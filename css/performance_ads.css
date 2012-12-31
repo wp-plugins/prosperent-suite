@@ -1,0 +1,30 @@
+div.prosperent-pa {
+ border: 0px !important;
+ z-index:10000;
+}
+/*
+ * round image corners
+ */
+div.prosperent-pa div.prosperent-pa-image {
+ -moz-border-radius: 10px;
+ border-radius: 10px;
+}
+div.prosperent-pa img.prosperent-pa-image {
+ -moz-border-radius: 8px;
+ border-radius: 8px;
+}
+.firstpost_advert_container {
+    clear: both;
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.firstpost_advert {
+    with: 100%;
+    min-height: 90px;
+    margin: 0;
+    padding: 7px;
+    text-align: center;
+    vertical-align: middle;
+}

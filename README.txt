@@ -67,6 +67,8 @@ The image below show the Performance Ads on a forum. The specific thread was rel
 
 == Installation ==
 
+[Video Tutorial of Installation](http://youtu.be/pTEmLn_UGXg)
+
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
     1. Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
     * Click the API tab in the menu, then click API Keys on the submenu and click Add New API Key. This will get you the API key you'll need so commissions can be tracked back to you. Name it whatever you'd like and you'll see that its created a key for you.

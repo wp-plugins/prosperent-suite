@@ -1,0 +1,52 @@
+<title>Update Query</title>
+<script type="text/javascript" src="../../../wp-includes/js/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../../wp-includes/js/tinymce/tiny_mce_popup.js"></script>
+<script type="text/javascript">
+		var AutoLinker = {
+			local_ed : 'ed',
+			init : function(ed) {
+				AutoLinker.local_ed = ed;
+				tinyMCEPopup.resizeToInnerSize();
+			},
+			
+			insert : function insertAutoLinkerSection(ed) {	
+				var query = jQuery('#query').val();
+			
+				var output = '[linker';
+				// Apply
+				if (query) 	
+				{
+					output += ' q="'+query+'"';
+				}
+				output += ']'+AutoLinker.local_ed.selection.getContent()+'[/linker]';
+
+				tinyMCEPopup.execCommand('mceReplaceContent', false, output);
+					 
+				// Return
+				tinyMCEPopup.close();
+			}
+		};
+		tinyMCEPopup.onInit.add(AutoLinker.init, AutoLinker);
+		 
+		document.write('<base href="'+tinymce.baseURL+'" />');
+</script>
+<style>
+	#autoLinker {
+	padding: 5px;
+	}
+	a {
+	text-decoration: none;
+	font-weight: bold;
+	}
+</style>
+<base target="_self" />
+
+<div align="center" id="autoLinker">
+	<form action="/" method="get" accept-charset="utf-8">
+		<p>Optional Query: <input type="text" id="query" style="width:125px" /></p>
+		<br/>
+		<a href="javascript:AutoLinker.insert(AutoLinker.local_ed)">Submit &rarr;</a>
+	</form>
+</div>
+
+

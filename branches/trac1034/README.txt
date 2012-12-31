@@ -76,6 +76,7 @@ The image below show the Performance Ads on a forum. The specific thread was rel
 4.	Go to the **Prosperent Settings** under Settings and edit those that you'd like.
 5.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search and also two that allow you to place Performance Ads in your sidebar and/or footer.
+        * If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.
 6.  There are Shortcodes available as well for the search results and the search bar for the Product Search portion. More can be found on those below in *Additional Notes for Installation*.
 7.  When editing or creating a page or post there is also a button for the auto-linker, this will allow you to select text that you did not specify in the text and query option.
 

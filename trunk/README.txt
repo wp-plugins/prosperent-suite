@@ -7,7 +7,7 @@ Stable tag: NA at this time
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Includes all Prosperent Plugins in one easy to use plugin. Contains: Product Search, Performance Ads, ProsperLinks, and Auto-Linker.
+Includes all Prosperent Plugins in one easy to use plugin to help monetize your blog with Prosperent's tools.
 
 == Description ==
 

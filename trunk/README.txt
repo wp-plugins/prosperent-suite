@@ -11,7 +11,7 @@ Includes all Prosperent Plugins in one easy to use plugin. Contains: Product Sea
 
 == Description ==
 
-= [Video Tutorial of Installation](http://youtu.be/pTEmLn_UGXg) =
+[Video Tutorial of Installation](http://youtu.be/pTEmLn_UGXg)
 
 = Deactivate your other Prosperent Plugins, and use this plugin in their place. =
 

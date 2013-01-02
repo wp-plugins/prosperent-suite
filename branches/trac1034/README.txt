@@ -13,7 +13,7 @@ Includes all Prosperent Plugins in one easy to use plugin to help monetize your 
 
 [Video Tutorial of Installation](http://youtu.be/pTEmLn_UGXg)
 
-= Deactivate your other Prosperent Plugins, and use this plugin in their place. =
+= Deactivate any other Prosperent Plugins before use. =
 
 = Prosperent Product Search =
 
@@ -128,6 +128,10 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 = 1.0 =
 * First Release
+
+== Upgrade Notice ==
+
+Deactivate any other Prosperent Plugins before use.
 
 == Notes ==
 

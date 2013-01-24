@@ -139,7 +139,7 @@ if ('prod' == $type || empty($type))
     }
 
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
-    echo '<span style="color:#666;">Products</span>&nbsp;|';
+    echo '<span>Products</span>&nbsp;|';
     echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=coup">Coupons</a>';
     if ($options['Celebrity_Endpoint'])
     {
@@ -153,8 +153,8 @@ if ('prod' == $type || empty($type))
         <input type="hidden" name="brand" value="<?php echo $filterBrand;?>">
         <input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
         <input type="hidden" name="type" value="<?php echo !$type ? 'prod' : $type; ?>">
-        <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-        <input class="submit" type="submit" id="searchsubmit" value="Search">
+        <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+        <input class="submit" type="submit" value="Search" style="padding:5px;">
         </form>
     </div>
     <?php
@@ -305,7 +305,7 @@ if ('prod' == $type || empty($type))
         if (!empty($brands2))
         {
             ?>
-            <table id="brandList" style="display:none; font-size:11px; width:100%; background:#F0F4F5; table-layout:fixed;">
+            <table id="brandList" style="display:none; font-size:11px; width:100%; table-layout:fixed;">
                 <?php
                 echo '<th style="padding:3px 0 0 5px; font-size:13px;">More Brands: </th>';
 
@@ -332,7 +332,7 @@ if ('prod' == $type || empty($type))
         if (!empty($merchants2))
         {
             ?>
-            <table id="merchantList" style="display:none; font-size:11px; background:#F0F4F5; width:100%;">
+            <table id="merchantList" style="display:none; font-size:11px; width:100%;">
                 <?php
                 echo '<th style="padding:3px 0 0 5px; font-size:13px;">More Merchants: </th>';
 
@@ -378,8 +378,8 @@ if ('prod' == $type || empty($type))
             <form id="searchform" method="GET" action="" style="margin:0;">
                 <input type="hidden" name="brand" value="<?php echo $filterBrand; ?>">
                 <input type="hidden" name="merchant" value="<?php echo $filterMerchant; ?>">
-                <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-                <input class="submit" type="submit" id="searchsubmit" value="Search">
+                <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+                <input class="submit" type="submit" value="Search" style="padding:5px;">
             </form>
         </div>
         <?php
@@ -396,8 +396,8 @@ if ('prod' == $type || empty($type))
             <input type="hidden" name="brand" value="<?php echo $filterBrand;?>">
             <input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
             <input type="hidden" name="type" value="<?php echo $type; ?>">
-            <label for="PriceSort" style="color:#666; font-size:14px;">Sort By: </label>
-            <select name="sort" onChange="priceSorter.submit();">
+            <label for="PriceSort" style="padding-right:4px; font-size:14px; float:left;">Sort By: </label>
+            <select name="sort" onChange="priceSorter.submit();" style="display:inline;">
                 <option> -- Select Option -- </option>
                 <option value="">Relevancy</option>
                 <option value="desc">Price: High to Low</option>
@@ -531,7 +531,7 @@ elseif ('coup' == $type)
 
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
     echo '<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=prod">Products</a>&nbsp;|';
-    echo '&nbsp;<span style="color:#666;">Coupons</span>';
+    echo '&nbsp;<span>Coupons</span>';
     if ($options['Celebrity_Endpoint'])
     {
         echo '&nbsp;|&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=cele">Celebrity</a>';
@@ -544,8 +544,8 @@ elseif ('coup' == $type)
         <form id="searchform" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0;">
             <input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
             <input type="hidden" name="type" value="<?php echo $type; ?>">
-            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-            <input class="submit" type="submit" value="Search" id="searchsubmit">
+            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+            <input class="submit" type="submit" value="Search" style="padding:5px;">
         </form>
     </div>
 
@@ -612,8 +612,8 @@ elseif ('coup' == $type)
             <form id="searchform" method="GET" action="" style="margin:0;">
                 <input type="hidden" name="m" value="<?php echo $filterMerchant;?>">
                 <input type="hidden" name="t" value="<?php echo $type; ?>">
-                <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-                <input class="submit" type="submit" value="Search" id="searchsubmit">
+                <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+                <input class="submit" type="submit" value="Search" style="padding:5px;">
             </form>
         </div>
         <?php
@@ -749,15 +749,15 @@ elseif ('cele' == $type)
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
     echo '<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=prod">Products</a>&nbsp;|';
     echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=coup">Coupons</a>&nbsp;|';
-    echo '&nbsp;<span style="color:#666;">Celebrity</span>';
+    echo '&nbsp;<span>Celebrity</span>';
     echo '</div>';
     ?>
 
     <div style="padding:10px 0; float:right;">
         <form id="searchform" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0;">
             <input type="hidden" name="type" value="<?php echo $type; ?>">
-            <input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-            <input class="submit" type="submit" id="searchsubmit" value="Search">
+            <input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+            <input class="submit" type="submit" value="Search" style="padding:5px;">
         </form>
     </div>
 
@@ -798,8 +798,8 @@ elseif ('cele' == $type)
         <div style="width:200px; padding-bottom:10px;">
             <form id="searchform" method="GET" action="">
                 <input type="hidden" name="type" value="<?php echo $type; ?>">
-                <input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
-                <input class="submit" type="submit" id="searchsubmit" value="Search">
+                <input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+                <input class="submit" type="submit" value="Search" style="padding:5px;">
             </form>
         </div>
         <?php
@@ -837,8 +837,8 @@ elseif ('cele' == $type)
         <form name="priceSorter" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0; float:right; padding:4px 13px 4px 0;">
             <input type="hidden" name="celeb" value="<?php echo $celeb;?>">
             <input type="hidden" name="type" value="<?php echo $type; ?>">
-            <label for="PriceSort" style="font-color:#cc6600; font-size:14px;">Sort By: </label>
-            <select name="sort" onChange="priceSorter.submit();">
+            <label for="PriceSort" style="padding-right:4px; font-size:14px; float:left;">Sort By: </label>
+            <select name="sort" onChange="priceSorter.submit();" style="display:inline;">
                 <option> -- Select Option -- </option>
                 <option value="">Relevancy</option>
                 <option value="desc">Price: High to Low</option>

@@ -222,16 +222,16 @@ if ('prod' == $type || empty($type))
                             {
                                 ?>
                                 </br>
-                                <a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-                                <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+                                <a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                                <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                                 <?php
                             }
                             else
                             {
                                 ?>
                                 </br>
-                                <a onclick="toggle_visibility('brandList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-                                <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+                                <a onclick="toggle_visibility('brandList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                                <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                                 <?php
                             }
                         }
@@ -241,7 +241,7 @@ if ('prod' == $type || empty($type))
                         echo '<div style="min-height:35px;">';
                         echo $filterBrand;
                         echo '</br><a href=' . str_replace(array('&brand=' . urlencode($filterBrand), '?brand=' . urlencode($filterBrand)), array('', '?'), $url) . '>clear filter</a>';
-                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/brandlogos/120x60/' . urlencode($filterBrand) . '.png"/></div>';
+                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/brandlogos/120x60/' . urlencode($filterBrand) . '.png" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
                         echo '</div>';
                     }
                     ?>
@@ -275,16 +275,16 @@ if ('prod' == $type || empty($type))
                             {
                                 ?>
                                 </br>
-                                <a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-                                <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+                                <a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                                <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                                 <?php
                             }
                             else
                             {
                                 ?>
                                 </br>
-                                <a onclick="toggle_visibility('merchantList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-                                <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+                                <a onclick="toggle_visibility('merchantList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                                <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                                 <?php
                             }
                         }
@@ -294,7 +294,7 @@ if ('prod' == $type || empty($type))
                         echo '<div style="min-height:35px;">';
                         echo $filterMerchant;
                         echo '</br><a href=' . str_replace(array('&merchant=' . urlencode($filterMerchant), '?merchant=' . urlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
-                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png"/></div>';
+                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
                         echo '</div>';
                     }
                     ?>
@@ -439,7 +439,7 @@ if ('prod' == $type || empty($type))
                 ?>
                 <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>"></span></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>
                     <div class="productContent">
                         <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
@@ -485,7 +485,7 @@ if ('prod' == $type || empty($type))
                             <?php
                         }
                         ?>
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
                     </div>
                 </div>
                 <?php
@@ -589,7 +589,7 @@ elseif ('coup' == $type)
                         echo '<div style="min-height:35px;">';
                         echo $filterMerchant;
                         echo '</br><a href=' . str_replace(array('&merchant=' . urlencode($filterMerchant), '?merchant=' . urlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
-                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png"/></div>';
+                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
                         echo '</div>';
                     }
                     ?>
@@ -656,7 +656,7 @@ elseif ('coup' == $type)
                 <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
                     <div class="couponImage">
                         <?php
-                        echo '<a href="' . $record['affiliate_url'] . '"><img src="' . $record['image_url'] . '"></a>';
+                        echo '<a href="' . $record['affiliate_url'] . '"><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
                         ?>
                     </div>
                     <div class="couponContent">
@@ -695,7 +695,7 @@ elseif ('coup' == $type)
                         ?>
                     </div>
                     <div class="couponVisit">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>"><img style="background: none repeat scroll 0 0 transparent; border: medium none; box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
                     </div>
                 </div>
                 <?php
@@ -779,7 +779,7 @@ elseif ('cele' == $type)
                     echo '<div style="min-height:35px;">';
                     echo $celeb;
                     echo '</br><a href=' . str_replace(array('&celeb=' . urlencode($celeb), '?celeb=' . urlencode($celeb)), array('', '?'), $url) . ' >clear filter</a>';
-                    echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/celebrity/100x100/' . urlencode($celeb) . '.jpg"/></div>';
+                    echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/celebrity/100x100/' . urlencode($celeb) . '.jpg" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
                     echo '</div>';
                 }
                 ?>
@@ -855,7 +855,7 @@ elseif ('cele' == $type)
                 ?>
                 <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']?>"  alt="<?php echo $record['keyword']?>" title="<?php echo $record['keyword']?>"></span></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']?>"  alt="<?php echo $record['keyword']?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>
                     <div class="productContent">
                         <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>"><span><?php echo $record['keyword']?></span></a></div>
@@ -889,7 +889,7 @@ elseif ('cele' == $type)
                             <?php
                         }
                         ?>
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> " style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>
                     </div>
                 </div>
                 <?php

@@ -1,6 +1,4 @@
 <?php
-require_once('prosperent_suite.php');
-
 add_action('widgets_init', create_function('', 'register_widget("ProsperStore_Widget");'));
 
 class ProsperStore_Widget extends WP_Widget
@@ -12,7 +10,7 @@ class ProsperStore_Widget extends WP_Widget
     }
 	
 	public function options()
-	{
+	{	
 	    global $wpdb;
         $wpdb->hide_errors();
         $myrows = $wpdb->get_row("SELECT *
@@ -35,7 +33,7 @@ class ProsperStore_Widget extends WP_Widget
             echo $before_title . $title . $after_title;
         ?>
         <form id="searchform" method="GET" action="<?php echo !$options['Base_URL'] ?  (!$options['Parent_Directory'] ? '/products' : '/' . $options['Parent_Directory'] . '/products') : '/' . $options['Base_URL']; ?>">
-            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:68%;">
+            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px;">
             <input class="submit" type="submit" id="searchsubmit" value="Search">
         </form>
         <?php

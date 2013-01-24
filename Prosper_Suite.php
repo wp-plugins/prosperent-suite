@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, and Auto-Linker)
 Description: Contains all Prosperent tools in one plugin, each one can be disabled if you don't want to use one.
-Version: 1.1
+Version: 1.1.1
 Author: Prosperent Brandon
 License: GPL2
 */

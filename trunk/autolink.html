@@ -1,52 +1,139 @@
-<title>Update Query</title>
-<script type="text/javascript" src="../../../wp-includes/js/jquery/jquery.js"></script>
-<script type="text/javascript" src="../../../wp-includes/js/tinymce/tiny_mce_popup.js"></script>
-<script type="text/javascript">
-		var AutoLinker = {
-			local_ed : 'ed',
-			init : function(ed) {
-				AutoLinker.local_ed = ed;
-				tinyMCEPopup.resizeToInnerSize();
-			},
-			
-			insert : function insertAutoLinkerSection(ed) {	
-				var query = jQuery('#query').val();
-			
-				var output = '[linker';
-				// Apply
-				if (query) 	
-				{
-					output += ' q="'+query+'"';
+<html>
+	<head>
+		<title>Update Query</title>
+		<script type="text/javascript" src="../../../wp-includes/js/jquery/jquery.js"></script>
+		<script type="text/javascript" src="../../../wp-includes/js/tinymce/tiny_mce_popup.js"></script>
+		<script type="text/javascript">
+			var AutoLinker = {
+				local_ed : 'ed',
+				init : function(ed) {
+					AutoLinker.local_ed = ed;
+					tinyMCEPopup.resizeToInnerSize();
+				},
+				
+				insert : function insertAutoLinkerSection(ed) {	
+					var query = jQuery('#query').val();
+					var brand = jQuery('#brand').val();
+					var merchant = jQuery('#merchant').val();
+					var goToMerc = jQuery('#goToMerc').is(':checked');
+					var output = '[linker';
+
+					// Apply
+					if (query) 	
+					{
+						output += ' q="'+query+'"';
+					}
+					if (goToMerc)
+					{
+						output += ' gtm="'+goToMerc+'"';
+					}
+					if (brand)
+					{
+						output += ' b="'+brand+'"';
+					}
+					if (merchant)
+					{
+						output += ' m="'+merchant+'"';
+					}
+					output += ']' + AutoLinker.local_ed.selection.getContent() + '[/linker]';
+
+					tinyMCEPopup.execCommand('mceReplaceContent', false, output);
+						 
+					// Return
+					tinyMCEPopup.close();
 				}
-				output += ']'+AutoLinker.local_ed.selection.getContent()+'[/linker]';
+			};
+			tinyMCEPopup.onInit.add(AutoLinker.init, AutoLinker);
+			 
+			document.write('<base href="'+tinymce.baseURL+'" />');
 
-				tinyMCEPopup.execCommand('mceReplaceContent', false, output);
-					 
-				// Return
-				tinyMCEPopup.close();
+			
+			var t;
+			function showValues() 
+			{
+				clearTimeout(t);
+				
+				var str = '';
+				
+				str = jQuery("form").serialize();
+				
+				xmlhttp=new XMLHttpRequest();
+				
+				xmlhttp.onreadystatechange=function()
+				{
+					jQuery('div.preview').html(xmlhttp.responseText).show();
+				}
+				xmlhttp.open("GET","/wp-content/plugins/prosperent-suite/preview.php?" + str,true);
+			
+				t = setTimeout(function(){					
+					try
+					{
+						xmlhttp.send();
+						str = '';
+					}
+					catch(e){}
+				}, 500);
+				
+				if (!str) clearTimeout(t);
+			}			
+
+			function setFocus()
+			{		
+				document.getElementById("query").focus();	
+				
+				if (AutoLinker.local_ed.selection.getContent())
+				{
+					document.getElementById("query").value = AutoLinker.local_ed.selection.getContent();
+					showValues();
+				}				
 			}
-		};
-		tinyMCEPopup.onInit.add(AutoLinker.init, AutoLinker);
-		 
-		document.write('<base href="'+tinymce.baseURL+'" />');
-</script>
-<style>
-	#autoLinker {
-	padding: 5px;
-	}
-	a {
-	text-decoration: none;
-	font-weight: bold;
-	}
-</style>
-<base target="_self" />
+		</script>
+		
+		<style>
+			#autoLinker {
 
-<div align="center" id="autoLinker">
-	<form action="/" method="get" accept-charset="utf-8">
-		<p>Optional Query: <input type="text" id="query" style="width:125px" /></p>
-		<br/>
-		<a href="javascript:AutoLinker.insert(AutoLinker.local_ed)">Submit &rarr;</a>
-	</form>
-</div>
-
+			}
+			a {
+				text-decoration: none;
+				font-weight: bold;
+			}
+			#auto_link_submit {
+				font-size:12px;
+				font-family:sans-serif;
+				display:inline-block;
+				background-color:#21759b;
+				background-image:-webkit-gradient(linear,left top,left bottom,from(#2a95c5),to(#21759b));
+				background-image:-webkit-linear-gradient(top,#2a95c5,#21759b);
+				background-image:-moz-linear-gradient(top,#2a95c5,#21759b);
+				background-image:-ms-linear-gradient(top,#2a95c5,#21759b);
+				background-image:-o-linear-gradient(top,#2a95c5,#21759b);
+				background-image:linear-gradient(to bottom,#2a95c5,#21759b);
+				border-color:#21759b;border-bottom-color:#1e6a8d;
+				-webkit-box-shadow:inset 0 1px 0 rgba(120,200,230,0.5);
+				box-shadow:inset 0 1px 0 rgba(120,200,230,0.5);
+				color:#fff;text-decoration:none;
+				text-shadow:0 1px 0 rgba(0,0,0,0.1);
+				line-height:23px;
+				height:24px;
+			}		
+			
+		</style>
+	</head>
+	<base target="_self" />
+	<body onload="setFocus()">
+		<div id="autoLinker">
+			<div align="center">
+				<form action="/" method="get" accept-charset="utf-8">
+					<p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues()"/></p>
+					<p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues()"/></p>
+					<p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues()"/></p>
+					<p>Go Directly to Merchant: <input type="checkbox" id="goToMerc"/></p>				
+					<input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed)"/>
+				</form>
+			</div>
+			<div style="float:left;font-size:12px;display:block;">Product Review:</div><p></br>
+			<div class="preview" style="display:none"></div>
+		</div>
+	</body>
+</html>
 

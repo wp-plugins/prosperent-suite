@@ -28,11 +28,9 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         extract($args);
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-        echo $before_widget;
-        if ( $title )
-            echo $before_title . $title . $after_title;
-        ?>
-        <script type="text/javascript"><!--
+		?>
+        <script type="text/javascript">
+			<!--
             prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
             prosperent_pa_width = <?php echo json_encode($options['FWW']); ?>;
             prosperent_pa_height = <?php echo json_encode($options['FWH']); ?>;
@@ -41,7 +39,6 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         </script>
         <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>
         <?php
-        echo $after_widget;
     }
 
     public function update( $new_instance, $old_instance )

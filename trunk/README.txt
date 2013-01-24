@@ -4,10 +4,10 @@ Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads,
 Requires at least: 3.0
 Tested up to: 3.5
 Stable tag: NA at this time
-License: GPLv2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Includes all Prosperent Plugins in one easy to use plugin to help monetize your blog with Prosperent's tools.
+All of the Prosperent's Tools in one easy to use plugin to help monetize your blog with the help of Prosperent.
 
 == Description ==
 
@@ -26,21 +26,20 @@ Prosperent Product Search uses Prosperent's API, which is a very advanced API th
 online retailers. Stores like Zappos, 6pm, Best Buy, Overstock, REI, Advance Auto Parts, Kohl's, Gap, Banana Republic, Cabelas, and thousands more. If it is sold online,
 we probably have it in our system.
 
-= Prosperent ProsperLinks =
-
-Adds ProsperLinks on a WordPress Page. This plugin places product links on the page that are relevant to the content.
-
-*Why Prosperent ProsperLinks?*
-
-Prosperent's ProsperLinks advanced algorithm analyzes your content in realtime and delivers laser targeted, on topic product references.
-
 = Prosperent Auto-Linker =
 
 Adds Auto-Linker buttons to HTML and Visual editor in WordPress for pages and posts. When text is highlighted an the button is pressed it will place [linker] short tags around the highlighted phrase connecting it to the Prosperent Product Search. Also puts Auto-Linker settings under the settings menu. Allowing you to link more commonly used phrases.
 
-On the HTML editor the button is named 'auto-linker'. In the Visual Editor, the button is the one with the gears on it.
+In the HTML editor the button is named 'auto-linker'. In the Visual Editor, the button is the one with the gears on it.
 
-When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to alter the query used with the highlighed phrase. once you hit submit if you changed the query it should look something like [linker q="ipad 4 case"]ipad 4[/linker]. The q variable will change the query used when someone clicks on Ipad 4 within the blog.
+When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to alter the query used with the highlighed phrase. Once you hit submit if you changed the query it should look something like [linker q="ipad 4 case"]ipad 4[/linker]. The q variable will change the query used when someone clicks on Ipad 4 within the blog.
+
+Inside the Auto-Linker shortcode you'll see attributes as follows:
+
+* q = query
+* b = brand
+* m = merchant
+* gtm = go to merchant
 
 *Why Prosperent Auto-Linker?*
 
@@ -51,7 +50,7 @@ soccer cleats
 
 Anytime you publish a wordpress post with the word nike in it, it will be linked to a search result page for nike shoes. If you publish a post with soccer cleats in it, the plugin links you to a soccer cleats product search page.
 
-The second addition is a tool that helps you quickly link words to product search pages when writing a new post. There is a Prosperent gear button. You simply highlight a word or phrase in your post, click the gear and it gets linked to a product search page.
+The second addition is a tool that helps you quickly link words to product search pages when writing a post or making a page. There is a Prosperent gear button. You simply highlight a word or phrase in your post, click the gear and it gets linked to a product search page. Secondly, now you can choose a Brand and Merchant to filter your choice even further. A product preview will be displayed at the bottom of the dialog. You can also now have the link go directly to the merchant instead of the product page.
 
 = Prosperent Performance Ads =
 
@@ -63,7 +62,7 @@ Prosperent Performance ads have a content analyzer that will produce an ad based
 
 The image below show the Performance Ads on a forum. The specific thread was related to Integra, and the items that Performance Ads pulled back were related to Integra.
 
-* We have an ever growing community, which is always willing to answer questions and lend a helping hand, and our team here at Prosperent is also available on the forum. *
+*We have an ever growing community, which is always willing to answer questions and lend a helping hand, and our team here at Prosperent is also available on the forum.*
 
 == Installation ==
 
@@ -85,6 +84,11 @@ The image below show the Performance Ads on a forum. The specific thread was rel
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.
 Log in to **Prosperent.com** every so often to check your stats.
 
+= ShortCodes Available =
+
+* [prosper_store][/prosper_store]- for the search results
+* [prosper_search][/prosper_search]- for a search box
+
 = Additional Notes for Installation =
 
 * This plugin automatically creates a *new page* called product. Go into that page and change the title to whatever you would like to be visible.
@@ -99,11 +103,10 @@ Log in to **Prosperent.com** every so often to check your stats.
 = Advanced Installation Options =
 
 * To add the performance ad after the first post on each page
-    * Go into your themes directory and open `index.php`. Add `<?php if(!$show_ads){ performance_ads(); $show_ads = 1; } ?>` after `<?php while ( have_posts() ) : the_post(); ?>` and before the `<?php endwhile; ?>`
+    * Go into your themes directory and open `index.php`. Add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if(!isset($show_ads) && is_plugin_active('prosper-suite/Prosper_Suite.php')){ performance_ads(); $show_ads = 1; } ?>` after `<?php while ( have_posts() ) : the_post(); ?>` and before the `<?php endwhile; ?>`
 * To add the performance ad to each post's page, before the comment section
-    * Go into your themes directory and open `content-single.php`. Add `<?php performance_ads(); ?>` after `<?php endif; ?>` and before `</footer><!-- .entry-meta -->`
-* If you want to add the search box in the header of your page, add `<?php prospere_header(); ?>` in your themes `header.php` file where you'd like it to be located.
-
+    * Go into your themes directory and open `content-single.php`. Add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if (is_plugin_active('prosper-suite/Prosper_Suite.php')) { performance_ads(); } ?>` after `<?php endif; ?>` and before `</footer><!-- .entry-meta -->`
+* If you want to add the search box in the header of your page, add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if (is_plugin_active('prosper-suite/Prosper_Suite.php')) { prospere_header(); } ?>` in your themes `header.php` file where you'd like it to be located.
 
 == Frequently Asked Questions ==
 
@@ -121,10 +124,15 @@ Log in to **Prosperent.com** every so often to check your stats.
     * We have a comprehensive reporting system in place that allows you to see which pages are generating earnings, which city/state/country the sales are coming from, and which individual products and retailers are providing those sales.
 7. **What is the revenue split?**
     * We take a 30% commission and pay you the other 70%. If you are a larger publisher this split changes to 80/20.
-8. **What are the comissions paid and terms?**
+8. **What are the commissions paid and terms?**
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 1.1 =
+* Removed ProsperLinks
+* AutoLinker has undergone a huge update
+* Major performance increases across all tools
 
 = 1.0 =
 * First Release

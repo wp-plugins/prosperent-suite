@@ -52,11 +52,9 @@ function prosper_pagination($pages = '', $range)
 
 $options = $this->options();
 
-
-
-$sort = !$_GET['sortBy'] ? (!$options['Default_Sort'] ? 'relevance desc' : $options['Default_Sort']) : $_GET['sortBy'];
-$filterMerchant = stripslashes($_GET['filterMerchant']);
-$filterBrand = stripslashes($_GET['filterBrand']);
+$sort = !$_GET['sort'] ? (!$options['Default_Sort'] ? '' : $options['Default_Sort']) : $_GET['sort'];
+$filterMerchant = stripslashes($_GET['merchant']);
+$filterBrand = stripslashes($_GET['brand']);
 $pageNumber = preg_replace('/(.*)(\/page\/)(\d+)(\/.*)/i', '$3', $_SERVER['REQUEST_URI']);
 $celeb = $_GET['celeb'];
 $type = $_GET['type'];
@@ -115,7 +113,7 @@ if ('prod' == $type || empty($type))
 		'query'          => $query,
 		'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
 		'limit'          => !$options['Api_Limit'] ? 100 : $options['Api_Limit'],
-		'sortBy'	     => $sort,
+		'sortPrice'	     => $sort,
 		'groupBy'	     => 'productId',
 		'enableFacets'   => $options['Enable_Facets'],
 		'filterBrand'    => !$options['Negative_Brand'] ? $filterBrand : $negativeBrands,
@@ -134,20 +132,25 @@ if ('prod' == $type || empty($type))
 	$facets = $prosperentApi -> getFacets();
 
 	$newUrl = str_replace(array('?type=' . $type, '&type=' . $type), array('?', ''), $url);
-
+	
+	if (!preg_match('/\?/', $newUrl))
+	{
+		$newUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['[REDIRECT_URL'] . '?' . $q;
+	}
+	
 	echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
 	echo '<span style="color:#666;">Products</span>&nbsp;|';
-	echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=coup"> Coupons</a>&nbsp;|';
+	echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=coup">Coupons</a>&nbsp;|';
 	echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=cele">Celebrity</a>';
 	echo '</div>';
 	?>
 
 	<div style="float:right;">
 		<form id="searchform" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0;">
-		<input type="hidden" name="filterBrand" value="<?php echo $filterBrand;?>">
-		<input type="hidden" name="filterMerchant" value="<?php echo $filterMerchant;?>">			
+		<input type="hidden" name="brand" value="<?php echo $filterBrand;?>">
+		<input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">			
 		<input type="hidden" name="type" value="<?php echo !$type ? 'prod' : $type; ?>">	
-		<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:64%;">
+		<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 		<input class="submit" type="submit" id="searchsubmit" value="Search">
 		</form>
 	</div>
@@ -197,31 +200,46 @@ if ('prod' == $type || empty($type))
 					}
 					else if (!$filterBrand)
 					{
+						$url = preg_replace('/\/page\/\d+/i', '', $url);
+						
 						foreach ($brands1 as $i => $brand)
 						{
 							if ($i < count($brands1) - 1)
 							{
-								echo '<a href=' . preg_replace('/\/page\/\d+/i', '', $url) . '&filterBrand=' . rawurlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a>, ';
+								echo '<a href=' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a>, ';
 							}
 							else
 							{
-								echo '<a href=' . preg_replace('/\/page\/\d+/i', '', $url) . '&filterBrand=' . rawurlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a>';
+								echo '<a href=' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a>';
 							}
 						}
 						if (!empty($brands2))
 						{
-							?>
-							</br>
-							<a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-							<a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
-							<?php
+							if (!$filterMerchant)
+							{
+								?>
+								</br>
+								<a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
+								<a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+								<?php
+							}
+							else
+							{
+								?>
+								</br>
+								<a onclick="toggle_visibility('brandList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Brands <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
+								<a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Brands <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+								<?php
+							}
 						}
 					}
 					else
 					{
+						echo '<div style="min-height:35px;">';
 						echo $filterBrand;
-						echo '</br><a href=' . str_replace(array('&filterBrand=' . rawurlencode($filterBrand), '?filterBrand=' . rawurlencode($filterBrand)), array('', '?'), $url) . '>clear filter</a>';
-						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/brandlogos/120x60/' . rawurlencode($filterBrand) . '.png"/></div>';
+						echo '</br><a href=' . str_replace(array('&brand=' . urlencode($filterBrand), '?brand=' . urlencode($filterBrand)), array('', '?'), $url) . '>clear filter</a>';
+						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/brandlogos/120x60/' . urlencode($filterBrand) . '.png"/></div>';
+						echo '</div>';
 					}
 					?>
 				</td>
@@ -231,36 +249,50 @@ if ('prod' == $type || empty($type))
 
 					if (empty($facets['merchant']) && !$filterMerchant)
 					{
-						echo '<div class="noMerchants"">No Merchants Found</div>';
+						echo '<div class="noMerchants">No Merchants Found</div>';
 					}
 					else if (!$filterMerchant)
 					{
 						foreach ($merchants1 as $i => $merchant)
 						{
+							$url = preg_replace('/\/page\/\d+/i', '', $url);
+							
 							if ($i < count($merchants1) - 1)
-							{
-								echo '<a href=' . preg_replace('/\/page\/\d+/i', '', $url) . '&filterMerchant=' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>, ';
+							{								
+								echo '<a href=' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>, ';
 							}
-
 							else
 							{
-								echo '<a href=' . preg_replace('/\/page\/\d+/i', '', $url) . '&filterMerchant=' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
+								echo '<a href=' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
 							}
 						}
 						if (!empty($merchants2))
 						{
-							?>
-							</br>
-							<a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
-							<a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
-							<?php
+							if (!$filterBrand)
+							{
+								?>
+								</br>
+								<a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
+								<a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+								<?php
+							}
+							else
+							{
+								?>
+								</br>
+								<a onclick="toggle_visibility('merchantList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Merchants <img src="<?php echo plugins_url('/img/arrow_down_small.png', __FILE__); ?>"/></span></a>
+								<a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Merchants <img src="<?php echo plugins_url('/img/arrow_up_small.png', __FILE__); ?>" /></span></a>
+								<?php
+							}
 						}
 					}
 					else
 					{
+						echo '<div style="min-height:35px;">';
 						echo $filterMerchant;
-						echo '</br><a href=' . str_replace(array('&filterMerchant=' . rawurlencode($filterMerchant), '?filterMerchant=' . rawurlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
-						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . rawurlencode($filterMerchant) . '.png"/></div>';
+						echo '</br><a href=' . str_replace(array('&merchant=' . urlencode($filterMerchant), '?merchant=' . urlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
+						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png"/></div>';
+						echo '</div>';
 					}
 					?>
 				</td>
@@ -281,7 +313,7 @@ if ('prod' == $type || empty($type))
 						echo '<tr>';
 					}
 
-					echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . $url . '&filterBrand=' . rawurlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a></td>';
+					echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a></td>';
 
 					if ($i % 5 == 4 && $i >= 9)
 					{
@@ -308,7 +340,7 @@ if ('prod' == $type || empty($type))
 						echo '<tr>';
 					}
 
-					echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . $url . '&filterMerchant=' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a></td>';
+					echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a></td>';
 
 					if ($i % 4 == 3 && $i >= 7)
 					{
@@ -341,9 +373,9 @@ if ('prod' == $type || empty($type))
 		?>
 		<div style="padding:10px 0;">
 			<form id="searchform" method="GET" action="" style="margin:0;">
-				<input type="hidden" name="filterBrand" value="<?php echo $filterBrand; ?>">
-				<input type="hidden" name="filterMerchant" value="<?php echo $filterMerchant; ?>">
-				<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:155px;">
+				<input type="hidden" name="brand" value="<?php echo $filterBrand; ?>">
+				<input type="hidden" name="merchant" value="<?php echo $filterMerchant; ?>">
+				<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 				<input class="submit" type="submit" id="searchsubmit" value="Search">
 			</form>
 		</div>
@@ -358,15 +390,15 @@ if ('prod' == $type || empty($type))
 		
 		<form name="priceSorter" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0; float:right; padding:4px 13px 4px 0;">
 			<input type="hidden" name="q" value="<?php echo $query;?>">
-			<input type="hidden" name="filterBrand" value="<?php echo $filterBrand;?>">
-			<input type="hidden" name="filterMerchant" value="<?php echo $filterMerchant;?>">
+			<input type="hidden" name="brand" value="<?php echo $filterBrand;?>">
+			<input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
 			<input type="hidden" name="type" value="<?php echo $type; ?>">
 			<label for="PriceSort" style="color:#666; font-size:14px;">Sort By: </label>
-			<select name="sortBy" onChange="priceSorter.submit();">
+			<select name="sort" onChange="priceSorter.submit();">
 				<option> -- Select Option -- </option>
-				<option value="relevance desc">Relevancy</option>
-				<option value="price desc">Price: High to Low</option>
-				<option value="price asc">Price: Low to High</option>
+				<option value="">Relevancy</option>
+				<option value="desc">Price: High to Low</option>
+				<option value="asc">Price: Low to High</option>
 			</select>
 		</form>
 		</br>
@@ -421,13 +453,13 @@ if ('prod' == $type || empty($type))
 						</div>
 						<div class="productBrandMerchant">
 							<?php
-							if($record['brand'])
+							if($record['brand'] && !$filterBrand)
 							{
-								echo '<span class="brandIn"><u>Brand</u>: <a href="' . $url . '&filterBrand=' . rawurlencode($record['brand']). '"><cite>' . $record['brand'] . '</cite></a></span>';
+								echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
 							}
-							if($record['merchant'])
+							if($record['merchant'] && !$filterMerchant)
 							{
-								echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . $url . '&filterMerchant=' . rawurlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+								echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
 							}
 							?>
 						</div>
@@ -450,7 +482,7 @@ if ('prod' == $type || empty($type))
 							<?php
 						}
 						?>
-						<a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+						<a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
 					</div>
 				</div>
 				<?php
@@ -472,7 +504,7 @@ elseif ('coup' == $type)
 		'query'          => $query,
 		'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
 		'limit'          => !$options['Api_Limit'] ? 100 : $options['Api_Limit'],
-		'sortBy'	     => $sort,
+		'sortPrice'	 	 => $sort,
 		'enableFacets'   => $options['Enable_Facets'],
 		'filterMerchant' => !$options['Negative_Merchant'] ? $filterMerchant : $negativeMerchants
 	));
@@ -488,6 +520,11 @@ elseif ('coup' == $type)
 	$totalFound = $prosperentApi -> getTotalRecordsFound();
 
 	$newUrl = str_replace(array('?type=' . $type, '&type=' . $type), array('?', ''), $url);
+		
+	if (!preg_match('/\?/', $newUrl))
+	{
+		$newUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['[REDIRECT_URL'] . '?' . $q;
+	}
 	
 	echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
 	echo '<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=prod">Products</a>&nbsp;|';
@@ -498,9 +535,9 @@ elseif ('coup' == $type)
 	
 	<div style="padding-bottom:10px; float:right;">
 		<form id="searchform" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0;">
-			<input type="hidden" name="filterMerchant" value="<?php echo $filterMerchant;?>">
+			<input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
 			<input type="hidden" name="type" value="<?php echo $type; ?>">
-			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="width:64%;">
+			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 			<input class="submit" type="submit" value="Search" id="searchsubmit">
 		</form>
 	</div>
@@ -531,20 +568,22 @@ elseif ('coup' == $type)
 						{
 							if ($i < count($merchants1) - 1)
 							{
-								echo '<a href=' . $url . '&filterMerchant=' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>, ';
+								echo '<a href=' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>, ';
 							}
 
 							else
 							{
-								echo '<a href=' . $url . '&filterMerchant=' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
+								echo '<a href=' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
 							}
 						}
 					}
 					else
 					{
+						echo '<div style="min-height:35px;">';
 						echo $filterMerchant;
-						echo '</br><a href=' . str_replace(array('&filterMerchant=' . rawurlencode($filterMerchant), '?filterMerchant=' . rawurlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
-						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . rawurlencode($filterMerchant) . '.png"/></div>';
+						echo '</br><a href=' . str_replace(array('&merchant=' . urlencode($filterMerchant), '?merchant=' . urlencode($filterMerchant)), array('', '?'), $url) . '>clear filter</a>';
+						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/logos/120x60/' . urlencode($filterMerchant) . '.png"/></div>';
+						echo '</div>';
 					}
 					?>
 				</td>
@@ -564,9 +603,9 @@ elseif ('coup' == $type)
 		?>
 		<div style="padding:10px 0;">
 			<form id="searchform" method="GET" action="" style="margin:0;">
-				<input type="hidden" name="filterMerchant" value="<?php echo $filterMerchant;?>">
-				<input type="hidden" name="type" value="<?php echo $type; ?>">
-				<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="width:155px;">
+				<input type="hidden" name="m" value="<?php echo $filterMerchant;?>">
+				<input type="hidden" name="t" value="<?php echo $type; ?>">
+				<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 				<input class="submit" type="submit" value="Search" id="searchsubmit">
 			</form>
 		</div>
@@ -649,7 +688,7 @@ elseif ('coup' == $type)
 						?>
 					</div>
 					<div class="couponVisit">
-						<a href="<?php echo $record['affiliate_url']; ?>"><img src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
+						<a href="<?php echo $record['affiliate_url']; ?>"><img style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
 					</div>                 
 				</div>
 				<?php
@@ -671,7 +710,7 @@ elseif ('cele' == $type)
 		'filterCelebrity' => $celeb,
 		'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
 		'limit'           => !$options['Api_Limit'] ? 100 : $options['Api_Limit'],
-		'sortBy'	      => $sort,
+		'sortPrice'	   	  => $sort,
 		'enableFacets'    => $options['Enable_Facets'],
 	));
 	
@@ -679,7 +718,7 @@ elseif ('cele' == $type)
 		'api_key'         => $options['Api_Key'],
 		'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
 		'limit'           => 500,
-		'sortBy'	      => 'celebrity asc'
+		'sortPrice'	   	  => 'celebrity asc'
 	));
 	
 	/*
@@ -693,8 +732,13 @@ elseif ('cele' == $type)
 	$celebrityApi->fetchCelebrities();
 	$celebrityResults = $celebrityApi -> getData();
 	
-	$newUrl = str_replace(array('?type=' . $type, '&type=' . $type, '&celeb=' . rawurlencode($celeb)), array('?', '', ''), $url);
+	$newUrl = str_replace(array('?type=' . $type, '&type=' . $type, '&celeb=' . urlencode($celeb)), array('?', '', ''), $url);
 
+	if (!preg_match('/\?/', $newUrl))
+	{
+		$newUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['[REDIRECT_URL'] . '?' . $q;
+	}
+	
 	echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
 	echo '<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=prod">Products</a>&nbsp;|';
 	echo '&nbsp;<a href="' . preg_replace('/\/page\/\d+/i', '', $newUrl) . '&type=coup">Coupons</a>&nbsp;|';
@@ -705,7 +749,7 @@ elseif ('cele' == $type)
 	<div style="padding:10px 0; float:right;">
 		<form id="searchform" method="GET" action="<?php echo $submitUrl; ?>" style="margin:0;">
 			<input type="hidden" name="type" value="<?php echo $type; ?>">
-			<input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="width:64%;">
+			<input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 			<input class="submit" type="submit" id="searchsubmit" value="Search">
 		</form>
 	</div>
@@ -720,14 +764,16 @@ elseif ('cele' == $type)
 				{
 					foreach ($celebrityResults as $i => $celebs)
 					{
-						echo '<a style="font-size:12px;" href="' . str_replace(array('?q=' . rawurlencode($query), '&q=' . rawurlencode($query)), array('?', ''), $url) . '&celeb=' . rawurlencode($celebs['celebrity']) . '">' . $celebs['celebrity'] . '</a><span style="font-size:12px; font-weight:bold;"> | </span>';
+						echo '<a style="font-size:12px;" href="' . str_replace(array('?q=' . urlencode($query), '&q=' . urlencode($query)), array('?', ''), $url) . '&celeb=' . urlencode($celebs['celebrity']) . '">' . $celebs['celebrity'] . '</a><span style="font-size:12px; font-weight:bold;"> | </span>';
 					}
 				}
 				else
 				{
-					echo $celeb;
-					echo '</br><a href=' . str_replace(array('&celeb=' . rawurlencode($celeb), '?celeb=' . rawurlencode($celeb)), array('', '?'), $url) . '>clear filter</a>';
-					echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/celebrity/100x100/' . rawurlencode($celeb) . '.jpg"/></div>';
+					echo '<div style="min-height:35px;">';
+					echo $celeb;					
+					echo '</br><a href=' . str_replace(array('&celeb=' . urlencode($celeb), '?celeb=' . urlencode($celeb)), array('', '?'), $url) . ' >clear filter</a>';
+					echo '<div style="margin-top:-50px;padding-left:150px;"><img src="http://img1.prosperent.com/images/celebrity/100x100/' . urlencode($celeb) . '.jpg"/></div>';
+					echo '</div>';
 				}
 				?>
 			</td>
@@ -745,7 +791,7 @@ elseif ('cele' == $type)
 		<div style="width:200px; padding-bottom:10px;">
 			<form id="searchform" method="GET" action="">
 				<input type="hidden" name="type" value="<?php echo $type; ?>">		
-				<input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="width:64%;">
+				<input class="field" type="text" name="celeb" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Celebrity' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 7px;">
 				<input class="submit" type="submit" id="searchsubmit" value="Search">
 			</form>
 		</div>
@@ -785,11 +831,11 @@ elseif ('cele' == $type)
 			<input type="hidden" name="celeb" value="<?php echo $celeb;?>">
 			<input type="hidden" name="type" value="<?php echo $type; ?>">
 			<label for="PriceSort" style="font-color:#cc6600; font-size:14px;">Sort By: </label>
-			<select name="sortBy" onChange="priceSorter.submit();">
+			<select name="sort" onChange="priceSorter.submit();">
 				<option> -- Select Option -- </option>
-				<option value="relevance desc">Relevancy</option>
-				<option value="price desc">Price: High to Low</option>
-				<option value="price asc">Price: Low to High</option>
+				<option value="">Relevancy</option>
+				<option value="desc">Price: High to Low</option>
+				<option value="asc">Price: Low to High</option>
 			</select>
 		</form>
 		
@@ -817,18 +863,6 @@ elseif ('cele' == $type)
 							}
 							?>
 						</div>
-						<div class="productBrandMerchant">
-							<?php
-							if($record['brand'])
-							{
-								echo '<span class="brandIn"><u>Brand</u>: <a href="' . $url . '&filterBrand=' . rawurlencode($record['brand']). '"><cite>' . $record['brand'] . '</cite></a></span>';
-							}
-							if($record['merchant'])
-							{
-								echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . $url . '&filterMerchant=' . rawurlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
-							}
-							?>
-						</div>
 					</div>
 					<div class="productEnd">
 						<?php 			
@@ -848,7 +882,7 @@ elseif ('cele' == $type)
 							<?php
 						}
 						?>
-						<a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+						<a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
 					</div>
 				</div>
 				<?php

@@ -129,6 +129,10 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.1.1 =
+* Uses native colors primarily, should allow it to work with more themese
+* Fixed the transparency on the Visit Store Image
+
 = 1.1 =
 * Removed ProsperLinks
 * AutoLinker has undergone a huge update

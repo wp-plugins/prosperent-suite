@@ -437,7 +437,7 @@ if ('prod' == $type || empty($type))
             {
                 $record['image_url'] = preg_replace('/\/images\/250x250\//', '/images/125x125/', $record['image_url'])
                 ?>
-                <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
+                <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
                         <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>
@@ -653,7 +653,7 @@ elseif ('coup' == $type)
             foreach ($results as $i => $record)
             {
                 ?>
-                <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
+                <div class="<?php echo count($results) >= 2 ? 'couponBlock' : 'couponBlock0'; ?>">
                     <div class="couponImage">
                         <?php
                         echo '<a href="' . $record['affiliate_url'] . '"><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
@@ -853,7 +853,7 @@ elseif ('cele' == $type)
             {
                 $record['image_url'] = preg_replace('/\/images\/250x250\//', '/images/125x125/', $record['image_url'])
                 ?>
-                <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
+                <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
                         <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']?>"  alt="<?php echo $record['keyword']?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>

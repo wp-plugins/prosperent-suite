@@ -47,7 +47,7 @@
 class Prosperent_Api implements Iterator
 {
     //constants
-    const VERSION = '2.1.2';
+    const VERSION = '2.1.3';
 
     const ENDPOINT_PRODUCT           = 'product';
     const ENDPOINT_COUPON            = 'coupon';
@@ -139,6 +139,16 @@ class Prosperent_Api implements Iterator
      * @var string
      */
     protected $_commissionDateRange;
+
+    /**
+     * @var string
+     */
+    protected $_expirationDateRange;
+
+    /**
+     * @var string
+     */
+    protected $_startDateRange;
 
     /**
      * @var string
@@ -443,6 +453,7 @@ class Prosperent_Api implements Iterator
         'commissionId',
         'api_key',
         'commissionDateRange',
+        'expirationDateRange',
         'clickDateRange',
         'query',
         //filters are imploded
@@ -1383,7 +1394,7 @@ class Prosperent_Api implements Iterator
             //if the end date is not set, then set to yesterday
             if ('endDate' == $date && !${$date})
             {
-                ${$date} = $endDate = date('Ymd', strtotime('yesterday'));
+                ${$date} = $endDate = date('Ymd', strtotime($type == 'commission' ? 'yesterday' : 'today'));
             }
 
             if (!preg_match('/^20[0-9]{2}-?[0-9]{2}-?[0-9]{2}$/', ${$date}))
@@ -1394,20 +1405,23 @@ class Prosperent_Api implements Iterator
             ${$date} = str_replace('-', '', ${$date});
         }
 
-        /*
-         * if the end date is >= today, set to yesterday
-         */
-        if ($endDate >= date('Ymd'))
+        if ($type == 'commission')
         {
-            $endDate = date('Ymd', strtotime('yesterday'));
-        }
+            /*
+             * if the end date is >= today, set to yesterday
+             */
+            if ($endDate >= date('Ymd'))
+            {
+                $endDate = date('Ymd', strtotime('yesterday'));
+            }
 
-        /*
-         * if the start date is > the end date, equal out
-         */
-        if ($startDate > $endDate)
-        {
-            $startDate = $endDate;
+            /*
+             * if the start date is > the end date, equal out
+             */
+            if ($startDate > $endDate)
+            {
+                $startDate = $endDate;
+            }
         }
 
         $this->$method(
@@ -1818,6 +1832,50 @@ class Prosperent_Api implements Iterator
     public function set_commissionDateRange($commissionDateRange)
     {
         $this->_commissionDateRange = (string) $commissionDateRange;
+        return $this;
+    }
+
+    /**
+     * Get expirationDateRange
+     *
+     * @return null|string
+     */
+    public function get_expirationDateRange()
+    {
+        return $this->_expirationDateRange;
+    }
+
+    /**
+     * Set expirationDateRange
+     *
+     * @param  string $expirationDateRange
+     * @return Prosperent_Api
+     */
+    public function set_expirationDateRange($expirationDateRange)
+    {
+        $this->_expirationDateRange = (string) $expirationDateRange;
+        return $this;
+    }
+
+    /**
+     * Get startDateRange
+     *
+     * @return null|string
+     */
+    public function get_startDateRange()
+    {
+        return $this->_startDateRange;
+    }
+
+    /**
+     * Set startDateRange
+     *
+     * @param  string $startDateRange
+     * @return Prosperent_Api
+     */
+    public function set_startDateRange($startDateRange)
+    {
+        $this->_startDateRange = (string) $startDateRange;
         return $this;
     }
 

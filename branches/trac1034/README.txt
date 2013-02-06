@@ -15,7 +15,7 @@ All of the Prosperent's Tools in one easy to use plugin to help monetize your bl
 
 = Prosperent Product Search =
 
-This plugin will add a product search box to your wordpress site, which viewers can use to search for products. When they click a product through your site they will be redirected to the Merchant's site. 
+This plugin will add a product search box to your wordpress site, which viewers can use to search for products. When they click a product through your site they will be redirected to the Merchant's site.
 If they make a purchase you will earn a commission from the sale.
 
 Prosperent Product Search uses Prosperent's API, which is a very advanced API that offers you access to 3000 merchants and 50 million products from all of the top
@@ -24,7 +24,7 @@ we probably have it in our system.
 
 = Prosperent Auto-Linker =
 
-Adds Auto-Linker buttons to HTML and Visual editor in WordPress for pages and posts. When text is highlighted and the button is pressed it will place [linker] short code tags around the highlighted phrase. 
+Adds Auto-Linker buttons to HTML and Visual editor in WordPress for pages and posts. When text is highlighted and the button is pressed it will place [linker] short code tags around the highlighted phrase.
 Also puts Auto-Linker settings under the settings menu that includes a text area allowing you to link more commonly used phrases.
 
 This is an example of what to enter into the text-area in the setting for Auto-Linker
@@ -34,10 +34,10 @@ This is an example of what to enter into the text-area in the setting for Auto-L
 
 Anytime you publish a wordpress post with the word nike in it, it will be linked to a search result page for nike shoes. If you publish a post with soccer cleats in it, the plugin links you to a soccer cleats product search page.
 
-In the Visual Editor, the button is the one with the chain link and Prosperent gears on it. In the HTML editor the button is named 'auto-linker'. 
+In the Visual Editor, the button is the one with the chain link and Prosperent gears on it. In the HTML editor the button is named 'auto-linker'.
 
-When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to alter the query, brand/merchant filter and decide whether to go to merchant, 
-skipping the products page. A preview is displayed at the bottom of the dialog box based on what you have entered. 
+When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to alter the query, brand/merchant filter and decide whether to go to merchant,
+skipping the products page. A preview is displayed at the bottom of the dialog box based on what you have entered.
 
 Example of auto-linker:
 
@@ -50,14 +50,14 @@ Inside the Auto-Linker dialog box you'll see options as follows:
 * Merchant - filters by merchant
 * Go to Merchant - the link will go directly to the merchant's page, skipping the product's page
 
-= If no matches are found and there are filters used, this tool will try again without the filters, and lastly in the rare case that there are no results it will not display a link. =
+*If no matches are found and there are filters used, this tool will try again without the filters, and lastly in the rare case that there are no results it will not display a link.*
 
 = Prosperent Auto-Comparer =
 
 Adds Auto-Comparer buttons to HTML and Visual editor in WordPress for pages and posts.
-This tool will place products or coupons on your page where you want them to appear. Simply put the cursor inside the page or post editor and click the Auto-Comparer button, if you are using the Visual Editor, the button is the one with the boxes and the Prosperent gears on it, in the HTML editor the button is named 'auto-compare'. 
+This tool will place products or coupons on your page where you want them to appear. Simply put the cursor inside the page or post editor and click the Auto-Comparer button, if you are using the Visual Editor, the button is the one with the boxes and the Prosperent gears on it, in the HTML editor the button is named 'auto-compare'.
 
-When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to enter a query as well as other options listed below. 
+When using the Visual Editor, a dialog box will pop up when the button is clicked, allowing you to enter a query as well as other options listed below.
 
 Example of Auto-Comparer:
 
@@ -76,7 +76,7 @@ Inside the Auto-Linker dialog you'll see options as follows:
 * Comparison Limit - Limit used for products with comparisons, defaults to 3
 * Use Coupons - use coupons instead of products
 
-= If no matches are found and there are filters used, this tool will try again without the filters, and lastly in the rare case that there are no results it will not display a product. =
+*If no matches are found and there are filters used, this tool will try again without the filters, and lastly in the rare case that there are no results it will not display a product.*
 
 = Prosperent Performance Ads =
 
@@ -100,9 +100,9 @@ Prosperent Performance ads have a content analyzer that will produce an ad based
 5.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search and also two that allow you to place Performance Ads in your sidebar and/or footer.
         * If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.\
-6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Auto-Comparer. 
-	* Auto-Linker allows you to link words that when clicked will go to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
-	* Auto-Comparer allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
+6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Auto-Comparer.
+    * Auto-Linker allows you to link words that when clicked will go to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
+    * Auto-Comparer allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
 7.  When editing or creating a page or post there is also a button for the auto-linker, this will allow you to select text that you did not specify in the text and query option.
 
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.

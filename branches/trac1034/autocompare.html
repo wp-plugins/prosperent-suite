@@ -1,31 +1,33 @@
 <html>
 	<head>
-		<title>Auto-Linker</title>
+		<title>Auto-Comparer</title>
 		<script type="text/javascript" src="../../../wp-includes/js/jquery/jquery.js"></script>
 		<script type="text/javascript" src="../../../wp-includes/js/tinymce/tiny_mce_popup.js"></script>
 		<script type="text/javascript">
-			var AutoLinker = {
+			var AutoCompare = {
 				local_ed : 'ed',
 				init : function(ed) {
-					AutoLinker.local_ed = ed;
+					AutoCompare.local_ed = ed;
 					tinyMCEPopup.resizeToInnerSize();
 				},
 				
-				insert : function insertAutoLinkerSection(ed) {	
+				insert : function insertAutoCompareSection(ed) {	
 					var query = jQuery('#query').val();
 					var brand = jQuery('#brand').val();
 					var merchant = jQuery('#merchant').val();
-					var goToMerc = jQuery('#goToMerc').is(':checked');
-					var output = '[linker';
+					var limit = jQuery('#limit').val();
+					var compLim = jQuery('#compLim').val();
+					var coup = jQuery('#coup').is(':checked');
+					var output = '[compare';
 
 					// Apply
 					if (query) 	
 					{
 						output += ' q="'+query+'"';
 					}
-					if (goToMerc)
+					if (coup)
 					{
-						output += ' gtm="'+goToMerc+'"';
+						output += ' c="'+coup+'"';
 					}
 					if (brand)
 					{
@@ -35,7 +37,15 @@
 					{
 						output += ' m="'+merchant+'"';
 					}
-					output += ']' + AutoLinker.local_ed.selection.getContent() + '[/linker]';
+					if (limit)
+					{
+						output += ' l="'+limit+'"';
+					}
+					if (compLim)
+					{
+						output += ' cl="'+compLim+'"';
+					}
+					output += ']' + AutoCompare.local_ed.selection.getContent() + '[/compare]';
 
 					tinyMCEPopup.execCommand('mceReplaceContent', false, output);
 						 
@@ -43,18 +53,17 @@
 					tinyMCEPopup.close();
 				}
 			};
-			tinyMCEPopup.onInit.add(AutoLinker.init, AutoLinker);
+			tinyMCEPopup.onInit.add(AutoCompare.init, AutoCompare);
 			 
 			document.write('<base href="'+tinymce.baseURL+'" />');
 
-			
 			var t;
 			function showValues() 
 			{
 				clearTimeout(t);
 				
 				var str = '';
-				
+
 				str = jQuery("form").serialize();
 				
 				xmlhttp=new XMLHttpRequest();
@@ -81,22 +90,22 @@
 			{		
 				document.getElementById("query").focus();	
 				
-				if (AutoLinker.local_ed.selection.getContent())
+				if (AutoCompare.local_ed.selection.getContent())
 				{
-					document.getElementById("query").value = AutoLinker.local_ed.selection.getContent();
+					document.getElementById("query").value = AutoCompare.local_ed.selection.getContent();
 					showValues();
 				}				
 			}
 		</script>
 		
 		<style>
-			#autoLinker {
+			#autoCompare {
 			}
 			a {
 				text-decoration: none;
 				font-weight: bold;
 			}
-			#auto_link_submit {
+			#auto_compare_submit {
 				font-size:12px;
 				font-family:sans-serif;
 				display:inline-block;
@@ -114,7 +123,7 @@
 				text-shadow:0 1px 0 rgba(0,0,0,0.1);
 				line-height:23px;
 				height:24px;
-			}		
+			}	
 			a.tooltip {
 				padding-left:4px;
 			}
@@ -128,11 +137,12 @@
 			a.tooltip span {
 				display:none; 
 				padding:2px 3px; 
+				margin-left:8px; 
 			}
 			a.tooltip:hover span{
 				display:block; 
 				position:absolute; 
-				right:40px;
+				right:10px;
 				background:#ffffff; 
 				border:1px solid #cccccc; 
 				color:#6c6c6c;
@@ -143,14 +153,16 @@
 	</head>
 	<base target="_self" />
 	<body onload="setFocus()">
-		<div id="autoLinker">
+		<div id="autoCompare">
 			<div align="center">
 				<form action="/" method="get" accept-charset="utf-8">
-					<p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>You can change the query here, otherwise it will use the content you highlighted, this will not change the content on the page.</span></a></p>
-					<p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by brand to narrow down the search.</span></a></p>
-					<p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by merchant to narrow down the search.</span></a></p>
-					<p>Go Directly to Merchant: <input type="checkbox" id="goToMerc"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will link to the merchant's page, skipping the product page.</span></a></p>				
-					<input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed)"/>
+					<p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>The query that is  used for the search</span></a></p>
+					<p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by brand to narrow down the search</span></a></p>
+					<p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by merchant to narrow down the search</span></a></p>
+					<p>Limit: <input type="text" id="limit" style="width:50px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>
+					<p>Comparison Limit: <input type="text" id="compLim" style="width:50px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This limit will be used for comparison products, defaults to 3</span></a></p>
+					<p>Use Coupons: <input type="checkbox" name="coup" id="coup" onChange="showValues()"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will use coupons instead of products</span></a></p>				
+					<input type="submit" value="Submit" class="button-primary" id="auto_compare_submit" onClick="javascript:AutoCompare.insert(AutoCompare.local_ed)"/>
 				</form>
 			</div>
 			<div style="float:left;font-size:12px;display:block;">Product Review:</div><p></br>

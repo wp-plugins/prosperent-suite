@@ -12,11 +12,9 @@
 					plugin_url : url
 				});
 			});
-			ed.addButton('linker', {title : 'Auto-Link', cmd : 'auto-linker', image: url + "/../img/prosperent.png" });
+			ed.addButton('linker', {title : 'Auto-Link', cmd : 'auto-linker', image: url + "/../img/prosp-link-icon.png" });
         }
     });
  
     tinymce.PluginManager.add('linker', tinymce.plugins.linkerPlugin);
 })();
-
-

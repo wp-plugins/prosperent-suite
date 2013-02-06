@@ -13,6 +13,8 @@ All of the Prosperent's Tools in one easy to use plugin to help monetize your bl
 
 = Deactivate any other Prosperent Plugins before use =
 
+To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
+
 = Prosperent Product Search =
 
 This plugin will add a product search box to your wordpress site, which viewers can use to search for products. When they click a product through your site they will be redirected to the Merchant's site.

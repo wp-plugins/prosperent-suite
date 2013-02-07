@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 1.2
+Version: 1.2.1
 Author: Prosperent Brandon
 License: GPL2
 */
@@ -62,16 +62,16 @@ if (!class_exists('Prosperent_Suite'))
                     add_shortcode('linker', array($this, 'linker_shortcode'));
                 }
             }
-			if ($options['Enable_AC'])
+            if ($options['Enable_AC'])
             {
                 if(is_admin())
                 {
-					add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
+                    add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
                     add_action('admin_init', array($this, 'autoCompare_custom_add'));
                 }
                 else
                 {
-					add_shortcode('compare', array($this, 'autoCompare_shortcode'));
+                    add_shortcode('compare', array($this, 'autoCompare_shortcode'));
                 }
             }
             if ($options['Enable_PPS'])
@@ -119,7 +119,7 @@ if (!class_exists('Prosperent_Suite'))
                 'UID'	=> array('input' => 'text',
                     'label' => __('Your Prosperent User-ID', $this->textdomain)
                 ),
-				'Api_Key' => array('input' => 'text',
+                'Api_Key' => array('input' => 'text',
                     'label' => __('Your API Key.', $this->textdomain)
                 ),
                 'blank' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>Enable or Disable Options</p></strong>', $this->textdomain)
@@ -130,7 +130,7 @@ if (!class_exists('Prosperent_Suite'))
                 'Enable_PA' => array('input' => 'checkbox', 'default' => true,
                     'label' => __('Enable Performance-Ads', $this->textdomain)
                 ),
-				'Enable_AC' => array('input' => 'checkbox',  'default' => true,
+                'Enable_AC' => array('input' => 'checkbox',  'default' => true,
                     'label' => __('Enable Auto-Comparer', $this->textdomain)
                 ),
                 'Enable_AL' => array('input' => 'checkbox',  'default' => true,
@@ -284,7 +284,7 @@ if (!class_exists('Prosperent_Suite'))
             echo '<p>' . __('The Prosperent Tools in this plugin bundle are:', $this->textdomain);
                 echo "<blockquote><code>Prosperent Product Search</code></blockquote>";
                 echo "<blockquote><code>Prosperent Auto-Linker</code></blockquote>";
-				echo "<blockquote><code>Prosperent Auto-Comparer</code></blockquote>";
+                echo "<blockquote><code>Prosperent Auto-Comparer</code></blockquote>";
                 echo "<blockquote><code>Prosperent Performance-Ads</code></blockquote>";
             echo '<p>' . __('If you have any questions, feel free to ask it at the <a href="http://community.prosperent.com/forumdisplay.php?33-Prosperent-Plugins">Prosperent forums</a>, or email me at <a href="mailto:brandon@prosperent.com">brandon@prosperent.com</a>', $this->textdomain);
         }
@@ -435,8 +435,8 @@ if (!class_exists('Prosperent_Suite'))
         public function search_shortcode()
         {
             $options = $this->options();
-			
-			ob_start();
+
+            ob_start();
             include(plugin_dir_path(__FILE__) . 'search_short.php');
             $search = ob_get_clean();
             return $search;
@@ -540,18 +540,18 @@ if (!class_exists('Prosperent_Suite'))
             <?php
         }
 
-		public function autoCompare_shortcode($atts, $content = null)
+        public function autoCompare_shortcode($atts, $content = null)
         {
             $options = $this->options();
-            $target   = $options['Target'] ? '_blank' : '_self';			
+            $target   = $options['Target'] ? '_blank' : '_self';
 
             extract(shortcode_atts(array(
                 "q"  => !isset($q) ? '' : $q,
                 "c"  => !isset($c) ? '' : $c,
                 "b"  => !isset($b) ? '' : $b,
                 "m"  => !isset($m) ? '' : $m,
-				"l"  => !isset($l) ? 1 : intval($l),
-				"cl" => !isset($cl) ? 3 : intval($cl)
+                "l"  => !isset($l) ? 1 : intval($l),
+                "cl" => !isset($cl) ? 3 : intval($cl)
             ), $atts));
 
             $query = !$q ? $content : $q;
@@ -563,113 +563,113 @@ if (!class_exists('Prosperent_Suite'))
             $fB = !isset($b) ? '' : '&brand=' . urlencode($b);
             $fM = !isset($m) ? '' : '&merchant=' . urlencode($m);
 
-			if (!$c)
-			{
-				require_once('Prosperent_Api.php');
-				$prosperentApi = new Prosperent_Api(array(
-					'api_key'        => $options['Api_Key'],
-					'query'          => $query,
-					'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-					'limit'          => $l,
-					'enableFacets'   => TRUE,
-					'sortPrice'		 => '',
-					'filterMerchant' => $m,
-					'filterBrand'	 => $b
-				));
-				
-				$prosperentApi -> fetch();
-				$results = $prosperentApi -> getAllData();				
+            if (!$c)
+            {
+                require_once('Prosperent_Api.php');
+                $prosperentApi = new Prosperent_Api(array(
+                    'api_key'        => $options['Api_Key'],
+                    'query'          => $query,
+                    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                    'limit'          => $l,
+                    'enableFacets'   => TRUE,
+                    'sortPrice'		 => '',
+                    'filterMerchant' => $m,
+                    'filterBrand'	 => $b
+                ));
 
-				if ($results)
-				{
-					ob_start();
-					include(plugin_dir_path(__FILE__) . 'compare_short.php');
-					$compare = ob_get_clean();
-					return $compare;
-				}
-				else
-				{ 
-					require_once('Prosperent_Api.php');
-					$prosperentApi = new Prosperent_Api(array(
-						'api_key'        => $options['Api_Key'],
-						'query'          => $query,
-						'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-						'limit'          => $l,
-						'enableFacets'   => TRUE,
-						'sortPrice'		 => '',
-					));
+                $prosperentApi -> fetch();
+                $results = $prosperentApi -> getAllData();
 
-					$prosperentApi -> fetch();
-					
-					
-					$results = $prosperentApi -> getAllData();
-					
-					if ($results)
-					{
-						ob_start();
-						include(plugin_dir_path(__FILE__) . 'compare_short.php');
-						$compare = ob_get_clean();
-						return $compare;
-					}
-					else
-					{
-						return;
-					}
-				}
-			}
-			else
-			{
-				require_once('Prosperent_Api.php');
-				$prosperentApi = new Prosperent_Api(array(
-					'api_key'        => $options['Api_Key'],
-					'query'          => $query,
-					'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-					'limit'          => $l,
-					'enableFacets'   => TRUE,
-					'sortPrice'		 => '',
-					'filterMerchant' => $m
-				));
-			
-				$prosperentApi -> fetchCoupons();
-				$results = $prosperentApi -> getAllData();
-				
-				if ($results)
-				{
-					ob_start();
-					include(plugin_dir_path(__FILE__) . 'compare_coup.php');
-					$compare = ob_get_clean();
-					return $compare;
-				}
-				else
-				{
-					require_once('Prosperent_Api.php');
-					$prosperentApi = new Prosperent_Api(array(
-						'api_key'        => $options['Api_Key'],
-						'query'          => $query,
-						'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-						'limit'          => $l,
-						'enableFacets'   => TRUE,
-						'sortPrice'		 => '',
-					));
+                if ($results)
+                {
+                    ob_start();
+                    include(plugin_dir_path(__FILE__) . 'compare_short.php');
+                    $compare = ob_get_clean();
+                    return $compare;
+                }
+                else
+                {
+                    require_once('Prosperent_Api.php');
+                    $prosperentApi = new Prosperent_Api(array(
+                        'api_key'        => $options['Api_Key'],
+                        'query'          => $query,
+                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                        'limit'          => $l,
+                        'enableFacets'   => TRUE,
+                        'sortPrice'		 => '',
+                    ));
 
-					$prosperentApi -> fetchCoupons();				
-					$results = $prosperentApi -> getAllData();
-					
-					if ($results)
-					{
-						ob_start();
-						include(plugin_dir_path(__FILE__) . 'compare_coup.php');
-						$compare = ob_get_clean();
-						return $compare;
-					}
-					else
-					{
-						return;
-					}
-				}
-			}
+                    $prosperentApi -> fetch();
+
+
+                    $results = $prosperentApi -> getAllData();
+
+                    if ($results)
+                    {
+                        ob_start();
+                        include(plugin_dir_path(__FILE__) . 'compare_short.php');
+                        $compare = ob_get_clean();
+                        return $compare;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                require_once('Prosperent_Api.php');
+                $prosperentApi = new Prosperent_Api(array(
+                    'api_key'        => $options['Api_Key'],
+                    'query'          => $query,
+                    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                    'limit'          => $l,
+                    'enableFacets'   => TRUE,
+                    'sortPrice'		 => '',
+                    'filterMerchant' => $m
+                ));
+
+                $prosperentApi -> fetchCoupons();
+                $results = $prosperentApi -> getAllData();
+
+                if ($results)
+                {
+                    ob_start();
+                    include(plugin_dir_path(__FILE__) . 'compare_coup.php');
+                    $compare = ob_get_clean();
+                    return $compare;
+                }
+                else
+                {
+                    require_once('Prosperent_Api.php');
+                    $prosperentApi = new Prosperent_Api(array(
+                        'api_key'        => $options['Api_Key'],
+                        'query'          => $query,
+                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                        'limit'          => $l,
+                        'enableFacets'   => TRUE,
+                        'sortPrice'		 => '',
+                    ));
+
+                    $prosperentApi -> fetchCoupons();
+                    $results = $prosperentApi -> getAllData();
+
+                    if ($results)
+                    {
+                        ob_start();
+                        include(plugin_dir_path(__FILE__) . 'compare_coup.php');
+                        $compare = ob_get_clean();
+                        return $compare;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
         }
-		
+
         public function linker_shortcode($atts, $content = null)
         {
             $options = $this->options();
@@ -712,26 +712,26 @@ if (!class_exists('Prosperent_Suite'))
                 }
                 else
                 {
-					require_once('Prosperent_Api.php');
-					$prosperentApi = new Prosperent_Api(array(
-						'api_key'        => $options['Api_Key'],
-						'query'          => $query,
-						'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-						'limit'          => 1,
-						'enableFacets'   => TRUE
-					));
+                    require_once('Prosperent_Api.php');
+                    $prosperentApi = new Prosperent_Api(array(
+                        'api_key'        => $options['Api_Key'],
+                        'query'          => $query,
+                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                        'limit'          => 1,
+                        'enableFacets'   => TRUE
+                    ));
 
-					$prosperentApi -> fetch();
-					$results = $prosperentApi -> getAllData();
-					
-					if ($results)
-					{
-						return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=_blank">' . $content . '</a>';
-					}
-					else
-					{
-						return;
-					}
+                    $prosperentApi -> fetch();
+                    $results = $prosperentApi -> getAllData();
+
+                    if ($results)
+                    {
+                        return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=_blank">' . $content . '</a>';
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -743,21 +743,21 @@ if (!class_exists('Prosperent_Suite'))
             // Add only in Rich Editor mode
             if (get_user_option('rich_editing') == 'true')
             {
-				add_filter('mce_external_plugins', array($this, 'autoLinker_tiny_register'));
+                add_filter('mce_external_plugins', array($this, 'autoLinker_tiny_register'));
                 add_filter('mce_buttons', array($this, 'autoLinker_tiny_add'));
             }
         }
 
-		public function autoCompare_custom_add()
+        public function autoCompare_custom_add()
         {
             // Add only in Rich Editor mode
             if (get_user_option('rich_editing') == 'true')
             {
-				add_filter('mce_external_plugins', array($this, 'autoCompare_tiny_register'));
+                add_filter('mce_external_plugins', array($this, 'autoCompare_tiny_register'));
                 add_filter('mce_buttons', array($this, 'autoCompare_tiny_add'));
             }
         }
-		
+
         public function qTagsLinker()
         {
             ?>
@@ -767,7 +767,7 @@ if (!class_exists('Prosperent_Suite'))
             <?php
         }
 
-		public function qTagsCompare()
+        public function qTagsCompare()
         {
             ?>
             <script type="text/javascript">
@@ -775,8 +775,8 @@ if (!class_exists('Prosperent_Suite'))
             </script>
             <?php
         }
-		
-		public function autoCompare_tiny_add($buttons)
+
+        public function autoCompare_tiny_add($buttons)
         {
             array_push($buttons, "|", "compare");
             return $buttons;
@@ -787,7 +787,7 @@ if (!class_exists('Prosperent_Suite'))
             $plugin_array["compare"] = plugin_dir_url(__FILE__) . 'js/compare.min.js';
             return $plugin_array;
         }
-		
+
         public function autoLinker_tiny_add($buttons)
         {
             array_push($buttons, "|", "linker");

@@ -16,37 +16,42 @@
     //-->
 </script>
 <?php
-function prosper_pagination($pages = '', $range)
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+
+if(!is_plugin_active('jetpack/jetpack.php'))
 {
-    global $paged, $wp_query;
-    if(empty($paged)) $paged = 1;
-
-    if($pages == '')
+    function prosper_pagination($pages = '', $range)
     {
-        $pages = $wp_query->max_num_pages;
-        if(!$pages)
-        {
-            $pages = 1;
-        }
-    }
+        global $paged, $wp_query;
+        if(empty($paged)) $paged = 1;
 
-    if(1 != $pages)
-    {
-        echo "<div class=\"pagination\"><span>Page ".$paged." of ".$pages."</span>";
-        if($paged > 2 && $paged <= $pages) echo "<a href='".get_pagenum_link(1)."'>&laquo; First</a>";
-        if($paged > 1) echo "<a href='".get_pagenum_link($paged - 1)."'>&lsaquo; Previous</a>";
-
-        for ($i=1; $i <= $pages; $i++)
+        if($pages == '')
         {
-            if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ))
+            $pages = $wp_query->max_num_pages;
+            if(!$pages)
             {
-                echo ($paged == $i)? "<span class=\"current\">".$i."</span>":"<a href='".get_pagenum_link($i)."' class=\"inactive\">".$i."</a>";
+                $pages = 1;
             }
         }
 
-        if ($paged < $pages) echo "<a href=\"".get_pagenum_link($paged + 1)."\">Next &rsaquo;</a>";
-        if ($paged < $pages && $paged < $pages-1) echo "<a href='".get_pagenum_link($pages)."'>Last &raquo;</a>";
-        echo "</div>";
+        if(1 != $pages)
+        {
+            echo "<div class=\"pagination\"><span>Page ".$paged." of ".$pages."</span>";
+            if($paged > 2 && $paged <= $pages) echo "<a href='".get_pagenum_link(1)."'>&laquo; First</a>";
+            if($paged > 1) echo "<a href='".get_pagenum_link($paged - 1)."'>&lsaquo; Previous</a>";
+
+            for ($i=1; $i <= $pages; $i++)
+            {
+                if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ))
+                {
+                    echo ($paged == $i)? "<span class=\"current\">".$i."</span>":"<a href='".get_pagenum_link($i)."' class=\"inactive\">".$i."</a>";
+                }
+            }
+
+            if ($paged < $pages) echo "<a href=\"".get_pagenum_link($paged + 1)."\">Next &rsaquo;</a>";
+            if ($paged < $pages && $paged < $pages-1) echo "<a href='".get_pagenum_link($pages)."'>Last &raquo;</a>";
+            echo "</div>";
+        }
     }
 }
 
@@ -407,27 +412,30 @@ if ('prod' == $type || empty($type))
         </br>
 
         <?php
-        // Gets the count of results for Pagination
-        $productCount = count($results);
-
-        // Pagination limit, can be changed
-        $limit = !$options['Pagination_Limit'] ? 15 : $options['Pagination_Limit'];
-
-        $pages = round($productCount / $limit, 0);
-
-        if ($pageNumber  < 1)
+        if (!is_plugin_active('jetpack/jetpack.php'))
         {
-            $pageNumber  = 1;
-        }
-        else if ($pageNumber  > ceil(($productCount + 1) / $limit))
-        {
-            $pageNumber  = ceil(($productCount + 1) / $limit);
-        }
+            // Gets the count of results for Pagination
+            $productCount = count($results);
 
-        $limitLower = ($pageNumber  - 1) * $limit;
+            // Pagination limit, can be changed
+            $limit = !$options['Pagination_Limit'] ? 15 : $options['Pagination_Limit'];
 
-        // Breaks the array into smaller chunks for each page depending on $limit
-        $results = array_slice($results, $limitLower, $limit, true);
+            $pages = round($productCount / $limit, 0);
+
+            if ($pageNumber  < 1)
+            {
+                $pageNumber  = 1;
+            }
+            else if ($pageNumber  > ceil(($productCount + 1) / $limit))
+            {
+                $pageNumber  = ceil(($productCount + 1) / $limit);
+            }
+
+            $limitLower = ($pageNumber  - 1) * $limit;
+
+            // Breaks the array into smaller chunks for each page depending on $limit
+            $results = array_slice($results, $limitLower, $limit, true);
+        }
         ?>
 
         <div id="productList">
@@ -899,5 +907,7 @@ elseif ('cele' == $type)
         <?php
     }
 }
-
-prosper_pagination($pages, $pages);
+if(!is_plugin_active('jetpack/jetpack.php'))
+{
+    prosper_pagination($pages, $pages);
+}

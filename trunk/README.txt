@@ -155,6 +155,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.2.1 =
+* Quick fix for those who were having troubles with this plugin and Jetpack, pagination will be turned off if Jetpack is active
+
 = 1.2 =
 * Added Auto-Comparer tool
 * Short codes will now go where you place them on the page instead of defaulting to the top

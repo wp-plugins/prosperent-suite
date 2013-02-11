@@ -57,12 +57,13 @@ if(!is_plugin_active('jetpack/jetpack.php'))
 
 $options = $this->options();
 
-$sort = !$_GET['sort'] ? (!$options['Default_Sort'] ? '' : $options['Default_Sort']) : $_GET['sort'];
+$sort           = !$_GET['sort'] ? (!$options['Default_Sort'] ? '' : $options['Default_Sort']) : $_GET['sort'];
 $filterMerchant = stripslashes($_GET['merchant']);
-$filterBrand = stripslashes($_GET['brand']);
-$pageNumber = preg_replace('/(.*)(\/page\/)(\d+)(\/.*)/i', '$3', $_SERVER['REQUEST_URI']);
-$celeb = $_GET['celeb'];
-$type = $_GET['type'];
+$filterBrand    = stripslashes($_GET['brand']);
+$pageNumber     = preg_replace('/(.*)(\/page\/)(\d+)(\/.*)/i', '$3', $_SERVER['REQUEST_URI']);
+$celeb          = $_GET['celeb'];
+$type           = $_GET['type'];
+$target 	    = $options['Target'] ? '_blank' : '_self';
 
 if (!$_GET['q'] && $options['Starting_Query'])
 {
@@ -447,10 +448,10 @@ if ('prod' == $type || empty($type))
                 ?>
                 <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>
                     <div class="productContent">
-                        <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
+                        <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
                         <div class="productDescription"><?php
                             if (strlen($record['description']) > 200)
                             {
@@ -493,7 +494,7 @@ if ('prod' == $type || empty($type))
                             <?php
                         }
                         ?>
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
                     </div>
                 </div>
                 <?php
@@ -618,8 +619,8 @@ elseif ('coup' == $type)
         ?>
         <div style="padding:10px 0;">
             <form id="searchform" method="GET" action="" style="margin:0;">
-                <input type="hidden" name="m" value="<?php echo $filterMerchant;?>">
-                <input type="hidden" name="t" value="<?php echo $type; ?>">
+                <input type="hidden" name="merchant" value="<?php echo $filterMerchant;?>">
+                <input type="hidden" name="type" value="<?php echo $type; ?>">
                 <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
                 <input class="submit" type="submit" value="Search" style="padding:5px;">
             </form>
@@ -664,13 +665,13 @@ elseif ('coup' == $type)
                 <div class="<?php echo count($results) >= 2 ? 'couponBlock' : 'couponBlock0'; ?>">
                     <div class="couponImage">
                         <?php
-                        echo '<a href="' . $record['affiliate_url'] . '"><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
+                        echo '<a href="' . $record['affiliate_url'] . '" target="' . $target . '"><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
                         ?>
                     </div>
                     <div class="couponContent">
                         <div class="couponTitle">
                             <?php
-                            echo '<a href="' . $record['affiliate_url'] . '">' . $record['keyword'] . '</a>';
+                            echo '<a href="' . $record['affiliate_url'] . '" target="' . $target . '">' . $record['keyword'] . '</a>';
                             ?>
                         </div>
                         <?php
@@ -703,7 +704,7 @@ elseif ('coup' == $type)
                         ?>
                     </div>
                     <div class="couponVisit">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img style="background: none repeat scroll 0 0 transparent; border: medium none; box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img style="background: none repeat scroll 0 0 transparent; border: medium none; box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
                     </div>
                 </div>
                 <?php
@@ -863,10 +864,10 @@ elseif ('cele' == $type)
                 ?>
                 <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
-                        <a href="<?php echo $record['affiliate_url']; ?>"><span><img src="<?php echo $record['image_url']?>"  alt="<?php echo $record['keyword']?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><img src="<?php echo $record['image_url']?>"  alt="<?php echo $record['keyword']?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                     </div>
                     <div class="productContent">
-                        <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>"><span><?php echo $record['keyword']?></span></a></div>
+                        <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><?php echo $record['keyword']?></span></a></div>
                         <div class="productDescription"><?php
                             if (strlen($record['description']) > 200)
                             {
@@ -897,7 +898,7 @@ elseif ('cele' == $type)
                             <?php
                         }
                         ?>
-                        <a href="<?php echo $record['affiliate_url']; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> " style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>
+                        <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> " style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>
                     </div>
                 </div>
                 <?php

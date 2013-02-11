@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 1.2.1
+Version: 1.2.2
 Author: Prosperent Brandon
 License: GPL2
 */
@@ -114,13 +114,17 @@ if (!class_exists('Prosperent_Suite'))
             $this->menu_name = __('Prosperent Settings', $this->textdomain);
 
             $this->config = array(
-                'blank1' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>User Settings</p></strong>', $this->textdomain),
+                'blank1' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>General Settings</p></strong>', $this->textdomain),
                 ),
                 'UID'	=> array('input' => 'text',
                     'label' => __('Your Prosperent User-ID', $this->textdomain)
                 ),
                 'Api_Key' => array('input' => 'text',
                     'label' => __('Your API Key.', $this->textdomain)
+                ),
+                'Target' => array('input' => 'checkbox', 'default' => true,
+                    'label'  => __('Open Links in New Window or Tab', $this->textdomain),
+                    'help'   => '<b>Checked</b> = <b>_blank</b>: opens link in a new window or tab<p><b>Unchecked</b> = <b>_self</b>: opens link in the same window<p><b>Will Not Change the Functionality of the Ads</b>',
                 ),
                 'blank' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>Enable or Disable Options</p></strong>', $this->textdomain)
                 ),
@@ -262,10 +266,6 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'Case_Sensitive' => array('input' => 'checkbox', 'default' => false,
                     'label'  => __('Case sensitive matching', $this->textdomain)
-                ),
-                'Target' => array('input' => 'checkbox', 'default' => true,
-                    'label'  => __('Open Links in New Window or Tab', $this->textdomain),
-                    'help'   => '<b>Checked</b> = <b>_blank</b>: opens link in a new window or tab<p><b>Unchecked</b> = <b>_self</b>: opens link in the same window',
                 )
             );
         }
@@ -708,7 +708,7 @@ if (!class_exists('Prosperent_Suite'))
                 $results = $prosperentApi -> getAllData();
                 if ($results)
                 {
-                    return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=_blank">' . $content . '</a>';
+                    return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '">' . $content . '</a>';
                 }
                 else
                 {
@@ -726,7 +726,7 @@ if (!class_exists('Prosperent_Suite'))
 
                     if ($results)
                     {
-                        return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=_blank">' . $content . '</a>';
+                        return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '">' . $content . '</a>';
                     }
                     else
                     {
@@ -822,7 +822,6 @@ if (!class_exists('Prosperent_Suite'))
             <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>
             <?php
         }
-
     }
 
     new Prosperent_Suite();

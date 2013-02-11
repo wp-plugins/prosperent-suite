@@ -155,6 +155,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.2.2 =
+* Open Links in new window or tab changed to general settings, shop links now open in new window if you check that setting, does not apply to Ads though
+
 = 1.2.1 =
 * Quick fix for those who were having troubles with this plugin and Jetpack, pagination will be turned off if Jetpack is active
 

@@ -86,6 +86,9 @@ Adds Performance Ads on a WordPress Page. The ads automatically scale in size an
 
 Prosperent Performance ads have a content analyzer that will produce an ad based on content in each thread. This will give you targeted ads, which in turn will lead to more clicks and conversions.
 
+If Performance Ads doesn't find results based on the content, it will use the fallback, either your page's/post's tags, fallbacks that you set inside the Admin settings, or trends (top selling products)
+At the moment, the tags fallback will only use your first tag on the page/post, we will be altering it to take the full list.
+
 *We have an ever growing community, which is always willing to answer questions and lend a helping hand, and our team here at Prosperent is also available on the forum.*
 
 == Installation ==
@@ -154,6 +157,9 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 1.2.3 =
+* Performance Ads will use any tags you may have on a post/page for a fallback for the Sidebar and Footer Ad units, if there are no tags it will use the fallback you set in the admin settings
 
 = 1.2.2 =
 * Open Links in new window or tab changed to general settings, shop links now open in new window if you check that setting, does not apply to Ads though

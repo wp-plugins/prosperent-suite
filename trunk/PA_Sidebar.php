@@ -9,32 +9,48 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
         parent::__construct('performance_ad_sb', __('Performance Ads (sidebar)'), $widget_ops);
     }
 
-	public function options()
-	{
-	    global $wpdb;
+    public function options()
+    {
+        global $wpdb;
         $wpdb->hide_errors();
         $myrows = $wpdb->get_row("SELECT *
                     FROM $wpdb->options
                     WHERE option_name = 'prosper_prosperent_suite'", ARRAY_A);
 
         $options = unserialize($myrows['option_value']);
-		return $options;
-	}
-	
+        return $options;
+    }
+
     public function widget( $args, $instance )
     {
-		$options = $this->options();
-		
+        $options = $this->options();
+
+        $posttags = get_the_tags();
+        $count=0;
+        if ($posttags)
+        {
+            foreach($posttags as $tag)
+            {
+                $count++;
+                if (1 == $count)
+                {
+                    $tag = $tag->name;
+                }
+            }
+        }
+
+        $fallback = !$tag ? !$options['sidebar_fallBack'] ? '' : $options['sidebar_fallBack'] : $tag;
+
         extract($args);
         $title = apply_filters('widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base);
 
         ?>
         <script type="text/javascript">
-			<!--
+            <!--
             prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
             prosperent_pa_width = <?php echo json_encode($options['SWW']); ?>;
             prosperent_pa_height = <?php echo json_encode($options['SWH']); ?>;
-            prosperent_pa_fallback_query = <?php echo json_encode($options['sidebar_fallBack']); ?>;
+            prosperent_pa_fallback_query = <?php echo json_encode($fallback); ?>;
             //-->
         </script>
         <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>

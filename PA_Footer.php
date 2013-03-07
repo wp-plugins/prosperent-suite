@@ -11,14 +11,8 @@ class Performance_Ad_Footer_Widget extends WP_Widget
 
     public function options()
     {
-        global $wpdb;
-        $wpdb->hide_errors();
-        $myrows = $wpdb->get_row("SELECT *
-                    FROM $wpdb->options
-                    WHERE option_name = 'prosper_prosperent_suite'", ARRAY_A);
-
-        $options = unserialize($myrows['option_value']);
-        return $options;
+        $optValues = get_option('prosper_prosperent_suite');
+        return $optValues;
     }
 
     public function widget( $args, $instance )
@@ -39,7 +33,7 @@ class Performance_Ad_Footer_Widget extends WP_Widget
             }
         }
 
-        $fallback = !$tag ? !$options['footer_fallBack'] ? '' : $options['footer_fallBack'] : $tag;
+        $fallback = isset($tag) ? $tag : $options['footer_fallBack'] ? $options['footer_fallBack'] : '';
 
         extract($args);
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );

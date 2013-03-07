@@ -24,7 +24,7 @@ This plugin contains the following Prosperent tools:
 
 This suite will give you everything you need to easily start making money with your blog.
 
-Look at the screenshots to get a brief overview of the tools and what you can do with them.
+**Look at the screenshots to get a brief overview of the tools and what you can do with them.**
 
 = Why choose Prosperent? =
 
@@ -50,12 +50,10 @@ Well these reasons should help you with that question:
 5.  While you are writing a new blog post (or editing an old one) you will now see a Prosperent Auto Compare icon in the editor tool bar. Click that and you can now type a product name, even restrict the results to a specific merchant/brand, and set the limit for the number of products to show or compare. You could also check the coupon box and enter a more generic term to display coupons instead (we have a few...well nearly 40,000 of those too . ) At the bottom of the box you see a preview of the product that will show up, then hit the submit button.
 6.  This is how it will look in your blog post or page.
 7.  This image shows a few of the features of the Prosperent Suite.
-
     * A widget for the search bar, where a visitor can input a product search and be directed to the store.
     * There's a sidebar ad unit, it analyzes the content of your blog to create a very targeted ad.
     * A sidebar widget that displays the top sold products.
     * And lastly, a content ad unit. It auto-scales to fit the content area.
-
 8.  This shows the store that is created by the plugin. It uses your blog's styling so it fits nicely within the content.
 
 == Installation ==

@@ -33,7 +33,7 @@ Well these reasons should help you with that question:
 * **We are here for you-** We are always around to answer questions, office guidance and make sure you have everything you need to make a living online.
 * **Traffic optimization-** Our algorithm's are always making sure every click you send us goes to the HIGHEST PAYING and HIGHEST CONVERTING merchant at that moment.
 * **Size-** Because of our high volume, we work with the best Merchants and negotiate the highest commissions out there. Yes, we take a percentage of each commission (30% by default) instead of charging you a monthly fee, but because of our size, we more than make up for that with higher commission rates.
-* **Automatic access to top merchant-** Once you sign up with us (for Free), you have access to all 3000+ merchants that we work with.
+* **Automatic access to top merchants-** Once you sign up with us (for Free), you have access to all 3000+ merchants that we work with.
 * **Clean data-** We clean the data feeds and resize images while serving it all from our global Content Delivery Network which means the images on your site load lightning fast at all times
 * **Big data-** We have mountains of conversion data. We know which merchants are converting, the brands that are hot, and the products that sell at various times throughout the year. We crunch all of this data and give you access to it all.
 * **Limitless and fast!-** We handle over 1.6 billion requests per month with no signs of slowing down. Fire off a request to our api, search tens of millions of products, and get back results within a few milliseconds.
@@ -54,15 +54,15 @@ Well these reasons should help you with that question:
 == Installation ==
 
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
-    1. Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
-    * Click the API tab in the menu, then click API Keys on the submenu and click Add New API Key. This will get you the API key you'll need so commissions can be tracked back to you. Name it whatever you'd like and you'll see that its created a key for you.
+    * Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
+        * Click the API tab in the menu, then click API Keys on the submenu and click Add New API Key. This will get you the API key you'll need so commissions can be tracked back to you. Name it whatever you'd like and you'll see that its created a key for you.
     * Next look for your User Id which can be found near your name in the upper right had corner.
 2.	Upload the **prosperent-suite** folder to the **/wp-content/plugins/** directory.
 3.	Activate the plugin through the *Plugins* menu in WordPress.
 4.	Go to the **Prosperent Settings** under Settings and edit those that you'd like.
 5.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
-        * If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.\
+        * If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.
 6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Auto-Comparer.
     * Auto-Linker allows you to link words to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
     * Auto-Comparer allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.

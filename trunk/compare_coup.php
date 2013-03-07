@@ -3,7 +3,7 @@
     $target = $options['Target'] ? '_blank' : '_self';
 
     // Loop to return coupons and corresponding information
-    foreach ($results as $i => $record)
+    foreach ($results as $record)
     {
         ?>
         <div class="couponBlock">
@@ -15,7 +15,7 @@
             <div class="couponContent">
                 <div class="couponTitle">
                     <?php
-                    echo '<a href="' . $record['affiliate_url'] . '" target="' . $target . '">' . $record['keyword'] . '</a>';
+                    echo '<a href="' . $record['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw">' . $record['keyword'] . '</a>';
                     ?>
                 </div>
                 <?php
@@ -48,7 +48,9 @@
                 ?>
             </div>
             <div class="couponVisit">
-                <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img style="background: none repeat scroll 0 0 transparent; border: medium none; box-shadow: none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__);?> "></a>
+                <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                    <input type="submit" value="Visit Store">
+                </form>
             </div>
         </div>
         <?php

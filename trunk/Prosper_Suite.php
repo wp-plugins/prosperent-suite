@@ -2,9 +2,9 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 1.2.3
+Version: 1.2.4
 Author: Prosperent Brandon
-License: GPL2
+License: GPLv3
 */
 
 /*
@@ -41,7 +41,6 @@ if (!class_exists('Prosperent_Suite'))
         {
             $this->prosperent_suite();
             $options = $this->options();
-            register_deactivation_hook(__FILE__, array(__CLASS__, 'prosperent_store_remove'));
 
             if ($options['Enable_PA'])
             {
@@ -76,13 +75,25 @@ if (!class_exists('Prosperent_Suite'))
             }
             if ($options['Enable_PPS'])
             {
-                add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
-                add_shortcode('prosper_store', array($this, 'store_shortcode'));
-                add_shortcode('prosper_search', array($this, 'search_shortcode'));
-                add_action('prospere_header', array($this, 'Prospere_Search'));
-                add_action('wp_title', array($this, 'prosper_title'), 10, 3);
-                register_activation_hook(__FILE__, array(__CLASS__, 'prosperent_store_install'));
+                if(is_admin())
+                {
+                    add_action('admin_init', array($this, 'prosperent_store_install'));
+                }
+                else
+                {
+                    add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
+                    add_shortcode('prosper_store', array($this, 'store_shortcode'));
+                    add_shortcode('prosper_search', array($this, 'search_shortcode'));
+                    add_action('prospere_header', array($this, 'Prospere_Search'));
+                    add_action('wp_title', array($this, 'prosper_title'), 10, 3);
+                }
+
+                require_once('TP_Widget.php');
                 require_once('PS_Widget.php');
+            }
+            else
+            {
+                add_action('admin_init', array($this, 'prosperent_store_remove'));
             }
         }
 
@@ -93,14 +104,13 @@ if (!class_exists('Prosperent_Suite'))
                 return;
 
             parent::__construct('1.0', 'prosperent-suite', 'prosper', __FILE__, array());
-
             self::$instance = $this;
         }
 
         public function options()
         {
-            $options = $this->get_options();
-            return $options;
+            $optValues = get_option('prosper_prosperent_suite');
+            return $optValues;
         }
 
         /**
@@ -124,7 +134,7 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'Target' => array('input' => 'checkbox', 'default' => true,
                     'label'  => __('Open Links in New Window or Tab', $this->textdomain),
-                    'help'   => '<b>Checked</b> = <b>_blank</b>: opens link in a new window or tab<p><b>Unchecked</b> = <b>_self</b>: opens link in the same window<p><b>Will Not Change the Functionality of the Ads</b>',
+                    'help'   => '<strong>Checked</strong> : opens link in a new window or tab<p><strong>Unchecked</strong> : opens link in the same window<p><strong>Will Not Change the Functionality of Performance Ads</strong>',
                 ),
                 'blank' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>Enable or Disable Options</p></strong>', $this->textdomain)
                 ),
@@ -139,7 +149,7 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'Enable_AL' => array('input' => 'checkbox',  'default' => true,
                     'label' => __('Enable Auto-Linker', $this->textdomain),
-                    'help'  => 'Some features will only work if Product Search is enabled.'
+                    'help'  => 'Some features of the Auto-Linker will only work if Product Search is enabled.'
                 ),
                 'blank2' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>Product Search Settings</p></strong>', $this->textdomain)
                 ),
@@ -158,13 +168,13 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'Search_Bar_Text' => array('input' => 'text',
                     'label' => __('Search Bar Placeholder Text', $this->textdomain),
-                    'help'  => 'Change what the search bar says as a placeholder.'
+                    'help'  => 'Change what the search bar displays as a placeholder.'
                 ),
                 'Merchant_Facets' => array('input' => 'text', 'default' => 10,
-                    'label' => __('Number of merchants to display in primary facet list', $this->textdomain)
+                    'label' => __('Number of merchants facets to display', $this->textdomain)
                 ),
                 'Brand_Facets' => array('input' => 'text', 'default' => 10,
-                    'label' => __('Number of brands to display in primary facet list', $this->textdomain)
+                    'label' => __('Number of brands facets to display', $this->textdomain)
                 ),
                 'Negative_Brand' => array('input' => 'text',
                     'label' => __('Negative Brand Filter', $this->textdomain),
@@ -176,28 +186,23 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'Starting_Query' => array('input' => 'text',
                     'label' => __('Starting Query', $this->textdomain),
-                    'help'  => 'When first visited, this query will be used if one has not been given. If no starting query is set, it shows the no results page.'
+                    'help'  => 'When first visited, this query will be used if one has not been given. If no starting query is set, the store shows the <b>No Results</b> page.'
                 ),
                 'Celebrity_Endpoint' => array('input' => 'checkbox', 'default' => true,
-                    'label' => __('Dsiplay the Link to the Celebrity Endpoint', $this->textdomain)
+                    'label' => __('Show the Celebrity Endpoint link', $this->textdomain)
                 ),
-                'Page_Title' => array('input' => 'checkbox',
-                    'label' => __('Use a page title you decide.', $this->textdomain),
-                    'help'  => 'Will use the title how you set it up in the next setting.'
-                ),
-                'Title_Param' => array('input' => 'text',
-                    'label' => __('Enter the title as you would like it.', $this->textdomain),
-                    'help'  => 'Seperate each part of the title with commas<br>
-                                Use the letter Q to represent the Query<br>
-                                Use PT to represent Page Title<br>
-                                Or enter your own, otherwise the page title will be of the WordPress configuration you use'
+                'Title_Structure' => array('input' => 'select', 'datatype' => 'hash',
+                    'options' => array(0 => 'WordPress Default', 1 => 'Page Title | Query ', 2 => 'Query | Page Title', 3 => 'Query', 4 => 'Page Title'),
+                    'label' => __('Page Title Structure', $this->textdomain),
+                    'help'  => 'You can choose which seperator to use for option 2 and 3 in the next option.<p>
+                                These titles will only change the title on the Store Page.'
                 ),
                 'Title_Sep' => array('input' => 'text',
-                    'label' => __('Enter a seperator for the Product page title.', $this->textdomain)
+                    'label' => __('<strong>Optional:</strong> Enter a title seperator', $this->textdomain)
                 ),
                 'Base_URL' => array('input' => 'text',
                     'label' => __('Base Url', $this->textdomain),
-                    'help'  => 'If you have a different URL from "<b>your-blog.com/product</b>" that you want the search query to go to.'
+                    'help'  => 'If you have a different URL from "<strong>your-blog.com/product</strong>" that you want the search query to go to.'
                 ),
                 'Additional_CSS' => array('input' => 'text',
                     'label' => __('Additional CSS for the shortcode search bar.', $this->textdomain)
@@ -208,28 +213,22 @@ if (!class_exists('Prosperent_Suite'))
                 ),*/
                 'Logo_Image' => array('input' => 'checkbox',
                     'label' => __('Logo Image', $this->textdomain),
-                    'help'  => '<b>Only for search bar in header.</b> Display the original sized Prosperent Logo. Size is 167px x 50px.'
+                    'help'  => '<strong>Only for search bar in header.</strong> Display the original sized Prosperent Logo. Size is 167px x 50px.'
                 ),
                 'Logo_imageSmall' => array('input' => 'checkbox',
                     'label' => __('Logo Image- Small', $this->textdomain),
-                    'help'  => '<b>Only for search bar in header.</b> Display the smaller Prosperent Logo. Size is 100px x 30px.'
+                    'help'  => '<strong>Only for search bar in header.</strong> Display the smaller Prosperent Logo. Size is 100px x 30px.'
                 ),
                 'blank4' => array('input' => 'custom', 'label' => __('<strong style="font-size:14px; text-decoration:underline;"><p>Performance Ad Settings</p></strong>', $this->textdomain)
-                ),
-                'content_fallBack' => array('input' => 'text',
-                    'label' => __('<strong>Optional.</strong> Fallback query for the content ad unit(s).', $this->textdomain),
-                    'help'  => 'If no relevant ad can be generated by analyzing your page content or user behavior. This can be a generic term that encompases the general idea of your site, or it can be a specific product.'
                 ),
                 'SWH' => array('input' => 'text', 'default' => 150,
                     'label' => __('Sidebar Widget Height', $this->textdomain),
                     'help'  => 'Minimum: 54'
                 ),
-                'SWW' => array('input' => 'text', 'default' => 180,
+                'SWW' => array('input' => 'text', 'default' => 'auto',
                     'label' => __('Sidebar Widget Width', $this->textdomain),
-                    'help'  => 'Minimum: 77'
-                ),
-                'sidebar_fallBack' => array('input' => 'text',
-                    'label' => __('<strong>Optional.</strong> Fallback query for the sidebar ad unit(s).', $this->textdomain)
+                    'help'  => 'Using <strong>auto</strong> will scale the add to fit the sidebar.<p>
+                                Minimum: 77'
                 ),
                 'FWH' => array('input' => 'text', 'default' => 150,
                     'label' => __('Footer Widget Height', $this->textdomain),
@@ -237,7 +236,15 @@ if (!class_exists('Prosperent_Suite'))
                 ),
                 'FWW' => array('input' => 'text', 'default' => 180,
                     'label' => __('Footer Widget Width', $this->textdomain),
-                    'help'  => 'Minimum: 77'
+                    'help'  => 'Using <strong>auto</strong> will scale the add to fit the footer.<p>
+                                Minimum: 77'
+                ),
+                'content_fallBack' => array('input' => 'text',
+                    'label' => __('<strong>Optional.</strong> Fallback query for the content ad unit(s).', $this->textdomain),
+                    'help'  => 'If no relevant ad can be generated by analyzing your page content or user behavior. This can be a generic term that encompases the general idea of your site, or it can be a specific product.'
+                ),
+                'sidebar_fallBack' => array('input' => 'text',
+                    'label' => __('<strong>Optional.</strong> Fallback query for the sidebar ad unit(s).', $this->textdomain)
                 ),
                 'footer_fallBack' => array('input' => 'text',
                     'label' => __('<strong>Optional.</strong> Fallback query for the footer ad unit(s).', $this->textdomain)
@@ -250,16 +257,16 @@ if (!class_exists('Prosperent_Suite'))
                                     <strong>"text" => "query (Optional)" </strong><p>
                                     For example: <br>
                                     <strong>shoes => Nike shoes</strong><br>
-                                    This would create a link on the word shoes and send the query to the Product Search as Nike shoes.
+                                    This would a link the word shoes to the Product Search as the query Nike shoes.
                                     <p>
 
-                                    The query parameter is optional so you can leave it as just the text to match as follows:<br>
+                                    The query parameter is optional so you can leave it as just the text as follows:<br>
                                     <strong>"text" </strong><p>
                                     For example: <br>
                                     <strong>shoes</strong><br>
-                                    This would create a link on the word shoes and send the query to the Product Search as shoes.
+                                    This would a link the word shoes to the Product Search as the query shoes.
                                     <p>
-                                    List the more specific matches early. For example, if you want to link both "shoes" and "Nike shoes", put "Nike shoes" first. Otherwise, "shoes" will match first, preventing "Nike shoes" from being found.'
+                                    List more specific matches first. For example, if you want to link both "shoes" and "Nike shoes", put "Nike shoes" first. Otherwise, "shoes" will match first, preventing "Nike shoes" from being found.'
                 ),
                 'Auto_Link_Comments' => array( 'input' => 'checkbox', 'default' => false,
                     'label'  => __('Enable auto-link in comments', $this->textdomain)
@@ -279,14 +286,14 @@ if (!class_exists('Prosperent_Suite'))
         {
             parent::options_page_description(__('Prosperent Settings', $this->textdomain));
 
-            echo '<p>' . __('All the Prosperent Plugins Bundled as one.', $this->textdomain);
-            echo '<p>' . __('Each add-on has its own Enable option. So you choose which to run on your blog.', $this->textdomain);
-            echo '<p>' . __('The Prosperent Tools in this plugin bundle are:', $this->textdomain);
+            echo '<p>' . __('All the Prosperent Plugins Bundled as one to easily monetize your blog.', $this->textdomain);
+            echo '<p>' . __('Each add-on has its own Enable option. So you choose which to run.', $this->textdomain);
+            echo '<p>' . __('The Prosperent Tools in this bundle are:', $this->textdomain);
                 echo "<blockquote><code>Prosperent Product Search</code></blockquote>";
                 echo "<blockquote><code>Prosperent Auto-Linker</code></blockquote>";
                 echo "<blockquote><code>Prosperent Auto-Comparer</code></blockquote>";
                 echo "<blockquote><code>Prosperent Performance-Ads</code></blockquote>";
-            echo '<p>' . __('If you have any questions, feel free to ask it at the <a href="http://community.prosperent.com/forumdisplay.php?33-Prosperent-Plugins">Prosperent forums</a>, or email me at <a href="mailto:brandon@prosperent.com">brandon@prosperent.com</a>', $this->textdomain);
+            echo '<p>' . __('If you have any questions, feel free to ask at the <a href="http://community.prosperent.com/forumdisplay.php?33-Prosperent-Plugins">Prosperent forums</a>, or email me at <a href="mailto:brandon@prosperent.com">brandon@prosperent.com</a>', $this->textdomain);
         }
 
         /**
@@ -299,10 +306,9 @@ if (!class_exists('Prosperent_Suite'))
             $options = $this->options();
             if ($options['Enable_AL'])
             {
-                $filters = apply_filters('c2c_linkify_text_filters', array('the_content', 'the_excerpt', 'widget_text'));
-                foreach ((array) $filters as $filter)
-                    add_filter( $filter, array($this, 'auto_linker'), 2);
-
+                add_filter('the_content', array($this, 'auto_linker'), 2);
+                add_filter('the_excerpt', array($this, 'auto_linker'), 2);
+                add_filter('widget_text', array($this, 'auto_linker'), 2);
 
                 // Note that the priority must be set high enough to avoid links inserted by the plugin from
                 // getting omitted as a result of any link stripping that may be performed.
@@ -334,18 +340,17 @@ if (!class_exists('Prosperent_Suite'))
             if (!$the_page)
             {
                 // Create post object
-                $_p = array();
-                $_p['post_title'] = $the_page_title;
-                $_p['post_content'] = "[prosper_store][/prosper_store]";
-                $_p['post_status'] = 'publish';
-                $_p['post_type'] = 'page';
-                $_p['comment_status'] = 'closed';
-                $_p['ping_status'] = 'closed';
-                $_p['post_category'] = array(0); // the default 'Uncatrgorised'
+                $proserStore = array(
+                    'post_title'     => $the_page_title,
+                    'post_content'   => '[prosper_store][/prosper_store]',
+                    'post_status'    => 'publish',
+                    'post_type'      => 'page',
+                    'comment_status' => 'closed',
+                    'ping_status'    => 'closed'
+                );
 
                 // Insert the post into the database
-                $the_page_id = wp_insert_post($_p);
-
+                $the_page_id = wp_insert_post($proserStore);
             }
             else
             {
@@ -355,12 +360,10 @@ if (!class_exists('Prosperent_Suite'))
                 //make sure the page is not trashed...
                 $the_page->post_status = 'publish';
                 $the_page_id = wp_update_post($the_page);
-
             }
 
             delete_option('prosperent_store_page_id');
             add_option('prosperent_store_page_id', $the_page_id);
-
         }
 
         public function prosperent_store_remove()
@@ -403,13 +406,14 @@ if (!class_exists('Prosperent_Suite'))
                     {
                         $query = urlencode(trim(empty($new_text) ? $old_text : $new_text));
 
-                        $new_text = '<a href="' . (!$base_url ? '/products/?q=' : '/' . $base_url . '/?q=') . urlencode($query) . '" target="' . $target . '">' . $old_text . '</a>';
+                        $new_text = '<a href="' . (!$base_url ? '/products/?q=' : '/' . $base_url . '/?q=') . urlencode($query) . '" target="' . $target . '" class="prosperent-kw">' . $old_text . '</a>';
                         $text = preg_replace("|(?!<.*?)\b$old_text\b(?![^<>]*?>)|$preg_flags", $new_text, $text);
                     }
                     // Remove links within links
                     $text = preg_replace( "#(<a [^>]+>)(.*)<a [^>]+>([^<]*)</a>([^>]*)</a>#iU", "$1$2$3$4</a>" , $text );
                 }
             }
+
             return trim($text);
         }
 
@@ -446,44 +450,30 @@ if (!class_exists('Prosperent_Suite'))
         {
             $options = $this->options();
 
-            if ($options['Page_Title'])
-            {
-                if ($options['Title_Param'])
-                {
-                    $parts = explode(',', $options['Title_Param']);
+            $title = str_replace($sep, '', $post_title);
+            $sep = ' ' . $sep . ' ';
+            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
+            $seperator = !$options['Title_Sep'] ? $sep : ' ' . trim($options['Title_Sep']) . ' ';
+            $query = ucwords(isset($_GET['q']) ? $_GET['q'] : $options['Starting_Query']);
 
-                    foreach ($parts as $part)
-                    {
-                        if ($part == 'Q')
-                        {
-                            $post_title = ucwords(!$_GET['q'] ? (!$options['Starting_Query'] ? '' : $options['Starting_Query']) : $_GET['q']) . (!$options['Title_Sep'] ? ' | ' : $options['Title_Sep']) . $post_title;
-                        }
-                        else if($part == 'PT')
-                        {
-                            $post_title = $post_title . $post_title;
-                        }
-                        else
-                        {
-                            $post_title = $post_title . $part;
-                        }
-                    }
-                }
-            }
-            else
+            if (is_page($page))
             {
-                $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-
-                if (is_page($page) && !isset($_GET['q']) && $options['Starting_Query'])
-                {
-                    $post_title = ucwords($options['Starting_Query'])  . ' | ';
-                }
-                else if (is_page($page) && isset($_GET['q']))
-                {
-                    $post_title = ucwords($_GET['q'])  . ' | ';
-                }
-                else
-                {
-                    $post_title = $post_title;
+                switch ( $options['Title_Structure'] ) {
+                    case 0:
+                        $post_title = $post_title;
+                        break;
+                    case 1:
+                        $post_title =  $title . (!$query ? $sep :  $seperator . $query . $sep);
+                        break;
+                    case 2:
+                        $post_title =  (!$query ? '' : $query . $seperator) . $post_title;
+                        break;
+                    case 3:
+                        $post_title =  (!$query ? $post_title : $query . $sep);
+                        break;
+                    case 4:
+                        $post_title =  $post_title;
+                        break;
                 }
             }
 
@@ -543,25 +533,21 @@ if (!class_exists('Prosperent_Suite'))
         public function autoCompare_shortcode($atts, $content = null)
         {
             $options = $this->options();
-            $target   = $options['Target'] ? '_blank' : '_self';
 
             extract(shortcode_atts(array(
-                "q"  => !isset($q) ? '' : $q,
-                "c"  => !isset($c) ? '' : $c,
-                "b"  => !isset($b) ? '' : $b,
-                "m"  => !isset($m) ? '' : $m,
-                "l"  => !isset($l) ? 1 : intval($l),
-                "cl" => !isset($cl) ? 3 : intval($cl)
+                'q'  => isset($q) ? $q : '',
+                'c'  => isset($c) ? $c : '',
+                'b'  => isset($b) ? $b : '',
+                'm'  => isset($m) ? $m : '',
+                'l'  => isset($l) ? intval($l) : 1,
+                'cl' => isset($cl) ? intval($cl) : 3
             ), $atts));
 
-            $query = !$q ? $content : $q;
+            $query = isset($q) ? $q : $content;
 
             // Remove links within links
             $query = strip_tags($query);
             $content = strip_tags($content);
-
-            $fB = !isset($b) ? '' : '&brand=' . urlencode($b);
-            $fM = !isset($m) ? '' : '&merchant=' . urlencode($m);
 
             if (!$c)
             {
@@ -591,17 +577,14 @@ if (!class_exists('Prosperent_Suite'))
                 {
                     require_once('Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
-                        'api_key'        => $options['Api_Key'],
-                        'query'          => $query,
-                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-                        'limit'          => $l,
-                        'enableFacets'   => TRUE,
-                        'sortPrice'		 => '',
+                        'api_key'      => $options['Api_Key'],
+                        'query'        => $query,
+                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+                        'limit'        => $l,
+                        'sortPrice'	   => ''
                     ));
 
                     $prosperentApi -> fetch();
-
-
                     $results = $prosperentApi -> getAllData();
 
                     if ($results)
@@ -644,12 +627,11 @@ if (!class_exists('Prosperent_Suite'))
                 {
                     require_once('Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
-                        'api_key'        => $options['Api_Key'],
-                        'query'          => $query,
-                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-                        'limit'          => $l,
-                        'enableFacets'   => TRUE,
-                        'sortPrice'		 => '',
+                        'api_key'      => $options['Api_Key'],
+                        'query'        => $query,
+                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+                        'limit'        => $l,
+                        'sortPrice'	   => ''
                     ));
 
                     $prosperentApi -> fetchCoupons();
@@ -676,20 +658,17 @@ if (!class_exists('Prosperent_Suite'))
             $target   = $options['Target'] ? '_blank' : '_self';
 
             extract(shortcode_atts(array(
-                "q"   => !isset($q) ? '' : $q,
-                "gtm" => !isset($gtm) ? '' : $gtm,
-                "b"   => !isset($b) ? '' : $b,
-                "m"   => !isset($m) ? '' : $m
+                'q'   => isset($q) ? $q : '',
+                'gtm' => isset($gtm) ? $gtm : '',
+                'b'   => isset($b) ? $b : '',
+                'm'   => isset($m) ? $m : ''
             ), $atts));
 
-            $query = !$q ? $content : $q;
+            $query = isset($q) ? $q : $content;
 
             // Remove links within links
             $query = strip_tags($query);
             $content = strip_tags($content);
-
-            $fB = empty($b) ? '' : '&brand=' . urlencode($b);
-            $fM = empty($m) ? '' : '&merchant=' . urlencode($m);
 
             if ($gtm || !$options['Enable_PPS'])
             {
@@ -706,19 +685,19 @@ if (!class_exists('Prosperent_Suite'))
 
                 $prosperentApi -> fetch();
                 $results = $prosperentApi -> getAllData();
+
                 if ($results)
                 {
-                    return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '">' . $content . '</a>';
+                    return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
                 }
                 else
                 {
                     require_once('Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
-                        'api_key'        => $options['Api_Key'],
-                        'query'          => $query,
-                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-                        'limit'          => 1,
-                        'enableFacets'   => TRUE
+                        'api_key'      => $options['Api_Key'],
+                        'query'        => $query,
+                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+                        'limit'        => 1
                     ));
 
                     $prosperentApi -> fetch();
@@ -726,7 +705,7 @@ if (!class_exists('Prosperent_Suite'))
 
                     if ($results)
                     {
-                        return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '">' . $content . '</a>';
+                        return '<a href="' . $results[0]['affiliate_url'] . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
                     }
                     else
                     {
@@ -735,7 +714,10 @@ if (!class_exists('Prosperent_Suite'))
                 }
             }
 
-            return '<a href="' . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']) . '/?q=' . urlencode($query) . $fB . $fM . '" TARGET="' . $target . '">' . $content . '</a>';
+            $fB = isset($b) ? '&brand=' . urlencode($b) : '';
+            $fM = isset($m) ? '&merchant=' . urlencode($m) : '';
+
+            return '<a href="' . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']) . '/?q=' . urlencode($query) . $fB . $fM . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
         }
 
         public function autoLinker_custom_add()
@@ -836,4 +818,3 @@ if (!class_exists('Prosperent_Suite'))
         do_action('performance_ads');
     }
 }
-

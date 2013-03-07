@@ -12,7 +12,7 @@ $prosperentApi = new Prosperent_Api(array(
 
 $prosperentApi -> fetch();
 $result = $prosperentApi -> getAllData();
-if (count($result) >= 2)
+if (count($result) > 1)
 {
     ?>
     <div id="productList">
@@ -26,16 +26,16 @@ if (count($result) >= 2)
                     <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                 </div>
                 <div class="productContent" style="width:52%;">
-                    <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
+                    <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" class="prosperent-kw"><span><?php echo $record['keyword']; ?></span></a></div>
                     <div class="productBrandMerchant">
                         <?php
                         if($record['brand'])
                         {
-                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+                            echo '<span class="brandIn"><u>Brand</u>: <a href="" onclick="return false;"><cite>' . $record['brand'] . '</cite></a></span>';
                         }
                         if($record['merchant'])
                         {
-                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="" onclick="return false;"><cite>' . $record['merchant'] . '</cite></a></span>';
                         }
                         ?>
                     </div>
@@ -58,7 +58,9 @@ if (count($result) >= 2)
                         <?php
                     }
                     ?>
-                    <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img class="visitImg" style="float:right;box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+                    <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                        <input type="submit" value="Visit Store">
+                    </form>
                 </div>
             </div>
             <?php
@@ -81,7 +83,7 @@ else
                     <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><img src="<?php echo $record['image_url']; ?>"  alt="<?php echo $record['keyword']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
                 </div>
                 <div class="productContent">
-                    <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
+                    <div class="productTitle"><a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" class="prosperent-kw"><span><?php echo $record['keyword']; ?></span></a></div>
                     <div class="productDescription"><?php
                         if (strlen($record['description']) > 200)
                         {
@@ -97,11 +99,11 @@ else
                         <?php
                         if($record['brand'])
                         {
-                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace(array('&brand=', '?brand='), array('', '?'), $url) . '&brand=' . urlencode($brand['value']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+                            echo '<span class="brandIn"><u>Brand</u>: <a href="" onclick="return false;"><cite>' . $record['brand'] . '</cite></a></span>';
                         }
                         if($record['merchant'])
                         {
-                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $url) . '&merchant=' . urlencode($merchant['value']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="" onclick="return false;"><cite>' . $record['merchant'] . '</cite></a></span>';
                         }
                         ?>
                     </div>
@@ -124,7 +126,9 @@ else
                         <?php
                     }
                     ?>
-                    <a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>"><img class="visitImg" style="box-shadow: none;background: none repeat scroll 0 0 transparent; border: medium none;" src="<?php echo plugins_url('/img/visit_store_button.png', __FILE__); ?> "></a>
+                    <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                        <input type="submit" value="Visit Store">
+                    </form>
                 </div>
             </div>
             <?php

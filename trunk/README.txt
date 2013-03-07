@@ -33,7 +33,7 @@ Well these reasons should help you with that question:
 * **We are here for you-** We are always around to answer questions, office guidance and make sure you have everything you need to make a living online.
 * **Traffic optimization-** Our algorithm's are always making sure every click you send us goes to the HIGHEST PAYING and HIGHEST CONVERTING merchant at that moment.
 * **Size-** Because of our high volume, we work with the best Merchants and negotiate the highest commissions out there. Yes, we take a percentage of each commission (30% by default) instead of charging you a monthly fee, but because of our size, we more than make up for that with higher commission rates.
-* **Automatic access to top merchant-** Once you sign up with us (for Free), you have access to all 3000+ merchants that we work with.
+* **Automatic access to top merchants-** Once you sign up with us (for Free), you have access to all 3000+ merchants that we work with.
 * **Clean data-** We clean the data feeds and resize images while serving it all from our global Content Delivery Network which means the images on your site load lightning fast at all times
 * **Big data-** We have mountains of conversion data. We know which merchants are converting, the brands that are hot, and the products that sell at various times throughout the year. We crunch all of this data and give you access to it all.
 * **Limitless and fast!-** We handle over 1.6 billion requests per month with no signs of slowing down. Fire off a request to our api, search tens of millions of products, and get back results within a few milliseconds.

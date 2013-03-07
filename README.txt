@@ -42,19 +42,13 @@ Well these reasons should help you with that question:
 == Screenshots ==
 
 1.	As you can see in the image, we can add a phrase, but we can also map that phrase to a more specific product. Say for example we want to link the word shoe to a specific Nike running shoe every time it appears on our blog.
-    * Simply type: **shoes => Nike Running Shoes **
-    Now, every instance of the word "shoes" on your blog is hyperlinked to a "Nike Running Shoes" product search results page.
+    Simply type: shoes => Nike Running Shoes - Now, every instance of the word "shoes" on your blog is hyperlinked to a "Nike Running Shoes" product search results page.
 2.	Highlight the product in your post and hit our Auto Link button in the editor. We pop up a screen so you can narrow down the product to an exact brand and merchant, determine if you want clicks on the link to go to the merchant directly, or to a search result page, and hit submit.
 3.  This is what it will look like to your visitor, an ordinary link in your posts.
 4.  When you click the link, you are either sent straight to the merchants site, or to your built in search page (which is also part of our plugin suite).
 5.  While you are writing a new blog post (or editing an old one) you will now see a Prosperent Auto Compare icon in the editor tool bar. Click that and you can now type a product name, even restrict the results to a specific merchant/brand, and set the limit for the number of products to show or compare. You could also check the coupon box and enter a more generic term to display coupons instead (we have a few...well nearly 40,000 of those too . ) At the bottom of the box you see a preview of the product that will show up, then hit the submit button.
 6.  This is how it will look in your blog post or page.
-7.  This image shows a few of the features of the Prosperent Suite.
-    * A widget for the search bar, where a visitor can input a product search and be directed to the store.
-    * There's a sidebar ad unit, it analyzes the content of your blog to create a very targeted ad.
-    * A sidebar widget that displays the top sold products.
-    * And lastly, a content ad unit. It auto-scales to fit the content area.
-
+7.  This image shows a few of the features of the Prosperent Suite.--  A widget for the search bar, where a visitor can input a product search and be directed to the store. -- There's a sidebar ad unit, it analyzes the content of your blog to create a very targeted ad. -- A sidebar widget that displays the top sold products. -- And lastly, a content ad unit. It auto-scales to fit the content area. --
 8.  This shows the store that is created by the plugin. It uses your blog's styling so it fits nicely within the content.
 
 == Installation ==

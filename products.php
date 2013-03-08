@@ -467,11 +467,11 @@ if ('prod' == $type || empty($type))
                             <?php
                             if($record['brand'] && !$filterBrand)
                             {
-                                echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace(array('&brand=', '?brand='), array('', '?'), $submitUrl) . '&brand=' . urlencode($brand['value']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+                                echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace(array('&brand=', '?brand='), array('', '?'), $submitUrl) . '&brand=' . urlencode($record['brand']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
                             }
                             if($record['merchant'] && !$filterMerchant)
                             {
-                                echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $submitUrl) . '&merchant=' . urlencode($merchant['value']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                                echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('&merchant=', '?merchant='), array('', '?'), $submitUrl) . '&merchant=' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
                             }
                             ?>
                         </div>
@@ -494,8 +494,8 @@ if ('prod' == $type || empty($type))
                             <?php
                         }
                         ?>
-                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store">
+                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" method="POST">
+                            <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
                 </div>
@@ -705,8 +705,8 @@ elseif ('coup' == $type)
                         ?>
                     </div>
                     <div class="couponVisit">
-                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store">
+                        <form style="margin:0;" method="POST" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                            <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
                 </div>
@@ -901,8 +901,8 @@ elseif ('cele' == $type)
                             <?php
                         }
                         ?>
-                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store">
+                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" method="POST">
+                            <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
                 </div>

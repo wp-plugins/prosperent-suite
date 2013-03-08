@@ -111,6 +111,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.2.5 =
+* Fixed a few bugs from the 1.2.4 release
+
 = 1.2.4 =
 * Updated product search and auto-comparer to look more native to your page, uses more of the same styling as your blog
 * Optimization, a lot of performance increases

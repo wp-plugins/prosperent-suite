@@ -111,6 +111,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.2.6 =
+* Fixed a few bugs
+
 = 1.2.5 =
 * Fixed a few bugs from the 1.2.4 release
 

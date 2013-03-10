@@ -68,12 +68,12 @@ if (!isset($_GET['q']) && $options['Starting_Query'])
 {
     if (preg_match('/\?/' , $_SERVER['REQUEST_URI']))
     {
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '&q=' . $options['Starting_Query'];
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '&q=' . urlencode($options['Starting_Query']);
         $q = $options['Starting_Query'];
     }
     else
     {
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '?q=' . $options['Starting_Query'];
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '?q=' . urlencode($options['Starting_Query']);
         $q = $options['Starting_Query'];
     }
 }
@@ -84,7 +84,7 @@ else
 }
 
 $submitUrl = preg_replace('/\/page\/\d+/i', '', $url);
-$newUrl = str_replace(array('?type=' . $type, '&type=' . $type), array('?', ''), $url);
+$newUrl = str_replace(array('?type=' . $type, '&type=' . $type), array('?', ''), $submitUrl);
 
 if (!preg_match('/\?/', $newUrl))
 {
@@ -147,10 +147,10 @@ if ('prod' == $type || empty($type))
 
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
     echo '<span>Products</span>&nbsp;|';
-    echo '&nbsp;<a href="' . $submitUrl . '&type=coup">Coupons</a>';
+    echo '&nbsp;<a href="' . $newUrl . '&type=coup">Coupons</a>';
     if ($options['Celebrity_Endpoint'])
     {
-        echo '&nbsp;|&nbsp;<a href="' . $submitUrl . '&type=cele">Celebrity</a>';
+        echo '&nbsp;|&nbsp;<a href="' . $newUrl . '&type=cele">Celebrity</a>';
     }
     echo '</div>';
     ?>
@@ -534,11 +534,11 @@ elseif ('coup' == $type)
     $totalFound = $prosperentApi -> getTotalRecordsFound();
 
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
-    echo '<a href="' . $submitUrl . '&type=prod">Products</a>&nbsp;|';
+    echo '<a href="' . $newUrl . '&type=prod">Products</a>&nbsp;|';
     echo '&nbsp;<span>Coupons</span>';
     if ($options['Celebrity_Endpoint'])
     {
-        echo '&nbsp;|&nbsp;<a href="' . $submitUrl . '&type=cele">Celebrity</a>';
+        echo '&nbsp;|&nbsp;<a href="' . $newUrl . '&type=cele">Celebrity</a>';
     }
 
     echo '</div>';
@@ -752,8 +752,8 @@ elseif ('cele' == $type)
     $celebrityResults = $celebrityApi -> getData();
 
     echo '<div class="typeselector" style="display:inline-block;margin-top:9px;">';
-    echo '<a href="' . $submitUrl . '&type=prod">Products</a>&nbsp;|';
-    echo '&nbsp;<a href="' . $submitUrl . '&type=coup">Coupons</a>&nbsp;|';
+    echo '<a href="' . $newUrl . '&type=prod">Products</a>&nbsp;|';
+    echo '&nbsp;<a href="' . $newUrl . '&type=coup">Coupons</a>&nbsp;|';
     echo '&nbsp;<span>Celebrity</span>';
     echo '</div>';
     ?>

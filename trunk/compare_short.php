@@ -58,8 +58,8 @@ if (count($result) > 1)
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
-                        <input type="submit" value="Visit Store">
+                    <form style="margin:0;"  method="POST" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                        <input type="submit" value="Visit Store"/>
                     </form>
                 </div>
             </div>
@@ -126,8 +126,8 @@ else
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
-                        <input type="submit" value="Visit Store">
+                    <form style="margin:0;"  method="POST" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>">
+                        <input type="submit" value="Visit Store"/>
                     </form>
                 </div>
             </div>

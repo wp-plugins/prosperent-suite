@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 1.2.6
+Version: 1.2.7
 Author: Prosperent Brandon
 License: GPLv3
 */
@@ -42,6 +42,9 @@ if (!class_exists('Prosperent_Suite'))
             $this->prosperent_suite();
             $options = $this->options();
 
+            register_activation_hook(__FILE__, array($this, 'prosperent_store_install'));
+            register_deactivation_hook( __FILE__, array($this, 'prosperent_store_remove'));
+
             if ($options['Enable_PA'])
             {
                 add_action('performance_ads', array($this, 'Prosper_Perform_Ads'));
@@ -75,18 +78,11 @@ if (!class_exists('Prosperent_Suite'))
             }
             if ($options['Enable_PPS'])
             {
-                if(is_admin())
-                {
-                    add_action('admin_init', array($this, 'prosperent_store_install'));
-                }
-                else
-                {
-                    add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
-                    add_shortcode('prosper_store', array($this, 'store_shortcode'));
-                    add_shortcode('prosper_search', array($this, 'search_shortcode'));
-                    add_action('prospere_header', array($this, 'Prospere_Search'));
-                    add_action('wp_title', array($this, 'prosper_title'), 10, 3);
-                }
+                add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
+                add_shortcode('prosper_store', array($this, 'store_shortcode'));
+                add_shortcode('prosper_search', array($this, 'search_shortcode'));
+                add_action('prospere_header', array($this, 'Prospere_Search'));
+                add_action('wp_title', array($this, 'prosper_title'), 10, 3);
 
                 require_once('TP_Widget.php');
                 require_once('PS_Widget.php');

@@ -111,6 +111,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 1.2.8 =
+* bug fix for Auto-Comparer and Auto-Linker when no query is given
+
 = 1.2.7 =
 * optimizations
 

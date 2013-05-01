@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 1.2.7
+Version: 1.2.8
 Author: Prosperent Brandon
 License: GPLv3
 */
@@ -539,7 +539,7 @@ if (!class_exists('Prosperent_Suite'))
                 'cl' => isset($cl) ? intval($cl) : 3
             ), $atts));
 
-            $query = isset($q) ? $q : $content;
+            $query = $q ?: $content;
 
             // Remove links within links
             $query = strip_tags($query);
@@ -660,7 +660,7 @@ if (!class_exists('Prosperent_Suite'))
                 'm'   => isset($m) ? $m : ''
             ), $atts));
 
-            $query = isset($q) ? $q : $content;
+            $query = $q ?: $content;
 
             // Remove links within links
             $query = strip_tags($query);

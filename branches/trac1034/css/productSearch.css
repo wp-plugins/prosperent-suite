@@ -52,7 +52,7 @@
 }
 
 .noResults-padding{
-    min-height:300px
+    min-height:30px
 }
 
 td {
@@ -166,12 +166,15 @@ td {
 
 .productContent .productBrandMerchant {
     font-size:12px;
+	margin: 0 auto;
+	width: 100%;
 }
 
 #productList .productEnd {
     width:120px;
     font-size:16px;
     float:right;
+	text-align:center;
 }
 
 .productEnd .productPriceNoSale {
@@ -200,12 +203,13 @@ td {
 }
 
 .productBrandMerchant  .brandIn {
-    padding-right:6px;
     display:inline-block;
+	width:46%;
 }
 
 .productBrandMerchant .merchantIn {
     display:inline-block;
+	width:49%;
 }
 
 /* Coupons */
@@ -319,15 +323,6 @@ span.code_cc{
 
     #productList .productBlock0{
         width:100%;
-        border-top:1px solid #EDEDED;
-        border-bottom:1px solid #EDEDED;
-        display:inline-block;
-    }
-
-    #productList .productBlock {
-        border-bottom:1px solid #EDEDED;
-        display:inline-block;
-        width:100%;
     }
 
     #facets .merchants {
@@ -349,12 +344,6 @@ span.code_cc{
         width:100%;
         font-size:16px;
         float:right;
-    }
-
-    #productList .productContent {
-        width:100%;
-        float:right;
-        display:block;
     }
 
     .priceSorter {
@@ -409,13 +398,6 @@ span.code_cc{
         border-top:0;
     }
 
-    #productList .productBlock0{
-        width:100%;
-        border-top:1px solid #EDEDED;
-        border-bottom:1px solid #EDEDED;
-        display:inline-block;
-    }
-
     #facets .filterImg {
         margin-top:-60px;
         padding-left:140px;
@@ -424,12 +406,6 @@ span.code_cc{
     .productContent .productDescription {
         padding-bottom:2px;
         font-size:12px;
-    }
-
-    #productList .productBlock {
-        border-bottom:1px solid #EDEDED;
-        display:inline-block;
-        width:100%;
     }
 
     #productList .productImage {
@@ -475,7 +451,7 @@ span.code_cc{
 
 @media all and (max-width:700px) and (min-width:580px) {
     #productList .productContent {
-        width:68%;
+        width:72%;
         padding-bottom:36px;
         float:right;
     }
@@ -489,6 +465,39 @@ span.code_cc{
 @media all and (max-width:800px) and (min-width:800px) {
     #productList .productContent {
         width:60%;
+        float:left;
+    }
+}
+
+@media all and (max-width:875px) and (min-width:780px) {
+    #facets .brands {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #facets .merchants {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+	
+    #productList .productContent {
+        width:68%;
+        float:right;
+    }
+	
+	#productList .productEnd {
+        width:120px;
+        font-size:14px;
+        float:left;
+        padding-bottom:4px;
+    }
+}
+
+@media all and (max-width:900px) and (min-width:875px) {
+    #productList .productContent {
+        width:48%;
         float:left;
     }
 }

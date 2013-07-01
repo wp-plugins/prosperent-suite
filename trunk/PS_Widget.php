@@ -28,8 +28,8 @@ class ProsperStore_Widget extends WP_Widget
 
         ?>
         <form id="searchform" method="GET" action="<?php echo $options['Base_URL'] ? '/' . $options['Base_URL'] : '/products'; ?>">
-            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px;">
-            <input type="submit" value="Search">
+            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px; margin: 24px 0 0 20px;">
+            <input type="submit" value="Search" style="padding:4px 4px 5px 4px;">
         </form>
         <?php
 

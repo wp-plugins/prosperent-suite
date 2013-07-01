@@ -30,6 +30,46 @@ if ($prosperImgUrl = get_query_var('prosperImg'))
 	header('Location:' . 'http://img1.prosperent.com/images/' . $prosperImgUrl);
 }
 
+$options = $this->get_option();
+
+if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
+{   
+	$pageNumber = preg_replace('/(.*)(\/page\/)(\d+)(\/.*)/i', '$3', $_SERVER['REQUEST_URI']);
+	$queryStrings = preg_replace('/(\/products\/)|' . $options["Base_URL"]. '|(\/page\/)(\d+)|(\?)|(\/)/', '', (preg_split('/&/',$_SERVER['REQUEST_URI'])));
+
+	foreach ($queryStrings as $query)
+	{
+		if (preg_match('/q/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newQueryString = 'query/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/merchant/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newMerchantString = 'merchant/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/brand/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newBrandString = 'brand/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/celeb/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newCelebString = 'celeb/' . $queryMatch[1] . '/';
+		}
+	}	
+	
+	if($pageNumber > 1)
+	{
+		$newPageString = 'page/' . $pageNumber . '/';
+	}
+	echo $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString;
+	
+	header('Location:http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ?  '/products' : ($options['Base_URL'] == 'null' ? '/' : '/' . $options['Base_URL'])) . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
+}
+
 function prosper_pagination($pages = '', $range, $paged)
 {
 	if(empty($paged)) $paged = 1;
@@ -63,7 +103,6 @@ function prosper_pagination($pages = '', $range, $paged)
 	}
 }
 
-$options = $this->get_option();
 $params = array_reverse(explode('/', get_query_var('queryParams')));
 
 $sendParams = array();

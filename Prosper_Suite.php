@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0
+Version: 2.0.1
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -23,16 +23,16 @@ License: GPLv3
 */
 
 if (!defined('PROSPER_URL'))
-	define('PROSPER_URL', plugin_dir_url(__FILE__));
+    define('PROSPER_URL', plugin_dir_url(__FILE__));
 if (!defined('PROSPER_PATH'))
-	define('PROSPER_PATH', plugin_dir_path(__FILE__));
+    define('PROSPER_PATH', plugin_dir_path(__FILE__));
 if (!defined('PROSPER_BASENAME'))
-	define('PROSPER_BASENAME', plugin_basename(__FILE__));
+    define('PROSPER_BASENAME', plugin_basename(__FILE__));
 
 if (!class_exists('Prosperent_Suite'))
 {
-	require PROSPER_PATH . 'admin/admin.php';	
-	
+    require PROSPER_PATH . 'admin/admin.php';
+
     class Prosperent_Suite extends Prosperent_Admin
     {
         /**
@@ -41,13 +41,13 @@ if (!class_exists('Prosperent_Suite'))
          * @return void
          */
         public function __construct()
-        {						
-			add_action( 'init', array($this, 'prosper_query_tag'), 1 );
-			add_action('init', array($this, 'do_output_buffer'));
-			
+        {
+            add_action( 'init', array($this, 'prosper_query_tag'), 1 );
+            add_action('init', array($this, 'do_output_buffer'));
+
             $options = $this->get_option();
 
-			register_activation_hook(__FILE__, array($this, 'prosper_activate'));
+            register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosperent_store_remove'));
 
             if ($options['Enable_PA'])
@@ -86,10 +86,10 @@ if (!class_exists('Prosperent_Suite'))
                 add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
                 add_shortcode('prosper_store', array($this, 'store_shortcode'));
                 add_shortcode('prosper_search', array($this, 'search_shortcode'));
-				add_shortcode('prosper_product', array($this, 'product_shortcode'));
+                add_shortcode('prosper_product', array($this, 'product_shortcode'));
                 add_action('prospere_header', array($this, 'Prospere_Search'));
                 add_action('wp_title', array($this, 'prosper_title'), 10, 3);
-						
+
                 require_once('TP_Widget.php');
                 require_once('PS_Widget.php');
             }
@@ -98,271 +98,271 @@ if (!class_exists('Prosperent_Suite'))
                 add_action('admin_init', array($this, 'prosperent_store_remove'));
             }
         }
-				
+
         /**
-		 * Retrieve an array of all the options the plugin uses. It can't use only one due to limitations of the options API.
-		 *
-		 * @return array of options.
-		 */
-		public function get_prosper_options_array() 
-		{
-			$optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
-			
-			return apply_filters( 'prosper_options', $optarr );
-		}
+         * Retrieve an array of all the options the plugin uses. It can't use only one due to limitations of the options API.
+         *
+         * @return array of options.
+         */
+        public function get_prosper_options_array()
+        {
+            $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
 
-		/**
-		 * Retrieve all the options
-		 *
-		 * @return array of options
-		 */
-		public function get_option() 
-		{
-			static $options;
+            return apply_filters( 'prosper_options', $optarr );
+        }
 
-			if (!isset($options)) 
-			{
-				$options = array();
-				foreach ($this->get_prosper_options_array() as $opt) 
-				{
-					$options = array_merge($options, (array) get_option($opt));
-				}
-			}
-			
-			return $options;
-		}
-		
-		public function prosper_activate()
-		{
-			$this->prosper_default();
-			
-			$this->prosperent_store_install();
-			
-			$this->prosper_rewrite();
-			
-			$this->prosper_flush_rules();
-		}
-		
-		/**
-		 * Flush the rewrite rules.
-		 */
-		public function prosper_flush_rules() 
-		{
-			global $wp_rewrite;
-			$wp_rewrite->flush_rules();
-		}
-		
-		public function do_output_buffer() 
-		{
-			ob_start();
-		}
-		
-		public function prosper_query_tag()
-		{
-			$GLOBALS['wp']->add_query_var( 'keyword' );
-			$GLOBALS['wp']->add_query_var( 'cid' );
-			$GLOBALS['wp']->add_query_var( 'storeUrl' );
-			$GLOBALS['wp']->add_query_var( 'queryParams' );
-			$GLOBALS['wp']->add_query_var( 'prosperImg' );
-		}
-		
-		public function prosper_rewrite()
-		{
-			$options  = $this->get_option();
-			$page     = (!$options['Base_URL'] ?  'products' : ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']));
-			$pageName = (!$options['Base_URL'] ?  'pagename=products' : ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']));
-		
-			add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-			add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-			add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-			add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-			add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-			add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&go&storeUrl=$matches[1]', 'top');
-			add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-			add_rewrite_rule($page . '/(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
-		}
-		
-		public function base_url()
-		{
-			global $wp_rewrite;
+        /**
+         * Retrieve all the options
+         *
+         * @return array of options
+         */
+        public function get_option()
+        {
+            static $options;
 
-			add_rewrite_rule($options['Base_URL'] . '/(.*)', 'index.php?pagename=products&queryParams=$matches[1]', 'top');
-			$wp_rewrite->flush_rules();
-		}		
-		
-		public function prosper_default() 
-		{
-			$old_options = get_option('prosper_prosperent_suite');
-			
-			if (!is_array(get_option('prosperSuite'))) 
-			{
-				if (is_array($old_options))
-				{
-					$opt = array(
-						'UID'     => $old_options['UID'],
-						'Api_Key' => $old_options['Api_Key'],
-						'Target'  => $old_options['Target']
-					);
-				}
-				else
-				{
-					$opt = array(
-						'Target' => 1
-					);
-				}
-				
-				update_option('prosperSuite', $opt);
-			}
-		
-			if (!is_array(get_option('prosper_productSearch' ))) 
-			{
-				if (is_array($old_options))
-				{
-					$opt = array(
-						'Enable_PPS'       	 => $old_options['Enable_PPS'],
-						'Product_Endpoint' 	 => 1,
-						'Country_Code'  	 => 'US',
-						'Coupon_Endpoint'    => 1,
-						'Celebrity_Endpoint' => 0,
-						'Local_Endpoint'     => 1,
-						'Geo_Locate' 		 => 1,
-						'Travel_Endpoint'    => 0,
-						'Api_Limit' 		 => $old_options['Api_Limit'],
-						'Pagination_Limit'   => $old_options['Pagination_Limit'],
-						'Enable_Facets'      => $old_options['Enable_Facets'],
-						'Default_Sort' 		 => $old_options['Default_Sort'],
-						'Search_Bar_Text'  	 => $old_options['Search_Bar_Text'],
-						'Merchant_Facets'    => $old_options['Merchant_Facets'],
-						'Brand_Facets' 		 => $old_options['Brand_Facets'],
-						'Negative_Brand'  	 => $old_options['Negative_Brand'],
-						'Negative_Merchant'  => $old_options['Negative_Merchant'],
-						'Positive_Merchant'  => '',
-						'Positive_Brand' 	 => '',
-						'Starting_Query' 	 => $old_options['Starting_Query'],
-						'Coupon_Query'       => '',
-						'Celebrity_Query' 	 => '',
-						'Local_Query' 		 => '',
-						'Travel_Query' 		 => ''
-					);
-				}
-				else
-				{
-					$opt = array(
-						'Enable_PPS'       	 => 1,
-						'Product_Endpoint' 	 => 1,
-						'Country_Code'  	 => 'US',
-						'Coupon_Endpoint'    => 1,
-						'Celebrity_Endpoint' => 0,
-						'Local_Endpoint'     => 1,
-						'Geo_Locate' 		 => 1,
-						'Travel_Endpoint'    => 0,
-						'Api_Limit' 		 => 50,
-						'Pagination_Limit'   => 10,
-						'Enable_Facets'      => 1,
-						'Default_Sort' 		 => '',
-						'Search_Bar_Text'  	 => '',
-						'Merchant_Facets'    => 10,
-						'Brand_Facets' 		 => 10,
-						'Negative_Brand'  	 => '',
-						'Negative_Merchant'  => '',
-						'Starting_Query' 	 => 'shoes',
-						'Positive_Merchant'  => '',
-						'Positive_Brand' 	 => '',
-						'Coupon_Query'       => '',
-						'Celebrity_Query' 	 => '',
-						'Local_Query' 		 => '',
-						'Travel_Query' 		 => ''						
-					);
-				}
-				update_option( 'prosper_productSearch', $opt );
-			}
+            if (!isset($options))
+            {
+                $options = array();
+                foreach ($this->get_prosper_options_array() as $opt)
+                {
+                    $options = array_merge($options, (array) get_option($opt));
+                }
+            }
 
-			if (!is_array(get_option('prosper_performAds'))) 
-			{
-				if (is_array($old_options))
-				{
-					$opt = array(
-						'Enable_PA'        => $old_options['Enable_PA'],
-						'SWH' 		 	   => $old_options['SWH'],
-						'SWW'   		   => $old_options['SWW'],
-						'FWH'      		   => $old_options['FWH'],
-						'FWW' 		 	   => $old_options['FWW'],
-						'content_fallBack' => $old_options['content_fallBack'],
-						'sidebar_fallBack' => $old_options['sidebar_fallBack'],
-						'footer_fallBack'  => $old_options['footer_fallBack']
-					);
-				}
-				else
-				{
-					$opt = array(
-						'Enable_PA'        => 1,
-						'SWH' 	 		   => 150,
-						'SWW'  	 		   => 'auto',
-						'FWH'    		   => 150,
-						'FWW' 			   => 'auto',
-						'content_fallBack' => '',
-						'sidebar_fallBack' => '',
-						'footer_fallBack'  => ''
-					);
-				}
-				update_option( 'prosper_performAds', $opt );
-			}
+            return $options;
+        }
 
-			if (!is_array(get_option('prosper_autoComparer'))) 
-			{
-				if (is_array($old_options))
-				{
-					$opt = array(
-						'Enable_AC' => $old_options['Enable_AC']
-					);
-				}
-				else
-				{
-					$opt = array(
-						'Enable_AC' => 1
-					);
-				}
-				update_option( 'prosper_autoComparer', $opt );
-			}
+        public function prosper_activate()
+        {
+            $this->prosper_default();
 
-			if (!is_array(get_option('prosper_autoLinker'))) 
-			{
-				if (is_array($old_options))
-				{
-					$opt = array(
-						'Enable_AL' 		 => $old_options['Enable_AL'],
-						'Auto_Link' 		 => $old_options['Auto_Link'],
-						'Auto_Link_Comments' => $old_options['Auto_Link_Comments'],
-						'Case_Sensitive' 	 => $old_options['Case_Sensitive']
-					);
-				}
-				else
-				{
-					$opt = array(
-						'Enable_AL' 		 => 1,
-						'Auto_Link'			 => 'shoes => Nike shoes',
-						'Auto_Link_Comments' => 0,
-						'Case_Sensitive' 	 => 0
-					);
-				}
-				update_option( 'prosper_autoLinker', $opt );
-			}
-			
-			if (!is_array(get_option('prosper_advanced'))) 
-			{
+            $this->prosperent_store_install();
 
-					$opt = array(
-						'Title_Structure' => 0,
-						'Title_Sep'		  => '',
-						'Base_URL' 		  => '',
-						'Additional_CSS'  => '',
-						'Logo_Image' 	  => 0,
-						'Logo_imageSmall' => 0
-					);
-				
-				update_option( 'prosper_advanced', $opt );
-			}
-		}
+            $this->prosper_rewrite();
+
+            $this->prosper_flush_rules();
+        }
+
+        /**
+         * Flush the rewrite rules.
+         */
+        public function prosper_flush_rules()
+        {
+            global $wp_rewrite;
+            $wp_rewrite->flush_rules();
+        }
+
+        public function do_output_buffer()
+        {
+            ob_start();
+        }
+
+        public function prosper_query_tag()
+        {
+            $GLOBALS['wp']->add_query_var( 'keyword' );
+            $GLOBALS['wp']->add_query_var( 'cid' );
+            $GLOBALS['wp']->add_query_var( 'storeUrl' );
+            $GLOBALS['wp']->add_query_var( 'queryParams' );
+            $GLOBALS['wp']->add_query_var( 'prosperImg' );
+        }
+
+        public function prosper_rewrite()
+        {
+            $options  = $this->get_option();
+            $page     = (!$options['Base_URL'] ?  'products' : ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']));
+            $pageName = (!$options['Base_URL'] ?  'pagename=products' : ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']));
+
+            add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&go&storeUrl=$matches[1]', 'top');
+            add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
+            add_rewrite_rule($page . '/(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
+        }
+
+        public function base_url()
+        {
+            global $wp_rewrite;
+
+            add_rewrite_rule($options['Base_URL'] . '/(.*)', 'index.php?pagename=products&queryParams=$matches[1]', 'top');
+            $wp_rewrite->flush_rules();
+        }
+
+        public function prosper_default()
+        {
+            $old_options = get_option('prosper_prosperent_suite');
+
+            if (!is_array(get_option('prosperSuite')))
+            {
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'UID'     => $old_options['UID'],
+                        'Api_Key' => $old_options['Api_Key'],
+                        'Target'  => $old_options['Target']
+                    );
+                }
+                else
+                {
+                    $opt = array(
+                        'Target' => 1
+                    );
+                }
+
+                update_option('prosperSuite', $opt);
+            }
+
+            if (!is_array(get_option('prosper_productSearch' )))
+            {
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'Enable_PPS'       	 => $old_options['Enable_PPS'],
+                        'Product_Endpoint' 	 => 1,
+                        'Country_Code'  	 => 'US',
+                        'Coupon_Endpoint'    => 1,
+                        'Celebrity_Endpoint' => 0,
+                        'Local_Endpoint'     => 1,
+                        'Geo_Locate' 		 => 1,
+                        'Travel_Endpoint'    => 0,
+                        'Api_Limit' 		 => $old_options['Api_Limit'],
+                        'Pagination_Limit'   => $old_options['Pagination_Limit'],
+                        'Enable_Facets'      => $old_options['Enable_Facets'],
+                        'Default_Sort' 		 => $old_options['Default_Sort'],
+                        'Search_Bar_Text'  	 => $old_options['Search_Bar_Text'],
+                        'Merchant_Facets'    => $old_options['Merchant_Facets'],
+                        'Brand_Facets' 		 => $old_options['Brand_Facets'],
+                        'Negative_Brand'  	 => $old_options['Negative_Brand'],
+                        'Negative_Merchant'  => $old_options['Negative_Merchant'],
+                        'Positive_Merchant'  => '',
+                        'Positive_Brand' 	 => '',
+                        'Starting_Query' 	 => $old_options['Starting_Query'],
+                        'Coupon_Query'       => '',
+                        'Celebrity_Query' 	 => '',
+                        'Local_Query' 		 => '',
+                        'Travel_Query' 		 => ''
+                    );
+                }
+                else
+                {
+                    $opt = array(
+                        'Enable_PPS'       	 => 1,
+                        'Product_Endpoint' 	 => 1,
+                        'Country_Code'  	 => 'US',
+                        'Coupon_Endpoint'    => 1,
+                        'Celebrity_Endpoint' => 0,
+                        'Local_Endpoint'     => 1,
+                        'Geo_Locate' 		 => 1,
+                        'Travel_Endpoint'    => 0,
+                        'Api_Limit' 		 => 50,
+                        'Pagination_Limit'   => 10,
+                        'Enable_Facets'      => 1,
+                        'Default_Sort' 		 => '',
+                        'Search_Bar_Text'  	 => '',
+                        'Merchant_Facets'    => 10,
+                        'Brand_Facets' 		 => 10,
+                        'Negative_Brand'  	 => '',
+                        'Negative_Merchant'  => '',
+                        'Starting_Query' 	 => 'shoes',
+                        'Positive_Merchant'  => '',
+                        'Positive_Brand' 	 => '',
+                        'Coupon_Query'       => '',
+                        'Celebrity_Query' 	 => '',
+                        'Local_Query' 		 => '',
+                        'Travel_Query' 		 => ''
+                    );
+                }
+                update_option( 'prosper_productSearch', $opt );
+            }
+
+            if (!is_array(get_option('prosper_performAds')))
+            {
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'Enable_PA'        => $old_options['Enable_PA'],
+                        'SWH' 		 	   => $old_options['SWH'],
+                        'SWW'   		   => $old_options['SWW'],
+                        'FWH'      		   => $old_options['FWH'],
+                        'FWW' 		 	   => $old_options['FWW'],
+                        'content_fallBack' => $old_options['content_fallBack'],
+                        'sidebar_fallBack' => $old_options['sidebar_fallBack'],
+                        'footer_fallBack'  => $old_options['footer_fallBack']
+                    );
+                }
+                else
+                {
+                    $opt = array(
+                        'Enable_PA'        => 1,
+                        'SWH' 	 		   => 150,
+                        'SWW'  	 		   => 'auto',
+                        'FWH'    		   => 150,
+                        'FWW' 			   => 'auto',
+                        'content_fallBack' => '',
+                        'sidebar_fallBack' => '',
+                        'footer_fallBack'  => ''
+                    );
+                }
+                update_option( 'prosper_performAds', $opt );
+            }
+
+            if (!is_array(get_option('prosper_autoComparer')))
+            {
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'Enable_AC' => $old_options['Enable_AC']
+                    );
+                }
+                else
+                {
+                    $opt = array(
+                        'Enable_AC' => 1
+                    );
+                }
+                update_option( 'prosper_autoComparer', $opt );
+            }
+
+            if (!is_array(get_option('prosper_autoLinker')))
+            {
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'Enable_AL' 		 => $old_options['Enable_AL'],
+                        'Auto_Link' 		 => $old_options['Auto_Link'],
+                        'Auto_Link_Comments' => $old_options['Auto_Link_Comments'],
+                        'Case_Sensitive' 	 => $old_options['Case_Sensitive']
+                    );
+                }
+                else
+                {
+                    $opt = array(
+                        'Enable_AL' 		 => 1,
+                        'Auto_Link'			 => 'shoes => Nike shoes',
+                        'Auto_Link_Comments' => 0,
+                        'Case_Sensitive' 	 => 0
+                    );
+                }
+                update_option( 'prosper_autoLinker', $opt );
+            }
+
+            if (!is_array(get_option('prosper_advanced')))
+            {
+
+                    $opt = array(
+                        'Title_Structure' => 0,
+                        'Title_Sep'		  => '',
+                        'Base_URL' 		  => '',
+                        'Additional_CSS'  => '',
+                        'Logo_Image' 	  => 0,
+                        'Logo_imageSmall' => 0
+                    );
+
+                update_option( 'prosper_advanced', $opt );
+            }
+        }
 
         /**
          * Override the plugin framework's register_filters() to actually hook actions and filters.
@@ -490,8 +490,8 @@ if (!class_exists('Prosperent_Suite'))
             // Product Search CSS for results and search
             wp_register_style( 'prospere_main_style', plugins_url('/css/productSearch.css', __FILE__) );
             wp_enqueue_style( 'prospere_main_style' );
-			
-			wp_register_style( 'prospere_product_style', plugins_url('/css/productPage.css', __FILE__) );
+
+            wp_register_style( 'prospere_product_style', plugins_url('/css/productPage.css', __FILE__) );
             wp_enqueue_style( 'prospere_product_style' );
 
             // Product Search CSS for IE7, a few changes to align objects
@@ -519,47 +519,47 @@ if (!class_exists('Prosperent_Suite'))
 
         public function prosper_title($sep, $seplocation, $title)
         {
-			$params = array_reverse(explode('/', get_query_var('queryParams')));
+            $params = array_reverse(explode('/', get_query_var('queryParams')));
 
-			$sendParams = array();
-			if (!empty($params))
-			{
-				$params = array_reverse($params);
-				foreach ($params as $k => $p)
-				{
-					//if the number is even, grab the next index value
-					if (!($k & 1))
-					{
-						$sendParams[$p] = $params[$k + 1];
-					}
-				}
-			}
-		
-			if ( 'right' == $seplocation )
-			{
-				$regex = '' . preg_quote( trim( $sep ), '/' ) . '';
-			}
-			else
-			{
-				$regex = '' . preg_quote( trim( $sep ), '/' ) . '';
-			}
+            $sendParams = array();
+            if (!empty($params))
+            {
+                $params = array_reverse($params);
+                foreach ($params as $k => $p)
+                {
+                    //if the number is even, grab the next index value
+                    if (!($k & 1))
+                    {
+                        $sendParams[$p] = $params[$k + 1];
+                    }
+                }
+            }
 
-			$title = preg_replace( $regex, '', $title );
-			$options = $this->get_option();
+            if ( 'right' == $seplocation )
+            {
+                $regex = '' . preg_quote( trim( $sep ), '/' ) . '';
+            }
+            else
+            {
+                $regex = '' . preg_quote( trim( $sep ), '/' ) . '';
+            }
+
+            $title = preg_replace( $regex, '', $title );
+            $options = $this->get_option();
 
             $sep = ' ' . (!$options['Title_Sep'] ? trim($sep) : ' ' . trim($options['Title_Sep'])) . ' ';
             $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
             $query = ucwords(urldecode($sendParams['query'] ? $sendParams['query'] : $options['Starting_Query']));
 
-			if (get_query_var('cid'))
-			{
-				$query = preg_replace('/\(.+\)/i', '', urldecode(get_query_var('keyword')));
-				$title = $query;
-			}			
+            if (get_query_var('cid'))
+            {
+                $query = preg_replace('/\(.+\)/i', '', urldecode(get_query_var('keyword')));
+                $title = $query;
+            }
             elseif (is_page($page))
             {
-                switch ( $options['Title_Structure'] ) 
-				{
+                switch ( $options['Title_Structure'] )
+                {
                     case 0:
                         $title = $title;
                         break;
@@ -578,7 +578,7 @@ if (!class_exists('Prosperent_Suite'))
                 }
             }
 
-			return $title;
+            return $title;
         }
 
 
@@ -758,7 +758,7 @@ if (!class_exists('Prosperent_Suite'))
         {
             $options = $this->get_option();
             $target   = $options['Target'] ? '_blank' : '_self';
-			
+
             extract(shortcode_atts(array(
                 'q'   => isset($q) ? $q : '',
                 'gtm' => isset($gtm) ? $gtm : '',

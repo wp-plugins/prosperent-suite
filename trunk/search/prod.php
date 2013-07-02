@@ -13,7 +13,7 @@ else
 $query = stripslashes($q);
 
 $prodSubmit = preg_replace('/\/$/', '', $url);
-$newQuery = str_replace('/query/' . $query, '', $prodSubmit);
+$newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
 $newSort = str_replace('/sort/' . $sendParams['sort'], '', $prodSubmit);
 
 if ($_POST['q']) 
@@ -38,8 +38,8 @@ $prosperentApi = new Prosperent_Api(array(
 	'sortPrice'	     => $sort,
 	'groupBy'	     => 'productId',
 	'enableFacets'   => $options['Enable_Facets'],
-	'filterBrand'    => !$negativeBrands ? $filterBrand : $negativeBrands,
-	'filterMerchant' => !$negativeMerchants ? $filterMerchant : $negativeMerchants
+	'filterBrand'    => $filterBrands,
+	'filterMerchant' => $filterMerchants
 ));
 
 /*
@@ -122,7 +122,7 @@ if ($prosperentApi->get_enableFacets() == 1)
 				{
 					$count = count($brands1);
 					foreach ($brands1 as $i => $brand)
-					{
+					{					
 						echo '<a href=' . $prodSubmit . '/brand/' . urlencode($brand['value']) . '>' . $brand['value'] . ' (' . $brand['count'] . ')</a>';
 
 						if ($i < ($count - 1))
@@ -270,7 +270,7 @@ if ($prosperentApi->get_enableFacets() == 1)
 else
 {
 	?>
-	<div class="table-seperator"></div>
+	<div class="table-seperator" style="margin-bottom:5px;"></div>
 	<?php
 }
 

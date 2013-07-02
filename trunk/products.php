@@ -30,6 +30,46 @@ if ($prosperImgUrl = get_query_var('prosperImg'))
 	header('Location:' . 'http://img1.prosperent.com/images/' . $prosperImgUrl);
 }
 
+$options = $this->get_option();
+
+if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
+{   
+	$pageNumber = preg_replace('/(.*)(\/page\/)(\d+)(\/.*)/i', '$3', $_SERVER['REQUEST_URI']);
+	$queryStrings = preg_replace('/(\/products\/)|' . $options["Base_URL"]. '|(\/page\/)(\d+)|(\?)|(\/)/', '', (preg_split('/&/',$_SERVER['REQUEST_URI'])));
+
+	foreach ($queryStrings as $query)
+	{
+		if (preg_match('/q/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newQueryString = 'query/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/merchant/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newMerchantString = 'merchant/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/brand/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newBrandString = 'brand/' . $queryMatch[1] . '/';
+		}
+		elseif(preg_match('/celeb/i', $query))
+		{
+			$queryMatch = preg_split('/=/', $query);
+			$newCelebString = 'celeb/' . $queryMatch[1] . '/';
+		}
+	}	
+	
+	if($pageNumber > 1)
+	{
+		$newPageString = 'page/' . $pageNumber . '/';
+	}
+	echo $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString;
+	
+	header('Location:http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ?  '/products' : ($options['Base_URL'] == 'null' ? '/' : '/' . $options['Base_URL'])) . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
+}
+
 function prosper_pagination($pages = '', $range, $paged)
 {
 	if(empty($paged)) $paged = 1;
@@ -49,7 +89,7 @@ function prosper_pagination($pages = '', $range, $paged)
 		if($paged > 2 && $paged <= $pages) echo "<a href='" .get_pagenum_link(1)."'>&laquo; First</a>";
 		if($paged > 1) echo "<a href='".get_pagenum_link($paged - 1)."'>&lsaquo; Previous</a>";
 
-		for ($i=1; $i <= $pages; $i++)
+		for ($i=$paged; $i <= $paged + 6; $i++)
 		{
 			if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ))
 			{
@@ -63,7 +103,6 @@ function prosper_pagination($pages = '', $range, $paged)
 	}
 }
 
-$options = $this->get_option();
 $params = array_reverse(explode('/', get_query_var('queryParams')));
 
 $sendParams = array();
@@ -172,16 +211,43 @@ $sepEnds[$type] = strip_tags($sepEnds[$type]);
 	
 $typeSelector = '<div class="typeselector" style="display:inline-block; margin-top:9px;">' . implode(' | ', $sepEnds) . '</div>';
 
+$filterBrands = array();
+$filterMerchants = array();
+
+if ($filterBrand)
+{
+	array_push($filterBrands, $filterBrand);
+}
+if ($filterMerchant)
+{
+	array_push($filterMerchants, $filterMerchant);
+}
+if($options['Positive_Brand'])
+{
+    $plusBrands = explode(',', stripslashes($options['Positive_Brand']));
+
+    foreach ($plusBrands as $postive)
+    {
+        array_push($filterBrands, urlencode(trim($postive)));
+    }
+}
+if ($options['Positive_Merchant'])
+{
+    $plusMerchants = explode(',', stripslashes($options['Positive_Merchant']));
+
+    foreach ($plusMerchants as $positive)
+    {
+        array_push($filterMerchants, urlencode(trim($positive)));
+    }
+}
 if($options['Negative_Brand'])
 {
     $minusBrands = explode(',', stripslashes($options['Negative_Brand']));
 
     foreach ($minusBrands as $negative)
     {
-        $negativeBrands[] = '!' . trim($negative);
+        array_push($filterBrands, '!' . urlencode(trim($negative)));
     }
-
-    array_unshift($negativeBrands, $filterBrand);
 }
 if ($options['Negative_Merchant'])
 {
@@ -189,11 +255,10 @@ if ($options['Negative_Merchant'])
 
     foreach ($minusMerchants as $negative)
     {
-        $negativeMerchants[] = '!' . trim($negative);
+        array_push($filterMerchants, '!' . urlencode(trim($negative)));
     }
-
-    array_unshift($negativeMerchants, $filterMerchant);
 }
+
 
 if (get_query_var('cid'))
 {            

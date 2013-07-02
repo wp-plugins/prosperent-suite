@@ -31,7 +31,7 @@ td {
 }
 
 #product .productContent {
-    width:56%;
+    width:54%;
     float:right;
 }
 
@@ -158,12 +158,17 @@ td {
 	text-align:left;
 }
 
+ul {
+	margin:0;
+	list-style:none;
+}
+
 #simProd li {
 	list-style:none; 
 	margin:0px;  
 	font-size:12px;  
 	display:inline;  
-	height:200px;  
+	height:210px;  
 	float:left;  
 	overflow:hidden;  
 	padding:4px 0;
@@ -256,7 +261,7 @@ td {
     padding-bottom:15px;
 }
 
-#product .productPriceSale span {
+#product .productPriceSale  {
     color:#cc6600;
 }
 
@@ -300,7 +305,7 @@ td {
         display:none;
     }
 
-    .productPrice span {
+    .productPrice  {
         text-decoration: line-through;
     }
 
@@ -369,7 +374,7 @@ td {
         padding-bottom:3px;
     }
 
-    .productPrice span {
+    .productPrice  {
         text-decoration: line-through;
     }
 

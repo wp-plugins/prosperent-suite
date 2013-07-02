@@ -573,8 +573,7 @@ class Prosperent_Admin
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">
 		<?php
-		if ( $form ) 
-		{
+		if ( $form ) {
 			echo '<form action="' . admin_url( 'options.php' ) . '" method="post" id="prosper-conf"' . ( $contains_files ? ' enctype="multipart/form-data"' : '' ) . '>';
 			settings_fields( $option );
 			$this->currentoption = $optionshort;
@@ -601,6 +600,7 @@ class Prosperent_Admin
 		</div>
 		</div>
 		</div>
+		<?php $this->admin_sidebar(); ?>
 		</div>
 	<?php
 	}

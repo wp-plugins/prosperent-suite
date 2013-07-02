@@ -2,7 +2,7 @@
 Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 3.5.1
+Tested up to: 3.5.2
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -110,6 +110,22 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.0.2, 2.0.3 =
+* trying to push new css rules for productPage and admin
+
+= 2.0.1 =
+* created header redirect for those who had pages indexed with the prior url structure
+
+= 2.0 =
+* clean, SEO friendly URLs
+* expanded shop
+* added new local deals endpoint
+* updated Prosperent admin settings look, added tabs to better seperate settings
+* added rich snippets
+* trends added to No Results page
+* displays price comparisons if they exist on product page
+* added new settings, can turn on and off any endpoint, positive filters, and others
 
 = 1.2.9 =
 * adjusted the last revision, only worked if you were using PHP Version 5.3+

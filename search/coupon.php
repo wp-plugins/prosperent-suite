@@ -30,7 +30,7 @@ $interval = abs($expires - $today) / (60*60*24);
 	<div class="productBlock">
 		<div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></span></a></div>
 		<div class="productImage">
-			<a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><img itemprop="image" src="<?php echo $record[0]['image_url']; ?>"  alt="<?php echo $record[0]['keyword']; ?>" title="<?php echo $record[0]['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>
+			<a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><img itemprop="image" src="<?php echo $record[0]['image_url']; ?>" title="<?php echo $record[0]['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>
 		</div>
 		<div class="productContent">
 			<div class="productDescription" itemprop="description"><?php
@@ -141,26 +141,27 @@ $prosperentApi = new Prosperent_Api(array(
 $prosperentApi -> fetchCoupons();
 $sameMerch = $prosperentApi -> getAllData();
 
-echo '<div class="clear"></div>';
-echo '<div class="simTitle">Other Coupons from ' . $record[0]['merchant'] . '</div>';
-echo '<div id="simCoup">';
-echo '<ul>';
-foreach ($sameMerch as $merchCoup)
+if ($sameMerch)
 {
-	$expires = strtotime($merchCoup['expiration_date']);
-	$today = strtotime(date("Y-m-d"));
-	$interval = abs($expires - $today) / (60*60*24);
-	
-	?>
-		<li>
-		<div class="listBlock">
-			<div class="prodContent">
-				<div class="prodImage">
-					<a href="<?php echo $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $merchCoup['keyword'])) . '/cid/' . $merchCoup['couponId']; ?>"><span><img src="<?php echo $merchCoup['image_url']; ?>"  alt="<?php echo $merchCoup['keyword']; ?>" title="<?php echo $merchCoup['keyword']; ?>"></span></a>
-				</div>
-				<div class="prodTitle">
-					<a href="<?php echo $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $merchCoup['keyword'])) . '/cid/' . $merchCoup['couponId']; ?>" >
-						<span>
+	echo '<div class="clear"></div>';
+	echo '<div class="simTitle">Other Coupons from ' . $record[0]['merchant'] . '</div>';
+	echo '<div id="simCoup">';
+	echo '<ul>';
+	foreach ($sameMerch as $merchCoup)
+	{
+		$expires = strtotime($merchCoup['expiration_date']);
+		$today = strtotime(date("Y-m-d"));
+		$interval = abs($expires - $today) / (60*60*24);
+		
+		?>
+			<li>
+			<div class="listBlock">
+				<div class="prodContent">
+					<div class="prodImage">
+						<a href="<?php echo $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $merchCoup['keyword'])) . '/cid/' . $merchCoup['couponId']; ?>"><img src="<?php echo $merchCoup['image_url']; ?>" title="<?php echo $merchCoup['keyword']; ?>"></a>
+					</div>
+					<div class="prodTitle">
+						<a href="<?php echo $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $merchCoup['keyword'])) . '/cid/' . $merchCoup['couponId']; ?>" >
 							<?php			
 							if (strlen($merchCoup['keyword']) > 60)
 							{
@@ -171,21 +172,21 @@ foreach ($sameMerch as $merchCoup)
 								echo $merchCoup['keyword']; 
 							}
 							?>
-						</span>
-					</a>
+						</a>
+					</div>
+					<?php
+					if ($interval <= 7 && $interval > 0)
+					{
+						echo '<div class="prodPrice">' . $interval . ' days left!</div>';
+					}
+					?>
 				</div>
-				<?php
-				if ($interval <= 7 && $interval > 0)
-				{
-					echo '<div class="prodPrice"><span> ' . $interval . ' days left!</span></div>';
-				}
-				?>
+				<div class="clear"></div>
 			</div>
-			<div class="clear"></div>
-		</div>
-		</li>
+			</li>
 
-	<?php
-}	
-echo '</ul>';
-echo '</div>';
+		<?php
+	}	
+	echo '</ul>';
+	echo '</div>';
+}

@@ -196,7 +196,7 @@ if (empty($results))
 				<div class="couponContent">
 					<div class="couponTitle">
 						<?php
-						echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '" target="' . $target . '">' . $record['keyword'] . '</a>';
+						echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
 						?>
 					</div>
 					<?php
@@ -293,7 +293,7 @@ else
 				<div class="couponContent">
 					<div class="couponTitle">
 						<?php
-						echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '" target="' . $target . '">' . $record['keyword'] . '</a>';
+						echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
 						?>
 					</div>
 					<?php

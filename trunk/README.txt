@@ -111,8 +111,11 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.0.2 =
+* trying to force push the css files for product page and admin
+
 = 2.0.1 =
-*created a header redirect for those who had pages indexed with the prior url structure
+* created a header redirect for those who had pages indexed with the prior url structure
 
 = 2.0 =
 * clean, SEO friendly URLs

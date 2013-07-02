@@ -47,9 +47,11 @@
 class Prosperent_Api implements Iterator
 {
     //constants
-    const VERSION = '2.1.3';
+    const VERSION = '2.1.6';
 
     const ENDPOINT_PRODUCT           = 'product';
+    const ENDPOINT_UKPRODUCT         = 'ukproduct';
+    const ENDPOINT_CAPRODUCT         = 'caproduct';
     const ENDPOINT_COUPON            = 'coupon';
     const ENDPOINT_MERCHANT          = 'merchant';
     const ENDPOINT_BRAND             = 'brand';
@@ -57,20 +59,28 @@ class Prosperent_Api implements Iterator
     const ENDPOINT_COMMISSION        = 'commission';
     const ENDPOINT_TRANSACTION       = 'transaction';
     const ENDPOINT_TRENDS            = 'trends';
+    const ENDPOINT_TRAVEL			 = 'travel';
+    const ENDPOINT_LOCAL			 = 'local';
 
     public static $endpoints = array(
         self::ENDPOINT_PRODUCT,
+        self::ENDPOINT_UKPRODUCT,
+        self::ENDPOINT_CAPRODUCT,
         self::ENDPOINT_COUPON,
         self::ENDPOINT_MERCHANT,
         self::ENDPOINT_BRAND,
         self::ENDPOINT_CELEBRITY,
         self::ENDPOINT_COMMISSION,
         self::ENDPOINT_TRANSACTION,
-        self::ENDPOINT_TRENDS
+        self::ENDPOINT_TRENDS,
+        self::ENDPOINT_TRAVEL,
+        self::ENDPOINT_LOCAL
     );
 
     public static $endpointRoutes = array(
         self::ENDPOINT_PRODUCT           => 'search',
+        self::ENDPOINT_UKPRODUCT         => 'uk/search',
+        self::ENDPOINT_CAPRODUCT         => 'ca/search',
         self::ENDPOINT_COUPON            => 'coupon/search',
         self::ENDPOINT_MERCHANT          => 'merchant',
         self::ENDPOINT_BRAND             => 'brand',
@@ -78,6 +88,8 @@ class Prosperent_Api implements Iterator
         self::ENDPOINT_COMMISSION        => 'commissions',
         self::ENDPOINT_TRANSACTION       => 'commissions/transactions',
         self::ENDPOINT_TRENDS            => 'trends',
+        self::ENDPOINT_TRAVEL			 => 'travel/search',
+        self::ENDPOINT_LOCAL			 => 'local/search'
     );
 
     /**
@@ -144,6 +156,11 @@ class Prosperent_Api implements Iterator
      * @var string
      */
     protected $_expirationDateRange;
+
+    /**
+     * @var string
+     */
+    protected $_starRatingRange;
 
     /**
      * @var string
@@ -454,6 +471,8 @@ class Prosperent_Api implements Iterator
         'api_key',
         'commissionDateRange',
         'expirationDateRange',
+        'startDateRange',
+        'starRatingRange',
         'clickDateRange',
         'query',
         //filters are imploded
@@ -742,7 +761,7 @@ class Prosperent_Api implements Iterator
      */
     public function getEndpointRoute($endpoint = null)
     {
-        $endpoint = endpoint ? $endpoint : self::ENDPOINT_PRODUCT;
+        $endpoint = $endpoint ? $endpoint : self::ENDPOINT_PRODUCT;
 
         return self::$endpointRoutes[$endpoint];
     }
@@ -789,7 +808,7 @@ class Prosperent_Api implements Iterator
         }
 
         //do we have a query?
-        if (in_array($this->_endpoint, array(self::ENDPOINT_PRODUCT, self::ENDPOINT_COUPON)) && (!$this->get_query() && !$this->hasFilters() && !$this->get_extendedQuery()))
+        if (in_array($this->_endpoint, array(self::ENDPOINT_PRODUCT, self::ENDPOINT_UKPRODUCT, self::ENDPOINT_CAPRODUCT)) && (!$this->get_query() && !$this->hasFilters() && !$this->get_extendedQuery()))
         {
             self::throwException('No query/filters or extendedQuery were specified for the Prosperent API', $this->get_exceptionHandler());
         }
@@ -810,14 +829,33 @@ class Prosperent_Api implements Iterator
     }
 
     /**
+     * Searches API for products
+     *
+     * @return array
+     */
+    public function fetchUkProducts()
+    {
+        return $this->fetch(self::ENDPOINT_UKPRODUCT);
+    }
+
+    /**
+     * Searches API for products
+     *
+     * @return array
+     */
+    public function fetchCaProducts()
+    {
+        return $this->fetch(self::ENDPOINT_CAPRODUCT);
+    }
+
+
+    /**
      * Searches API for coupons
      *
      * @return array
      */
     public function fetchCoupons()
     {
-        //indicate this is the coupon endpoint so that the data node is used
-        $this->_isCouponEndpoint = true;
         return $this->fetch(self::ENDPOINT_COUPON);
     }
 
@@ -936,6 +974,26 @@ class Prosperent_Api implements Iterator
     }
 
     /**
+     * Search the travel endpoint
+     *
+     * @return array
+     */
+    public function fetchTravel()
+    {
+        return $this->fetch(self::ENDPOINT_TRAVEL);
+    }
+
+    /**
+     * Search the local endpoint
+     *
+     * @return array
+     */
+    public function fetchLocal()
+    {
+        return $this->fetch(self::ENDPOINT_LOCAL);
+    }
+
+    /**
      * Determines if any filters were applied
      *
      * @return boolean
@@ -960,6 +1018,7 @@ class Prosperent_Api implements Iterator
     {
         //create the cache key
         $cacheKey = 'prosperent_api_cache::';
+
         foreach (self::$cacheKeys as $key)
         {
             $method = 'get_' . $key;
@@ -1434,6 +1493,49 @@ class Prosperent_Api implements Iterator
     }
 
     /**
+     * Sets a range on the star rating range
+     *
+     * @param  string $type
+     * @param  mixed  $low
+     * @param  mixed  $high
+     * @return Prosperent_Api
+     */
+    public function setRange($type, $low, $high=null)
+    {
+        $method = 'set_' . $type . 'Range';
+
+        /*
+         * ignore call if the method doesn't exist
+         */
+        if (!method_exists($this, $method))
+        {
+            return $this;
+        }
+
+        foreach (array('low', 'high') as $star)
+        {
+            //if the high star is not set, then set to to low
+            if ('high' != $star)
+            {
+                $high = $low;
+            }
+
+            if (!preg_match('/^\d(\.)?\d?$/', $high))
+            {
+                self::throwException('The ' . $type . ' ' . $high . ' must be a float value.');
+            }
+        }
+
+        $this->$method(
+            (float)$low
+            . ','
+            . (float)$high
+        );
+
+        return $this;
+    }
+
+    /**
      * Returns the requested array node
      *
      * @param  bool $returnRawArray
@@ -1525,6 +1627,7 @@ class Prosperent_Api implements Iterator
         /*
          * set the image urls back up
          */
+
         if (isset($current['image_url']))
         {
             $defaultImageSize = self::$imageUrlSize;
@@ -1876,6 +1979,28 @@ class Prosperent_Api implements Iterator
     public function set_startDateRange($startDateRange)
     {
         $this->_startDateRange = (string) $startDateRange;
+        return $this;
+    }
+
+    /**
+     * Get starRatingRange
+     *
+     * @return null|string
+     */
+    public function get_starRatingRange()
+    {
+        return $this->_starRatingRange;
+    }
+
+    /**
+     * Set starRatingRange
+     *
+     * @param  string $starRatingRange
+     * @return Prosperent_Api
+     */
+    public function set_starRatingRange($starRatingRange)
+    {
+        $this->_starRatingRange = (string) $starRatingRange;
         return $this;
     }
 
@@ -4496,6 +4621,7 @@ class Prosperent_Api_Cache_Backend_Memcache extends Prosperent_Api_Cache_Backend
     {
         switch ($mode) {
             case Prosperent_Api_Cache::CLEANING_MODE_ALL:
+            case Prosperent_Api_Cache::CLEANING_MODE_OLD:
                 return $this->_memcache->flush();
                 break;
                default:

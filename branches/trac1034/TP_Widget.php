@@ -29,11 +29,12 @@ class TopProducts_Widget extends WP_Widget
 			$prevNumDays = 30;
 			$startRange = date('Ymd', time() - 86400 * $prevNumDays);
 			$endRange   = date('Ymd');
-
+			
 			// fetch trends from api
-			require_once('Prosperent_Api.php');
+			require_once(PROSPER_PATH . 'Prosperent_Api.php');
 			$api = new Prosperent_Api(array(
-				'enableFacets' => 'productId'
+				'enableFacets'  => 'productId',
+				'filterCatalog' => $options['Country']
 			));
 
 			$api->setDateRange('commission', $startRange, $endRange)
@@ -53,14 +54,24 @@ class TopProducts_Widget extends WP_Widget
 				'limit' 	      => 5
 			));
 
-			$api->fetch();
-
+			switch ($options['Country'])
+			{
+				case 'UK':
+					$api -> fetchUkProducts();
+					break;
+				case 'CA':
+					$api -> fetchCaProducts();
+					break;
+				default:
+					$api -> fetchProducts();
+					break;
+			}
 			?>
 			<table>
 			<?php
 			foreach ($api->getAllData() as $record)
 			{
-				echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . (!$options['Base_URL'] ?  '/products' : '/' . $options['Base_URL']) . '?q=' . urlencode($record['keyword']) . '">' . $record['keyword'] . '</a></td></tr>';
+				echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="http://' . $_SERVER['HTTP_HOST'] . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . $record['keyword'] . '</a></td></tr>';
 			}
 			?>
 			</table>

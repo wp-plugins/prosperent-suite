@@ -152,26 +152,25 @@ $prosperentApi = new Prosperent_Api(array(
 $prosperentApi -> fetch();
 $similar = $prosperentApi -> getAllData();
 
-if ($similar)
-{
-	echo '<div class="clear"></div>';
-	echo '<div class="simTitle">Similar Products</div>';
-	echo '<div id="simProd">';
-	echo '<ul>';
+echo '<div class="clear"></div>';
+echo '<div class="simTitle">Similar Products</div>';
+echo '<div id="simProd">';
+echo '<ul>';
 
-	foreach ($similar as $prod)
-	{
-		$price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
-		$prod['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url'])));
-		?>
-			<li>
-			<div class="listBlock">
-				<div class="prodImage">
-					<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><img src="<?php echo $prod['image_url']; ?>" title="<?php echo $prod['keyword']; ?>"></a>
-				</div>
-				<div class="prodContent">
-					<div class="prodTitle" style="text-align:center;font-size:12px;">
-						<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+foreach ($similar as $prod)
+{
+	$price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
+	$prod['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url'])));
+	?>
+		<li>
+		<div class="listBlock">
+			<div class="prodImage">
+				<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><span><img src="<?php echo $prod['image_url']; ?>" title="<?php echo $prod['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+			</div>
+			<div class="prodContent">
+				<div class="prodTitle" style="text-align:center;font-size:12px;">
+					<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+						<span>
 							<?php			
 							if (strlen($prod['keyword']) > 60)
 							{
@@ -182,20 +181,19 @@ if ($similar)
 								echo $prod['keyword']; 
 							}
 							?>
-						</a>
-					</div>
-					<div class="prodPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></span></div>
+						</span>
+					</a>
 				</div>
-				<div class="clear"></div>
+				<div class="prodPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></span></div>
 			</div>
-			</li>
-		<?php
-	}	
-	echo '</ul>';
-	echo '</div>';
-}
+			<div class="clear"></div>
+		</div>
+		</li>
+	<?php
+}	
+echo '</ul>';
+echo '</div>';
 echo '<div class="clear"></div>';
-
 /*
 /  Prosperent API Query
 */
@@ -214,24 +212,23 @@ $currency = 'USD';
 
 $sameBrand = $prosperentApi -> getAllData();
 
-if ($sameBrand)
+echo '<div class="simTitle">Other Products from ' . $record[0]['brand'] . '</div>';
+echo '<div id="simProd">';
+echo '<ul>';
+foreach ($sameBrand as $brandProd)
 {
-	echo '<div class="simTitle">Other Products from ' . $record[0]['brand'] . '</div>';
-	echo '<div id="simProd">';
-	echo '<ul>';
-	foreach ($sameBrand as $brandProd)
-	{
-		$price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
-		$brandProd['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url'])));
-		?>
-			<li>
-			<div class="listBlock">
-				<div class="prodImage">
-					<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><img src="<?php echo $brandProd['image_url']; ?>" title="<?php echo $brandProd['keyword']; ?>"></a>
-				</div>
-				<div class="prodContent">
-					<div class="prodTitle" style="text-align:center;font-size:12px;">
-						<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+	$price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
+	$brandProd['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url'])));
+	?>
+		<li>
+		<div class="listBlock">
+			<div class="prodImage">
+				<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span><img src="<?php echo $brandProd['image_url']; ?>"  alt="<?php echo $brandProd['keyword']; ?>" title="<?php echo $brandProd['keyword']; ?>"></span></a>
+			</div>
+			<div class="prodContent">
+				<div class="prodTitle" style="text-align:center;font-size:12px;">
+					<a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+						<span>
 							<?php			
 							if (strlen($brandProd['keyword']) > 60)
 							{
@@ -242,15 +239,15 @@ if ($sameBrand)
 								echo $brandProd['keyword']; 
 							}
 							?>
-						</a>
-					</div>
-					<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
+						</span>
+					</a>
 				</div>
-				<div class="clear"></div>
+				<div class="prodPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></span></div>
 			</div>
-			</li>
-		<?php
-	}	
-	echo '</ul>';
-	echo '</div>';
-}
+			<div class="clear"></div>
+		</div>
+		</li>
+	<?php
+}	
+echo '</ul>';
+echo '</div>';

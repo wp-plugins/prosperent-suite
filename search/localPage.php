@@ -132,29 +132,28 @@ $city = null == $record[0]['city'] ? 'Online' : $record[0]['city'];
 $prosperentApi -> fetchLocal();
 $sameCity = $prosperentApi -> getAllData();
 
-if ($sameCity)
+echo '<div class="simTitle">Other Deals ' . ($city == 'Online' ? $city : 'in ' . $city) . '</div>';
+echo '<div id="simProd">';
+echo '<ul>';
+foreach ($sameCity as $cityProd)
 {
-	echo '<div class="simTitle">Other Deals ' . ($city == 'Online' ? $city : 'in ' . $city) . '</div>';
-	echo '<div id="simProd">';
-	echo '<ul>';
-	foreach ($sameCity as $cityProd)
+	if (empty($cityProd['localId']))
 	{
-		if (empty($cityProd['localId']))
-		{
-			continue;
-		}
-		
-		$price = $cityProd['price_sale'] ? $cityProd['price_sale'] : $cityProd['price'];
-		$cityProd['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $cityProd['image_url'])));
-		?>
-		<li>
-			<div class="listBlock">
-				<div class="prodImage">
-					<a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $cityProd['keyword'])) . '/cid/' . $cityProd['localId']; ?>"><img src="<?php echo $cityProd['image_url']; ?>" title="<?php echo $cityProd['keyword']; ?>"></a>
-				</div>
-				<div class="prodContent">
-					<div class="prodTitle" style="text-align:center;font-size:12px;">
-						<a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $cityProd['keyword'])) . '/cid/' . $cityProd['localId']; ?>" >
+		continue;
+	}
+	
+	$price = $cityProd['price_sale'] ? $cityProd['price_sale'] : $cityProd['price'];
+	$cityProd['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $cityProd['image_url'])));
+	?>
+	<li>
+		<div class="listBlock">
+			<div class="prodImage">
+				<a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $cityProd['keyword'])) . '/cid/' . $cityProd['localId']; ?>"><span><img src="<?php echo $cityProd['image_url']; ?>" title="<?php echo $cityProd['keyword']; ?>"></span></a>
+			</div>
+			<div class="prodContent">
+				<div class="prodTitle" style="text-align:center;font-size:12px;">
+					<a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $cityProd['keyword'])) . '/cid/' . $cityProd['localId']; ?>" >
+						<span>
 							<?php			
 							if (strlen($cityProd['keyword']) > 60)
 							{
@@ -165,15 +164,15 @@ if ($sameCity)
 								echo $cityProd['keyword']; 
 							}
 							?>
-						</a>
-					</div>
-					<div class="prodPrice"><span>$<?php echo $price; ?></span></div>
+						</span>
+					</a>
 				</div>
-				<div class="clear"></div>
+				<div class="prodPrice"><span>$<?php echo $price; ?></span></div>
 			</div>
-		</li>
-		<?php
-	}	
-	echo '</ul>';
-	echo '</div>';
+			<div class="clear"></div>
+		</div>
+	</li>
+	<?php
 }	
+echo '</ul>';
+echo '</div>';

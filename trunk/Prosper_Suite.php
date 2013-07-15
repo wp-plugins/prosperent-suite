@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.3
+Version: 2.0.4
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -42,7 +42,7 @@ if (!class_exists('Prosperent_Suite'))
          */
         public function __construct()
         {
-            add_action( 'init', array($this, 'prosper_query_tag'), 1 );
+            add_action('init', array($this, 'prosper_query_tag'), 1);
             add_action('init', array($this, 'do_output_buffer'));
 
             $options = $this->get_option();
@@ -68,6 +68,18 @@ if (!class_exists('Prosperent_Suite'))
                 {
                     add_shortcode('linker', array($this, 'linker_shortcode'));
                 }
+
+                add_filter('the_content', array($this, 'auto_linker'), 2);
+                add_filter('the_excerpt', array($this, 'auto_linker'), 2);
+                add_filter('widget_text', array($this, 'auto_linker'), 2);
+
+                // Note that the priority must be set high enough to avoid links inserted by the plugin from
+                // getting omitted as a result of any link stripping that may be performed.
+                if ($options['Auto_Link_Comments'])
+                {
+                    add_filter('get_comment_text', array($this, 'auto_linker'), 11);
+                    add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
+                }
             }
             if ($options['Enable_AC'])
             {
@@ -88,7 +100,8 @@ if (!class_exists('Prosperent_Suite'))
                 add_shortcode('prosper_search', array($this, 'search_shortcode'));
                 add_shortcode('prosper_product', array($this, 'product_shortcode'));
                 add_action('prospere_header', array($this, 'Prospere_Search'));
-                add_action('wp_title', array($this, 'prosper_title'), 10, 3);
+                add_action('wp_head', array($this, 'ogMeta'));
+                add_filter('wp_title', array($this, 'prosper_title'), 20, 3);
 
                 require_once('TP_Widget.php');
                 require_once('PS_Widget.php');
@@ -109,6 +122,13 @@ if (!class_exists('Prosperent_Suite'))
             $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
 
             return apply_filters( 'prosper_options', $optarr );
+        }
+
+        public function ogMeta()
+        {
+            echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
+            echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
+            echo '<meta property="og:type" content="website" />';
         }
 
         /**
@@ -357,7 +377,8 @@ if (!class_exists('Prosperent_Suite'))
                         'Base_URL' 		  => '',
                         'Additional_CSS'  => '',
                         'Logo_Image' 	  => 0,
-                        'Logo_imageSmall' => 0
+                        'Logo_imageSmall' => 0,
+                        'Image_Masking'	  => 0
                     );
 
                 update_option( 'prosper_advanced', $opt );
@@ -374,17 +395,7 @@ if (!class_exists('Prosperent_Suite'))
             $options = $this->get_option();
             if ($options['Enable_AL'])
             {
-                add_filter('the_content', array($this, 'auto_linker'), 2);
-                add_filter('the_excerpt', array($this, 'auto_linker'), 2);
-                add_filter('widget_text', array($this, 'auto_linker'), 2);
 
-                // Note that the priority must be set high enough to avoid links inserted by the plugin from
-                // getting omitted as a result of any link stripping that may be performed.
-                if ($options['Auto_Link_Comments'])
-                {
-                    add_filter('get_comment_text', array($this, 'auto_linker'), 11);
-                    add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
-                }
             }
         }
 
@@ -517,8 +528,13 @@ if (!class_exists('Prosperent_Suite'))
             return $search;
         }
 
-        public function prosper_title($sep, $seplocation, $title)
+        public function prosper_title($title, $sep, $seplocation)
         {
+            if ( is_feed() )
+            {
+                return $title;
+            }
+
             $params = array_reverse(explode('/', get_query_var('queryParams')));
 
             $sendParams = array();
@@ -537,32 +553,38 @@ if (!class_exists('Prosperent_Suite'))
 
             $options = $this->get_option();
 
-            $sep = ' ' . (!$options['Title_Sep'] ? trim($sep) : ' ' . trim($options['Title_Sep'])) . ' ';
+            $sep = ' ' . (!$options['Title_Sep'] ? !$sep ? '|' : trim($sep) : trim($options['Title_Sep'])) . ' ';
             $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
             $query = ucwords(urldecode($sendParams['query'] ? $sendParams['query'] : $options['Starting_Query']));
+            $page_num = $sendParams['page'] ? ' Page ' . $sendParams['page'] : '';
+
+            if ($sendParams['type'] == 'cele')
+            {
+                $query = ucwords(urldecode($sendParams['celeb'] ? ($sendParams['celebQuery'] ? $sendParams['celeb'] . ' - ' . $sendParams['celebQuery'] : $sendParams['celeb']) : ''));
+            }
 
             if (get_query_var('cid'))
             {
                 $query = preg_replace('/\(.+\)/i', '', urldecode(get_query_var('keyword')));
-                $title = ' ' . $query . ' ';
+                $title = $query . $sep . $title;
             }
             elseif (is_page($page))
             {
                 switch ( $options['Title_Structure'] )
                 {
-                    case 0:
+                    case '0':
                         $title = $title;
                         break;
-                    case 1:
-                        $title =  $title . (!$query ? $sep :  $seperator . $query . $sep);
+                    case '1':
+                        $title =  $title . (!$query ? '' : $sep . $query . $page_num);
                         break;
-                    case 2:
-                        $title =  (!$query ? '' : $query . $seperator) . $title;
+                    case '2':
+                        $title =  (!$query ? '' : $query . $page_num . $sep) . $title;
                         break;
-                    case 3:
-                        $title =  (!$query ? $title : $query . $sep);
+                    case '3':
+                        $title =  (!$query ? $title : $query . $page_num . $sep);
                         break;
-                    case 4:
+                    case '4':
                         $title =  $title;
                         break;
                 }
@@ -570,7 +592,6 @@ if (!class_exists('Prosperent_Suite'))
 
             return $title;
         }
-
 
         public function Prospere_Search()
         {

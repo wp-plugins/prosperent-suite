@@ -56,7 +56,7 @@ echo '<p class="descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2>' . __( 'How do you want your results ordered?', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->select( 'Default_Sort', __( 'Sort Results By', 'prosperent-suite' ), array( 'rel' => __( 'Relevancy', 'prosperent-suite' ), 'desc' => __( 'Price: High to Low', 'prosperent-suite' ), 'asc' => __( 'Price: Low to High', 'prosperent-suite' ) ) );
-echo '<p class="descb">' . __( "", 'prosperent-suite' ) . '</p>'; 
+echo '<p class="descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2>' . __( 'Default Queries', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->textinput( 'Starting_Query', __( 'Products Query', 'prosperent-suite' ), '', '<a href="#" class="tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>If no query has been given, this will be used. If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );

@@ -12,6 +12,7 @@ Prosperent's Tools in one plugin help monetize your blog with ease.
 == Description ==
 
 = Deactivate any other Prosperent Plugins before use =
+= To ensure the new reroutes are working correctly, it's best to deactivate and reactivate the plugin. =
 
 To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
@@ -52,6 +53,8 @@ Well these reasons should help you with that question:
 8.  This shows the store that is created by the plugin. It uses your blog's styling so it fits nicely within the content.
 
 == Installation ==
+
+= To ensure the new reroutes are working correctly, it's best to deactivate and reactivate the plugin. =
 
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
     * Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
@@ -110,6 +113,9 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.0.4 =
+* Bug Fixes, fixed page titles, added Open Graph rules
 
 = 2.0.2, 2.0.3 =
 * trying to push new css rules for productPage and admin

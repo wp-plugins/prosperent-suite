@@ -1,8 +1,6 @@
 <?php
 $url = 'http://' . $_SERVER['HTTP_HOST'] . '/products/type/' . $type;
 
-$this->prosper_title();
-
 switch ($options['Country'])
 {
     case 'UK':
@@ -84,7 +82,7 @@ $result = $prosperentApi -> getAllData();
     <div class="productBlock">
         <div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><cite itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></cite></a></div>
         <div class="productImage">
-            <a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><img itemprop="image" src="<?php echo $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])); ?>" title="<?php echo $record[0]['keyword']; ?>" ></a>
+            <a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" ></a>
         </div>
         <div class="productContent">
             <div class="productDescription" itemprop="description"><?php
@@ -233,7 +231,7 @@ if ($similar)
     foreach ($similar as $prod)
     {
         $price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
-        $prod['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url'])));
+        $prod['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']);
         ?>
             <li>
             <div class="listBlock">
@@ -304,7 +302,7 @@ if ($sameBrand)
     foreach ($sameBrand as $brandProd)
     {
         $price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
-        $brandProd['image_url'] = $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url'])));
+        $brandProd['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']);
         ?>
             <li>
             <div class="listBlock">

@@ -60,53 +60,6 @@ echo $typeSelector;
 </div>
 
 <?php
-if ($prosperentApi->get_enableFacets() == 1)
-{
-    $merchants = $facets['merchant'];
-
-    if ($merchants)
-    {
-        $merchants1 = array_slice($merchants, 0, !$options['Merchant_Facets'] ? 10 : $options['Merchant_Facets'], true);
-    }
-    ?>
-    <table id="facets">
-        <tr>
-            <td class="merchants" style="width:98%; float:none;">
-                <?php
-                echo (empty($filterMerchant) ? '<div class="browseMerchants">Browse by Merchant: </div>' : '<div class="filteredMerchants">Filtered by Merchant: </div>');
-
-                if (empty($facets['merchant']) && !$filterMerchant)
-                {
-                    echo '<div class="noMerchants"">No Merchants Found</div>';
-                }
-                else if (!$filterMerchant && !empty($results))
-                {
-                    $count = count($merchants1);
-                    foreach ($merchants1 as $i => $merchant)
-                    {
-                        echo '<a href=' . $coupSubmit . '/merchant/' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
-
-                        if ($i < ($count - 1))
-                        {
-                            echo ', ';
-                        }
-                    }
-                }
-                else
-                {
-                    echo '<div style="min-height:35px;">';
-                    echo urldecode($filterMerchant);
-                    echo '</br><a href=' . str_replace('/merchant/' . $filterMerchant, '', $coupSubmit) . '>clear filter</a>';
-                    echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/' . urlencode(str_replace('/', ',SL,',  ('logos/120x60/' . $filterMerchant . '.png'))) : 'http://img1.prosperent.com/images/logos/120x60/' . $filterMerchant . '.png') . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
-                    echo '</div>';
-                }
-                ?>
-            </td>
-        </tr>
-    </table>
-    <?php
-}
-
 /*
 /  If no results, or the user clicked search when 'Search Products...'
 /  was in the search field, displays 'No Results'
@@ -114,6 +67,7 @@ if ($prosperentApi->get_enableFacets() == 1)
 if (empty($results))
 {
     echo '<div class="noResults">No Results</div>';
+    /*
     ?>
     <div style="padding:10px 0;">
         <form id="searchform" method="POST" action="" style="margin:0;">
@@ -122,6 +76,7 @@ if (empty($results))
         </form>
     </div>
     <?php
+    */
     if ($filterMerchant)
     {
         echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace('/merchant/' . $filterMerchant, '', $coupSubmit) . '>clear the filter(s)</a></div>';
@@ -238,6 +193,54 @@ if (empty($results))
 }
 else
 {
+    if ($prosperentApi->get_enableFacets() == 1)
+    {
+        $merchants = $facets['merchant'];
+
+        if ($merchants)
+        {
+            $merchants1 = array_slice($merchants, 0, !$options['Merchant_Facets'] ? 10 : $options['Merchant_Facets'], true);
+        }
+        ?>
+        <table id="facets">
+            <tr>
+                <td class="merchants" style="width:98%; float:none;">
+                    <?php
+                    echo (empty($filterMerchant) ? '<div class="browseMerchants">Browse by Merchant: </div>' : '<div class="filteredMerchants">Filtered by Merchant: </div>');
+
+                    if (empty($facets['merchant']) && !$filterMerchant)
+                    {
+                        echo '<div class="noMerchants"">No Merchants Found</div>';
+                    }
+                    else if (!$filterMerchant && !empty($results))
+                    {
+                        $count = count($merchants1);
+                        foreach ($merchants1 as $i => $merchant)
+                        {
+                            echo '<a href=' . $coupSubmit . '/merchant/' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
+
+                            if ($i < ($count - 1))
+                            {
+                                echo ', ';
+                            }
+                        }
+                    }
+                    else
+                    {
+                        echo '<div style="min-height:35px;">';
+                        echo urldecode($filterMerchant);
+                        echo '</br><a href=' . str_replace('/merchant/' . $filterMerchant, '', $coupSubmit) . '>clear filter</a>';
+                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/' . urlencode(str_replace('/', ',SL,',  ('logos/120x60/' . $filterMerchant . '.png'))) : 'http://img1.prosperent.com/images/logos/120x60/' . $filterMerchant . '.png') . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
+                        echo '</div>';
+                    }
+                    ?>
+                </td>
+            </tr>
+        </table>
+        <div class="table-seperator"></div>
+        <?php
+    }
+
     echo '<div class="totalFound">' . $totalFound . ' coupons for <b>' . strtolower(urldecode($query)) . '</b></div>';
 
     // Gets the count of results for Pagination

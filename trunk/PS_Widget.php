@@ -9,10 +9,26 @@ class ProsperStore_Widget extends WP_Widget
         parent::__construct('prosperent_store', __('Prosperent Store'), $widget_ops);
     }
 
+    public function get_prosper_options_array()
+    {
+        $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+
+        return apply_filters( 'prosper_options', $optarr );
+    }
+
     public function options()
     {
-        $optValues = get_option('prosper_prosperent_suite');
-        return $optValues;
+        static $options;
+
+        if (!isset($options))
+        {
+            $options = array();
+            foreach ($this->get_prosper_options_array() as $opt)
+            {
+                $options = array_merge($options, (array) get_option($opt));
+            }
+        }
+        return $options;
     }
 
     public function widget( $args, $instance )
@@ -25,9 +41,8 @@ class ProsperStore_Widget extends WP_Widget
         echo $before_widget;
         if ( $title )
             echo $before_title . $title . $after_title;
-
         ?>
-        <form id="searchform" method="GET" action="<?php echo $options['Base_URL'] ? '/' . $options['Base_URL'] : '/products'; ?>">
+        <form id="searchform" method="POST" action="">
             <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px; margin: 24px 0 0 20px;">
             <input type="submit" value="Search" style="padding:4px 4px 5px 4px;">
         </form>

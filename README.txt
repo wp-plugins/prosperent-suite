@@ -115,6 +115,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 == Changelog ==
 
 = 2.0.4 =
+* More Bug Fixes, Adjusted Page titles, de-cluttered No Results page, adjusted open graph rules (Facebook), fixed Auto-Linker, adjusted a few options
+
+= 2.0.4 =
 * Bug Fixes, fixed page titles, added Open Graph rules
 
 = 2.0.2, 2.0.3 =

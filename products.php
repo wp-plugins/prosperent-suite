@@ -70,7 +70,7 @@ if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
     header('Location:http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ?  '/products' : ($options['Base_URL'] == 'null' ? '/' : '/' . $options['Base_URL'])) . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
 }
 
-function prosper_pagination($pages = '', $range, $paged)
+function prosper_pagination($pages = '', $paged, $range = 8)
 {
     if(empty($paged)) $paged = 1;
 
@@ -89,7 +89,7 @@ function prosper_pagination($pages = '', $range, $paged)
         if($paged > 2 && $paged <= $pages) echo "<a href='" .get_pagenum_link(1)."'>&laquo; First</a>";
         if($paged > 1) echo "<a href='".get_pagenum_link($paged - 1)."'>&lsaquo; Previous</a>";
 
-        for ($i=$paged; $i <= $paged + 6; $i++)
+        for ($i = $paged; $i <= $pages; $i++)
         {
             if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ))
             {

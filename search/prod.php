@@ -1,5 +1,5 @@
 <?php
-if (!$query && !$filerBrand && !$filterMerchant && $options['Starting_Query'])
+if (!$query && !$filterBrand && !$filterMerchant && $options['Starting_Query'])
 {
     $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . 'query/' . urlencode($options['Starting_Query']);
     $q = $options['Starting_Query'];
@@ -75,6 +75,135 @@ echo $typeSelector;
     </form>
 </div>
 <?php
+/*
+/  If no results, or the user clicked search when 'Search Products...'
+/  was in the search field, displays 'No Results'
+*/
+if (empty($results))
+{
+    echo '<div class="noResults">No Results</div>';
+    /*
+    ?>
+    <div style="padding:10px 0;">
+        <form id="searchform" method="POST" action="" style="margin:0;">
+            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
+            <input class="submit" type="submit" value="Search" style="padding:5px;">
+        </form>
+    </div>
+    <?php
+    */
+    if ($filterBrand || $filterMerchant)
+    {
+        echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace(array('/merchant/' . $filterMerchant, '/brand/' . $filterBrand), array('', ''), $prodSubmit) . '>clear the filter(s)</a>.</div>';
+    }
+    else
+    {
+        echo '<div class="noResults-secondary">Please try your search again.</div>';
+    }
+    echo '<div class="noResults-padding"></div>';
+
+    // calculate date range
+    $prevNumDays = 30;
+    $startRange = date('Ymd', time() - 86400 * $prevNumDays);
+    $endRange   = date('Ymd');
+
+    // fetch trends from api
+    require_once(PROSPER_PATH . 'Prosperent_Api.php');
+    $api = new Prosperent_Api(array(
+        'enableFacets' => 'productId'
+    ));
+
+    $api->setDateRange('commission', $startRange, $endRange)
+        ->fetchTrends();
+
+    // set productId as key in array
+    foreach ($api->getFacets('productId') as $data)
+    {
+        $keys[] = $data['value'];
+    }
+
+    // fetch merchant data from api
+    $api = new Prosperent_Api(array(
+        'api_key'         => $options['Api_Key'],
+        'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+        'filterProductId' => $keys,
+        'limit' 	      => 15
+    ));
+
+    $api->fetch();
+    $results = $api->getAllData() ;
+
+    echo '<div class="totalFound">Browse these <strong>trending products</strong></div>';
+    ?>
+
+    <div id="productList">
+        <?php
+        // Loop to return Products and corresponding information
+        foreach ($results as $i => $record)
+        {
+            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+            ?>
+            <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
+                <div class="productImage">
+                    <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                </div>
+                <div class="productContent">
+                    <div class="productTitle"><a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
+                    <div class="productDescription"><?php
+                        if (strlen($record['description']) > 200)
+                        {
+                            echo substr($record['description'], 0, 200) . '...';
+                        }
+                        else
+                        {
+                            echo $record['description'];
+                        }
+                        ?>
+                    </div>
+                    <div class="productBrandMerchant">
+                        <?php
+                        if($record['brand'] && !$filterBrand)
+                        {
+                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . $prodSubmit . '/brand/' . urlencode($record['brand']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+                        }
+                        if($record['merchant'] && !$filterMerchant)
+                        {
+                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . $prodSubmit . '/merchant/' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="productEnd">
+                    <?php
+                    if(empty($record['price_sale']) || $record['price'] <= $record['price_sale'])
+                    {
+                        //we don't do anything
+                        ?>
+                        <div class="productPriceNoSale"><span><?php echo '$' . $record['price']; ?></span></div>
+                        <?php
+                    }
+                    //otherwise strike-through Price and list the Price_Sale
+                    else
+                    {
+                        ?>
+                        <div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></span></div>
+                        <div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price_sale']?></span></div>
+                        <?php
+                    }
+                    ?>
+                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace('/', ',SL,', $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                        <input type="submit" value="Visit Store"/>
+                    </form>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
+    </div>
+    <?php
+}
+else
+{
 if ($prosperentApi->get_enableFacets() == 1)
 {
     $brands = $facets['brand'];
@@ -274,133 +403,6 @@ else
     <?php
 }
 
-/*
-/  If no results, or the user clicked search when 'Search Products...'
-/  was in the search field, displays 'No Results'
-*/
-if (empty($results))
-{
-    echo '<div class="noResults">No Results</div>';
-    ?>
-    <div style="padding:10px 0;">
-        <form id="searchform" method="POST" action="" style="margin:0;">
-            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-            <input class="submit" type="submit" value="Search" style="padding:5px;">
-        </form>
-    </div>
-    <?php
-    if ($filterBrand || $filterMerchant)
-    {
-        echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace(array('/merchant/' . $filterMerchant, '/brand/' . $filterBrand), array('', ''), $prodSubmit) . '>clear the filter(s)</a>.</div>';
-    }
-    else
-    {
-        echo '<div class="noResults-secondary">Please try your search again.</div>';
-    }
-    echo '<div class="noResults-padding"></div>';
-
-    // calculate date range
-    $prevNumDays = 30;
-    $startRange = date('Ymd', time() - 86400 * $prevNumDays);
-    $endRange   = date('Ymd');
-
-    // fetch trends from api
-    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-    $api = new Prosperent_Api(array(
-        'enableFacets' => 'productId'
-    ));
-
-    $api->setDateRange('commission', $startRange, $endRange)
-        ->fetchTrends();
-
-    // set productId as key in array
-    foreach ($api->getFacets('productId') as $data)
-    {
-        $keys[] = $data['value'];
-    }
-
-    // fetch merchant data from api
-    $api = new Prosperent_Api(array(
-        'api_key'         => $options['Api_Key'],
-        'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
-        'filterProductId' => $keys,
-        'limit' 	      => 15
-    ));
-
-    $api->fetch();
-    $results = $api->getAllData() ;
-
-    echo '<div class="totalFound">Browse these <strong>trending products</strong></div>';
-    ?>
-
-    <div id="productList">
-        <?php
-        // Loop to return Products and corresponding information
-        foreach ($results as $i => $record)
-        {
-            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
-            ?>
-            <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
-                <div class="productImage">
-                    <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
-                </div>
-                <div class="productContent">
-                    <div class="productTitle"><a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
-                    <div class="productDescription"><?php
-                        if (strlen($record['description']) > 200)
-                        {
-                            echo substr($record['description'], 0, 200) . '...';
-                        }
-                        else
-                        {
-                            echo $record['description'];
-                        }
-                        ?>
-                    </div>
-                    <div class="productBrandMerchant">
-                        <?php
-                        if($record['brand'] && !$filterBrand)
-                        {
-                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . $prodSubmit . '/brand/' . urlencode($record['brand']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
-                        }
-                        if($record['merchant'] && !$filterMerchant)
-                        {
-                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . $prodSubmit . '/merchant/' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
-                        }
-                        ?>
-                    </div>
-                </div>
-                <div class="productEnd">
-                    <?php
-                    if(empty($record['price_sale']) || $record['price'] <= $record['price_sale'])
-                    {
-                        //we don't do anything
-                        ?>
-                        <div class="productPriceNoSale"><span><?php echo '$' . $record['price']; ?></span></div>
-                        <?php
-                    }
-                    //otherwise strike-through Price and list the Price_Sale
-                    else
-                    {
-                        ?>
-                        <div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></span></div>
-                        <div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price_sale']?></span></div>
-                        <?php
-                    }
-                    ?>
-                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace('/', ',SL,', $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
-                        <input type="submit" value="Visit Store"/>
-                    </form>
-                </div>
-            </div>
-            <?php
-        }
-        ?>
-    </div>
-    <?php
-}
-else
-{
     echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ($query ? strtolower(urldecode($query)) : ($filterBrand ? urldecode($filterBrand) : urldecode($filterMerchant))) . '</b></div>';
     ?>
 
@@ -416,30 +418,28 @@ else
     </br>
 
     <?php
+    // Gets the count of results for Pagination
+    $productCount = count($results);
 
-        // Gets the count of results for Pagination
-        $productCount = count($results);
+    // Pagination limit, can be changed
+    $limit = !$options['Pagination_Limit'] ? 10 : $options['Pagination_Limit'];
 
-        // Pagination limit, can be changed
-        $limit = !$options['Pagination_Limit'] ? 10 : $options['Pagination_Limit'];
+    $pages = round($productCount / $limit, 0);
+    $ceiling = ceil(($productCount + 1) / $limit);
 
-        $pages = round($productCount / $limit, 0);
-        $ceiling = ceil(($productCount + 1) / $limit);
+    if ($pageNumber  < 1)
+    {
+        $pageNumber  = 1;
+    }
+    else if ($pageNumber  > $ceiling)
+    {
+        $pageNumber  = $ceiling;
+    }
 
-        if ($pageNumber  < 1)
-        {
-            $pageNumber  = 1;
-        }
-        else if ($pageNumber  > $ceiling)
-        {
-            $pageNumber  = $ceiling;
-        }
+    $limitLower = ($pageNumber  - 1) * $limit;
 
-        $limitLower = ($pageNumber  - 1) * $limit;
-
-        // Breaks the array into smaller chunks for each page depending on $limit
-        $results = array_slice($results, $limitLower, $limit, true);
-
+    // Breaks the array into smaller chunks for each page depending on $limit
+    $results = array_slice($results, $limitLower, $limit, true);
     ?>
 
     <div id="productList">
@@ -509,4 +509,4 @@ else
     <?php
 }
 
-prosper_pagination($pages, $pages, $sendParams['page']);
+prosper_pagination($pages, $sendParams['page']);

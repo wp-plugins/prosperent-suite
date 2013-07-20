@@ -1,5 +1,6 @@
 <?php
-$url = 'http://' . $_SERVER['HTTP_HOST'] . '/products/type/local';
+$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+$url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $base . '/type/local';
 
 /*
 /  Prosperent API Query

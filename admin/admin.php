@@ -349,10 +349,24 @@ class Prosperent_Admin
 
         $val = '';
         if ( isset( $options[$var] ) )
-            $val = esc_attr( $options[$var] );
+        {
+            foreach (explode( "\n", $options[$var]) as $line)
+            {
+                list( $shortcut, $text ) = array_map( 'trim', explode( "=>", $line, 2 ) );
+                if ( !empty( $shortcut ) )
+                {
+                    $new_values[str_replace( '\\', '', $shortcut )] = str_replace( '\\', '', $text );
+                }
+            }
+            $val = $new_values;
+        }
 
+        $new_value = '';
+        foreach ( $val AS $shortcut => $replacement )
+            $new_value .= "$shortcut => $replacement\n";
+        $value = $new_value;
 
-        return '<label class="textinput" for="' . esc_attr( $var ) . '">' . esc_html( $label ) . ':</label><textarea class="textinput ' . $class . '" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']">' . $val . '</textarea>' . '<br class="clear" />';
+        return '<label class="textinput" for="' . esc_attr( $var ) . '">' . esc_html( $label ) . ':</label><textarea class="textinput ' . $class . '" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']">' . $value . '</textarea>' . '<br class="clear" />';
     }
 
     /**

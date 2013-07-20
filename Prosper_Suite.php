@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.4
+Version: 2.0.5
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -50,14 +50,14 @@ if (!class_exists('Prosperent_Suite'))
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosperent_store_remove'));
 
-            if ($options['Enable_PA'])
+            if (isset($options['Enable_PA']))
             {
                 add_action('performance_ads', array($this, 'Prosper_Perform_Ads'));
                 add_action('wp_enqueue_scripts', array($this, 'prosperAds_css'));
                 require_once('PA_Sidebar.php');
                 require_once('PA_Footer.php');
             }
-            if ($options['Enable_AL'])
+            if (isset($options['Enable_AL']))
             {
                 if(is_admin())
                 {
@@ -69,19 +69,9 @@ if (!class_exists('Prosperent_Suite'))
                     add_shortcode('linker', array($this, 'linker_shortcode'));
                 }
 
-                add_filter('the_content', array($this, 'auto_linker'), 2);
-                add_filter('the_excerpt', array($this, 'auto_linker'), 2);
-                add_filter('widget_text', array($this, 'auto_linker'), 2);
-
-                // Note that the priority must be set high enough to avoid links inserted by the plugin from
-                // getting omitted as a result of any link stripping that may be performed.
-                if ($options['Auto_Link_Comments'])
-                {
-                    add_filter('get_comment_text', array($this, 'auto_linker'), 11);
-                    add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
-                }
+                $this->register_filters();
             }
-            if ($options['Enable_AC'])
+            if (isset($options['Enable_AC']))
             {
                 if(is_admin())
                 {
@@ -93,10 +83,11 @@ if (!class_exists('Prosperent_Suite'))
                     add_shortcode('compare', array($this, 'autoCompare_shortcode'));
                 }
             }
-            if ($options['Enable_PPS'])
+            if (isset($options['Enable_PPS']))
             {
                 add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
                 add_shortcode('prosper_store', array($this, 'store_shortcode'));
+                add_shortcode('prosperCat', array($this, 'storeCat_shortcode'));
                 add_shortcode('prosper_search', array($this, 'search_shortcode'));
                 add_shortcode('prosper_product', array($this, 'product_shortcode'));
                 add_action('prospere_header', array($this, 'Prospere_Search'));
@@ -120,15 +111,64 @@ if (!class_exists('Prosperent_Suite'))
         public function get_prosper_options_array()
         {
             $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
-
             return apply_filters( 'prosper_options', $optarr );
         }
 
         public function ogMeta()
         {
+            $options = $this->get_option();
+            /*
+            /  Prosperent API Query
+            */
+            require_once(PROSPER_PATH . 'Prosperent_Api.php');
+            $prosperentApi = new Prosperent_Api(array(
+                'api_key'         => $options['Api_Key'],
+                'limit'           => 1,
+                'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+                'enableFacets'    => $options['Enable_Facets'],
+                'filterCatalogId' => get_query_var('cid')
+            ));
+
+            switch ($options['Country'])
+            {
+                case 'UK':
+                    $prosperentApi -> fetchUkProducts();
+                    $currency = 'GBP';
+                    break;
+                case 'CA':
+                    $prosperentApi -> fetchCaProducts();
+                    $currency = 'CAD';
+                    break;
+                default:
+                    $prosperentApi -> fetchProducts();
+                    $currency = 'USD';
+                    break;
+            }
+            $record = $prosperentApi -> getAllData();
+
             echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
             echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
             echo '<meta property="og:type" content="website" />';
+            echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
+            echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
+            echo '<meta property="og:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+        }
+
+        public function register_filters()
+        {
+            $options = $this->get_option();
+
+            add_filter('the_content', array($this, 'auto_linker'), 2);
+            add_filter('the_excerpt', array($this, 'auto_linker'), 2);
+            add_filter('widget_text', array($this, 'auto_linker'), 2);
+
+            // Note that the priority must be set high enough to avoid links inserted by the plugin from
+            // getting omitted as a result of any link stripping that may be performed.
+            if ($options['Auto_Link_Comments'])
+            {
+                add_filter('get_comment_text', array($this, 'auto_linker'), 11);
+                add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
+            }
         }
 
         /**
@@ -385,20 +425,6 @@ if (!class_exists('Prosperent_Suite'))
             }
         }
 
-        /**
-         * Override the plugin framework's register_filters() to actually hook actions and filters.
-         *
-         * @return void
-         */
-        public function register_filters()
-        {
-            $options = $this->get_option();
-            if ($options['Enable_AL'])
-            {
-
-            }
-        }
-
         public function prosperent_store_install()
         {
             $the_page_title = 'Products';
@@ -481,7 +507,14 @@ if (!class_exists('Prosperent_Suite'))
                 $text = ' ' . $text . ' ';
                 if ($options['Auto_Link'])
                 {
-                    foreach ($options['Auto_Link'] as $old_text => $new_text)
+                    foreach (explode( "\n", $options['Auto_Link']) as $line)
+                    {
+                        $parts = array_map('trim', explode("=>", $line, 2));
+
+                        $val[$parts[0]] =  $parts[1];
+                    }
+
+                    foreach ($val as $old_text => $new_text)
                     {
                         $query = urlencode(trim(empty($new_text) ? $old_text : $new_text));
 
@@ -512,6 +545,20 @@ if (!class_exists('Prosperent_Suite'))
 
         public function store_shortcode()
         {
+            ob_start();
+            include(plugin_dir_path(__FILE__) . 'products.php');
+            $store = ob_get_clean();
+            return $store;
+        }
+
+        public function storeCat_shortcode($atts, $content = null)
+        {
+            extract(shortcode_atts(array(
+                'q'  => isset($q) ? $q : '',
+                'b'  => isset($b) ? $b : '',
+                'm'  => isset($m) ? $m : '',
+            ), $atts));
+
             ob_start();
             include(plugin_dir_path(__FILE__) . 'products.php');
             $store = ob_get_clean();
@@ -573,13 +620,12 @@ if (!class_exists('Prosperent_Suite'))
                 switch ( $options['Title_Structure'] )
                 {
                     case '0':
-                        $title = $title;
                         break;
                     case '1':
-                        $title =  $title . (!$query ? '' : $sep . $query . $page_num);
+                        $title =  $title . $page_num . (!$query ? '' : $sep . $query);
                         break;
                     case '2':
-                        $title =  (!$query ? '' : $query . $page_num . $sep) . $title;
+                        $title =  (!$query ? '' : $query . $sep) . $title . $page_num;
                         break;
                     case '3':
                         $title =  (!$query ? $title : $query . $page_num . $sep);
@@ -597,7 +643,7 @@ if (!class_exists('Prosperent_Suite'))
         {
             $options = $this->get_option();
             ?>
-            <form id="search" method="GET" action="<?php echo !$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']; ?>">
+            <form id="search" method="POST" action="">
                 <table>
                     <tr>
                         <?php

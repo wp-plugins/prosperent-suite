@@ -174,216 +174,6 @@ echo $typeSelector;
     </form>
 </div>
 <?php
-$cities = $facets['city'];
-$zipCodes = $facets['zipCode'];
-
-if ($cities)
-{
-    $cities1 = array_splice($cities, 0, $options['Brand_Facets'] ? $options['Brand_Facets'] : 10);
-    $cities2 = $cities;
-
-    $cityNames = array();
-    foreach ($cities2 as $cityFacet)
-    {
-        $cityNames[] = ucfirst($cityFacet['value']);
-    }
-
-    array_multisort($cityNames, SORT_REGULAR, $cities2);
-}
-
-if ($zipCodes)
-{
-    $zipCodes1 = array_splice($zipCodes, 0, $options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10);
-    $zipCodes2 = $zipCodes;
-
-    $zipCodeNames = array();
-    foreach ($merchants2 as $zipFacets)
-    {
-        $zipCodeNames[] = ucfirst($zipFacets['value']);
-    }
-
-    array_multisort($zipCodeNames, SORT_STRING, $zipCodes2);
-}
-
-?>
-<table id="facets">
-    <tr>
-        <td class="brands">
-            <?php
-            echo (empty($filterCity) ? '<div class="browseBrands">Browse by City: </div>' : '<div class="filteredBrand">Filtered by City: </div>');
-            if (empty($facets['city']) && !$filterCity && !$city)
-            {
-                echo '<div class="noBrands">No Cities Found</div>';
-            }
-            else if (!$filterCity)
-            {
-                $count = count($cities1);
-                $countminus = $count - 1;
-                foreach ($cities1 as $i => $cityFacet)
-                {
-                    if($cityFacet['value'] == 'null')
-                    {
-                        $cityFacet['value'] = 'Online';
-                    }
-
-                    echo '<a href=' . $localSubmit . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a>';
-
-                    if ($i < $countminus)
-                    {
-                        echo ', ';
-                    }
-                }
-                if ($cities2)
-                {
-                    if ($filterZipCode)
-                    {
-                        ?>
-                        </br>
-                        <a onclick="toggle_visibility('brandList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Cities <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Cities <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <?php
-                    }
-                    else
-                    {
-                        ?>
-                        </br>
-                        <a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Cities <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Cities <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <?php
-                    }
-                }
-            }
-            else
-            {
-                echo '<div style="min-height:35px;">';
-                echo urldecode($filterCity);
-                echo '</br><a href=' . str_replace('/city/' . $filterCity, '', $localSubmit) . '>clear filter</a>';
-                echo '</div>';
-            }
-            ?>
-        </td>
-        <td class="merchants">
-            <?php
-            echo (empty($filterZip) ? '<div class="browseMerchants">Browse by Zip Code: </div>' : '<div class="filteredMerchants">Filtered by Zip Code: </div>');
-
-            if (empty($facets['zipCode']) && !$filterZip)
-            {
-                echo '<div class="noMerchants">No Zip Codes Found</div>';
-            }
-            else if (!$filterZip)
-            {
-                $count = count($zipCodes1);
-                $countminus = $count - 1;
-                foreach ($zipCodes1 as $i => $zipFacet)
-                {
-                    if($zipFacet['value'] == 'null')
-                    {
-                        $zipFacet['value'] = 'Online';
-                    }
-
-                    echo '<a href=' . $localSubmit . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a>';
-
-                    if ($i < $countminus)
-                    {
-                        echo ', ';
-                    }
-                }
-                if ($zipCodes2)
-                {
-                    if ($filterCity)
-                    {
-                        ?>
-                        </br>
-                        <a onclick="toggle_visibility('merchantList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <?php
-                    }
-                    else
-                    {
-                        ?>
-                        </br>
-                        <a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
-                        <?php
-                    }
-                }
-            }
-            else
-            {
-                echo '<div style="min-height:35px;">';
-                echo $zip;
-                echo '</br><a href=' . str_replace('/zip/' . $filterZip, '', $localSubmit) . '>clear filter</a>';
-                echo '</div>';
-            }
-            ?>
-        </td>
-    </tr>
-</table>
-<?php
-if ($cities2)
-{
-    ?>
-    <table id="brandList" style="display:none; font-size:11px; width:100%; table-layout:fixed;">
-        <?php
-        echo '<th style="padding:3px 0 0 5px; font-size:13px;float:left;">More Cities: </th>';
-
-        foreach ($cities2 as  $i => $cityFacet)
-        {
-            if($cityFacet['value'] == null)
-            {
-                $cityFacet['value'] = 'Online';
-            }
-
-            if ($i == 0 || $i % 5 == 0 && $i >= 5)
-            {
-                echo '<tr>';
-            }
-
-            echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . $localSubmit . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a></td>';
-
-            if ($i % 5 == 4 && $i >= 9)
-            {
-                echo '</tr>';
-            }
-        }
-        ?>
-    </table>
-    <?php
-}
-if ($zipCodes2)
-{
-    ?>
-    <table id="merchantList" style="display:none; font-size:11px; width:100%;">
-        <?php
-        echo '<th style="padding:3px 0 0 5px; font-size:13px;float:left;">More Zip Codes: </th>';
-
-        foreach ($zipCodes2 as $i => $zipFacet)
-        {
-            if($zipFacet['value'] == null)
-            {
-                $zipFacet['value'] = 'Online';
-            }
-
-            if ($i == 0 || $i % 4 == 0 && $i >= 4)
-            {
-                echo '<tr>';
-            }
-
-            echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . $localSubmit . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a></td>';
-
-            if ($i % 4 == 3 && $i >= 7)
-            {
-                echo '</tr>';
-            }
-        }
-        ?>
-    </table>
-    <?php
-}
-?>
-<div class="table-seperator"></div>
-<?php
-
 /*
 /  If no results, or the user clicked search when 'Search Products...'
 /  was in the search field, displays 'No Results'
@@ -391,6 +181,7 @@ if ($zipCodes2)
 if (empty($results))
 {
     echo '<div class="noResults">No Results</div>';
+    /*
     ?>
     <div style="padding:10px 0;">
         <form id="searchform" method="POST" action="" style="margin:0;">
@@ -399,6 +190,7 @@ if (empty($results))
         </form>
     </div>
     <?php
+    */
     if ($filterCity || $filterMerchant || $filterState || $filterZip)
     {
         echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace(array('/merchant/' . $filterMerchant, '/city/' . $filterCity, '/zip/' . $filterZip, '/state/' . $filterState), array('', '', '', ''), $localSubmit) . '>clear the filter(s)</a>.</div>';
@@ -539,6 +331,215 @@ if (empty($results))
 }
 else
 {
+    $cities = $facets['city'];
+    $zipCodes = $facets['zipCode'];
+
+    if ($cities)
+    {
+        $cities1 = array_splice($cities, 0, $options['Brand_Facets'] ? $options['Brand_Facets'] : 10);
+        $cities2 = $cities;
+
+        $cityNames = array();
+        foreach ($cities2 as $cityFacet)
+        {
+            $cityNames[] = ucfirst($cityFacet['value']);
+        }
+
+        array_multisort($cityNames, SORT_REGULAR, $cities2);
+    }
+
+    if ($zipCodes)
+    {
+        $zipCodes1 = array_splice($zipCodes, 0, $options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10);
+        $zipCodes2 = $zipCodes;
+
+        $zipCodeNames = array();
+        foreach ($merchants2 as $zipFacets)
+        {
+            $zipCodeNames[] = ucfirst($zipFacets['value']);
+        }
+
+        array_multisort($zipCodeNames, SORT_STRING, $zipCodes2);
+    }
+
+    ?>
+    <table id="facets">
+        <tr>
+            <td class="brands">
+                <?php
+                echo (empty($filterCity) ? '<div class="browseBrands">Browse by City: </div>' : '<div class="filteredBrand">Filtered by City: </div>');
+                if (empty($facets['city']) && !$filterCity && !$city)
+                {
+                    echo '<div class="noBrands">No Cities Found</div>';
+                }
+                else if (!$filterCity)
+                {
+                    $count = count($cities1);
+                    $countminus = $count - 1;
+                    foreach ($cities1 as $i => $cityFacet)
+                    {
+                        if($cityFacet['value'] == 'null')
+                        {
+                            $cityFacet['value'] = 'Online';
+                        }
+
+                        echo '<a href=' . $localSubmit . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a>';
+
+                        if ($i < $countminus)
+                        {
+                            echo ', ';
+                        }
+                    }
+                    if ($cities2)
+                    {
+                        if ($filterZipCode)
+                        {
+                            ?>
+                            </br>
+                            <a onclick="toggle_visibility('brandList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Cities <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Cities <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <?php
+                        }
+                        else
+                        {
+                            ?>
+                            </br>
+                            <a onclick="toggle_visibility('brandList'); toggle_hidden('merchantList'); toggle_hidden('moreBrands'); toggle_visibility('hideBrands'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreBrands" style="display:block;">More Cities <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <a onclick="toggle_hidden('brandList'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="hideBrands" style="display:none;">Hide Cities <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <?php
+                        }
+                    }
+                }
+                else
+                {
+                    echo '<div style="min-height:35px;">';
+                    echo urldecode($filterCity);
+                    echo '</br><a href=' . str_replace('/city/' . $filterCity, '', $localSubmit) . '>clear filter</a>';
+                    echo '</div>';
+                }
+                ?>
+            </td>
+            <td class="merchants">
+                <?php
+                echo (empty($filterZip) ? '<div class="browseMerchants">Browse by Zip Code: </div>' : '<div class="filteredMerchants">Filtered by Zip Code: </div>');
+
+                if (empty($facets['zipCode']) && !$filterZip)
+                {
+                    echo '<div class="noMerchants">No Zip Codes Found</div>';
+                }
+                else if (!$filterZip)
+                {
+                    $count = count($zipCodes1);
+                    $countminus = $count - 1;
+                    foreach ($zipCodes1 as $i => $zipFacet)
+                    {
+                        if($zipFacet['value'] == 'null')
+                        {
+                            $zipFacet['value'] = 'Online';
+                        }
+
+                        echo '<a href=' . $localSubmit . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a>';
+
+                        if ($i < $countminus)
+                        {
+                            echo ', ';
+                        }
+                    }
+                    if ($zipCodes2)
+                    {
+                        if ($filterCity)
+                        {
+                            ?>
+                            </br>
+                            <a onclick="toggle_visibility('merchantList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <?php
+                        }
+                        else
+                        {
+                            ?>
+                            </br>
+                            <a onclick="toggle_visibility('merchantList'); toggle_hidden('brandList'); toggle_hidden('moreMerchants'); toggle_visibility('hideMerchants'); toggle_hidden('hideBrands'); toggle_visibility('moreBrands'); return false;" style="cursor:pointer; font-size:12px;"><span id="moreMerchants" style="display:block;">More Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_down_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <a onclick="toggle_hidden('merchantList'); toggle_hidden('hideMerchants'); toggle_visibility('moreMerchants'); " style="cursor:pointer; font-size:12px;"><span id="hideMerchants" style="display:none;">Hide Zip Codes <img src="<?php echo PROSPER_URL . 'img/arrow_up_small.png'; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
+                            <?php
+                        }
+                    }
+                }
+                else
+                {
+                    echo '<div style="min-height:35px;">';
+                    echo $zip;
+                    echo '</br><a href=' . str_replace('/zip/' . $filterZip, '', $localSubmit) . '>clear filter</a>';
+                    echo '</div>';
+                }
+                ?>
+            </td>
+        </tr>
+    </table>
+    <?php
+    if ($cities2)
+    {
+        ?>
+        <table id="brandList" style="display:none; font-size:11px; width:100%; table-layout:fixed;">
+            <?php
+            echo '<th style="padding:3px 0 0 5px; font-size:13px;float:left;">More Cities: </th>';
+
+            foreach ($cities2 as  $i => $cityFacet)
+            {
+                if($cityFacet['value'] == null)
+                {
+                    $cityFacet['value'] = 'Online';
+                }
+
+                if ($i == 0 || $i % 5 == 0 && $i >= 5)
+                {
+                    echo '<tr>';
+                }
+
+                echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . $localSubmit . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a></td>';
+
+                if ($i % 5 == 4 && $i >= 9)
+                {
+                    echo '</tr>';
+                }
+            }
+            ?>
+        </table>
+        <?php
+    }
+    if ($zipCodes2)
+    {
+        ?>
+        <table id="merchantList" style="display:none; font-size:11px; width:100%;">
+            <?php
+            echo '<th style="padding:3px 0 0 5px; font-size:13px;float:left;">More Zip Codes: </th>';
+
+            foreach ($zipCodes2 as $i => $zipFacet)
+            {
+                if($zipFacet['value'] == null)
+                {
+                    $zipFacet['value'] = 'Online';
+                }
+
+                if ($i == 0 || $i % 4 == 0 && $i >= 4)
+                {
+                    echo '<tr>';
+                }
+
+                echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . $localSubmit . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a></td>';
+
+                if ($i % 4 == 3 && $i >= 7)
+                {
+                    echo '</tr>';
+                }
+            }
+            ?>
+        </table>
+        <?php
+    }
+    ?>
+    <div class="table-seperator"></div>
+    <?php
     echo '<div class="totalFound">' . $totalFound . ' results for <strong>' . (!$filterCity ? (!$filterZip ? (!$filterState ? 'Online Deals' : ('noResult' != $filterState ? ucwords($backStates[$decodeState]) : 'Online Deals')) : 'zip code: ' . $zip) : (ucwords($city) . ', ' . ucwords($decodeState))) . '</strong></div>';
     ?>
 

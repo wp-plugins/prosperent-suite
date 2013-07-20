@@ -8,75 +8,91 @@ class TopProducts_Widget extends WP_Widget
         $widget_ops = array('classname' => 'top_products_widget', 'description' => __( "Displays the top Products of Prosperent at the time"));
         parent::__construct('prosper_top_products', __('Top Products'), $widget_ops);
     }
-	
-	public function options()
-	{	
-		$optValues = get_option('prosper_prosperent_suite');
-		return $optValues;
-	}
-	
+
+    public function get_prosper_options_array()
+    {
+        $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+
+        return apply_filters( 'prosper_options', $optarr );
+    }
+
+    public function options()
+    {
+        static $options;
+
+        if (!isset($options))
+        {
+            $options = array();
+            foreach ($this->get_prosper_options_array() as $opt)
+            {
+                $options = array_merge($options, (array) get_option($opt));
+            }
+        }
+        return $options;
+    }
+
     public function widget( $args, $instance )
     {
-		$options = $this->options();
-		
+        $options = $this->options();
+
         extract($args);
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
         echo $before_widget;
         if ( $title )
             echo $before_title . $title . $after_title;
-			// calculate date range
-			$prevNumDays = 30;
-			$startRange = date('Ymd', time() - 86400 * $prevNumDays);
-			$endRange   = date('Ymd');
-			
-			// fetch trends from api
-			require_once(PROSPER_PATH . 'Prosperent_Api.php');
-			$api = new Prosperent_Api(array(
-				'enableFacets'  => 'productId',
-				'filterCatalog' => $options['Country']
-			));
+            // calculate date range
+            $prevNumDays = 30;
+            $startRange = date('Ymd', time() - 86400 * $prevNumDays);
+            $endRange   = date('Ymd');
 
-			$api->setDateRange('commission', $startRange, $endRange)
-				->fetchTrends();
+            // fetch trends from api
+            require_once(PROSPER_PATH . 'Prosperent_Api.php');
+            $api = new Prosperent_Api(array(
+                'enableFacets'  => 'productId',
+                'filterCatalog' => $options['Country']
+            ));
 
-			// set productId as key in array
-			foreach ($api->getFacets('productId') as $data)
-			{
-				$keys[] = $data['value'];
-			}
+            $api->setDateRange('commission', $startRange, $endRange)
+                ->fetchTrends();
 
-			// fetch merchant data from api
-			$api = new Prosperent_Api(array(
-				'api_key'         => $options['Api_Key'],
-				'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
-				'filterProductId' => $keys,
-				'limit' 	      => 5
-			));
+            // set productId as key in array
+            foreach ($api->getFacets('productId') as $data)
+            {
+                $keys[] = $data['value'];
+            }
 
-			switch ($options['Country'])
-			{
-				case 'UK':
-					$api -> fetchUkProducts();
-					break;
-				case 'CA':
-					$api -> fetchCaProducts();
-					break;
-				default:
-					$api -> fetchProducts();
-					break;
-			}
-			?>
-			<table>
-			<?php
-			foreach ($api->getAllData() as $record)
-			{
-				echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="http://' . $_SERVER['HTTP_HOST'] . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . $record['keyword'] . '</a></td></tr>';
-			}
-			?>
-			</table>
-			<?php
-			
+            // fetch merchant data from api
+            $api = new Prosperent_Api(array(
+                'api_key'         => $options['Api_Key'],
+                'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+                'filterProductId' => $keys,
+                'limit' 	      => 5
+            ));
+
+            switch ($options['Country'])
+            {
+                case 'UK':
+                    $api -> fetchUkProducts();
+                    break;
+                case 'CA':
+                    $api -> fetchCaProducts();
+                    break;
+                default:
+                    $api -> fetchProducts();
+                    break;
+            }
+            ?>
+            <table>
+            <?php
+            foreach ($api->getAllData() as $record)
+            {
+                echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="http://' . $_SERVER['HTTP_HOST'] . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . $record['keyword'] . '</a></td></tr>';
+            }
+            ?>
+            </table>
+            <?php
+
         echo $after_widget;
     }
 

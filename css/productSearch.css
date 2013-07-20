@@ -44,7 +44,9 @@
 
 /*  Products   */
 .noResults {
+    border-top: 1px solid #EDEDED;
     font-size:2.4em;
+    margin-top:5px;
 }
 
 .noResults-secondary {
@@ -166,15 +168,15 @@ td {
 
 .productContent .productBrandMerchant {
     font-size:12px;
-	margin: 0 auto;
-	width: 100%;
+    margin: 0 auto;
+    width: 100%;
 }
 
 #productList .productEnd {
     width:120px;
     font-size:16px;
     float:right;
-	text-align:center;
+    text-align:center;
 }
 
 .productEnd .productPriceNoSale {
@@ -204,12 +206,12 @@ td {
 
 .productBrandMerchant  .brandIn {
     display:inline-block;
-	width:46%;
+    width:46%;
 }
 
 .productBrandMerchant .merchantIn {
     display:inline-block;
-	width:49%;
+    width:49%;
 }
 
 /* Coupons */
@@ -481,13 +483,13 @@ span.code_cc{
         padding:0;
         border-top:0;
     }
-	
+
     #productList .productContent {
         width:68%;
         float:right;
     }
-	
-	#productList .productEnd {
+
+    #productList .productEnd {
         width:120px;
         font-size:14px;
         float:left;

@@ -5,8 +5,11 @@ class ProsperStore_Widget extends WP_Widget
 {
     public function __construct()
     {
-        $widget_ops = array('classname' => 'prosperent_store_widget', 'description' => __( "Displays the Prosperent search bar") );
-        parent::__construct('prosperent_store', __('Prosperent Store'), $widget_ops);
+        parent::__construct(
+            'prosperent_store', // Base ID
+            'Prosperent Store', // Name
+            array('classname' => 'prosperent_store_widget', 'description' => __( "Displays the Prosperent search bar") ) // Args
+        );
     }
 
     public function get_prosper_options_array()
@@ -41,6 +44,15 @@ class ProsperStore_Widget extends WP_Widget
         echo $before_widget;
         if ( $title )
             echo $before_title . $title . $after_title;
+
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']);
+        $prodSubmit = preg_replace('/\/$/', '', $url);
+        $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
+
+        if ($_POST['q'])
+        {
+            header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+        }
         ?>
         <form id="searchform" method="POST" action="">
             <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px; margin: 24px 0 0 20px;">
@@ -53,9 +65,8 @@ class ProsperStore_Widget extends WP_Widget
 
     public function update( $new_instance, $old_instance )
     {
-        $new_instance = (array) $new_instance;
-        $new_instance = wp_parse_args((array) $new_instance, array( 'title' => ''));
-        $instance['title'] = strip_tags($new_instance['title']);
+        $instance = array();
+        $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
         return $instance;
     }
 

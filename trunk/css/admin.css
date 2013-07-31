@@ -1,21 +1,20 @@
 h4 {
-	clear: both;
 	margin: 2em 0 0 0;	
 }
 
-p.desc {
+p.prosper_desc {
 	color:#777;
 	font-size:11px;
 	padding: 0 0 0 36px;
 	margin: 2px 0 10px 0;
 }
 
-p.desc.label {
+p.prosper_desc.label {
 	padding: 2px 0 10px 180px;
 	margin-bottom: 20px;
 }
 
-p.descb {
+p.prosper_descb {
 	color:#777;
 	font-size:11px;
 	padding: 0 0 8px 36px;
@@ -23,12 +22,12 @@ p.descb {
 	border-bottom: 1px solid #ddd;
 }
 
-p.descb.label {
+p.prosper_descb.label {
 	padding: 2px 0 10px 180px;
 	margin-bottom: 20px;
 }
 
-p.settingDesc {
+p.prosper_settingDesc {
 	color:#777;
 	font-size:12px;
 	padding: 0 0 8px 36px;
@@ -36,7 +35,7 @@ p.settingDesc {
 	border-bottom: 1px solid #ddd;
 }
 
-p.settingDesc.label {
+p.prosper_settingDesc.label {
 	padding: 2px 0 10px 180px;
 	margin-bottom: 20px;
 }
@@ -62,7 +61,7 @@ label {
 	margin-left: 6px;
 }
 
-select.selectCountry {
+select.prosper_selectCountry {
 	width: 80px;
 	float: left;
 }
@@ -72,38 +71,42 @@ textarea {
 	min-height:200px;
 }
 
-input.textinput, select {
+input.prosper_textinput, select {
 	width: 200px;
 }
 
-input.checkbox {
+input.prosper_checkbox {
 	float: left;
 	margin: 5px 0 0 20px;
 	padding: 5px;
 }
 
-input.geocheckbox {
+input.prosper_geocheckbox {
 	float: left;
 	margin: 5px 0 0 40px;
 	padding: 5px;
 }
 
-label.geocheckbox {
+label.prosper_geocheckbox {
 	background-color: transparent;
 	margin: 6px 0 5px 10px;
 }
 
-select.select {
+select.prosper_select {
 	float: left;
 }
 
-input.textinput, textarea.textinput {
+input.prosper_textinput, textarea.prosper_textinput {
 	float: left;
 	margin: 5px 0 0 0;
 	padding: 5px;
 }
 
-input.checkbox.double {
+input.prosper_checkbox.double {
+	margin-top: 2px;
+}
+
+input.prosper_geocheckbox.double {
 	margin-top: 2px;
 }
 
@@ -111,52 +114,52 @@ input.checkbox.double {
 	height: 50px;	
 }
 
-textarea.import {
+textarea.prosper_import {
 	width: 500px;
 	height: 100px;
 }
 
-label.checkbox {
+label.prosper_checkbox {
 	width: 200px;
 	background-color: transparent;
 	margin: 6px 0 5px 20px;
 }
 
-label.selectCountry {
+label.prosper_selectCountry {
 	width: 60px;
 	background-color: transparent;
 	margin: 6px 0 5px 40px;
 }
 
-label.select {
+label.prosper_select {
 	width: 200px;
 	background-color: transparent;
 	margin: 6px 0 5px 20px;
 }
 
-label.textinput  {
+label.prosper_textinput  {
 	width: 200px;
 	background-color: transparent;
 	margin: 6px 0 5px 20px;
 }
 
-	a.tooltip {
+	a.prosper_tooltip {
 		padding-left:4px;
 	}
-	.tooltip img {
+	.prosper_tooltip img {
 		margin-bottom:-2px;
 	}
 	a:hover {
 		background:#ffffff;
 		text-decoration:none;
 	}
-	a.tooltip span {
+	a.prosper_tooltip span {
 		display:none; 
 		padding:2px 3px; 
 		margin-left:8px;
 		margin-top:18px;
 	}
-	a.tooltip:hover span{
+	a.prosper_tooltip:hover span{
 		display:inline-block;
 		position:absolute;
 		left:130px;
@@ -169,7 +172,7 @@ label.textinput  {
 	}			
 
 
-label.radio {
+label.prosper_radio {
 	margin-right: 20px;
 }
 
@@ -266,7 +269,7 @@ div.prosperbox .button:hover, div.prosperbox .button-primary:hover {
 }
 
 
-h2 {
+h2.prosper_h2 {
 	margin-bottom: 20px;
 }
 h2 code {

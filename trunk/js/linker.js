@@ -6,7 +6,7 @@
 				ed.windowManager.open({
 					file : url + '/../autolink.html',
 					width : 300 + parseInt(ed.getLang('linker.delta_width', 0)),
-					height : 450 + parseInt(ed.getLang('linker.delta_height', 0)),
+					height : 490 + parseInt(ed.getLang('linker.delta_height', 0)),
 					inline : 1
 				}, {
 					plugin_url : url

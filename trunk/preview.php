@@ -8,9 +8,9 @@
     }
 </style>
 <?php
-    error_reporting(0);
-
-	require_once(PROSPER_PATH . 'Prosperent_Api.php');
+    error_reporting(0);     
+	
+	require_once('Prosperent_Api.php');
     $prosperentApi = new Prosperent_Api(array(
         'api_key'        => '7b0a5297441c39be99fda92fc784b516',
         'query'          => $_GET['q'],
@@ -23,7 +23,7 @@
     if (!$_GET['coup'])
     {
         $prosperentApi -> set_filterBrand($_GET['brand']);
-		switch ($options['Country'])
+		switch ($_GET['country'])
 		{
 			case 'UK':
 				$prosperentApi -> fetchUkProducts();
@@ -37,8 +37,8 @@
 				$prosperentApi -> fetchProducts();
 				$currency = 'USD';
 				break;
-		}
-        $results = $prosperentApi -> getAllData();
+		}       
+		$results = $prosperentApi -> getAllData();		
     }
     else
     {

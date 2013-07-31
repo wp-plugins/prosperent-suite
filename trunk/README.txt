@@ -114,8 +114,26 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
-= 2.0.4 =
-* More Bug Fixes, Adjusted Page titles, de-cluttered No Results page, adjusted open graph rules (Facebook), fixed Auto-Linker, adjusted a few options
+= 2.0.6 =
+* Added more ways to refine your search (remove query and remove sort)
+* Added Twitter Cards
+* Added options under Advanced tab to add twitter creator and twitter site
+* Fixed coupons
+* Adjusted some CSS rules
+* Added country to Auto-Linker and Auto-Comparer
+* Fixed the disappearing widgets
+* Fixed Product Search Widget and Search Short Code
+* Added more button to description on individual product pages
+* Fixed pagination bug
+* Removes page is new query, filter or sort method is used
+
+= 2.0.5 =
+* More Bug Fixes
+* Adjusted Page titles
+* De-cluttered No Results page
+* Adjusted open graph rules (Facebook)
+* Fixed Auto-Linker
+* Adjusted a few options
 
 = 2.0.4 =
 * Bug Fixes, fixed page titles, added Open Graph rules

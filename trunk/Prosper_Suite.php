@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.5
+Version: 2.0.6
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -87,7 +87,6 @@ if (!class_exists('Prosperent_Suite'))
             {
                 add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
                 add_shortcode('prosper_store', array($this, 'store_shortcode'));
-                add_shortcode('prosperCat', array($this, 'storeCat_shortcode'));
                 add_shortcode('prosper_search', array($this, 'search_shortcode'));
                 add_shortcode('prosper_product', array($this, 'product_shortcode'));
                 add_action('prospere_header', array($this, 'Prospere_Search'));
@@ -110,13 +109,23 @@ if (!class_exists('Prosperent_Suite'))
          */
         public function get_prosper_options_array()
         {
-            $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+            $optarr = array('prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced');
             return apply_filters( 'prosper_options', $optarr );
         }
 
         public function ogMeta()
         {
             $options = $this->get_option();
+
+            if(!preg_match('/^@/', $options['Twitter_Site']))
+            {
+                $options['Twitter_Site'] = '@' . $options['Twitter_Site'];
+            }
+            if(!preg_match('/^@/', $options['Twitter_Creator']))
+            {
+                $options['Twitter_Creator'] = '@' . $options['Twitter_Creator'];
+            }
+
             /*
             /  Prosperent API Query
             */
@@ -146,12 +155,25 @@ if (!class_exists('Prosperent_Suite'))
             }
             $record = $prosperentApi -> getAllData();
 
+            // Open Graph: FaceBook
             echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
             echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
             echo '<meta property="og:type" content="website" />';
             echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
             echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
             echo '<meta property="og:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+
+            // Twitter Cards
+            echo '<meta name="twitter:card" content="product">';
+            echo '<meta name="twitter:site" content="' . $options['Twitter_Site'] . '" />';
+            echo '<meta name="twitter:creator" content="' . $options['Twitter_Creator'] . '"/>';
+            echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
+            echo '<meta name="twitter:data1" content="' . ((!$record[0]['price_sale'] || $record[0]['price'] <= $record[0]['price_sale']) ? $record[0]['price'] : $record[0]['price_sale']) . '">';
+            echo '<meta name="twitter:label1" content="Price">';
+            echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
+            echo '<meta name="twitter:label2" content="Brand">';
+            echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
+            echo '<meta name="twitter:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
         }
 
         public function register_filters()
@@ -410,17 +432,34 @@ if (!class_exists('Prosperent_Suite'))
 
             if (!is_array(get_option('prosper_advanced')))
             {
-
+                if (is_array($old_options))
+                {
+                    $opt = array(
+                        'Title_Structure' => $old_options['Title_Structure'],
+                        'Title_Sep'		  => $old_options['Title_Sep'],
+                        'Base_URL' 		  => $old_options['Base_URL'],
+                        'Twitter_Site'	  => '',
+                        'Twitter_Creator' => '',
+                        'Additional_CSS'  => $old_options['Additional_CSS'],
+                        'Logo_Image' 	  => $old_options['Logo_Image'],
+                        'Logo_imageSmall' => $old_options['Logo_imageSmall'],
+                        'Image_Masking'	  => 0
+                    );
+                }
+                else
+                {
                     $opt = array(
                         'Title_Structure' => 0,
                         'Title_Sep'		  => '',
                         'Base_URL' 		  => '',
+                        'Twitter_Site'	  => '',
+                        'Twitter_Creator' => '',
                         'Additional_CSS'  => '',
                         'Logo_Image' 	  => 0,
                         'Logo_imageSmall' => 0,
                         'Image_Masking'	  => 0
                     );
-
+                }
                 update_option( 'prosper_advanced', $opt );
             }
         }
@@ -551,20 +590,6 @@ if (!class_exists('Prosperent_Suite'))
             return $store;
         }
 
-        public function storeCat_shortcode($atts, $content = null)
-        {
-            extract(shortcode_atts(array(
-                'q'  => isset($q) ? $q : '',
-                'b'  => isset($b) ? $b : '',
-                'm'  => isset($m) ? $m : '',
-            ), $atts));
-
-            ob_start();
-            include(plugin_dir_path(__FILE__) . 'products.php');
-            $store = ob_get_clean();
-            return $store;
-        }
-
         public function search_shortcode()
         {
             $options = $this->get_option();
@@ -599,11 +624,15 @@ if (!class_exists('Prosperent_Suite'))
             }
 
             $options = $this->get_option();
-
             $sep = ' ' . (!$options['Title_Sep'] ? !$sep ? '|' : trim($sep) : trim($options['Title_Sep'])) . ' ';
             $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-            $query = ucwords(urldecode($sendParams['query'] ? $sendParams['query'] : $options['Starting_Query']));
+            $query = ($sendParams['query'] ? $sendParams['query'] : (($sendParams['brand'] || $sendParams['merchant']) ? '' : ($options['Starting_Query'] ? $options['Starting_Query'] : '')));
+            $query = ucwords(urldecode(str_replace('+', ' ', $query)));
             $page_num = $sendParams['page'] ? ' Page ' . $sendParams['page'] : '';
+            $pagename = get_the_title();
+            $blogname = get_bloginfo();
+            $brand = ucwords(urldecode($sendParams['brand']));
+            $merchant = ucwords(urldecode($sendParams['merchant']));
 
             if ($sendParams['type'] == 'cele')
             {
@@ -620,15 +649,16 @@ if (!class_exists('Prosperent_Suite'))
                 switch ( $options['Title_Structure'] )
                 {
                     case '0':
+                        $title =  $title;
                         break;
                     case '1':
-                        $title =  $title . $page_num . (!$query ? '' : $sep . $query);
+                        $title =  $title . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
                         break;
                     case '2':
-                        $title =  (!$query ? '' : $query . $sep) . $title . $page_num;
+                        $title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
                         break;
                     case '3':
-                        $title =  (!$query ? $title : $query . $page_num . $sep);
+                        $title =  !$query ? $title : ($query ? $query : '') . ($brand ?  ' &raquo; ' . $brand : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
                         break;
                     case '4':
                         $title =  $title;
@@ -642,6 +672,24 @@ if (!class_exists('Prosperent_Suite'))
         public function Prospere_Search()
         {
             $options = $this->get_option();
+
+            $url = 'http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']);
+            $prodSubmit = preg_replace('/\/$/', '', $url);
+            $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
+
+            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
+
+            if (is_page($page) && $_POST['q'])
+            {
+                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                $prodSubmit = preg_replace('/\/$/', '', $url);
+                $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
+                header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+            }
+            elseif ($_POST['q'])
+            {
+                header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+            }
             ?>
             <form id="search" method="POST" action="">
                 <table>
@@ -699,7 +747,8 @@ if (!class_exists('Prosperent_Suite'))
                 'b'  => isset($b) ? $b : '',
                 'm'  => isset($m) ? $m : '',
                 'l'  => isset($l) ? intval($l) : 1,
-                'cl' => isset($cl) ? intval($cl) : 3
+                'cl' => isset($cl) ? intval($cl) : 3,
+                'ct' => isset($ct) ? $ct : 'US'
             ), $atts));
 
             $query = $q ? $q : $content;
@@ -713,7 +762,7 @@ if (!class_exists('Prosperent_Suite'))
                 require_once('Prosperent_Api.php');
                 $prosperentApi = new Prosperent_Api(array(
                     'api_key'        => $options['Api_Key'],
-                    'query'          => $query,
+                    'query'          => trim($query),
                     'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
                     'limit'          => $l,
                     'enableFacets'   => TRUE,
@@ -722,7 +771,21 @@ if (!class_exists('Prosperent_Suite'))
                     'filterBrand'	 => $b
                 ));
 
-                $prosperentApi -> fetch();
+                switch ($ct)
+                {
+                    case 'UK':
+                        $prosperentApi -> fetchUkProducts();
+                        $currency = 'GBP';
+                        break;
+                    case 'CA':
+                        $prosperentApi -> fetchCaProducts();
+                        $currency = 'CAD';
+                        break;
+                    default:
+                        $prosperentApi -> fetchProducts();
+                        $currency = 'USD';
+                        break;
+                }
                 $results = $prosperentApi -> getAllData();
 
                 if ($results)
@@ -743,7 +806,21 @@ if (!class_exists('Prosperent_Suite'))
                         'sortPrice'	   => ''
                     ));
 
-                    $prosperentApi -> fetch();
+                    switch ($ct)
+                    {
+                        case 'UK':
+                            $prosperentApi -> fetchUkProducts();
+                            $currency = 'GBP';
+                            break;
+                        case 'CA':
+                            $prosperentApi -> fetchCaProducts();
+                            $currency = 'CAD';
+                            break;
+                        default:
+                            $prosperentApi -> fetchProducts();
+                            $currency = 'USD';
+                            break;
+                    }
                     $results = $prosperentApi -> getAllData();
 
                     if ($results)
@@ -820,7 +897,8 @@ if (!class_exists('Prosperent_Suite'))
                 'q'   => isset($q) ? $q : '',
                 'gtm' => isset($gtm) ? $gtm : '',
                 'b'   => isset($b) ? $b : '',
-                'm'   => isset($m) ? $m : ''
+                'm'   => isset($m) ? $m : '',
+                'ct'  => isset($ct) ? $ct : 'US'
             ), $atts));
 
             $query = $q ? $q : $content;
@@ -842,7 +920,21 @@ if (!class_exists('Prosperent_Suite'))
                     'filterMerchant' => $m
                 ));
 
-                $prosperentApi -> fetch();
+                switch ($ct)
+                {
+                    case 'UK':
+                        $prosperentApi -> fetchUkProducts();
+                        $currency = 'GBP';
+                        break;
+                    case 'CA':
+                        $prosperentApi -> fetchCaProducts();
+                        $currency = 'CAD';
+                        break;
+                    default:
+                        $prosperentApi -> fetchProducts();
+                        $currency = 'USD';
+                        break;
+                }
                 $results = $prosperentApi -> getAllData();
 
                 if ($results)
@@ -859,7 +951,21 @@ if (!class_exists('Prosperent_Suite'))
                         'limit'        => 1
                     ));
 
-                    $prosperentApi -> fetch();
+                    switch ($ct)
+                    {
+                        case 'UK':
+                            $prosperentApi -> fetchUkProducts();
+                            $currency = 'GBP';
+                            break;
+                        case 'CA':
+                            $prosperentApi -> fetchCaProducts();
+                            $currency = 'CAD';
+                            break;
+                        default:
+                            $prosperentApi -> fetchProducts();
+                            $currency = 'USD';
+                            break;
+                    }
                     $results = $prosperentApi -> getAllData();
 
                     if ($results)

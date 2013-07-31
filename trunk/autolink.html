@@ -15,6 +15,7 @@
 					var query = jQuery('#query').val();
 					var brand = jQuery('#brand').val();
 					var merchant = jQuery('#merchant').val();
+					var country = jQuery('#country').val();
 					var goToMerc = jQuery('#goToMerc').is(':checked');
 					var output = '[linker';
 
@@ -34,6 +35,10 @@
 					if (merchant)
 					{
 						output += ' m="'+merchant+'"';
+					}
+					if (country)
+					{
+						output += ' ct="'+country+'"';
 					}
 					output += ']' + AutoLinker.local_ed.selection.getContent() + '[/linker]';
 
@@ -150,6 +155,7 @@
 					<p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by brand to narrow down the search.</span></a></p>
 					<p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues()"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by merchant to narrow down the search.</span></a></p>
 					<p>Go Directly to Merchant: <input type="checkbox" id="goToMerc"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will link to the merchant's page, skipping the product page.</span></a></p>				
+					<p>Country: <select id="country" name="country" onChange="showValues()"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
 					<input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed)"/>
 				</form>
 			</div>

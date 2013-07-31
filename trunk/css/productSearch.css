@@ -44,9 +44,9 @@
 
 /*  Products   */
 .noResults {
-    border-top: 1px solid #EDEDED;
+	border-top: 1px solid #EDEDED;
     font-size:2.4em;
-    margin-top:5px;
+	margin-top:5px;
 }
 
 .noResults-secondary {
@@ -123,6 +123,7 @@ td {
 .totalFound {
     float:left;
     padding: 0 0 0 15px;
+	margin-top:6px;
 }
 
 #productList {
@@ -168,15 +169,15 @@ td {
 
 .productContent .productBrandMerchant {
     font-size:12px;
-    margin: 0 auto;
-    width: 100%;
+	margin: 0 auto;
+	width: 100%;
 }
 
 #productList .productEnd {
     width:120px;
     font-size:16px;
     float:right;
-    text-align:center;
+	text-align:center;
 }
 
 .productEnd .productPriceNoSale {
@@ -206,12 +207,11 @@ td {
 
 .productBrandMerchant  .brandIn {
     display:inline-block;
-    width:46%;
+	width:46%;
 }
 
 .productBrandMerchant .merchantIn {
     display:inline-block;
-    width:49%;
 }
 
 /* Coupons */
@@ -425,6 +425,7 @@ span.code_cc{
     #productList .productContent {
         width:60%;
         float:right;
+		min-height:135px;
     }
 
     .productEnd .productPriceNoSale {
@@ -454,7 +455,7 @@ span.code_cc{
 @media all and (max-width:700px) and (min-width:580px) {
     #productList .productContent {
         width:72%;
-        padding-bottom:36px;
+        min-height:135px;
         float:right;
     }
 
@@ -483,13 +484,14 @@ span.code_cc{
         padding:0;
         border-top:0;
     }
-
+	
     #productList .productContent {
         width:68%;
+		min-height:135px;
         float:right;
     }
-
-    #productList .productEnd {
+	
+	#productList .productEnd {
         width:120px;
         font-size:14px;
         float:left;

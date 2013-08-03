@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.6
+Version: 2.0.7
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -48,7 +48,7 @@ if (!class_exists('Prosperent_Suite'))
             $options = $this->get_option();
 
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
-            register_deactivation_hook( __FILE__, array($this, 'prosperent_store_remove'));
+            register_deactivation_hook( __FILE__, array($this, 'prosper_deactivate'));
 
             if (isset($options['Enable_PA']))
             {
@@ -56,6 +56,18 @@ if (!class_exists('Prosperent_Suite'))
                 add_action('wp_enqueue_scripts', array($this, 'prosperAds_css'));
                 require_once('PA_Sidebar.php');
                 require_once('PA_Footer.php');
+            }
+            if (isset($options['Enable_AC']))
+            {
+                if(is_admin())
+                {
+                    add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
+                    add_action('admin_init', array($this, 'autoCompare_custom_add'));
+                }
+                else
+                {
+                    add_shortcode('compare', array($this, 'autoCompare_shortcode'));
+                }
             }
             if (isset($options['Enable_AL']))
             {
@@ -70,18 +82,6 @@ if (!class_exists('Prosperent_Suite'))
                 }
 
                 $this->register_filters();
-            }
-            if (isset($options['Enable_AC']))
-            {
-                if(is_admin())
-                {
-                    add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
-                    add_action('admin_init', array($this, 'autoCompare_custom_add'));
-                }
-                else
-                {
-                    add_shortcode('compare', array($this, 'autoCompare_shortcode'));
-                }
             }
             if (isset($options['Enable_PPS']))
             {
@@ -225,13 +225,19 @@ if (!class_exists('Prosperent_Suite'))
             $this->prosper_flush_rules();
         }
 
+        public function prosper_deactivate()
+        {
+            $this->prosperent_store_remove();
+
+            $this->prosper_flush_rules();
+        }
+
         /**
          * Flush the rewrite rules.
          */
         public function prosper_flush_rules()
         {
-            global $wp_rewrite;
-            $wp_rewrite->flush_rules();
+            flush_rewrite_rules();
         }
 
         public function do_output_buffer()

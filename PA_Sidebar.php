@@ -9,26 +9,26 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
         parent::__construct('performance_ad_sb', __('Performance Ads (sidebar)'), $widget_ops);
     }
 
-	public function get_prosper_options_array()
-	{
-		$optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+    public function get_prosper_options_array()
+    {
+        $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
 
-		return apply_filters( 'prosper_options', $optarr );
-	}
-	
+        return apply_filters( 'prosper_options', $optarr );
+    }
+
     public function options()
     {
-		static $options;
+        static $options;
 
-		if (!isset($options))
-		{
-			$options = array();
-			foreach ($this->get_prosper_options_array() as $opt)
-			{
-				$options = array_merge($options, (array) get_option($opt));
-			}
-		}
-		return $options;
+        if (!isset($options))
+        {
+            $options = array();
+            foreach ($this->get_prosper_options_array() as $opt)
+            {
+                $options = array_merge($options, (array) get_option($opt));
+            }
+        }
+        return $options;
     }
 
     public function widget( $args, $instance )
@@ -54,8 +54,11 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
         extract($args);
         $title = apply_filters('widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base);
 
+        /*echo $before_widget;
+        if ( $title )
+            echo $before_title . $title . $after_title;*/
         ?>
-        <script type="text/javascript">
+        <script data-cfasync="false">
             <!--
             prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
             prosperent_pa_width = <?php echo json_encode($options['SWW'] == 'auto' ? '' : $options['SWW']); ?>;
@@ -63,10 +66,10 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
             prosperent_pa_fallback_query = <?php echo json_encode($fallback); ?>;
             //-->
         </script>
-        <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>
-		<br>
+        <script data-cfasync="false" src="http://prosperent.com/js/ad.js"></script>
+        <br>
         <?php
-
+        //echo $after_widget;
     }
 
     public function update( $new_instance, $old_instance )

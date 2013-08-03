@@ -43,6 +43,7 @@ td {
 #product .productContent .productDescription {
     padding-bottom:5px;
     font-size:14px;
+    -moz-hyphens: none;
 }
 
 #product .productContent .productBrandMerchant {
@@ -50,31 +51,31 @@ td {
 }
 
 #product .productBrandMerchant .category {
-	font-size:12px;
+    font-size:12px;
 }
 
 #product .clear {
-	clear: both;
+    clear: both;
 }
 
 #product .allResults {
-	display:block;
-	padding-top:15px;
+    display:block;
+    padding-top:15px;
 }
 
 #product .productResults {
-	width:100%;
-	float:left;
-	border:none;
+    width:100%;
+    float:left;
+    border:none;
 }
 
 #product .productResults tr {
-	border-bottom:#ddd solid 1px;
+    border-bottom:#ddd solid 1px;
 }
 
 #product .productResults td {
-	text-align:center; 
-	padding:4px 4px;
+    text-align:center;
+    padding:4px 4px;
 }
 
 #coupon {
@@ -112,140 +113,140 @@ td {
 }
 
 #coupon .productBrandMerchant .category {
-	font-size:12px;
+    font-size:12px;
 }
 
 #coupon .clear {
-	clear: both;
+    clear: both;
 }
 
 #coupon .allResults {
-	display:block;
-	padding-top:15px;
+    display:block;
+    padding-top:15px;
 }
 
 #coupon .productResults {
-	width:100%;
-	float:left;
-	border:none;
+    width:100%;
+    float:left;
+    border:none;
 }
 
 #coupon .productResults tr {
-	border-bottom:#ddd solid 1px;
+    border-bottom:#ddd solid 1px;
 }
 
 #coupon .productResults td {
-	text-align:center; 
-	padding:4px 4px;
+    text-align:center;
+    padding:4px 4px;
 }
 
 .simTitle {
-	margin-top:30px;
-	font-size:16px;
-	font-weight:bold;
+    margin-top:30px;
+    font-size:16px;
+    font-weight:bold;
 }
 
 #simProd {
-	padding:0 0.5em;
-	border-top:2px solid #ddd;
+    padding:0 0.5em;
+    border-top:2px solid #ddd;
 }
 
 #simProd ul {
-	list-style:none; 
-	margin:0; 
-	padding:0;  
-	display:inline; 
-	text-align:left;
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:inline;
+    text-align:left;
 }
 
 ul {
-	margin:0;
-	list-style:none;
+    margin:0;
+    list-style:none;
 }
 
 #simProd li {
-	list-style:none; 
-	margin:0px;  
-	font-size:12px;  
-	display:inline;  
-	height:210px;  
-	float:left;  
-	overflow:hidden;  
-	padding:4px 0;
+    list-style:none;
+    margin:0px;
+    font-size:12px;
+    display:inline;
+    height:210px;
+    float:left;
+    overflow:hidden;
+    padding:4px 0;
 }
 
 #simProd .listBlock {
-	width:146px; 
-	margin: 0 auto;
+    width:146px;
+    margin: 0 auto;
 }
 
 #simProd .prodImage {
-	margin: 0 10px; 
-	height:130px;
+    margin: 0 10px;
+    height:130px;
 }
 
 #simProd .prodImage img{
-	background: none repeat scroll 0 0 transparent; 
-	border: medium none;
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
 }
 
 #simProd .prodTitle {
-	text-align:center;
-	font-size:12px;
+    text-align:center;
+    font-size:12px;
 }
 
 #simProd .prodPrice {
-	font-size:12px;
-	text-align:center;
+    font-size:12px;
+    text-align:center;
 }
 
 #simCoup {
-	padding:0 0.5em;
-	border-top:2px solid #ddd;
+    padding:0 0.5em;
+    border-top:2px solid #ddd;
 }
 
 #simCoup ul {
-	list-style:none; 
-	margin:0; 
-	padding:0;  
-	display:inline; 
-	text-align:left;
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:inline;
+    text-align:left;
 }
 
 #simCoup li {
-	list-style:none; 
-	margin:0px;  
-	font-size:11px;  
-	display:inline;  
-	height:144px;  
-	float:left;  
-	overflow:hidden;  
-	padding:4px 0;
+    list-style:none;
+    margin:0px;
+    font-size:11px;
+    display:inline;
+    height:144px;
+    float:left;
+    overflow:hidden;
+    padding:4px 0;
 }
 
 #simCoup .listBlock {
-	width:146px; 
-	margin: 0 auto;
+    width:146px;
+    margin: 0 auto;
 }
 
 #simCoup .prodImage {
-	margin: 0 10px; 
-	height:70px;
+    margin: 0 10px;
+    height:70px;
 }
 
 #simCoup .prodImage img{
-	background: none repeat scroll 0 0 transparent; 
-	border: medium none;
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
 }
 
 #simCoup .prodTitle {
-	text-align:center;
-	font-size:12px;
+    text-align:center;
+    font-size:12px;
 }
 
 #simCoup .prodPrice {
-	font-size:12px;
-	text-align:center;
+    font-size:12px;
+    text-align:center;
 }
 
 
@@ -267,13 +268,13 @@ ul {
 
 #product .productBrandMerchant  .prodBrand {
     padding-right:6px;
-	font-size:13px;
+    font-size:13px;
     display:inline-block;
 }
 
 #product .productBrandMerchant  .prodPrice {
     padding-right:6px;
-	padding-top:4px;
+    padding-top:4px;
     display:inline-block;
 
 }
@@ -285,11 +286,11 @@ ul {
         width:100%;
     }
 
-	#coupon .productContent {
+    #coupon .productContent {
         width:100%;
         float:left;
     }
-	
+
     #product .productImage {
         width:135px;
         float:left;

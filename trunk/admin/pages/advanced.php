@@ -4,10 +4,10 @@ $prosper_admin->admin_header( __( 'Advanced', 'prosperent-suite' ), true, 'prosp
 
 echo '<p class="prosper_settingDesc" style="font-size:16px;">' . __( 'These are the more <strong>advanced</strong> settings. <br><br>They are not necessary to get everything running correctly. ', 'prosperent-suite' ) . '</p>';
 
-/*echo '<h2 class="prosper_h2">' . __( 'Delete Options on Uninstall', 'prosperent-suite' ) . '</h2>';
+echo '<h2 class="prosper_h2">' . __( 'Delete Options on Uninstall', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Option_Delete', __( 'Delete Options on Plugin Uninstall', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "<strong>Checking this will delete options on Uninstall. On reinstallation, some options will be added automatically.</strong>", 'prosperent-suite' ) . '</p>';
-*/
+
 echo '<h2 class="prosper_h2">' . __( 'Image URL Masking', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->geoCheckbox( 'Image_Masking', __( 'Image URL Masking', 'prosperent-suite' ), '', '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Masks the image urls to, they will now match your website\'s URL. Only advise the use of the if you are <strong>NOT</strong> on shared hosting, otherwise your images may load slowly.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';

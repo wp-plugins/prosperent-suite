@@ -114,6 +114,12 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.0.7 =
+* Fixed bug with Auto-Linker and Auto-Comparer when using CloudFlare's RocketLoader
+* Adjusted some CSS
+* Changed flush rules
+* Added uninstall method and uninstall option (Advanced tab)- if checked will delete all options data from table
+
 = 2.0.6 =
 * Added more ways to refine your search (remove query and remove sort)
 * Added Twitter Cards

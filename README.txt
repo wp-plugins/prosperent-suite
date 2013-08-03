@@ -114,6 +114,9 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.0.7.1 =
+* fixed uninstall method
+
 = 2.0.7 =
 * Fixed bug with Auto-Linker and Auto-Comparer when using CloudFlare's RocketLoader
 * Adjusted some CSS

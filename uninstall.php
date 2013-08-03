@@ -3,7 +3,8 @@ require_once('Prosper_Suite.php');
 
 $options = Prosperent_Suite::get_option();
 
-if(!defined(WP_UNINSTALL_PLUGIN) && (!$options['Option_Delete'] || false == $options['Option_Delete'])) exit();
+if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
+    exit ();
 
 if ( true == $options['Option_Delete'] || 1 == $options['Option_Delete'] )
 {

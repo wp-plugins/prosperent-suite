@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.7
+Version: 2.0.7.1
 Author: Prosperent Brandon
 License: GPLv3
 

@@ -29,8 +29,15 @@ echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</
 echo $prosper_admin->textinput( 'Api_Limit', __( 'Number of results', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>API Limit (Max = 1000)</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosper_admin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Pagination Limit</span></a>' );
+echo $prosper_admin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Amount of products shown per page.</span></a>' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosper_admin->textinput( 'Same_Limit', __( 'Limits for Same/Similar Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>This limit will set the desired amount for the "Similar Products" and "Other Products from Brand" on the individual product pages.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
+/*echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the products page...', 'prosperent-suite' ) . '</h2>';
+echo $prosper_admin->radio( 'Product_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), __( 'View', 'prosperent-suite' ) );
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';*/
 
 echo '<h2 class="prosper_h2">' . __( 'Do you want to allow filtering of the results?', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );

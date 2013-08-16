@@ -1,7 +1,9 @@
 <?php
 if (!$celeb && $options['Celebrity_Query'])
 {
-	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . 'celeb/' . urlencode($options['Celebrity_Query']);
+	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$url = preg_replace('/\/$/', '', $url);
+	$url .= 'celeb/' . urlencode($options['Celebrity_Query']);
 	$c = $options['Celebrity_Query'];
 }
 else
@@ -20,11 +22,13 @@ $newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNum
 if ($_POST['cq']) 
 {
 	header('Location: ' . $newQuery . '/celebQuery/' . urlencode($_POST['cq']));
+	exit;
 }
 
 if ($_POST['sort']) 
 {
 	header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
+	exit;
 }
 
 /*
@@ -64,10 +68,10 @@ $celebrityResults = $celebrityApi -> getData();
 echo $typeSelector;
 ?>
 
-<div style="float:right;">
-	<form id="searchform" method="POST" action="" style="margin:0;">
-		<input class="field" type="text" name="cq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-		<input class="submit" type="submit" value="Search" style="padding:5px;">
+<div class="prosper_searchform">
+	<form class="searchform" method="POST" action="">
+		<input class="field" type="text" name="cq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
+		<input class="submit" type="submit" value="Search">
 	</form>
 </div>
 
@@ -105,16 +109,7 @@ if (empty($results))
 {
 	header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
 	echo '<div class="noResults">No Results</div>';
-	/*
-	?>
-	<div style="padding:10px 0;">
-		<form id="searchform" method="POST" action="" style="margin:0;">
-			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-			<input class="submit" type="submit" value="Search" style="padding:5px;">
-		</form>
-	</div>
-	<?php
-	*/
+
 	if ($filterMerchant || $filterBrand || $query)
 	{
 		echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace(array('/merchant/' . $filterMerchant, '/brand/' . $filterBrand, '/query/' . $query), array('', '', ''), $celeSubmit) . '>clear the filter(s)</a>.</div>';
@@ -274,15 +269,17 @@ else
 	echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ucwords($celebDecode ? ($celebQuery ? $celebDecode . ' + ' . $celebQuery : $celebDecode) : ($celebQuery ? urldecode($celebQuery) : ($filterBrand ? urldecode($filterBrand) : urldecode($filterMerchant)))) . '</b>' . (($celebQuery && $celebDecode) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace('/celebQuery/' . $celebQuery, '', $celeSubmit) . '> [x]</a>' : '') . '</div>';
 	?>
 
-	<form name="priceSorter" method="POST" action="" style="margin:0; float:right; padding:0 15px 0 0; margin-top:6px;">
-		<label for="PriceSort" style="padding-right:4px; font-size:14px; float:left;">Sort By: </label>
-		<select name="sort" onChange="priceSorter.submit();" style="display:inline; margin-bottom:0; margin-top:0;">
-			<option value="rel">Relevancy</option>
-			<option <?php echo ($sort == 'desc' ? 'selected="true"' : ''); ?> value="desc">Price: High to Low</option>
-			<option <?php echo ($sort == 'asc' ? 'selected="true"' : ''); ?> value="asc">Price: Low to High</option>
-		</select>
-		<?php echo $sort != 'rel' ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $celeSubmit) . '> [x]</a>' : ''; ?>
-	</form>
+	<div class="prosper_priceSorter">
+		<form class="sorterofprice" name="priceSorter" method="POST" action="" >
+			<label for="PriceSort">Sort By: </label>
+			<select name="sort" onChange="priceSorter.submit();">
+				<option value="rel">Relevancy</option>
+				<option <?php echo ($sort == 'desc' ? 'selected="true"' : ''); ?> value="desc">Price: High to Low</option>
+				<option <?php echo ($sort == 'asc' ? 'selected="true"' : ''); ?> value="asc">Price: Low to High</option>
+			</select>
+			<?php echo ($sort != 'rel' && '' != $sort) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $celeSubmit) . '> [x]</a>' : ''; ?>
+		</form>
+	</div>
 
 	<div id="productList">
 		<?php

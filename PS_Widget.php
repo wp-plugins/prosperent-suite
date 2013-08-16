@@ -45,19 +45,20 @@ class ProsperStore_Widget extends WP_Widget
         if ( $title )
             echo $before_title . $title . $after_title;
 
-        $url = 'http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']);
-        $prodSubmit = preg_replace('/\/$/', '', $url);
-        $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
+		$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+		$url = site_url('/') . $base;
+        $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $url);
 
         if ($_POST['q'])
         {
             header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+			exit;
         }
         ?>
-        <form id="searchform" method="POST" action="">
-            <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px; margin: 24px 0 0 20px;">
-            <input type="submit" value="Search" style="padding:4px 4px 5px 4px;">
-        </form>
+		<form class="searchform" method="POST" action="">
+			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="margin:14px 0 0 12px;">
+			<input class="submit" type="submit" value="Search" style="margin-top: 14px;">
+		</form>
         <?php
 
         echo $after_widget;

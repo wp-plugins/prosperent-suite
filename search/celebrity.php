@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-$url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $base . '/type/cele';
+$url = site_url('/') . $base . '/type/cele';
 
 /*
 /  Prosperent API Query
@@ -147,7 +147,7 @@ $result = $prosperentApi -> getAllData();
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
 	'api_key'      => $options['Api_Key'],
-	'limit'        => 8,
+	'limit'        => $options['Same_Limit'],
 	'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
 	'query'		   => $record[0]['keyword'],
 	'groupBy'	   => 'productId'
@@ -206,7 +206,7 @@ echo '<div class="clear"></div>';
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
 	'api_key'      => $options['Api_Key'],
-	'limit'        => 8,
+	'limit'        => $options['Same_Limit'],
 	'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
 	'enableFacets' => $options['Enable_Facets'],
 	'filterBrand'  => $record[0]['brand'],

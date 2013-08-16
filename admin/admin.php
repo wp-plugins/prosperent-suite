@@ -97,7 +97,7 @@ class Prosperent_Admin
 		add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_URL . 'img/prosperent.png' );
 		add_submenu_page('prosper_general', __('Product Search', 'prosperent-suite' ), __( 'Product Search', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
 		add_submenu_page('prosper_general', __( 'Performance Ads', 'prosperent-suite' ), __( 'Performance Ads', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
-		add_submenu_page('prosper_general', __( 'Auto-Comparer', 'prosperent-suite' ), __( 'Auto-Comparer', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'comparerPage' ) );
+		add_submenu_page('prosper_general', __( 'Product Insert', 'prosperent-suite' ), __( 'Product Insert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'comparerPage' ) );
 		add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
 		//add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
@@ -505,7 +505,7 @@ class Prosperent_Admin
 
 		$var_esc = esc_attr( $var );
 
-		$output = '<br/><label class="prosper_select">' . $label . ':</label>';
+		$output = '<br/><label class="prosper_radio">' . $label . ':' . $tooltip . '</label>';
 		foreach ( $values as $key => $value ) {
 			$key = esc_attr( $key );
 			$output .= '<input type="radio" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']" value="' . $key . '" ' . ( $options[$var] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radio" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';

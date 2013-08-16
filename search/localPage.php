@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-$url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $base . '/type/local';
+$url = site_url('/') . $base . '/type/local';
 
 /*
 /  Prosperent API Query
@@ -123,7 +123,7 @@ $state = null == $record[0]['state'] ? 'null' : $record[0]['state'];
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
 	'api_key'       => $options['Api_Key'],
-	'limit'         => 8,
+	'limit'         => $options['Same_Limit'],
 	'visitor_ip'    => $_SERVER['REMOTE_ADDR'],
 	'enableFacets'  => true,
 	'filterCity'    => $city,

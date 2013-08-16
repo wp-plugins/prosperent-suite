@@ -81,6 +81,12 @@ input.prosper_checkbox {
 	padding: 5px;
 }
 
+input.prosper_radio {
+	float: left;
+	margin: 2px 0 0 0;
+	padding: 5px;
+}
+
 input.prosper_geocheckbox {
 	float: left;
 	margin: 5px 0 0 40px;

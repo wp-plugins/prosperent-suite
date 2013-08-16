@@ -1,17 +1,44 @@
 <?php
-$url = 'http://' . $_SERVER['HTTP_HOST'] . ($option['Base_URL'] ? '/' . $option['Base_URL'] : '/products');
-$prodSubmit = preg_replace('/\/$/', '', $url);
-$newQuery = str_replace('/query/' . $query, '', $prodSubmit);
+$params = array_reverse(explode('/', get_query_var('queryParams')));			
 
-if ($_POST['q']) 
+$sendParams = array();
+if (!empty($params))
 {
-	header('Location: ' . $newQuery . '/query/' . urlencode($_POST['q']));
+	$params = array_reverse($params);
+	foreach ($params as $k => $p)
+	{
+		//if the number is even, grab the next index value
+		if (!($k & 1))
+		{
+			$sendParams[$p] = $params[$k + 1];
+		}
+	}
+}	
+
+$query = $sendParams['query'];
+$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+$url = site_url('/') . $base;
+
+$page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
+
+if (is_page($page) && $_POST['q'])
+{
+	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$prodSubmit = preg_replace('/\/$/', '', $url);
+	$newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
+	header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+	exit;
+}		
+elseif ($_POST['q']) 
+{
+	header('Location: ' . $url . '/query/' . urlencode(trim($_POST['q'])));
+	exit;
 }
 ?>
 
 <div style="<?php echo $options['Additional_CSS']; ?>">
-    <form id="searchform" method="POST" action="<?php echo $options['Base_URL'] ? '/' . $options['Base_URL'] : '/products'; ?>">
-        <input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="width:60%; padding:4px 4px 7px;">
-        <input type="submit" value="Search">
-    </form>
+	<form class="searchform" method="POST" action="">
+		<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
+		<input class="submit" type="submit" value="Search">
+	</form>
 </div>

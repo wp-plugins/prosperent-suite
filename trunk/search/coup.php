@@ -1,7 +1,9 @@
 <?php
 if (!$query && $options['Coupon_Query'])
 {
-	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/query/' . urlencode($options['Coupon_Query']);
+	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$url = preg_replace('/\/$/', '', $url);
+	$url .= '/query/' . urlencode($options['Coupon_Query']);
 	$q = $options['Coupon_Query'];
 }
 else
@@ -18,22 +20,24 @@ $newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNum
 
 if ($_POST['coupq']) 
 {
-	header('Location: ' . $newQuery . '/query/' . urlencode($_POST['coupq']));
+	header('Location: ' . $newQuery . '/query/' . htmlentities(urlencode($_POST['q'])));
+	exit;
 }
 
 if ($_POST['sort']) 
 {
 	header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
+	exit;
 }
 
 $key = array_search('Zappos.com', $filterMerchants);
-if ($key || 0 == $key)
+if ($key || 0 === $key)
 {
 	unset($filterMerchants[$key]);
 }
 
 $key2 = array_search('6pm', $filterMerchants);
-if ($key2 || 0 == $key2)
+if ($key2 || 0 === $key2)
 {
 	unset($filterMerchants[$key2]);
 }
@@ -67,10 +71,10 @@ $totalFound = $prosperentApi -> getTotalRecordsFound();
 echo $typeSelector;
 ?>
 
-<div style="float:right;">
-	<form id="searchform" method="POST" action="" style="margin:0;">
-		<input class="field" type="text" name="coupq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-		<input class="submit" type="submit" value="Search" style="padding:5px;">
+<div class="prosper_searchform">
+	<form class="searchform" method="POST" action="">
+		<input class="field" type="text" name="coupq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
+		<input class="submit" type="submit" value="Search">
 	</form>
 </div>
 
@@ -79,20 +83,11 @@ echo $typeSelector;
 /  If no results, or the user clicked search when 'Search Products...'
 /  was in the search field, displays 'No Results'
 */
-if (empty($results))
+if (empty($results) || !$filterCouponMerchants || !$query)
 {
 	header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
 	echo '<div class="noResults">No Results</div>';
-	/*
-	?>
-	<div style="padding:10px 0;">
-		<form id="searchform" method="POST" action="" style="margin:0;">
-			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-			<input class="submit" type="submit" value="Search" style="padding:5px;">
-		</form>
-	</div>
-	<?php
-	*/
+
 	if ($filterMerchant)
 	{
 		echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace('/merchant/' . $filterMerchant, '', $coupSubmit) . '>clear the filter(s)</a></div>';
@@ -280,16 +275,18 @@ else
 	// Breaks the array into smaller chunks for each page depending on $limit
 	$results = array_slice($results, $limitLower, $limit, true);
 	?>
-	<form name="priceSorter" method="POST" action="" style="margin:0; float:right; padding:0 15px 0 0; margin-top:6px;">
-		<label for="PriceSort" style="padding-right:4px; font-size:14px; float:left;">Sort By: </label>
-		<select name="sort" onChange="priceSorter.submit();" style="display:inline; margin-bottom:0; margin-top:0;">
-			<option value="rel">Relevancy</option>
-			<option <?php echo ($sort == 'expiration_date+desc' ? 'selected="true"' : ''); ?> value="expiration_date+desc">Expiration Date: Descending</option>
-			<option <?php echo ($sort == 'expiration_date+asc' ? 'selected="true"' : ''); ?> value="expiration_date+asc">Expiration Date: Ascending</option>		
-		</select>
-		<?php echo $sort != 'rel' ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $coupSubmit) . '> [x]</a>' : ''; ?>
-	</form>
-	</br>
+	<div class="prosper_priceSorter">
+		<form class="sorterofprice" name="priceSorter" method="POST" action="" >
+			<label for="PriceSort">Sort By: </label>
+			<select name="sort" onChange="priceSorter.submit();">
+				<option value="rel">Relevancy</option>
+				<option <?php echo ($sort == 'expiration_date+desc' ? 'selected="true"' : ''); ?> value="expiration_date+desc">Expiration Date: Descending</option>
+				<option <?php echo ($sort == 'expiration_date+asc' ? 'selected="true"' : ''); ?> value="expiration_date+asc">Expiration Date: Ascending</option>		
+			</select>
+			<?php echo ($sort != 'rel' && '' != $sort) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $coupSubmit) . '> [x]</a>' : ''; ?>
+		</form>
+	</div>
+
 	<div id="couponList">
 		<?php
 		// Loop to return coupons and corresponding information

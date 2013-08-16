@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite (Contains Performance Ads, Product Search, Auto-Linker and Auto-Comparer)
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.7.1
+Version: 2.0.8
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -42,18 +42,26 @@ if (!class_exists('Prosperent_Suite'))
          */
         public function __construct()
         {
-            add_action('init', array($this, 'prosper_query_tag'), 1);
             add_action('init', array($this, 'do_output_buffer'));
+            add_action('init', array($this, 'prosper_query_tag'), 1);
 
             $options = $this->get_option();
 
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosper_deactivate'));
 
+            global $wp_rewrite;
+            if (!$wp_rewrite->rules['store/go/([^/]*)/?'])
+            {
+                add_action( 'init', array($this, 'prosper_rewrite' ));
+                add_action( 'init', array($this, 'prosper_flush_rules' ));
+            }
+
             if (isset($options['Enable_PA']))
             {
                 add_action('performance_ads', array($this, 'Prosper_Perform_Ads'));
                 add_action('wp_enqueue_scripts', array($this, 'prosperAds_css'));
+                add_action('wp_head', array($this, 'perform_header'));
                 require_once('PA_Sidebar.php');
                 require_once('PA_Footer.php');
             }
@@ -155,25 +163,29 @@ if (!class_exists('Prosperent_Suite'))
             }
             $record = $prosperentApi -> getAllData();
 
-            // Open Graph: FaceBook
-            echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
-            echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
-            echo '<meta property="og:type" content="website" />';
-            echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
-            echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
-            echo '<meta property="og:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
+            if (is_page($page))
+            {
+                // Open Graph: FaceBook
+                echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
+                echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
+                echo '<meta property="og:type" content="website" />';
+                echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
+                echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
+                echo '<meta property="og:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
 
-            // Twitter Cards
-            echo '<meta name="twitter:card" content="product">';
-            echo '<meta name="twitter:site" content="' . $options['Twitter_Site'] . '" />';
-            echo '<meta name="twitter:creator" content="' . $options['Twitter_Creator'] . '"/>';
-            echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
-            echo '<meta name="twitter:data1" content="' . ((!$record[0]['price_sale'] || $record[0]['price'] <= $record[0]['price_sale']) ? $record[0]['price'] : $record[0]['price_sale']) . '">';
-            echo '<meta name="twitter:label1" content="Price">';
-            echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
-            echo '<meta name="twitter:label2" content="Brand">';
-            echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
-            echo '<meta name="twitter:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+                // Twitter Cards
+                echo '<meta name="twitter:card" content="product">';
+                echo '<meta name="twitter:site" content="' . $options['Twitter_Site'] . '" />';
+                echo '<meta name="twitter:creator" content="' . $options['Twitter_Creator'] . '"/>';
+                echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
+                echo '<meta name="twitter:data1" content="' . ((!$record[0]['price_sale'] || $record[0]['price'] <= $record[0]['price_sale']) ? $record[0]['price'] : $record[0]['price_sale']) . '">';
+                echo '<meta name="twitter:label1" content="Price">';
+                echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
+                echo '<meta name="twitter:label2" content="Brand">';
+                echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
+                echo '<meta name="twitter:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+            }
         }
 
         public function register_filters()
@@ -191,6 +203,11 @@ if (!class_exists('Prosperent_Suite'))
                 add_filter('get_comment_text', array($this, 'auto_linker'), 11);
                 add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
             }
+        }
+
+        public function perform_header()
+        {
+            echo '<script data-cfasync="false" type="text/javascript" src="http://prosperent.com/js/ad.js"></script>';
         }
 
         /**
@@ -217,18 +234,14 @@ if (!class_exists('Prosperent_Suite'))
         public function prosper_activate()
         {
             $this->prosper_default();
-
             $this->prosperent_store_install();
-
             $this->prosper_rewrite();
-
             $this->prosper_flush_rules();
         }
 
         public function prosper_deactivate()
         {
             $this->prosperent_store_remove();
-
             $this->prosper_flush_rules();
         }
 
@@ -270,14 +283,6 @@ if (!class_exists('Prosperent_Suite'))
             add_rewrite_rule($page . '/(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
         }
 
-        public function base_url()
-        {
-            global $wp_rewrite;
-
-            add_rewrite_rule($options['Base_URL'] . '/(.*)', 'index.php?pagename=products&queryParams=$matches[1]', 'top');
-            $wp_rewrite->flush_rules();
-        }
-
         public function prosper_default()
         {
             $old_options = get_option('prosper_prosperent_suite');
@@ -317,6 +322,7 @@ if (!class_exists('Prosperent_Suite'))
                         'Travel_Endpoint'    => 0,
                         'Api_Limit' 		 => $old_options['Api_Limit'],
                         'Pagination_Limit'   => $old_options['Pagination_Limit'],
+                        'Same_Limit'		 => 8,
                         'Enable_Facets'      => $old_options['Enable_Facets'],
                         'Default_Sort' 		 => $old_options['Default_Sort'],
                         'Search_Bar_Text'  	 => $old_options['Search_Bar_Text'],
@@ -346,6 +352,7 @@ if (!class_exists('Prosperent_Suite'))
                         'Travel_Endpoint'    => 0,
                         'Api_Limit' 		 => 50,
                         'Pagination_Limit'   => 10,
+                        'Same_Limit'		 => 8,
                         'Enable_Facets'      => 1,
                         'Default_Sort' 		 => '',
                         'Search_Bar_Text'  	 => '',
@@ -577,13 +584,14 @@ if (!class_exists('Prosperent_Suite'))
         public function prospere_stylesheets()
         {
             // Product Search CSS for results and search
-            wp_register_style( 'prospere_main_style', plugins_url('/css/productSearch.css', __FILE__) );
+            // List View
+            wp_register_style( 'prospere_main_style', plugins_url('/css/productSearchList.css', __FILE__) );
             wp_enqueue_style( 'prospere_main_style' );
 
             wp_register_style( 'prospere_product_style', plugins_url('/css/productPage.css', __FILE__) );
             wp_enqueue_style( 'prospere_product_style' );
 
-            // Product Search CSS for IE7, a few changes to align objects
+            // Product Search CSS for IE7, a few changes to align objects in IE 7
             wp_enqueue_style('prospere_IE_7', plugins_url('/css/productSearch-IE7.css', __FILE__));
             wp_enqueue_style( 'prospere_IE_7' );
         }
@@ -591,7 +599,7 @@ if (!class_exists('Prosperent_Suite'))
         public function store_shortcode()
         {
             ob_start();
-            include(plugin_dir_path(__FILE__) . 'products.php');
+            include(PROSPER_PATH . 'products.php');
             $store = ob_get_clean();
             return $store;
         }
@@ -601,7 +609,7 @@ if (!class_exists('Prosperent_Suite'))
             $options = $this->get_option();
 
             ob_start();
-            include(plugin_dir_path(__FILE__) . 'search_short.php');
+            include(PROSPER_PATH . 'search_short.php');
             $search = ob_get_clean();
             return $search;
         }
@@ -632,43 +640,95 @@ if (!class_exists('Prosperent_Suite'))
             $options = $this->get_option();
             $sep = ' ' . (!$options['Title_Sep'] ? !$sep ? '|' : trim($sep) : trim($options['Title_Sep'])) . ' ';
             $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-            $query = ($sendParams['query'] ? $sendParams['query'] : (($sendParams['brand'] || $sendParams['merchant']) ? '' : ($options['Starting_Query'] ? $options['Starting_Query'] : '')));
+            $query = ($sendParams['query'] ? $sendParams['query'] : ($options['Starting_Query'] ? $options['Starting_Query'] : ''));
             $query = ucwords(urldecode(str_replace('+', ' ', $query)));
             $page_num = $sendParams['page'] ? ' Page ' . $sendParams['page'] : '';
             $pagename = get_the_title();
             $blogname = get_bloginfo();
             $brand = ucwords(urldecode($sendParams['brand']));
             $merchant = ucwords(urldecode($sendParams['merchant']));
+            $type = $sendParams['type'];
+            $state = ucwords(urldecode($sendParams['state']));
+            $city = ucwords(urldecode($sendParams['city']));
+            $zip = ucwords(urldecode($sendParams['zip']));
+            $celeb = ucwords(urldecode($sendParams['celeb']));
+            $celebQuery = ucwords(urldecode($sendParams['celebQuery']));
 
-            if ($sendParams['type'] == 'cele')
+            if ('coup' == $type)
             {
-                $query = ucwords(urldecode($sendParams['celeb'] ? ($sendParams['celebQuery'] ? $sendParams['celeb'] . ' - ' . $sendParams['celebQuery'] : $sendParams['celeb']) : ''));
+                $query = ($sendParams['query'] ? $sendParams['query'] : ($options['Coupon_Query'] ? $options['Coupon_Query'] : ''));
             }
 
             if (get_query_var('cid'))
             {
                 $query = preg_replace('/\(.+\)/i', '', urldecode(get_query_var('keyword')));
+                $query = str_replace(',SL,', '/', $query);
                 $title = $query . $sep . $title;
             }
             elseif (is_page($page))
             {
-                switch ( $options['Title_Structure'] )
+                if ('local' == $type)
                 {
-                    case '0':
-                        $title =  $title;
-                        break;
-                    case '1':
-                        $title =  $title . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
-                        break;
-                    case '2':
-                        $title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
-                        break;
-                    case '3':
-                        $title =  !$query ? $title : ($query ? $query : '') . ($brand ?  ' &raquo; ' . $brand : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
-                        break;
-                    case '4':
-                        $title =  $title;
-                        break;
+                    switch ( $options['Title_Structure'] )
+                    {
+                        case '0':
+                            $title =  $title;
+                            break;
+                        case '1':
+                            $title =  $title . $page_num . (($zip || $city || $state) ? $sep : '') . ($zip ? $zip : '') . ($zip && $city ? ' ' : '') . ($city ? $city : '') . (($zip && $state || $state && $city) ? ' ' : '') . ($state ? $state : '');
+                            break;
+                        case '2':
+                            $title = ($zip ? $zip : '') . ($zip && $city ? ' ' : '') . ($city ? $city : '') . (($zip && $state && !$city) ? ' ' : (($state && $city) ? ', ' : '')) . ($state ? $state : '') . (($zip || $city || $state) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
+                            break;
+                        case '3':
+                            $title =  !$zip ? $title : ($zip ? $zip : '') . ($city ?  ' &raquo; ' . $city : '') . ($state ? ' &raquo; ' . $state : '') . $page_num;
+                            break;
+                        case '4':
+                            $title =  $title;
+                            break;
+                    }
+                }
+                elseif('cele' == $type)
+                {
+                    switch ( $options['Title_Structure'] )
+                    {
+                        case '0':
+                            $title =  $title;
+                            break;
+                        case '1':
+                            $title =  $title . $page_num . (($celebQuery || $celeb) ? $sep : '') . ($celebQuery ? $celebQuery : '') . ($celebQuery && $celeb ? ' &raquo; ' : '') . ($celeb ? $celeb : '');
+                            break;
+                        case '2':
+                            $title = ($celebQuery ? $celebQuery : '') . ($celebQuery && $celeb ? ' &raquo; ' : '') . ($celeb ? $celeb : '') . (($celebQuery || $celeb ) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
+                            break;
+                        case '3':
+                            $title =  !$celebQuery ? $title : ($celebQuery ? $celebQuery : '') . ($celeb ?  ' &raquo; ' . $celeb : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
+                            break;
+                        case '4':
+                            $title =  $title;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch ( $options['Title_Structure'] )
+                    {
+                        case '0':
+                            $title =  $title;
+                            break;
+                        case '1':
+                            $title =  $title . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
+                            break;
+                        case '2':
+                            $title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
+                            break;
+                        case '3':
+                            $title =  !$query ? $title : ($query ? $query : '') . ($brand ?  ' &raquo; ' . $brand : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
+                            break;
+                        case '4':
+                            $title =  $title;
+                            break;
+                    }
                 }
             }
 
@@ -677,7 +737,24 @@ if (!class_exists('Prosperent_Suite'))
 
         public function Prospere_Search()
         {
+            $params = array_reverse(explode('/', get_query_var('queryParams')));
+
+            $sendParams = array();
+            if (!empty($params))
+            {
+                $params = array_reverse($params);
+                foreach ($params as $k => $p)
+                {
+                    //if the number is even, grab the next index value
+                    if (!($k & 1))
+                    {
+                        $sendParams[$p] = $params[$k + 1];
+                    }
+                }
+            }
+
             $options = $this->get_option();
+            $query = $sendParams['query'];
 
             $url = 'http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']);
             $prodSubmit = preg_replace('/\/$/', '', $url);
@@ -691,10 +768,12 @@ if (!class_exists('Prosperent_Suite'))
                 $prodSubmit = preg_replace('/\/$/', '', $url);
                 $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
                 header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+                exit;
             }
             elseif ($_POST['q'])
             {
                 header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+                exit;
             }
             ?>
             <form id="search" method="POST" action="">
@@ -765,7 +844,7 @@ if (!class_exists('Prosperent_Suite'))
 
             if (!$c)
             {
-                require_once('Prosperent_Api.php');
+                require_once(PROSPER_PATH . 'Prosperent_Api.php');
                 $prosperentApi = new Prosperent_Api(array(
                     'api_key'        => $options['Api_Key'],
                     'query'          => trim($query),
@@ -797,13 +876,13 @@ if (!class_exists('Prosperent_Suite'))
                 if ($results)
                 {
                     ob_start();
-                    include(plugin_dir_path(__FILE__) . 'compare_short.php');
+                    include(PROSPER_PATH . 'compare_short.php');
                     $compare = ob_get_clean();
                     return $compare;
                 }
                 else
                 {
-                    require_once('Prosperent_Api.php');
+                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
                         'api_key'      => $options['Api_Key'],
                         'query'        => $query,
@@ -832,7 +911,7 @@ if (!class_exists('Prosperent_Suite'))
                     if ($results)
                     {
                         ob_start();
-                        include(plugin_dir_path(__FILE__) . 'compare_short.php');
+                        include(PROSPER_PATH . 'compare_short.php');
                         $compare = ob_get_clean();
                         return $compare;
                     }
@@ -844,7 +923,7 @@ if (!class_exists('Prosperent_Suite'))
             }
             else
             {
-                require_once('Prosperent_Api.php');
+                require_once(PROSPER_PATH . 'Prosperent_Api.php');
                 $prosperentApi = new Prosperent_Api(array(
                     'api_key'        => $options['Api_Key'],
                     'query'          => $query,
@@ -861,13 +940,13 @@ if (!class_exists('Prosperent_Suite'))
                 if ($results)
                 {
                     ob_start();
-                    include(plugin_dir_path(__FILE__) . 'compare_coup.php');
+                    include(PROSPER_PATH . 'compare_coup.php');
                     $compare = ob_get_clean();
                     return $compare;
                 }
                 else
                 {
-                    require_once('Prosperent_Api.php');
+                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
                         'api_key'      => $options['Api_Key'],
                         'query'        => $query,
@@ -882,7 +961,7 @@ if (!class_exists('Prosperent_Suite'))
                     if ($results)
                     {
                         ob_start();
-                        include(plugin_dir_path(__FILE__) . 'compare_coup.php');
+                        include(PROSPER_PATH . 'compare_coup.php');
                         $compare = ob_get_clean();
                         return $compare;
                     }
@@ -915,7 +994,7 @@ if (!class_exists('Prosperent_Suite'))
 
             if ($gtm || !$options['Enable_PPS'])
             {
-                require_once('Prosperent_Api.php');
+                require_once(PROSPER_PATH . 'Prosperent_Api.php');
                 $prosperentApi = new Prosperent_Api(array(
                     'api_key'        => $options['Api_Key'],
                     'query'          => $query,
@@ -949,7 +1028,7 @@ if (!class_exists('Prosperent_Suite'))
                 }
                 else
                 {
-                    require_once('Prosperent_Api.php');
+                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
                     $prosperentApi = new Prosperent_Api(array(
                         'api_key'      => $options['Api_Key'],
                         'query'        => $query,
@@ -1037,7 +1116,7 @@ if (!class_exists('Prosperent_Suite'))
 
         public function autoCompare_tiny_register($plugin_array)
         {
-            $plugin_array["compare"] = plugin_dir_url(__FILE__) . 'js/compare.min.js';
+            $plugin_array["compare"] = PROSPER_URL . 'js/compare.min.js';
             return $plugin_array;
         }
 
@@ -1049,7 +1128,7 @@ if (!class_exists('Prosperent_Suite'))
 
         public function autoLinker_tiny_register($plugin_array)
         {
-            $plugin_array["linker"] = plugin_dir_url(__FILE__) . 'js/linker.min.js';
+            $plugin_array["linker"] = PROSPER_URL . 'js/linker.min.js';
             return $plugin_array;
         }
 
@@ -1064,15 +1143,24 @@ if (!class_exists('Prosperent_Suite'))
         {
             $options = $this->get_option();
 
+            $posttags = get_the_tags();
+            $count=0;
+            if ($posttags)
+            {
+                foreach($posttags as $tag)
+                {
+                    $count++;
+                    if (1 == $count)
+                    {
+                        $tag = $tag->name;
+                    }
+                }
+            }
+
+            $fallback = isset($tag) ? $tag : $options['content_fallBack'] ? $options['content_fallBack'] : '';
+
             ?>
-            <script type="text/javascript">
-                <!--
-                prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
-                prosperent_pa_height = 90;
-                prosperent_pa_fallback_query = <?php echo json_encode($options['content_fallBack']); ?>;
-                //-->
-            </script>
-            <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>
+            <div class="prosperent-pa" style="height:90;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
             <?php
         }
     }

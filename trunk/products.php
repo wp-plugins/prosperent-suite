@@ -32,6 +32,7 @@ if ($storeUrl = get_query_var('storeUrl'))
 	$storeUrl = urldecode($storeUrl);
 	$storeUrl = str_replace(',SL,', '/', $storeUrl);
 	header('Location:http://prosperent.com/' . $storeUrl);
+	exit;
 }
 
 if ($prosperImgUrl = get_query_var('prosperImg'))
@@ -39,6 +40,7 @@ if ($prosperImgUrl = get_query_var('prosperImg'))
 	$prosperImgUrl = urldecode($prosperImgUrl);
 	$prosperImgUrl = str_replace(',SL,', '/', $prosperImgUrl);
 	header('Location:http://img1.prosperent.com/images/' . $prosperImgUrl);
+	exit;
 }
 
 $options = $this->get_option();
@@ -76,9 +78,9 @@ if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
 	{
 		$newPageString = 'page/' . $pageNumber . '/';
 	}
-	echo $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString;
 	
 	header('Location:http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ?  '/products' : ($options['Base_URL'] == 'null' ? '/' : '/' . $options['Base_URL'])) . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
+	exit;
 }
 
 function prosper_pagination($pages = '', $paged, $range = 8)

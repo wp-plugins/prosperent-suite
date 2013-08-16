@@ -54,22 +54,10 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
         extract($args);
         $title = apply_filters('widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base);
 
-        /*echo $before_widget;
-        if ( $title )
-            echo $before_title . $title . $after_title;*/
-        ?>
-        <script data-cfasync="false">
-            <!--
-            prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
-            prosperent_pa_width = <?php echo json_encode($options['SWW'] == 'auto' ? '' : $options['SWW']); ?>;
-            prosperent_pa_height = <?php echo json_encode($options['SWH']); ?>;
-            prosperent_pa_fallback_query = <?php echo json_encode($fallback); ?>;
-            //-->
-        </script>
-        <script data-cfasync="false" src="http://prosperent.com/js/ad.js"></script>
-        <br>
+		?>
+		<div class="prosperent-pa" style="height: <?php echo $options['SWH']; ?>; width: <?php echo $options['SWW'] == 'auto' ? '' : $options['SWW']; ?>" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+		<br>
         <?php
-        //echo $after_widget;
     }
 
     public function update( $new_instance, $old_instance )

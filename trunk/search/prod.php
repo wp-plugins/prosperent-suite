@@ -1,7 +1,9 @@
 <?php
 if (!$query && !$filterBrand && !$filterMerchant && $options['Starting_Query'])
 {
-	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . 'query/' . urlencode($options['Starting_Query']);
+	$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$url = preg_replace('/\/$/', '', $url);
+	$url .= '/query/' . htmlentities(urlencode($options['Starting_Query']));
 	$q = $options['Starting_Query'];
 }
 else
@@ -18,12 +20,14 @@ $newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNum
 
 if ($_POST['q']) 
 {
-	header('Location: ' . $newQuery . '/query/' . urlencode($_POST['q']));
+	header('Location: ' . $newQuery . '/query/' . htmlentities(urlencode($_POST['q'])));
+	exit;
 }
 
 if ($_POST['sort']) 
 {
 	header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
+	exit;
 }
 
 /*
@@ -68,10 +72,10 @@ $facets = $prosperentApi -> getFacets();
 echo $typeSelector;
 ?>
 
-<div style="float:right;">
-	<form id="searchform" method="POST" action="" style="margin:0;">
-		<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-		<input type="submit" value="Search" style="padding:5px; font-size:12px;">
+<div class="prosper_searchform">
+	<form class="searchform" method="POST" action="">
+		<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
+		<input class="submit" type="submit" value="Search">
 	</form>
 </div>
 <?php
@@ -83,16 +87,7 @@ if (empty($results))
 {
 	header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
 	echo '<div class="noResults">No Results</div>';
-	/*
-	?>
-	<div style="padding:10px 0;">
-		<form id="searchform" method="POST" action="" style="margin:0;">
-			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="padding:4px 4px 6px;">
-			<input class="submit" type="submit" value="Search" style="padding:5px;">
-		</form>
-	</div>
-	<?php
-	*/
+
 	if ($filterBrand || $filterMerchant)
 	{
 		echo '<div class="noResults-secondary">Please try your search again or <a style="text-decoration:none;" href=' . str_replace(array('/merchant/' . $filterMerchant, '/brand/' . $filterBrand), array('', ''), $prodSubmit) . '>clear the filter(s)</a>.</div>';
@@ -136,7 +131,6 @@ if (empty($results))
 	
 	echo '<div class="totalFound">Browse these <strong>trending products</strong></div>';
 	?>
-
 	<div id="productList">
 		<?php
 		// Loop to return Products and corresponding information
@@ -180,7 +174,7 @@ if (empty($results))
 					{
 						//we don't do anything
 						?>
-						<div class="productPriceNoSale"><span><?php echo '$' . $record['price']; ?></span></div>
+						<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
 						<?php
 					}
 					//otherwise strike-through Price and list the Price_Sale
@@ -406,17 +400,18 @@ else
 
 	echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ucwords($query ? urldecode($query) : ($filterBrand ? urldecode($filterBrand) : urldecode($filterMerchant))) . '</b>' . ($query && ($filterMerchant || $filterBrand) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/query/' . $query), array('', ''), $prodSubmit) . '> [x]</a>' : '') . '</div>';
 	?>
-
-	<form name="priceSorter" method="POST" action="" style="margin:0; float:right; padding:0 15px 0 0; margin-top:6px;">
-		<label for="PriceSort" style="padding-right:4px; font-size:14px; float:left;">Sort By: </label>
-		<select name="sort" onChange="priceSorter.submit();" style="display:inline; margin-bottom:0; margin-top:0;">
-			<option value="rel">Relevancy</option>
-			<option <?php echo ($sort == 'desc' ? 'selected="true"' : ''); ?> value="desc">Price: High to Low</option>
-			<option <?php echo ($sort == 'asc' ? 'selected="true"' : ''); ?> value="asc">Price: Low to High</option>
-		</select>		
-		<?php echo $sort != 'rel' ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $prodSubmit) . '> [x]</a>' : ''; ?>
-	</form>
-	</br>
+	
+	<div class="prosper_priceSorter">
+		<form class="sorterofprice" name="priceSorter" method="POST" action="" >
+			<label for="PriceSort">Sort By: </label>
+			<select name="sort" onChange="priceSorter.submit();">
+				<option value="rel">Relevancy</option>
+				<option <?php echo ($sort == 'desc' ? 'selected="true"' : ''); ?> value="desc">Price: High to Low</option>
+				<option <?php echo ($sort == 'asc' ? 'selected="true"' : ''); ?> value="asc">Price: Low to High</option>
+			</select>		
+			<?php echo ($sort != 'rel' && '' != $sort) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $prodSubmit) . '> [x]</a>' : ''; ?>
+		</form>
+	</div>
 
 	<?php
 	// Gets the count of results for Pagination
@@ -486,7 +481,7 @@ else
 					{
 						//we don't do anything
 						?>
-						<div class="productPriceNoSale"><span><?php echo '$' . $record['price']; ?></span></div>
+						<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
 						<?php
 					}
 					//otherwise strike-through Price and list the Price_Sale

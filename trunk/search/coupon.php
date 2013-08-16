@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-$url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $base . '/type/coup';
+$url = site_url('/') . $base . '/type/coup';
 
 /*
 /  Prosperent API Query
@@ -136,7 +136,7 @@ $interval = abs($expires - $today) / (60*60*24);
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
 	'api_key'        => $options['Api_Key'],
-	'limit'          => 8,
+	'limit'          => $options['Same_Limit'],
 	'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
 	'enableFacets'   => $options['Enable_Facets'],
 	'filterMerchant' => $record[0]['merchant'],

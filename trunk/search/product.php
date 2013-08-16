@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-$url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $base;
+$url = site_url('/') . $base;
 
 switch ($options['Country'])
 {
@@ -91,7 +91,7 @@ $result = $prosperentApi -> getAllData();
                 {
                     echo substr($record[0]['description'], 0, 200);
 					?>
-					<span id="moreDesc" style="display:inline-block;"> ... <a style="cursor:pointer;" onclick="showFullDesc('fullDesc'); hideMoreDesc('moreDesc');">more</a></span><p id="fullDesc" style="display:none; -moz-hyphens: manual;"><?php echo substr($record[0]['description'], 200); ?></p>
+					<div id="moreDesc" style="display:inline-block;"> ... <a style="cursor:pointer;" onclick="showFullDesc('fullDesc'); hideMoreDesc('moreDesc');">more</a></div><span id="fullDesc" style="display:none; -moz-hyphens: manual;font-style:normal;"><?php echo substr($record[0]['description'], 200); ?></span>
 					<?php
                 }
                 else
@@ -205,7 +205,7 @@ $result = $prosperentApi -> getAllData();
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
     'api_key'      => $options['Api_Key'],
-    'limit'        => 8,
+    'limit'        => $options['Same_Limit'],
     'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
     'query'		   => $record[0]['keyword'],
     'groupBy'	   => 'productId'
@@ -276,7 +276,7 @@ echo '<div class="clear"></div>';
 require_once(PROSPER_PATH . 'Prosperent_Api.php');
 $prosperentApi = new Prosperent_Api(array(
     'api_key'      => $options['Api_Key'],
-    'limit'        => 8,
+    'limit'        => $options['Same_Limit'],
     'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
     'enableFacets' => $options['Enable_Facets'],
     'filterBrand'  => $record[0]['brand'],

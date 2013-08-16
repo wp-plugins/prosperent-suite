@@ -21,7 +21,7 @@ This plugin contains the following Prosperent tools:
 * **Product Search-** Create a store within your blog.
 * **Performance Ads-** Display ads easily inside widgets, these ads are use an advanced content analyzer to display relevant ads.
 * **Auto-Linker-** Easily link products to the store or the merchant.
-* **Auto-Comparer-** Display a product comparison within your post or page to easily show visitors product information.
+* **Product Insert-** Display a product comparison within your post or page to easily show visitors product information.
 
 This suite will give you everything you need to easily start making money with your blog.
 
@@ -66,9 +66,9 @@ Well these reasons should help you with that question:
 5.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
-6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Auto-Comparer.
+6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Product Insert.
     * Auto-Linker allows you to link words to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
-    * Auto-Comparer allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
+    * Product Insert allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
 
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.
 Log in to **Prosperent.com** every so often to check your stats.
@@ -113,6 +113,21 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.0.8 =
+* fixed issue with reroutes suddenly dying, not working in the first place
+* added new option under Product Search under Set Limits... that will affect the amount of products shown in the Similar Products and Other Products From...
+* Changed the name of the Auto-Comparer to Product Insert (same functionality and works the same so it won't mess up older shortcode, just changed the name)
+* fixed a currency issue
+* fixed coupons, they can now be filtered as intended
+* altered titles to work better for Local Deals and Celebrity
+* fixed performance ads, auto-linker, and product insert when using CloudFlare's RocketLoader
+* some css changes
+* fixed meta tag issue when not on the products page
+* removed slashes from titles
+* added fix to header redirects
+* adjusted the pulled urls to better accomodate different permalink types
+* other bug fixes that I can't think of right now
 
 = 2.0.7.1 =
 * fixed uninstall method

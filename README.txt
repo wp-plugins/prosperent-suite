@@ -12,7 +12,6 @@ Prosperent's Tools in one plugin help monetize your blog with ease.
 == Description ==
 
 = Deactivate any other Prosperent Plugins before use =
-= To ensure the new reroutes are working correctly, it's best to deactivate and reactivate the plugin. =
 
 To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
@@ -21,7 +20,7 @@ This plugin contains the following Prosperent tools:
 * **Product Search-** Create a store within your blog.
 * **Performance Ads-** Display ads easily inside widgets, these ads are use an advanced content analyzer to display relevant ads.
 * **Auto-Linker-** Easily link products to the store or the merchant.
-* **Product Insert-** Display a product comparison within your post or page to easily show visitors product information.
+* **Product Insert-** (formerly known as Auto-Comparer) Display a product within your post or page to easily show visitors product information.
 
 This suite will give you everything you need to easily start making money with your blog.
 

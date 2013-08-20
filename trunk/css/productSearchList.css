@@ -46,11 +46,11 @@
     border-top: 1px solid #EDEDED;
     font-size:2.4em;
     margin-top:5px;
-	padding-top:15px;
+    padding-top:15px;
 }
 
 .noResults-secondary {
-	padding-top:8px;
+    padding-top:8px;
     font-size:14px;
 }
 
@@ -63,45 +63,45 @@ td {
 }
 
 .prosper_priceSorter {
-	margin:0; 
-	float:right; 
-	padding:0 15px 0 0;
-	margin-top:4px;
+    margin:0;
+    float:right;
+    padding:0 15px 0 0;
+    margin-top:4px;
 }
 
 .sorterofprice {
-	margin:0;
+    margin:0;
 }
 
 .sorterofprice  label {
-	padding-right:4px; 
-	font-size:14px; 
-	float:left;
+    padding-right:4px;
+    font-size:14px;
+    float:left;
 }
 
 .sorterofprice  select {
-	display:inline; 
-	margin-bottom: 4px; 
-	margin-top:-6px;
-}	
+    display:inline;
+    margin-bottom: 4px;
+    margin-top:-6px;
+}
 
 .prosper_searchform {
-	float:right;
+    float:right;
 }
 
 .searchform {
-	margin:0;
+    margin:0;
 }
 
-.searchform  .submit {
-	margin: -10px 0 0 0;
-	padding:4px 4px 6px;
-}	
+.searchform .prosper_submit {
+    margin: -10px 0 0 0;
+    padding:4px 4px 6px;
+}
 
-.searchform  .field {
-	width:65%;
-	padding:4px; 
-	font-size:14px;
+.searchform .prosper_field {
+    width:60%;
+    padding:4px;
+    font-size:14px;
 }
 
 #facets {
@@ -114,7 +114,7 @@ td {
 }
 
 #facets tr {
-	border:none;
+    border:none;
 }
 
 #facets .brands {
@@ -145,12 +145,12 @@ td {
 
 #brandList {
     margin:0;
-	border-bottom:1px solid #EDEDED;
+    border-bottom:1px solid #EDEDED;
 }
 
 #merchantList {
     margin:0;
-	border-bottom:1px solid #EDEDED;
+    border-bottom:1px solid #EDEDED;
 }
 
 #brandList tr {

@@ -113,6 +113,11 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.0.9 =
+* small CSS fixes on both admin and user side
+* fixed Performance Ads width and height
+* fixed conflict with Simple URLs plugin
+
 = 2.0.8 =
 * fixed issue with reroutes suddenly dying, not working in the first place
 * added new option under Product Search under Set Limits... that will affect the amount of products shown in the Similar Products and Other Products From...

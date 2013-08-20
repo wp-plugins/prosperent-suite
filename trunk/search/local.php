@@ -174,8 +174,8 @@ echo $typeSelector;
 ?>
 <div class="prosper_searchform">
     <form class="searchform" method="POST" action="">
-        <input class="field" type="text" name="state" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
-        <input class="submit" type="submit" value="Search">
+        <input class="prosper_field" type="text" name="state" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Local' : $options['Search_Bar_Text']; ?>">
+        <input class="prosper_submit" type="submit" value="Search">
     </form>
 </div>
 <?php

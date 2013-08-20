@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.8
+Version: 2.0.9
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -50,11 +50,10 @@ if (!class_exists('Prosperent_Suite'))
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosper_deactivate'));
 
-            global $wp_rewrite;
-            if (!$wp_rewrite->rules['store/go/([^/]*)/?'])
+            $rules = get_option('rewrite_rules');
+            if (!$rules['store/go/([^/]*)/?'])
             {
-                add_action( 'init', array($this, 'prosper_rewrite' ));
-                add_action( 'init', array($this, 'prosper_flush_rules' ));
+                add_action( 'init', array($this, 'prosper_reroutes' ));
             }
 
             if (isset($options['Enable_PA']))
@@ -210,6 +209,12 @@ if (!class_exists('Prosperent_Suite'))
             echo '<script data-cfasync="false" type="text/javascript" src="http://prosperent.com/js/ad.js"></script>';
         }
 
+        public function prosper_reroutes()
+        {
+            $this->prosper_rewrite();
+            $this->prosper_flush_rules();
+        }
+
         /**
          * Retrieve all the options
          *
@@ -278,7 +283,7 @@ if (!class_exists('Prosperent_Suite'))
             add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
             add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
             add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&go&storeUrl=$matches[1]', 'top');
+            add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
             add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
             add_rewrite_rule($page . '/(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
         }
@@ -1160,7 +1165,7 @@ if (!class_exists('Prosperent_Suite'))
             $fallback = isset($tag) ? $tag : $options['content_fallBack'] ? $options['content_fallBack'] : '';
 
             ?>
-            <div class="prosperent-pa" style="height:90;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+            <div class="prosperent-pa" style="height:90px;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
             <?php
         }
     }

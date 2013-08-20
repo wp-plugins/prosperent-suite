@@ -9,26 +9,26 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         parent::__construct('performance_ad_ft', __('Performance Ads (footer)'), $widget_ops);
     }
 
-	public function get_prosper_options_array()
-	{
-		$optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+    public function get_prosper_options_array()
+    {
+        $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
 
-		return apply_filters( 'prosper_options', $optarr );
-	}
-	
+        return apply_filters( 'prosper_options', $optarr );
+    }
+
     public function options()
     {
-		static $options;
+        static $options;
 
-		if (!isset($options))
-		{
-			$options = array();
-			foreach ($this->get_prosper_options_array() as $opt)
-			{
-				$options = array_merge($options, (array) get_option($opt));
-			}
-		}
-		return $options;
+        if (!isset($options))
+        {
+            $options = array();
+            foreach ($this->get_prosper_options_array() as $opt)
+            {
+                $options = array_merge($options, (array) get_option($opt));
+            }
+        }
+        return $options;
     }
 
     public function widget( $args, $instance )
@@ -55,8 +55,8 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
         ?>
-		<div class="prosperent-pa" style="height: <?php echo $options['FWH']; ?>; width: <?php echo $options['FWW'] == 'auto' ? '' : $options['SWW']; ?>" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
-		<br>
+        <div class="prosperent-pa" style="height: <?php echo $options['FWH'] . 'px'; ?>; width: <?php echo $options['FWW'] == 'auto' ? '' : $options['FWW'] . 'px'; ?>" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+        <br>
         <?php
     }
 

@@ -107,7 +107,7 @@ else
         {
 			$record['image_url'] = $options['Image_Masking'] ? $startUrl  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
 			?>
-			<div class="productBlock0">
+			<div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
 				<div class="productImage">
 					<a href="<?php echo $startUrl . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
 				</div>

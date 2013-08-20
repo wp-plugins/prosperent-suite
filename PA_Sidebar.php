@@ -28,6 +28,7 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
                 $options = array_merge($options, (array) get_option($opt));
             }
         }
+
         return $options;
     }
 
@@ -55,7 +56,7 @@ class Performance_Ad_Sidebar_Widget extends WP_Widget
         $title = apply_filters('widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base);
 
 		?>
-		<div class="prosperent-pa" style="height: <?php echo $options['SWH']; ?>; width: <?php echo $options['SWW'] == 'auto' ? '' : $options['SWW']; ?>" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+		<div class="prosperent-pa" style="height: <?php echo $options['SWH'] . 'px'; ?>; width: <?php echo ($options['SWW'] == 'auto' ? '' : $options['SWW'] . 'px'); ?>;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>" ></div>
 		<br>
         <?php
     }

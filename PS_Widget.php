@@ -45,20 +45,20 @@ class ProsperStore_Widget extends WP_Widget
         if ( $title )
             echo $before_title . $title . $after_title;
 
-		$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-		$url = site_url('/') . $base;
+        $base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+        $url = site_url('/') . $base;
         $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $url);
 
         if ($_POST['q'])
         {
             header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
-			exit;
+            exit;
         }
         ?>
-		<form class="searchform" method="POST" action="">
-			<input class="field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="margin:14px 0 0 12px;">
-			<input class="submit" type="submit" value="Search" style="margin-top: 14px;">
-		</form>
+        <form class="searchform" method="POST" action="">
+            <input class="prosper_field" type="text" name="q" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>" style="margin:14px 0 0 18px;">
+            <input class="prosper_submit" type="submit" value="Search" style="margin-top: 14px;">
+        </form>
         <?php
 
         echo $after_widget;

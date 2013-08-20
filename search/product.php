@@ -101,12 +101,12 @@ $result = $prosperentApi -> getAllData();
                 ?>
             </div>
             <div class="productBrandMerchant">
-                <?php
+                <?php 
                 if($record[0]['category'])
                 {	
 					$record[0]['category'] = preg_replace('/\/$/', '', $record[0]['category']);
 					$record[0]['category'] = preg_replace('/([a-z0-9])(?=[A-Z])/', '$1-$2', $record[0]['category']);
-                    $categoryList = preg_split('/(:|>|<|;|\.|-|\/)/i', $record[0]['category']);
+                    $categoryList = preg_split('/(:|>|<|;|\.|\/)/i', $record[0]['category']);
 					$catCount = count($categoryList);
 
                     echo '<div><u>Category</u>: ';

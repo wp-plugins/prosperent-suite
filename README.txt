@@ -2,7 +2,7 @@
 Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 3.5.2
+Tested up to: 3.6.1
 Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,7 @@ This plugin contains the following Prosperent tools:
 * **Product Search-** Create a store within your blog.
 * **Performance Ads-** Display ads easily inside widgets, these ads are use an advanced content analyzer to display relevant ads.
 * **Auto-Linker-** Easily link products to the store or the merchant.
-* **Auto-Comparer-** Display a product comparison within your post or page to easily show visitors product information.
+* **Product Insert-** (formerly known as Auto-Comparer) Display a product within your post or page to easily show visitors product information.
 
 This suite will give you everything you need to easily start making money with your blog.
 
@@ -53,6 +53,8 @@ Well these reasons should help you with that question:
 
 == Installation ==
 
+= To ensure the new reroutes are working correctly, it's best to deactivate and reactivate the plugin. =
+
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
     * Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
     * Click the API tab in the menu, then click API Keys on the submenu and click Add New API Key. This will get you the API key you'll need so commissions can be tracked back to you. Name it whatever you'd like and you'll see that its created a key for you.
@@ -63,9 +65,9 @@ Well these reasons should help you with that question:
 5.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
-6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Auto-Comparer.
+6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Product Insert.
     * Auto-Linker allows you to link words to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
-    * Auto-Comparer allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
+    * Product Insert allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
 
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.
 Log in to **Prosperent.com** every so often to check your stats.
@@ -110,6 +112,81 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1 =
+* Ease of use for everything
+* Optimizations all around
+* Performance Ad Widget updated- settings now inside widget window
+* Only one Performance Ad Widget now, place it wherever you'd like and size it any way you want
+* Added the width to the Prosper Search widget, you can use pixels, em or percentage to designate a width
+* Caching is now enabled for the Product Search (just need to make the prosperent_cache directory writable (0777) to take advantage of it)
+* Removed unused files
+* Base URL is set automatically now (can be overridden)
+* Added Performance Ad button in the page/post editors
+* Fixed/Changed AutoLinker 
+* CSS Updates
+* Fixed brand/merchant filters when they had non alphanumeric characters
+* Added topics to Performance Ads, if you enter a topic, your ad will focus the products on that topic (you can enter multiple topics)
+* General Bug Fixes
+
+= 2.0.9 =
+* small CSS fixes on both admin and user side
+* fixed Performance Ads width and height
+* fixed conflict with Simple URLs plugin
+
+= 2.0.8 =
+* fixed issue with reroutes suddenly dying, not working in the first place
+* added new option under Product Search under Set Limits... that will affect the amount of products shown in the Similar Products and Other Products From...
+* Changed the name of the Auto-Comparer to Product Insert (same functionality and works the same so it won't mess up older shortcode, just changed the name)
+* fixed a currency issue
+* fixed coupons, they can now be filtered as intended
+* altered titles to work better for Local Deals and Celebrity
+* fixed performance ads, auto-linker, and product insert when using CloudFlare's RocketLoader
+* some css changes
+* fixed meta tag issue when not on the products page
+* removed slashes from titles
+* added fix to header redirects
+* adjusted the pulled urls to better accomodate different permalink types
+* other bug fixes that I can't think of right now
+
+= 2.0.7.1 =
+* fixed uninstall method
+
+= 2.0.7 =
+* Fixed bug with Auto-Linker and Auto-Comparer when using CloudFlare's RocketLoader
+* Adjusted some CSS
+* Changed flush rules
+* Added uninstall method and uninstall option (Advanced tab)- if checked will delete all options data from table
+
+= 2.0.6 =
+* Added more ways to refine your search (remove query and remove sort)
+* Added Twitter Cards
+* Added options under Advanced tab to add twitter creator and twitter site
+* Fixed coupons
+* Adjusted some CSS rules
+* Added country to Auto-Linker and Auto-Comparer
+* Fixed the disappearing widgets
+* Fixed Product Search Widget and Search Short Code
+* Added more button to description on individual product pages
+* Fixed pagination bug
+* Removes page is new query, filter or sort method is used
+
+= 2.0.5 =
+* More Bug Fixes
+* Adjusted Page titles
+* De-cluttered No Results page
+* Adjusted open graph rules (Facebook)
+* Fixed Auto-Linker
+* Adjusted a few options
+
+= 2.0.4 =
+* Bug Fixes, fixed page titles, added Open Graph rules
+
+= 2.0.2, 2.0.3 =
+* trying to push new css rules for productPage and admin
+
+= 2.0.1 =
+* created header redirect for those who had pages indexed with the prior url structure
 
 = 2.0 =
 * clean, SEO friendly URLs

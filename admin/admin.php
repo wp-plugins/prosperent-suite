@@ -11,7 +11,6 @@ class Prosperent_Admin
 	 */
 	var $adminpages = array( 'prosper_general', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced');
 
-
 	/**
 	 * Constructor
 	 *
@@ -23,9 +22,85 @@ class Prosperent_Admin
 		add_action('admin_menu', array($this, 'register_settings_page' ), 5);
 		add_action( 'network_admin_menu', array( $this, 'register_network_settings_page' ) );
 		add_filter( 'plugin_action_links', array( $this, 'add_action_link' ), 10, 2 );
-		wp_enqueue_style( 'prospere_admin_style', PROSPER_URL . 'css/admin.css');
+		add_action( 'init', array( $this, 'init' ), 20 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'prosper_admin_css' ));	
 	}
 
+	public function prosper_admin_css()
+	{
+		wp_register_style( 'prospere_admin_style', PROSPER_URL . 'css/admin.min.css');
+        wp_enqueue_style( 'prospere_admin_style');
+	}
+	
+	public function init()
+	{
+		if ( isset( $_GET['add'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_add_setting' ) && current_user_can( 'manage_options' ) ) 
+		{ 
+			$this->add_links();
+			wp_redirect( admin_url( 'admin.php?page=prosper_autoLinker&settings-updated=true' ) );
+		}	
+		
+		if ( isset( $_GET['delete'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_delete_setting' ) && current_user_can( 'manage_options' ) ) 
+		{
+			$this->delete_links($_GET['delete']);
+			wp_redirect( admin_url( 'admin.php?page=prosper_autoLinker' ) );
+		}		
+
+		if ( isset( $_GET['hide'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_hide_message' ) && current_user_can( 'manage_options' ) ) 
+		{
+			$this->hide_message();
+			wp_redirect( admin_url( 'admin.php?page=prosper_general' ) );
+		}	
+	}
+	
+	public function add_links()
+	{
+		$options = $this->get_option('prosper_autoLinker');
+	
+		$options['LinkAmount'] = intval($options['LinkAmount']) + 1;
+		update_option('prosper_autoLinker', $options);
+
+		$options['LTM'][$options['LinkAmount'] - 1] = true;
+
+		update_option('prosper_autoLinker', $options);
+	}	
+	
+	public function delete_links($optNum) 
+	{	
+		$options = $this->get_option('prosper_autoLinker');
+		$intLinks = intval($options['LinkAmount']);
+		$intOptNum = intval($optNum);
+
+		$newCase  = array();
+		$newLimit = array();
+		for ($i = 0; $i < $intLinks; $i++)
+		{
+			$newLimit[]  = $options['LTM'][$i] ? $options['LTM'][$i] : 0;
+			$newCase[] = $options['Case'][$i] ? $options['Case'][$i] : 0;
+		}
+
+		$options['LTM'] = $newLimit;
+		$options['Case'] = $newCase;	
+				
+		array_splice($options['Match'], $intOptNum, 1);
+		array_splice($options['Query'], $intOptNum, 1);
+		array_splice($options['PerPage'], $intOptNum, 1);
+		array_splice($options['LTM'], $intOptNum, 1);
+		array_splice($options['Case'], $intOptNum, 1);
+		
+		$options['LinkAmount'] = $intLinks - 1;
+
+		update_option('prosper_autoLinker', $options);
+	}
+	
+	public function hide_message()
+	{	
+		$options = $this->get_option('prosper_advanced');
+		
+		$options['concealCacheMessage'] = TRUE;
+		update_option('prosper_advanced', $options);
+	}
+	
 	/**
 	 * Register all the options needed for the configuration pages.
 	 */
@@ -97,7 +172,7 @@ class Prosperent_Admin
 		add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_URL . 'img/prosperent.png' );
 		add_submenu_page('prosper_general', __('Product Search', 'prosperent-suite' ), __( 'Product Search', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
 		add_submenu_page('prosper_general', __( 'Performance Ads', 'prosperent-suite' ), __( 'Performance Ads', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
-		add_submenu_page('prosper_general', __( 'Auto-Comparer', 'prosperent-suite' ), __( 'Auto-Comparer', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'comparerPage' ) );
+		add_submenu_page('prosper_general', __( 'Product Insert', 'prosperent-suite' ), __( 'Product Insert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'comparerPage' ) );
 		add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
 		//add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
@@ -203,7 +278,7 @@ class Prosperent_Admin
 
 		if ( $file == $this_plugin ) 
 		{
-			$settings_link = '<a href="' . admin_url( 'admin.php?page=prosperent_dashboard' ) . '">' . __( 'Settings', 'prosperent_suite' ) . '</a>';
+			$settings_link = '<a href="' . admin_url( 'admin.php?page=prosper_general' ) . '">' . __( 'Settings', 'prosperent_suite' ) . '</a>';
 			array_unshift( $links, $settings_link );
 		}
 		return $links;
@@ -233,7 +308,7 @@ class Prosperent_Admin
 	 * @param string $option     The option the variable belongs to.
 	 * @return string
 	 */
-	public function checkbox( $var, $label, $label_left = false, $option = '') 
+	public function checkbox( $var, $label, $label_left = false, $option = '', $tooltip = '') 
 	{
 		if ( empty( $option ) )
 			$option = $this->currentoption;
@@ -249,17 +324,17 @@ class Prosperent_Admin
 		if ( $label_left !== false ) {
 			if ( !empty( $label_left ) )
 				$label_left .= ':';
-			$output_label = '<label class="checkbox" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
-			$class        = 'checkbox';
+			$output_label = '<label class="prosper_checkbox" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
+			$class        = 'prosper_checkbox';
 		} else {
-			$output_label = '<label for="' . esc_attr( $var ) . '">' . $label . '</label>';
-			$class        = 'checkbox double';
+			$output_label = '<label class="prosper_checkbox" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+			$class        = 'prosper_checkbox double';
 		}
 
 		$output_input = "<input class='$class' type='checkbox' value='1' id='" . esc_attr( $var ) . "' name='" . esc_attr( $option ) . "[" . esc_attr( $var ) . "]' " . checked( $options[$var], 1, false ) . '/>';
 
 		if ( $label_left !== false ) {
-			$output = $output_label . $output_input . '<label class="checkbox" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+			$output = $output_label . $output_input . '<label class="prosper_checkbox" for="' . esc_attr( $var ) . '">' . $label . '</label>' . $tooltip;
 		} else {
 			$output = $output_input . $output_label;
 		}
@@ -267,15 +342,40 @@ class Prosperent_Admin
 		return $output . '<br class="clear" />';
 	}
 
-		/**
-	 * Create a Checkbox input field.
-	 *
-	 * @param string $var        The variable within the option to create the checkbox for.
-	 * @param string $label      The label to show for the variable.
-	 * @param bool   $label_left Whether the label should be left (true) or right (false).
-	 * @param string $option     The option the variable belongs to.
-	 * @return string
-	 */
+	public function checkboxinline( $var, $label, $label_left = false, $arrayNum, $option = '') 
+	{
+		if ( empty( $option ) )
+			$option = $this->currentoption;
+		
+		$options = $this->get_option( $option );
+		
+		if ( !isset( $options[$var][$arrayNum] ) )
+			$options[$var][$arrayNum] = false;
+			
+		if ( $options[$var][$arrayNum] === true )
+			$options[$var][$arrayNum] = 1;
+			
+		if ( $label_left !== false ) {
+			if ( !empty( $label_left ) )
+				$label_left .= ':';
+			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
+			$class        = 'prosper_checkboxinline';
+		} else {
+			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+			$class        = 'prosper_checkboxinline double';
+		}
+
+		$output_input = "<input class='$class' type='checkbox' value='1' id='" . esc_attr( $var ) . "' name='" . esc_attr( $option) . "[" . esc_attr( $var ) . "][" . $arrayNum . "]' " . checked( $options[$var][$arrayNum], 1, false ) . "/>";
+
+		if ( $label_left !== false ) {
+			$output = $output_label . $output_input . '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+		} else {
+			$output = $output_input . $output_label;
+		}
+
+		return $output;
+	}
+	
 	public function geoCheckbox( $var, $label, $label_left = false, $option = '', $tooltip = '' ) 
 	{
 		if ( empty( $option ) )
@@ -292,17 +392,17 @@ class Prosperent_Admin
 		if ( $label_left !== false ) {
 			if ( !empty( $label_left ) )
 				$label_left .= ':';
-			$output_label = '<label class="geocheckbox" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
-			$class        = 'geocheckbox';
+			$output_label = '<label class="prosper_geocheckbox" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
+			$class        = 'prosper_geocheckbox';
 		} else {
 			$output_label = '<label for="' . esc_attr( $var ) . '">' . $label . '</label>';
-			$class        = 'geocheckbox double';
+			$class        = 'prosper_geocheckbox double';
 		}
 
 		$output_input = "<input class='$class' type='checkbox' value='1' id='" . esc_attr( $var ) . "' name='" . esc_attr( $option ) . "[" . esc_attr( $var ) . "]' " . checked( $options[$var], 1, false ) . '/>';
 
 		if ( $label_left !== false ) {
-			$output = $output_label . $output_input . '<label class="geocheckbox" for="' . esc_attr( $var ) . '">' . $label . '</label>' . $tooltip;
+			$output = $output_label . $output_input . '<label class="prosper_geocheckbox" for="' . esc_attr( $var ) . '">' . $label . '</label>' . $tooltip;
 		} else {
 			$output = $output_input . $output_label;
 		}
@@ -329,9 +429,53 @@ class Prosperent_Admin
 		if ( isset( $options[$var] ) )
 			$val = esc_attr( $options[$var] );
 
-		return '<label class="textinput" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="textinput" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>' . '<br class="clear" />';
+		return '<label class="prosper_textinput" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="prosper_textinput" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>' . '<br class="clear" />';
 	}
 
+	/**
+	 * Create a small Text input field.
+	 *
+	 * @param string $var    The variable within the option to create the text input field for.
+	 * @param string $label  The label to show for the variable.
+	 * @param string $option The option the variable belongs to.
+	 * @return string
+	 */
+	public function textinputsmall( $var, $label, $option = '', $tooltip = '' ) 
+	{
+		if ( empty( $option ) )
+			$option = $this->currentoption;
+
+		$options = $this->get_option( $option );
+
+		$val = '';
+		if ( isset( $options[$var] ) )
+			$val = esc_attr( $options[$var] );
+
+		return '<label class="prosper_textinputsmall" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="prosper_textinputsmall" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>' . '<br class="clear" />';
+	}
+	
+	/**
+	 * Create a Text input field.
+	 *
+	 * @param string $var    The variable within the option to create the text input field for.
+	 * @param string $label  The label to show for the variable.
+	 * @param string $option The option the variable belongs to.
+	 * @return string
+	 */
+	public function textinputinline( $var, $label, $arrayNum, $option = '', $tooltip = '' ) 
+	{
+		if ( empty( $option ) )
+			$option = $this->currentoption;
+
+		$options = $this->get_option( $option );
+
+		$val = '';
+		if ( isset( $options[$var][$arrayNum] ) )
+			$val = esc_attr( $options[$var][$arrayNum] );
+			
+		return '<label class="prosper_textinputinline" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="prosper_textinputinline" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . ( $var ) . '][' . $arrayNum . ']" value="' . $val . '"/>';	
+	}
+	
 	/**
 	 * Create a textarea.
 	 *
@@ -347,12 +491,29 @@ class Prosperent_Admin
 
 		$options = $this->get_option( $option );
 
-		$val = '';
+		$val = '';		
 		if ( isset( $options[$var] ) )
-			$val = esc_attr( $options[$var] );
+		{
+			foreach (explode( "\n", $options[$var]) as $line)
+			{
+				list( $shortcut, $text ) = array_map( 'trim', explode( "=>", $line, 2 ) );
+				if ( !empty( $shortcut ) )
+				{
+					$new_values[str_replace( '\\', '', $shortcut )] = str_replace( '\\', '', $text );
+				}				
+			}
+			$val = $new_values;
+		}
 
-
-		return '<label class="textinput" for="' . esc_attr( $var ) . '">' . esc_html( $label ) . ':</label><textarea class="textinput ' . $class . '" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']">' . $val . '</textarea>' . '<br class="clear" />';
+		$new_value = '';
+		if ($val)
+		{
+		foreach ( $val AS $shortcut => $replacement )
+			$new_value .= "$shortcut => $replacement\n";
+		}
+		$value = $new_value;
+		
+		return '<label class="prosper_textarea" for="' . esc_attr( $var ) . '">' . esc_html( $label ) . ':</label><textarea class="prosper_textarea"' . $class . '" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']">' . $value . '</textarea>' . '<br class="clear" />';
 	}
 
 	/**
@@ -391,8 +552,8 @@ class Prosperent_Admin
 		$options = $this->get_option( $option );
 
 		$var_esc = esc_attr( $var );
-		$output  = '<label class="select" for="' . $var_esc . '">' . $label . ':' . $tooltip . '</label>';
-		$output .= '<select class="select" name="' . $option . '[' . $var_esc . ']" id="' . $var_esc . '">';
+		$output  = '<label class="prosper_select" for="' . $var_esc . '">' . $label . ':' . $tooltip . '</label>';
+		$output .= '<select class="prosper_select" name="' . $option . '[' . $var_esc . ']" id="' . $var_esc . '">';
 
 		foreach ( $values as $value => $label ) {
 			$sel = '';
@@ -422,8 +583,8 @@ class Prosperent_Admin
 		$options = $this->get_option( $option );
 
 		$var_esc = esc_attr( $var );
-		$output  = '<label class="selectCountry" for="' . $var_esc . '">' . $label . ':</label>';
-		$output .= '<select class="selectCountry" name="' . $option . '[' . $var_esc . ']" id="' . $var_esc . '">';
+		$output  = '<label class="prosper_selectCountry" for="' . $var_esc . '">' . $label . ':</label>';
+		$output .= '<select class="prosper_selectCountry" name="' . $option . '[' . $var_esc . ']" id="' . $var_esc . '">';
 
 		foreach ( $values as $value => $label ) {
 			$sel = '';
@@ -457,14 +618,14 @@ class Prosperent_Admin
 		}
 
 		$var_esc = esc_attr( $var );
-		$output  = '<label class="select" for="' . $var_esc . '">' . esc_html( $label ) . ':</label>';
-		$output .= '<input type="file" value="' . $val . '" class="textinput" name="' . esc_attr( $option ) . '[' . $var_esc . ']" id="' . $var_esc . '"/>';
+		$output  = '<label class="prosper_select" for="' . $var_esc . '">' . esc_html( $label ) . ':</label>';
+		$output .= '<input type="file" value="' . $val . '" class="prosper_textinput" name="' . esc_attr( $option ) . '[' . $var_esc . ']" id="' . $var_esc . '"/>';
 
 		// Need to save separate array items in hidden inputs, because empty file inputs type will be deleted by settings API.
 		if ( !empty( $options[$var] ) ) {
-			$output .= '<input class="hidden" type="hidden" id="' . $var_esc . '_file" name="prosper_local[' . $var_esc . '][file]" value="' . esc_attr( $options[$var]['file'] ) . '"/>';
-			$output .= '<input class="hidden" type="hidden" id="' . $var_esc . '_url" name="prosper_local[' . $var_esc . '][url]" value="' . esc_attr( $options[$var]['url'] ) . '"/>';
-			$output .= '<input class="hidden" type="hidden" id="' . $var_esc . '_type" name="prosper_local[' . $var_esc . '][type]" value="' . esc_attr( $options[$var]['type'] ) . '"/>';
+			$output .= '<input class="prosper_hidden" type="hidden" id="' . $var_esc . '_file" name="prosper_local[' . $var_esc . '][file]" value="' . esc_attr( $options[$var]['file'] ) . '"/>';
+			$output .= '<input class="prosper_hidden" type="hidden" id="' . $var_esc . '_url" name="prosper_local[' . $var_esc . '][url]" value="' . esc_attr( $options[$var]['url'] ) . '"/>';
+			$output .= '<input class="prosper_hidden" type="hidden" id="' . $var_esc . '_type" name="prosper_local[' . $var_esc . '][type]" value="' . esc_attr( $options[$var]['type'] ) . '"/>';
 		}
 		$output .= '<br class="clear"/>';
 
@@ -491,10 +652,10 @@ class Prosperent_Admin
 
 		$var_esc = esc_attr( $var );
 
-		$output = '<br/><label class="select">' . $label . ':</label>';
+		$output = '<br/><label class="prosper_radio">' . $label . ':' . $tooltip . '</label>';
 		foreach ( $values as $key => $value ) {
 			$key = esc_attr( $key );
-			$output .= '<input type="radio" class="radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']" value="' . $key . '" ' . ( $options[$var] == $key ? ' checked="checked"' : '' ) . ' /> <label class="radio" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
+			$output .= '<input type="radio" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']" value="' . $key . '" ' . ( $options[$var] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radio" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
 		}
 		$output .= '<br/>';
 
@@ -558,7 +719,7 @@ class Prosperent_Admin
 		if ( ( isset( $_GET['updated'] ) && $_GET['updated'] == 'true' ) || ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == 'true' ) ) {
 			$msg = __( 'Settings updated', 'prosperent-suite' );
 
-			echo '<div id="message" style="width:94%;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
+			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
 		}
 		?>
 		<a href="http://prosperent.com/">
@@ -569,7 +730,7 @@ class Prosperent_Admin
 			</div>
 		</a>
 		<h2 id="prosper-title"><?php _e( "Prosperent Suite: ", 'prosperent-suite' ); echo $title; ?></h2>
-		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; max-width:600px; padding: 0 20px 0 0;">
+		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:800px; padding: 0 20px 0 0;">
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">
 		<?php
@@ -581,7 +742,7 @@ class Prosperent_Admin
 		}
 
 	}
-
+	
 	/**
 	 * Generates the footer for admin pages
 	 *
@@ -592,8 +753,7 @@ class Prosperent_Admin
 		if ( $submit ) 
 		{
 			?>
-			<div class="submit"><input type="submit" class="button-primary" name="submit"
-									   value="<?php _e( "Save Settings", 'prosperent-suite' ); ?>"/></div>
+			<div class="submit"><input type="submit" class="button-primary" name="submit" value="<?php _e( "Save Settings", 'prosperent-suite' ); ?>"/></div>
 			<?php 
 		} 
 		?>

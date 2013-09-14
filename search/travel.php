@@ -4,7 +4,7 @@ $newQuery = str_replace('/query/' . $query, '', $travelSubmit);
 
 if ($_POST['country'] || $_POST['state'] || $_POST['city']) 
 {
-	header('Location: ' . $newQuery . ($_POST['country'] ? '/country/' . urlencode($_POST['country']) : '') . ($_POST['state'] ? '/state/' . urlencode($_POST['state']) : '') . ($_POST['city'] ? '/city/' . urlencode($_POST['city']) : '') . '/distance/' . ($_POST['distance'] ? $_POST['distance'] : 25));
+	header('Location: ' . $newQuery . ($_POST['country'] ? '/country/' . urlencode($_POST['country']) : '') . ($_POST['state'] ? '/state/' . urlencode($_POST['state']) : '') . ($_POST['city'] ? '/city/' . urlencode($_POST['city']) : ''));
 }
 
 /*

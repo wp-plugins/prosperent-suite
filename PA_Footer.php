@@ -9,10 +9,26 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         parent::__construct('performance_ad_ft', __('Performance Ads (footer)'), $widget_ops);
     }
 
+    public function get_prosper_options_array()
+    {
+        $optarr = array( 'prosperSuite', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced' );
+
+        return apply_filters( 'prosper_options', $optarr );
+    }
+
     public function options()
     {
-        $optValues = get_option('prosper_prosperent_suite');
-        return $optValues;
+        static $options;
+
+        if (!isset($options))
+        {
+            $options = array();
+            foreach ($this->get_prosper_options_array() as $opt)
+            {
+                $options = array_merge($options, (array) get_option($opt));
+            }
+        }
+        return $options;
     }
 
     public function widget( $args, $instance )
@@ -39,15 +55,8 @@ class Performance_Ad_Footer_Widget extends WP_Widget
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
         ?>
-        <script type="text/javascript">
-            <!--
-            prosperent_pa_uid = <?php echo json_encode($options['UID']); ?>;
-            prosperent_pa_width = <?php echo json_encode($options['FWW']); ?>;
-            prosperent_pa_height = <?php echo json_encode($options['FWH']); ?>;
-            prosperent_pa_fallback_query = <?php echo json_encode($fallback); ?>;
-            //-->
-        </script>
-        <script type="text/javascript" src="http://prosperent.com/js/ad.js"></script>
+        <div class="prosperent-pa" style="height: <?php echo $options['FWH'] . 'px'; ?>; width: <?php echo $options['FWW'] == 'auto' ? '' : $options['FWW'] . 'px'; ?>" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+        <br>
         <?php
     }
 

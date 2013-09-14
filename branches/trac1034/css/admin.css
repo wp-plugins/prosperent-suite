@@ -1,278 +1,282 @@
 h4 {
-	clear: both;
-	margin: 2em 0 0 0;	
+    margin: 2em 0 0 0;
 }
 
-p.desc {
-	color:#777;
-	font-size:11px;
-	padding: 0 0 0 36px;
-	margin: 2px 0 10px 0;
+p.prosper_desc {
+    color:#777;
+    font-size:11px;
+    padding: 0 0 0 36px;
+    margin: 2px 0 10px 0;
 }
 
-p.desc.label {
-	padding: 2px 0 10px 180px;
-	margin-bottom: 20px;
+p.prosper_desc.label {
+    padding: 2px 0 10px 180px;
+    margin-bottom: 20px;
 }
 
-p.descb {
-	color:#777;
-	font-size:11px;
-	padding: 0 0 8px 36px;
-	margin: 2px 0 10px 0;
-	border-bottom: 1px solid #ddd;
+p.prosper_descb {
+    color:#777;
+    font-size:11px;
+    padding: 0 0 8px 36px;
+    margin: 2px 0 10px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-p.descb.label {
-	padding: 2px 0 10px 180px;
-	margin-bottom: 20px;
+p.prosper_descb.label {
+    padding: 2px 0 10px 180px;
+    margin-bottom: 20px;
 }
 
-p.settingDesc {
-	color:#777;
-	font-size:12px;
-	padding: 0 0 8px 36px;
-	margin: 2px 0 10px 0;
-	border-bottom: 1px solid #ddd;
+p.prosper_settingDesc {
+    color:#777;
+    font-size:12px;
+    padding: 0 0 8px 36px;
+    margin: 2px 0 10px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-p.settingDesc.label {
-	padding: 2px 0 10px 180px;
-	margin-bottom: 20px;
+p.prosper_settingDesc.label {
+    padding: 2px 0 10px 180px;
+    margin-bottom: 20px;
 }
 
 tr.yst_row {
-	padding: 5px 0 0 0;
-	margin: 5px 0 0 0;
+    padding: 5px 0 0 0;
+    margin: 5px 0 0 0;
 }
 tr.yst_row.even {
-	background-color: #f6f6f6;
+    background-color: #f6f6f6;
 }
 
 div.prosperbox ul {
-	margin-left: 20px;
+    margin-left: 20px;
 }
 
 .postbox {
-	margin: 10px 10px 0 0;	
+    margin: 10px 10px 0 0;
 }
 
 label {
-	float: left;
-	margin-left: 6px;
+    margin-left: 6px;
 }
 
-select.selectCountry {
-	width: 80px;
-	float: left;
+select.prosper_selectCountry {
+    width: 80px;
+    float: left;
 }
 
 textarea {
-	width:300px;
-	min-height:200px;
+    width:300px;
+    min-height:200px;
 }
 
-input.textinput, select {
-	width: 200px;
+input.prosper_textinput, select {
+    width: 200px;
 }
 
-input.checkbox {
-	float: left;
-	margin: 5px 0 0 20px;
-	padding: 5px;
+input.prosper_checkbox {
+    float: left;
+    margin: 5px 0 0 20px;
+    padding: 5px;
 }
 
-input.geocheckbox {
-	float: left;
-	margin: 5px 0 0 40px;
-	padding: 5px;
+input.prosper_radio {
+    float: left;
+    margin: 2px 0 0 0;
+    padding: 5px;
 }
 
-label.geocheckbox {
-	background-color: transparent;
-	margin: 6px 0 5px 10px;
+input.prosper_geocheckbox {
+    float: left;
+    margin: 5px 0 0 40px;
+    padding: 5px;
 }
 
-select.select {
-	float: left;
+label.prosper_geocheckbox {
+    background-color: transparent;
+    margin: 6px 0 5px 10px;
 }
 
-input.textinput, textarea.textinput {
-	float: left;
-	margin: 5px 0 0 0;
-	padding: 5px;
+select.prosper_select {
+    float: left;
 }
 
-input.checkbox.double {
-	margin-top: 2px;
+input.prosper_textinput, textarea.prosper_textinput {
+    float: left;
+    margin: 5px 0 0 0;
+    padding: 5px;
+}
+
+input.prosper_checkbox.double {
+    margin-top: 2px;
+}
+
+input.prosper_geocheckbox.double {
+    margin-top: 2px;
 }
 
 .textinput.metadesc {
-	height: 50px;	
+    height: 50px;
 }
 
-textarea.import {
-	width: 500px;
-	height: 100px;
+textarea.prosper_import {
+    width: 500px;
+    height: 100px;
 }
 
-label.checkbox {
-	width: 200px;
-	background-color: transparent;
-	margin: 6px 0 5px 20px;
+label.prosper_checkbox {
+    width: 200px;
+    background-color: transparent;
+    margin: 6px 0 5px 20px;
 }
 
-label.selectCountry {
-	width: 60px;
-	background-color: transparent;
-	margin: 6px 0 5px 40px;
+label.prosper_selectCountry {
+    float:left;
+    width: 60px;
+    background-color: transparent;
+    margin: 6px 0 5px 40px;
 }
 
-label.select {
-	width: 200px;
-	background-color: transparent;
-	margin: 6px 0 5px 20px;
+label.prosper_select {
+    float:left;
+    width: 200px;
+    background-color: transparent;
+    margin: 6px 0 5px 20px;
 }
 
-label.textinput  {
-	width: 200px;
-	background-color: transparent;
-	margin: 6px 0 5px 20px;
+label.prosper_textinput  {
+    float:left;
+    width: 200px;
+    background-color: transparent;
+    margin: 6px 0 5px 20px;
 }
 
-	a.tooltip {
-		padding-left:4px;
-	}
-	.tooltip img {
-		margin-bottom:-2px;
-	}
-	a:hover {
-		background:#ffffff;
-		text-decoration:none;
-	}
-	a.tooltip span {
-		display:none; 
-		padding:2px 3px; 
-		margin-left:8px;
-		margin-top:18px;
-	}
-	a.tooltip:hover span{
-		display:inline-block;
-		position:absolute;
-		left:130px;
-		background:#ffffff; 
-		border:1px solid #cccccc; 
-		color:#6c6c6c;
-		width:auto;
-		max-width:195px;
-		font-size:11px;
-	}			
+    a.prosper_tooltip {
+        padding-left:4px;
+    }
+    .prosper_tooltip img {
+        margin-bottom:-2px;
+    }
+    a:hover {
+        background:#ffffff;
+        text-decoration:none;
+    }
+    a.prosper_tooltip span {
+        display:none;
+        padding:2px 3px;
+        margin-left:8px;
+        margin-top:18px;
+    }
+    a.prosper_tooltip:hover span{
+        display:inline-block;
+        position:absolute;
+        left:130px;
+        background:#ffffff;
+        border:1px solid #cccccc;
+        color:#6c6c6c;
+        width:auto;
+        max-width:195px;
+        font-size:11px;
+    }
 
 
-label.radio {
-	margin-right: 20px;
+label.prosper_radio {
+    margin-right: 20px;
 }
 
 .postbox form {
-	line-height: 150%;	
+    line-height: 150%;
 }
 
 div.prosperbox ul li {
-	list-style: square;
-	line-height:16px;
-	font-size: 11px;
+    list-style: square;
+    line-height:16px;
+    font-size: 11px;
 }
 
 div.prosperbox a, div.prosperbox a.rsswidget {
-	font-family: sans-serif;
-	font-size: 12px;
+    font-family: sans-serif;
+    font-size: 12px;
 }
 div.prosperbox a:hover, div.prosperbox a.rsswidget:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 div.prosperbox ul li.rss {
-	list-style-image: url(../images/rss.png);
+    list-style-image: url(../images/rss.png);
 }
 
 div.prosperbox ul li.twitter {
-	list-style-image: url(../images/twitter-icon.png);
+    list-style-image: url(../images/twitter-icon.png);
 }
 
 div.prosperbox ul li.facebook {
-	list-style-image: url(../images/facebook-icon.png);
+    list-style-image: url(../images/facebook-icon.png);
 }
 
 div.prosperbox ul li.googleplus {
-	list-style-image: url(../images/google-plus-icon.png);
+    list-style-image: url(../images/google-plus-icon.png);
 }
 
 div.prosperbox ul li.email {
-	list-style-image: url(../images/email_sub.png);
+    list-style-image: url(../images/email_sub.png);
 }
 
 div.prosperbox ul li.prosper {
-	list-style-image: url(../images/prosper-16x16.png); 
-}
-
-.text {
-	width: 250px;
+    list-style-image: url(../images/prosper-16x16.png);
 }
 
 div.prosperbox .button:hover, div.prosperbox .button-primary:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
-
-
-
 .correct {
-	background-color: green;
-	color: white;
-	padding: 5px;
+    background-color: green;
+    color: white;
+    padding: 5px;
 }
 
 .wrong {
-	background-color: red;
-	color: white;
-	padding: 5px;
+    background-color: red;
+    color: white;
+    padding: 5px;
 }
 
 .wrong code {
-	padding: 3px 8px;
-	color: #000;
+    padding: 3px 8px;
+    color: #000;
 }
 
 .button.fixit {
-	padding: 5px 8px;
-	margin: 0 5px;
-	float: right;
+    padding: 5px 8px;
+    margin: 0 5px;
+    float: right;
 }
 
 .button {
-	color: #000 !important;
+    color: #000 !important;
 }
 
 .postbox#donate {
-	border-color: green;
-	border-width: 2px;
+    border-color: green;
+    border-width: 2px;
 }
 
 .wpseotab {
-	display: none;
-	max-width: 600px !important;
+    display: none;
+    max-width: 600px !important;
 }
 .wpseotab.active {
-	display: block;
+    display: block;
 }
 
 
-h2 {
-	margin-bottom: 20px;
+h2.prosper_h2 {
+    margin-bottom: 20px;
 }
 h2 code {
-	font-size: 23px;
+    font-size: 23px;
 }
 
 #prosper-conf {
-	max-width: 600px;
+    max-width: 600px;
 }

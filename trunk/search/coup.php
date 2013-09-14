@@ -2,30 +2,35 @@
 if (!$query && $options['Coupon_Query'])
 {
     $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    $url = preg_replace('/\/$/', '', $url);
-    $url .= '/query/' . urlencode($options['Coupon_Query']);
+    $url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities(rawurlencode($options['Coupon_Query']));
     $q = $options['Coupon_Query'];
 }
 else
 {
     $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$url = preg_replace('/\/$/', '', $url);
     $q = $query;
 }
 
 $query = stripslashes($q);
 
-$coupSubmit = preg_replace('/\/$/', '', $url);
-$newQuery = str_replace(array('/query/' . $query, '/page/' . $pageNumber), array('', ''), $coupSubmit);
-$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $coupSubmit);
+$coupSubmit = $url;
 
-if ($_POST['coupq'])
+if(is_front_page())
 {
-    header('Location: ' . $newQuery . '/query/' . htmlentities(urlencode($_POST['q'])));
+	$coupSubmit = site_url('/') . 'products';
+}
+
+if (isset($_POST['q']))
+{
+	$newQuery = str_replace(array('/query/' . $query, '/page/' . $pageNumber), array('', ''), $coupSubmit);
+    header('Location: ' . $newQuery . '/query/' . htmlentities(rawurlencode($_POST['q'])));
     exit;
 }
 
-if ($_POST['sort'])
+if (isset($_POST['sort']))
 {
+	$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $coupSubmit);
     header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
     exit;
 }
@@ -47,8 +52,7 @@ $filterCouponMerchants = array_merge($filterMerchants, array('!Zappos.com', '!6p
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
+$settings = array(
     'api_key'        => $options['Api_Key'],
     'query'          => $query,
     'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
@@ -56,8 +60,20 @@ $prosperentApi = new Prosperent_Api(array(
     'enableFacets'   => $options['Enable_Facets'],
     'filterMerchant' => $filterCouponMerchants,
     'sortPrice'	     => $sort
-));
+);
 
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+			'lifetime'	 => 3600
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 /*
 /  Fetching results and pulling back all data
 /  To see which data is available to pull back login in to
@@ -73,7 +89,7 @@ echo $typeSelector;
 
 <div class="prosper_searchform">
     <form class="searchform" method="POST" action="">
-        <input class="prosper_field" type="text" name="coupq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Coupons' : $options['Search_Bar_Text']; ?>">
+        <input class="prosper_field" type="text" name="q" id="s" placeholder="<?php echo $options['Search_Bar_Text'] ? $options['Search_Bar_Text'] : 'Search Coupons'; ?>">
         <input class="prosper_submit" type="submit" value="Search">
     </form>
 </div>
@@ -83,7 +99,7 @@ echo $typeSelector;
 /  If no results, or the user clicked search when 'Search Products...'
 /  was in the search field, displays 'No Results'
 */
-if (empty($results) || !$filterCouponMerchants || !$query)
+if (empty($results) || (empty($filterMerchants) && !$query))
 {
     header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
     echo '<div class="noResults">No Results</div>';
@@ -104,11 +120,23 @@ if (empty($results) || !$filterCouponMerchants || !$query)
     $endRange   = date('Ymd');
 
     // fetch trends from api
-    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-    $api = new Prosperent_Api(array(
+    $settings = array(
         'enableFacets'  => 'keyword',
         'filterCatalog' => 'coupons'
-    ));
+    );
+	
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+				'lifetime'	 => 3600
+			)
+		));	
+	}
+	
+	$api = new Prosperent_Api($settings);
 
     $api->setDateRange('commission', $startRange, $endRange)
         ->fetchTrends();
@@ -120,13 +148,26 @@ if (empty($results) || !$filterCouponMerchants || !$query)
     }
 
     // fetch merchant data from api
-    $api = new Prosperent_Api(array(
+    $settings = array(
         'api_key'         => $options['Api_Key'],
         'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
         'filterKeyword'   => $keys,
         'limit' 	      => 15
-    ));
+    );
 
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+				'lifetime'	 => 3600
+			)
+		));	
+	}
+	
+	$api = new Prosperent_Api($settings);
+	
     $api->fetchCoupons();
     $results = $api->getAllData() ;
 
@@ -139,13 +180,13 @@ if (empty($results) || !$filterCouponMerchants || !$query)
         foreach ($results as $i => $record)
         {
             ?>
-            <div class="<?php echo count($results) >= 2 ? 'couponBlock' : 'couponBlock0'; ?>">
+            <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
                 <div class="couponImage">
                     <?php
-                    echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) :  $record['image_url']) . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
+                    echo '<a href="' . $productPage . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) :  $record['image_url']) . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
                     ?>
                     <div class="couponVisit">
-                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
                             <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
@@ -153,7 +194,7 @@ if (empty($results) || !$filterCouponMerchants || !$query)
                 <div class="couponContent">
                     <div class="couponTitle">
                         <?php
-                        echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
+                        echo '<a href="' . $productPage . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
                         ?>
                     </div>
                     <?php
@@ -219,7 +260,7 @@ else
                         $count = count($merchants1);
                         foreach ($merchants1 as $i => $merchant)
                         {
-                            echo '<a href=' . str_replace('/page/' . $pageNumber, '', $coupSubmit) . '/merchant/' . urlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
+                            echo '<a href=' . str_replace('/page/' . $pageNumber, '', $coupSubmit) . '/merchant/' . rawurlencode($merchant['value']) . '>' . $merchant['value'] . ' (' . $merchant['count'] . ')</a>';
 
                             if ($i < ($count - 1))
                             {
@@ -230,9 +271,9 @@ else
                     else
                     {
                         echo '<div style="min-height:35px;">';
-                        echo urldecode($filterMerchant);
+                        echo rawurldecode($filterMerchant);
                         echo '</br><a href=' . str_replace(array('/page/' . $page, '/merchant/' . $filterMerchant), array('', ''), $coupSubmit) . '>clear filter</a>';
-                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/' . urlencode(str_replace('/', ',SL,',  ('logos/120x60/' . $filterMerchant . '.png'))) : 'http://img1.prosperent.com/images/logos/120x60/' . $filterMerchant . '.png') . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
+                        echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/' . rawurlencode(str_replace('/', ',SL,',  ('logos/120x60/' . $filterMerchant . '.png'))) : 'http://img1.prosperent.com/images/logos/120x60/' . $filterMerchant . '.png') . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
                         echo '</div>';
                     }
                     ?>
@@ -249,7 +290,7 @@ else
     }
     else
     {
-        echo '<div class="totalFound">' . $totalFound . ' coupons for <b>' . ucwords($query ? urldecode($query) : urldecode($filterMerchant)) . '</b>' . (($query && $filterMerchant) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace('/query/' . $query, '', $coupSubmit) . '> [x]</a>' : '') . '</div>';
+        echo '<div class="totalFound">' . $totalFound . ' coupons for <b>' . ucwords($query ? rawurldecode($query) : rawurldecode($filterMerchant)) . '</b>' . (($query && $filterMerchant) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace('/query/' . $query, '', $coupSubmit) . '> [x]</a>' : '') . '</div>';
     }
 
     // Gets the count of results for Pagination
@@ -293,21 +334,16 @@ else
         foreach ($results as $i => $record)
         {
             ?>
-            <div class="<?php echo count($results) >= 2 ? 'couponBlock' : 'couponBlock0'; ?>">
+            <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
                 <div class="couponImage">
                     <?php
-                    echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) :  $record['image_url']) . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"></a>';
+                    echo '<a href="' . $productPage . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) :  $record['image_url']) . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
                     ?>
-                    <div class="couponVisit">
-                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store"/>
-                        </form>
-                    </div>
                 </div>
                 <div class="couponContent">
                     <div class="couponTitle">
                         <?php
-                        echo '<a href="' . $productPage . '/coupon/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
+                        echo '<a href="' . $productPage . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '">' . $record['keyword'] . '</a>';
                         ?>
                     </div>
                     <?php
@@ -339,7 +375,11 @@ else
                     }
                     ?>
                 </div>
-
+                    <div class="couponVisit">
+                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+                            <input type="submit" value="Visit Store"/>
+                        </form>
+                    </div>
             </div>
             <?php
         }
@@ -348,4 +388,4 @@ else
     <?php
 }
 
-prosper_pagination($pages, $sendParams['page']);
+prosper_pagination($pages, $pageNumber);

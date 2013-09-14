@@ -5,13 +5,12 @@ $prosper_admin->admin_header( __( 'General Settings', 'prosperent-suite' ), true
 
 $options = get_site_option( 'prosper_general' );
 
-echo '<h2 class="prosper_h2">' . __( 'Your Settings', 'prosperent-suite' ) . '</h2>';
-echo $prosper_admin->textinput( 'UID', __( 'Prosperent User-Id', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Found next to your screen name once you have logged in to Prosperent. In the upper right hand corner, in parentheses.</span></a>' );
+echo '<h2 class="prosper_h2">' . __( 'Your Settings (Required)', 'prosperent-suite' ) . '</h2>';
+echo $prosper_admin->textinputsmall( 'UID', __( '<strong>Prosperent User-Id</strong>', 'prosperent-suite' ), '');
+echo '<p class="prosper_desc">' . __( '1.) Sign Up (It\'s free) at <a href="http://prosperent.com/join" target="_blank">Prosperent</a><br>2.) Once you are logged in, look in the upper Right Hand corner for the 6 digit number that comes after your user-name. That is your UserId.<br><strong>Example</strong>: Welcome, Brandon (123456).  Your UserId would be <strong>123456</strong> in this case.', 'prosperent-suite' ) . '</p>';
 
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-
-echo $prosper_admin->textinput( 'Api_Key', __( 'Prosperent API Key', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Once you log in to the backend, click the API tab. Click the API Keys sub-tab, and then either "Add New API Key" or copy an existing one.</span></a>' );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+echo $prosper_admin->textinput( 'Api_Key', __( '<strong>Prosperent API Key</strong>', 'prosperent-suite' ), '');
+echo '<p class="prosper_descb">' . __( '1.) Go to the <a href="http://prosperent.com/affiliate/api" target="_blank">Prosperent API</a> page <br>2.) Click the API Keys tab<br>3.) Click either "Add New API Key" or copy an existing API Key<br>4.) Paste the API Key into this box', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Target', __( 'Open Links in New Window or Tab', 'prosperent-suite' ));

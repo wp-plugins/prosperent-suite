@@ -19,6 +19,7 @@
                     var compLim = jQuery('#compLim').val();
                     var country = jQuery('#country').val();
                     var coup = jQuery('#coup').is(':checked');
+					var prodId = jQuery('#prodid').val();
                     var output = '[compare';
 
                     // Apply
@@ -50,6 +51,11 @@
                     {
                         output += ' ct="'+country+'"';
                     }
+					if (prodId)
+                    {
+                        output += ' id="'+prodId+'"';
+                    }
+					
                     output += ']' + AutoCompare.local_ed.selection.getContent() + '[/compare]';
 
                     tinyMCEPopup.execCommand('mceReplaceContent', false, output);
@@ -101,6 +107,12 @@
                     showValues();
                 }
             }
+			
+			function getIdofItem(el)
+			{
+				document.getElementById("prodid").value = el.id;
+				showValues(el.id);
+			}	
         </script>
 
         <style>
@@ -168,10 +180,12 @@
                     <p>Limit: <input type="text" id="limit" style="width:50px" onKeyUp="showValues();"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>
                     <p>Comparison Limit: <input type="text" id="compLim" style="width:50px" onKeyUp="showValues();"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This limit will be used for comparison products, defaults to 3</span></a></p>
                     <p>Use Coupons: <input type="checkbox" name="coup" id="coup" onChange="showValues();"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will use coupons instead of products</span></a></p>
-                    <input type="submit" value="Submit" class="button-primary" id="auto_compare_submit" onClick="javascript:AutoCompare.insert(AutoCompare.local_ed);"/>
+                    <p>ID: <input type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This is set by clicking the product/coupon that you would like to users to go to when clicked.</span></a></p>
+					<input type="submit" value="Submit" class="button-primary" id="auto_compare_submit" onClick="javascript:AutoCompare.insert(AutoCompare.local_ed);"/>
                 </form>
             </div>
             <div style="float:left;font-size:12px;display:block;">Product Review:</div><p></br>
+			<span style="font-size:10px;"><strong>Note</strong>: Click the Product/Coupon that you would like to be displayed when a user clicks the link. If after you have set an item, it is removed from our catalog, we will use your query and any filters.</span>
             <div class="preview" style="display:none"></div>
         </div>
     </body>

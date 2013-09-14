@@ -2,8 +2,8 @@
 Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 2.0.9
+Tested up to: 3.6.1
+Stable tag: trunk
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,22 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1 =
+* Ease of use for everything
+* Optimizations all around
+* Performance Ad Widget updated- settings now inside widget window
+* Only one Performance Ad Widget now, place it wherever you'd like and size it any way you want
+* Added the width to the Prosper Search widget, you can use pixels, em or percentage to designate a width
+* Caching is now enabled for the Product Search (just need to make the prosperent_cache directory writable (0777) to take advantage of it)
+* Removed unused files
+* Base URL is set automatically now (can be overridden)
+* Added Performance Ad button in the page/post editors
+* Fixed/Changed AutoLinker 
+* CSS Updates
+* Fixed brand/merchant filters when they had non alphanumeric characters
+* Added topics to Performance Ads, if you enter a topic, your ad will focus the products on that topic (you can enter multiple topics)
+* General Bug Fixes
 
 = 2.0.9 =
 * small CSS fixes on both admin and user side

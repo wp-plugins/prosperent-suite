@@ -70,22 +70,26 @@ if (!$filterState && $options['Local_Query'])
             $filterState = $states[$localQuery[0]];
         }
 
-        $url = $url . '/state/' . urlencode($filterState) . '/city/' . urlencode($filterCity);
+        $url = $url . '/state/' . rawurlencode($filterState) . '/city/' . rawurlencode($filterCity);
     }
     elseif (strlen($localQuery[0]) == 2)
     {
         $filterState = $localQuery[0];
-        $url = $url . '/state/' . urlencode($filterState);
+        $url = $url . '/state/' . rawurlencode($filterState);
     }
     else
     {
         $filterState = $states[$localQuery[0]];
-        $url = $url . '/state/' . urlencode($filterState);
+        $url = $url . '/state/' . rawurlencode($filterState);
     }
 }
 
-$stateFull = strtolower($_POST['state']);
-$state = $states[$stateFull];
+if (isset($_POST['state']))
+{
+	$stateFull = strtolower($_POST['state']);
+	$state = $states[$stateFull];
+}	
+	
 $backStates = array_flip($states);
 
 if (empty($state) || !$state || NULL == $state)
@@ -94,22 +98,27 @@ if (empty($state) || !$state || NULL == $state)
 }
 
 $localSubmit = preg_replace('/\/$/', '', $url);
-$newQuery = str_replace(array('/city/' . $filterCity, '/state/' . $filterState, '/zip/' . $filterZip, '/page/' . $pageNumber), array('', '', '', ''), $localSubmit);
-$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $localSubmit);
 
-if ($_POST['state'])
+if(is_front_page())
 {
+	$localSubmit = site_url('/') . 'products';
+}
+
+if (isset($_POST['state']))
+{
+	$newQuery = str_replace(array('/city/' . $filterCity, '/state/' . $filterState, '/zip/' . $filterZip, '/page/' . $pageNumber), array('', '', '', ''), $localSubmit);
     header('Location: ' . $newQuery . '/state/' . $state);
     exit;
 }
 
-if ($_POST['sort'])
+if (isset($_POST['sort']))
 {
+	$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $localSubmit);
     header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
     exit;
 }
 
-if (empty($filterState) && $options['Geo_Locate'])
+if (empty($filterState) && isset($options['Geo_Locate']))
 {
     require_once(PROSPER_PATH . 'geo/geoplugin.class.php');
     //locate the IP
@@ -118,15 +127,16 @@ if (empty($filterState) && $options['Geo_Locate'])
 
     $filterState = $geoplugin->region;
     $filterCity  = $geoplugin->city;
-    header('Location: ' . $newQuery . '/state/' . urlencode($filterState) . '/city/' . urlencode($filterCity));
+	
+	$newQuery = str_replace(array('/city/' . $filterCity, '/state/' . $filterState, '/zip/' . $filterZip, '/page/' . $pageNumber), array('', '', '', ''), $localSubmit);
+    header('Location: ' . $newQuery . '/state/' . rawurlencode($filterState) . '/city/' . rawurlencode($filterCity));
     exit;
 }
 
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
+$settings = array(
     'api_key'        => $options['Api_Key'],
     'limit'          => $options['Api_Limit'],
     'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
@@ -135,8 +145,21 @@ $prosperentApi = new Prosperent_Api(array(
     'filterZipCode'  => $filterZip,
     'filterCity'     => $filterCity,
     'filterState'    => $filterState,
-    'filterMerchant' => stripslashes($sendParams['merchant'])
-));
+    'filterMerchant' => $filterMerchants
+);
+
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+			'lifetime'	 => 3600
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 
 $prosperentApi -> fetchLocal();
 $results = $prosperentApi -> getAllData();
@@ -144,10 +167,9 @@ $results = $prosperentApi -> getAllData();
 $totalFound = $prosperentApi -> getTotalRecordsFound();
 $facets = $prosperentApi -> getFacets();
 
-if ($filterState && ((!$filterCity || !$filterZip) || ($filterCity == 'Online' || $filterZip == 'Online')))
+if ((!$filterCity || !$filterZip) || ($filterCity == 'Online' || $filterZip == 'Online'))
 {
-    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-    $prosperentApi = new Prosperent_Api(array(
+    $settings = array(
         'api_key'        => $options['Api_Key'],
         'limit'          => $options['Api_Limit'],
         'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
@@ -157,8 +179,21 @@ if ($filterState && ((!$filterCity || !$filterZip) || ($filterCity == 'Online' |
         'filterCity'     => 'null',
         'filterState'    => 'null',
         'filterMerchant' => stripslashes($sendParams['merchant'])
-    ));
+    );
+	
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+				'lifetime'	 => 3600
+			)
+		));	
+	}
 
+	$prosperentApi = new Prosperent_Api($settings);
+	
     $prosperentApi -> fetchLocal();
     $onlineResults = $prosperentApi -> getAllData();
 
@@ -174,7 +209,7 @@ echo $typeSelector;
 ?>
 <div class="prosper_searchform">
     <form class="searchform" method="POST" action="">
-        <input class="prosper_field" type="text" name="state" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Local' : $options['Search_Bar_Text']; ?>">
+        <input class="prosper_field" type="text" name="state" id="s" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : 'Search Local Deals'; ?>">
         <input class="prosper_submit" type="submit" value="Search">
     </form>
 </div>
@@ -204,11 +239,23 @@ if (empty($results))
     $endRange   = date('Ymd');
 
     // fetch trends from api
-    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-    $api = new Prosperent_Api(array(
+    $api = array(
         'enableFacets'  => 'keyword',
         'filterCatalog' => 'local'
-    ));
+    );
+	
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+				'lifetime'	 => 3600
+			)
+		));	
+	}
+	
+	$api = new Prosperent_Api($settings);
 
     $api->setDateRange('commission', $startRange, $endRange)
         ->fetchTrends();
@@ -220,13 +267,26 @@ if (empty($results))
     }
 
     // fetch merchant data from api
-    $api = new Prosperent_Api(array(
+    $settings = array(
         'api_key'         => $options['Api_Key'],
         'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
         'filterKeyword'	   => $keys,
         'limit' 	      => 15
-    ));
+    );
+	
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache',
+				'lifetime'	 => 3600
+			)
+		));	
+	}
 
+	$api = new Prosperent_Api($settings);
+	
     $api->fetchLocal();
     $results = $api->getAllData() ;
 
@@ -254,14 +314,14 @@ if (empty($results))
                     continue;
                 }
 
-                $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+                $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
                 ?>
-                <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
+                <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
-                        <a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                        <a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                     </div>
                     <div class="productContent">
-                        <div class="productTitle"><a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><?php echo $record['keyword']; ?></span></a></div>
+                        <div class="productTitle"><a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><?php echo $record['keyword']; ?></span></a></div>
                         <div id="couponList" class="couponExpire"><?php echo preg_match('/no sales campaign/i', $record['promo']) ? '' : $record['promo']; ?></div>
                         <div class="productDescription"><?php
                             if (strlen($record['description']) > 200)
@@ -278,11 +338,11 @@ if (empty($results))
                             <?php
                             if ($record['city'] && 'Online' != $record['city'])
                             {
-                                echo '<span class="brandIn"><u>City</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/city/' . $filterCity), array('', ''), $localSubmit) . '/city/' . urlencode($record['city']) . '"><cite>' . $record['city'] . '</cite></a></span>';
+                                echo '<span class="brandIn"><u>City</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/city/' . $filterCity), array('', ''), $localSubmit) . '/city/' . rawurlencode($record['city']) . '"><cite>' . $record['city'] . '</cite></a></span>';
                             }
                             if ($record['state'])
                             {
-                                echo '<span class="merchantIn"><u>State</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/state/' . $filterState), array('', ''), $localSubmit) . '/state/' . urlencode($record['state']) . '"><cite>' . ucwords($backStates[$record['state']]) . '</cite></a></span><br>';
+                                echo '<span class="merchantIn"><u>State</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/state/' . $filterState), array('', ''), $localSubmit) . '/state/' . rawurlencode($record['state']) . '"><cite>' . ucwords($backStates[$record['state']]) . '</cite></a></span><br>';
                             }
                             if ('Online' == $record['city'] && 'Online' == $record['zipCode'])
                             {
@@ -290,11 +350,11 @@ if (empty($results))
                             }
                             if ($record['zipCode'] && 'Online' != $record['zipCode'])
                             {
-                                echo '<span class="brandIn"><u>Zip Code</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/zip/' . $filterZip), array('', ''), $localSubmit) . '/zip/' . urlencode($record['zipCode']) . '"><cite>' . urlencode($record['zipCode']) . '</cite></a></span>';
+                                echo '<span class="brandIn"><u>Zip Code</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/zip/' . $filterZip), array('', ''), $localSubmit) . '/zip/' . rawurlencode($record['zipCode']) . '"><cite>' . rawurlencode($record['zipCode']) . '</cite></a></span>';
                             }
                             if ($record['merchant'])
                             {
-                                echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/merchant/' . $filterMerchant), array('', ''), $localSubmit) . '/merchant/' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                                echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/merchant/' . $filterMerchant), array('', ''), $localSubmit) . '/merchant/' . rawurlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
                             }
                             ?>
                         </div>
@@ -317,7 +377,7 @@ if (empty($results))
                             <?php
                         }
                         ?>
-                        <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                        <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
                             <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
@@ -383,7 +443,7 @@ else
                             $cityFacet['value'] = 'Online';
                         }
 
-                        echo '<a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a>';
+                        echo '<a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/city/' . rawurlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a>';
 
                         if ($i < $countminus)
                         {
@@ -413,7 +473,7 @@ else
                 else
                 {
                     echo '<div style="min-height:35px;">';
-                    echo urldecode($filterCity);
+                    echo rawurldecode($filterCity);
                     echo '</br><a href=' . str_replace(array('/page/' . $pageNumber, '/city/' . $filterCity), array('', ''), $localSubmit) . '>clear filter</a>';
                     echo '</div>';
                 }
@@ -438,7 +498,7 @@ else
                             $zipFacet['value'] = 'Online';
                         }
 
-                        echo '<a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a>';
+                        echo '<a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/zip/' . rawurlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a>';
 
                         if ($i < $countminus)
                         {
@@ -496,7 +556,7 @@ else
                     echo '<tr>';
                 }
 
-                echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/city/' . urlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a></td>';
+                echo '<td style="width:1%; padding:5px; height:30px;"><a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/city/' . rawurlencode($cityFacet['value']) . '>' . $cityFacet['value'] . ' (' . $cityFacet['count'] . ')</a></td>';
 
                 if ($i % 5 == 4 && $i >= 9)
                 {
@@ -526,7 +586,7 @@ else
                     echo '<tr>';
                 }
 
-                echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/zip/' . urlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a></td>';
+                echo '<td style="padding:5px; height:30px; width:1%;"><a href=' . str_replace('/page/' . $pageNumber, '', $localSubmit) . '/zip/' . rawurlencode($zipFacet['value']) . '>' . $zipFacet['value'] . ' (' . $zipFacet['count'] . ')</a></td>';
 
                 if ($i % 4 == 3 && $i >= 7)
                 {
@@ -604,14 +664,14 @@ else
                 continue;
             }
 
-            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
             ?>
-            <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
+            <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                 <div class="productImage">
-                    <a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                    <a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                 </div>
                 <div class="productContent">
-                    <div class="productTitle"><a href="<?php echo $productPage . '/local/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><?php echo $record['keyword']; ?></span></a></div>
+                    <div class="productTitle"><a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><?php echo $record['keyword']; ?></span></a></div>
                     <div id="couponList" class="couponExpire"><?php echo preg_match('/no sales campaign/i', $record['promo']) ? '' : $record['promo']; ?></div>
                     <div class="productDescription"><?php
                         if (strlen($record['description']) > 200)
@@ -628,11 +688,11 @@ else
                         <?php
                         if ($record['city'] && 'Online' != $record['city'])
                         {
-                            echo '<span class="brandIn"><u>City</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/city/' . $filterCity), array('', ''), $localSubmit) . '/city/' . urlencode($record['city']) . '"><cite>' . $record['city'] . '</cite></a></span>';
+                            echo '<span class="brandIn"><u>City</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/city/' . $filterCity), array('', ''), $localSubmit) . '/city/' . rawurlencode($record['city']) . '"><cite>' . $record['city'] . '</cite></a></span>';
                         }
                         if ($record['state'])
                         {
-                            echo '<span class="merchantIn"><u>State</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/state/' . $filterState), array('', ''), $localSubmit) . '/state/' . urlencode($record['state']) . '"><cite>' . ucwords($backStates[$record['state']]) . '</cite></a></span><br>';
+                            echo '<span class="merchantIn"><u>State</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/state/' . $filterState), array('', ''), $localSubmit) . '/state/' . rawurlencode($record['state']) . '"><cite>' . ucwords($backStates[$record['state']]) . '</cite></a></span><br>';
                         }
                         if ('Online' == $record['city'] && 'Online' == $record['zipCode'])
                         {
@@ -640,11 +700,11 @@ else
                         }
                         if ($record['zipCode'] && 'Online' != $record['zipCode'])
                         {
-                            echo '<span class="brandIn"><u>Zip Code</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/zip/' . $filterZip), array('', ''), $localSubmit) . '/zip/' . urlencode($record['zipCode']) . '"><cite>' . urlencode($record['zipCode']) . '</cite></a></span>';
+                            echo '<span class="brandIn"><u>Zip Code</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/zip/' . $filterZip), array('', ''), $localSubmit) . '/zip/' . rawurlencode($record['zipCode']) . '"><cite>' . rawurlencode($record['zipCode']) . '</cite></a></span>';
                         }
                         if ($record['merchant'])
                         {
-                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/merchant/' . $filterMerchant), array('', ''), $localSubmit) . '/merchant/' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace(array('/page/' . $pageNumber, '/merchant/' . $filterMerchant), array('', ''), $localSubmit) . '/merchant/' . rawurlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
                         }
                         ?>
                     </div>
@@ -667,7 +727,7 @@ else
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
                         <input type="submit" value="Visit Store"/>
                     </form>
                 </div>
@@ -679,4 +739,4 @@ else
     <?php
 }
 
-prosper_pagination($pages, $sendParams['page']);
+prosper_pagination($pages, $pageNumber);

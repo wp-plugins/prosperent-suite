@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.0.9
+Version: 2.1
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -32,6 +32,7 @@ if (!defined('PROSPER_BASENAME'))
 if (!class_exists('Prosperent_Suite'))
 {
     require PROSPER_PATH . 'admin/admin.php';
+	require_once(PROSPER_PATH . 'Prosperent_Api.php');
 
     class Prosperent_Suite extends Prosperent_Admin
     {
@@ -41,74 +42,113 @@ if (!class_exists('Prosperent_Suite'))
          * @return void
          */
         public function __construct()
-        {
+        {						
             add_action('init', array($this, 'do_output_buffer'));
             add_action('init', array($this, 'prosper_query_tag'), 1);
+		
+			if (!file_exists(PROSPER_PATH . 'prosperent_cache') || substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) != '0777')
+			{
+				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
+			}
 
             $options = $this->get_option();
-
+			
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosper_deactivate'));
 
+			add_action('admin_init', array($this, 'prosper_activate_redirect'));
+			
             $rules = get_option('rewrite_rules');
             if (!$rules['store/go/([^/]*)/?'])
             {
                 add_action( 'init', array($this, 'prosper_reroutes' ));
             }
 
-            if (isset($options['Enable_PA']))
-            {
-                add_action('performance_ads', array($this, 'Prosper_Perform_Ads'));
-                add_action('wp_enqueue_scripts', array($this, 'prosperAds_css'));
-                add_action('wp_head', array($this, 'perform_header'));
-                require_once('PA_Sidebar.php');
-                require_once('PA_Footer.php');
-            }
-            if (isset($options['Enable_AC']))
-            {
-                if(is_admin())
-                {
-                    add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
-                    add_action('admin_init', array($this, 'autoCompare_custom_add'));
-                }
-                else
-                {
-                    add_shortcode('compare', array($this, 'autoCompare_shortcode'));
-                }
-            }
-            if (isset($options['Enable_AL']))
-            {
-                if(is_admin())
-                {
-                    add_action('admin_print_footer_scripts', array($this, 'qTagsLinker'));
-                    add_action('admin_init', array($this, 'autoLinker_custom_add'));
-                }
-                else
-                {
-                    add_shortcode('linker', array($this, 'linker_shortcode'));
-                }
+			if ($options['Api_Key'] && preg_match('/\w{32,32}/i', $options['Api_Key']) && $options['UID'] && preg_match('/\d{6,6}/', $options['UID']))
+			{ 
+				if (isset($options['Enable_PA']))
+				{
+					if(is_admin())
+					{
+						add_action('admin_print_footer_scripts', array($this, 'qTagsPerformAd'));
+						add_action('admin_init', array($this, 'performAd_custom_add'));
+					}
+					else
+					{
+						add_shortcode('perform_ad', array($this, 'performAd_shortCode'));
+						add_action('wp_head', array($this, 'perform_header'));
+					}
+					require_once('PA_Widget.php');
+				}
+				if (isset($options['Enable_AC']))
+				{
+					if(is_admin())
+					{
+						add_action('admin_print_footer_scripts', array($this, 'qTagsCompare'));
+						add_action('admin_init', array($this, 'autoCompare_custom_add'));
+					}
+					else
+					{ 
+						add_shortcode('compare', array($this, 'autoCompare_shortcode'));
+					}
+				}
+				if (isset($options['Enable_AL']))
+				{
+					if(is_admin())
+					{
+						add_action('admin_print_footer_scripts', array($this, 'qTagsLinker'));
+						add_action('admin_init', array($this, 'autoLinker_custom_add'));
+					}
+					else
+					{
+						add_shortcode('linker', array($this, 'linker_shortcode'));
+					}
 
-                $this->register_filters();
-            }
-            if (isset($options['Enable_PPS']))
-            {
-                add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
-                add_shortcode('prosper_store', array($this, 'store_shortcode'));
-                add_shortcode('prosper_search', array($this, 'search_shortcode'));
-                add_shortcode('prosper_product', array($this, 'product_shortcode'));
-                add_action('prospere_header', array($this, 'Prospere_Search'));
-                add_action('wp_head', array($this, 'ogMeta'));
-                add_filter('wp_title', array($this, 'prosper_title'), 20, 3);
+					$this->register_filters();
+				}
+				if (isset($options['Enable_PPS']))
+				{
+					add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
+					add_shortcode('prosper_store', array($this, 'store_shortcode'));
+					add_shortcode('prosper_search', array($this, 'search_shortcode'));
+					add_action('wp_head', array($this, 'ogMeta'));
+					add_filter('wp_title', array($this, 'prosper_title'), 20, 3);
 
-                require_once('TP_Widget.php');
-                require_once('PS_Widget.php');
-            }
-            else
-            {
-                add_action('admin_init', array($this, 'prosperent_store_remove'));
-            }
+					require_once('TP_Widget.php');
+					require_once('PS_Widget.php');
+				}
+				else
+				{
+					add_action('admin_init', array($this, 'prosperent_store_remove'));
+				}
+			}
+			else
+			{
+				add_action( 'admin_notices', array($this, 'prosperBadSettings' ));
+			}	
         }
-
+		
+		public function prosperNoticeWrite() 
+		{
+			$options = $this->get_option();
+			if (!$options['concealCacheMessage'])
+			{
+				echo '<div class="updated" style="padding:6px 0;">';
+				echo _e( '<span style="font-size:14px; padding-left:10px;">Please make the <strong>prosperent_cache</strong> directory writable (0777). If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span><span style="font-size:12px;"><a style="margin-left:24px; margin-top:4px;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&hide&nonce='. wp_create_nonce( 'prosper_hide_message' )) . '">' . __( 'Hide this Message', 'prosperent-suite' ) . '</a></span>', 'my-text-domain' );
+				echo '</div>';	
+			}	
+		}
+		
+		public function prosperBadSettings()
+		{
+			
+			$url = admin_url( 'admin.php?page=prosper_general' );
+			echo '<div class="error" style="padding:6px 0;">';
+			echo _e( '<span style="font-size:14px; padding-left:10px;">Your User Id or API Key is either incorrect or missing. </span><br>
+			<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent User ID</strong> and an <strong>API Key</strong>. Go to the Prosperent Suite <a href="' . $url . '">General Settings</a> and follow the directions to get your User Id and an API Key.</span>', 'my-text-domain' );
+			echo '</div>';		
+		}
+		
         /**
          * Retrieve an array of all the options the plugin uses. It can't use only one due to limitations of the options API.
          *
@@ -136,15 +176,26 @@ if (!class_exists('Prosperent_Suite'))
             /*
             /  Prosperent API Query
             */
-            require_once(PROSPER_PATH . 'Prosperent_Api.php');
-            $prosperentApi = new Prosperent_Api(array(
+            $settings = array(
                 'api_key'         => $options['Api_Key'],
                 'limit'           => 1,
                 'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
                 'enableFacets'    => $options['Enable_Facets'],
                 'filterCatalogId' => get_query_var('cid')
-            ));
+            );
 
+			if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+			{	
+				$settings = array_merge($settings, array(
+					'cacheBackend'   => 'FILE',
+					'cacheOptions'   => array(
+						'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+					)
+				));	
+			}
+			
+			$prosperentApi = new Prosperent_Api($settings);
+			
             switch ($options['Country'])
             {
                 case 'UK':
@@ -162,11 +213,11 @@ if (!class_exists('Prosperent_Suite'))
             }
             $record = $prosperentApi -> getAllData();
 
-            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
+            $page = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
             if (is_page($page))
             {
                 // Open Graph: FaceBook
-                echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
+                echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/" />';
                 echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
                 echo '<meta property="og:type" content="website" />';
                 echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
@@ -206,7 +257,7 @@ if (!class_exists('Prosperent_Suite'))
 
         public function perform_header()
         {
-            echo '<script data-cfasync="false" type="text/javascript" src="http://prosperent.com/js/ad.js"></script>';
+            echo '<script async type="text/javascript" src="http://prosperent.com/js/ad.js"></script>';
         }
 
         public function prosper_reroutes()
@@ -220,7 +271,7 @@ if (!class_exists('Prosperent_Suite'))
          *
          * @return array of options
          */
-        public function get_option()
+        public function get_option($option = null)
         {
             static $options;
 
@@ -240,8 +291,8 @@ if (!class_exists('Prosperent_Suite'))
         {
             $this->prosper_default();
             $this->prosperent_store_install();
-            $this->prosper_rewrite();
-            $this->prosper_flush_rules();
+            $this->prosper_reroutes();
+			$this->prosperOptionActivateAdd();
         }
 
         public function prosper_deactivate()
@@ -250,6 +301,23 @@ if (!class_exists('Prosperent_Suite'))
             $this->prosper_flush_rules();
         }
 
+		public function prosperOptionActivateAdd() 
+		{
+			add_option('prosperActivationRedirect', true);
+		}
+
+		public function prosper_activate_redirect() 
+		{
+			if (get_option('prosperActivationRedirect', false)) 
+			{
+				delete_option('prosperActivationRedirect');
+				if(!isset($_GET['activate-multi']))
+				{
+					wp_redirect( admin_url( 'admin.php?page=prosper_general' ) );
+				}
+			}
+		}
+		
         /**
          * Flush the rewrite rules.
          */
@@ -275,8 +343,9 @@ if (!class_exists('Prosperent_Suite'))
         public function prosper_rewrite()
         {
             $options  = $this->get_option();
-            $page     = (!$options['Base_URL'] ?  'products' : ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']));
-            $pageName = (!$options['Base_URL'] ?  'pagename=products' : ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']));
+
+            $page     = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL'] . '/') : 'products/';
+            $pageName = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']) : 'pagename=products';
 
             add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
             add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
@@ -285,7 +354,7 @@ if (!class_exists('Prosperent_Suite'))
             add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
             add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
             add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-            add_rewrite_rule($page . '/(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
+            add_rewrite_rule($page . '(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
         }
 
         public function prosper_default()
@@ -382,20 +451,25 @@ if (!class_exists('Prosperent_Suite'))
                 if (is_array($old_options))
                 {
                     $opt = array(
-                        'Enable_PA'        => $old_options['Enable_PA'],
-                        'SWH' 		 	   => $old_options['SWH'],
+                        'Enable_PA'   => $old_options['Enable_PA'],
+						'Remove_Tags' => ''
+                        /*
+						'SWH' 		 	   => $old_options['SWH'],
                         'SWW'   		   => $old_options['SWW'],
                         'FWH'      		   => $old_options['FWH'],
                         'FWW' 		 	   => $old_options['FWW'],
                         'content_fallBack' => $old_options['content_fallBack'],
                         'sidebar_fallBack' => $old_options['sidebar_fallBack'],
                         'footer_fallBack'  => $old_options['footer_fallBack']
+						*/
                     );
                 }
                 else
                 {
                     $opt = array(
-                        'Enable_PA'        => 1,
+                        'Enable_PA'   => 1,
+						'Remove_Tags' => ''
+						/*
                         'SWH' 	 		   => 150,
                         'SWW'  	 		   => 'auto',
                         'FWH'    		   => 150,
@@ -403,6 +477,7 @@ if (!class_exists('Prosperent_Suite'))
                         'content_fallBack' => '',
                         'sidebar_fallBack' => '',
                         'footer_fallBack'  => ''
+						*/
                     );
                 }
                 update_option( 'prosper_performAds', $opt );
@@ -431,18 +506,14 @@ if (!class_exists('Prosperent_Suite'))
                 {
                     $opt = array(
                         'Enable_AL' 		 => $old_options['Enable_AL'],
-                        'Auto_Link' 		 => $old_options['Auto_Link'],
-                        'Auto_Link_Comments' => $old_options['Auto_Link_Comments'],
-                        'Case_Sensitive' 	 => $old_options['Case_Sensitive']
+                        'Auto_Link_Comments' => $old_options['Auto_Link_Comments']
                     );
                 }
                 else
                 {
                     $opt = array(
                         'Enable_AL' 		 => 1,
-                        'Auto_Link'			 => 'shoes => Nike shoes',
-                        'Auto_Link_Comments' => 0,
-                        'Case_Sensitive' 	 => 0
+                        'Auto_Link_Comments' => 0
                     );
                 }
                 update_option( 'prosper_autoLinker', $opt );
@@ -455,12 +526,9 @@ if (!class_exists('Prosperent_Suite'))
                     $opt = array(
                         'Title_Structure' => $old_options['Title_Structure'],
                         'Title_Sep'		  => $old_options['Title_Sep'],
-                        'Base_URL' 		  => $old_options['Base_URL'],
                         'Twitter_Site'	  => '',
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => $old_options['Additional_CSS'],
-                        'Logo_Image' 	  => $old_options['Logo_Image'],
-                        'Logo_imageSmall' => $old_options['Logo_imageSmall'],
                         'Image_Masking'	  => 0
                     );
                 }
@@ -469,12 +537,9 @@ if (!class_exists('Prosperent_Suite'))
                     $opt = array(
                         'Title_Structure' => 0,
                         'Title_Sep'		  => '',
-                        'Base_URL' 		  => '',
                         'Twitter_Site'	  => '',
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => '',
-                        'Logo_Image' 	  => 0,
-                        'Logo_imageSmall' => 0,
                         'Image_Masking'	  => 0
                     );
                 }
@@ -554,60 +619,182 @@ if (!class_exists('Prosperent_Suite'))
         public function auto_linker($text)
         {
             $options = $this->get_option();
+			
+			$random 			= FALSE;
+			$base_url   		= $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '/query/' : $options['Base_URL'] . '/query/') : 'products/query/';
+			$target 			= $options['Target'] ? '_blank' : '_self';
+			$prosper_aff_url    = 'http://prosperent.com/store/product/' . $options['UID'] . '-427-0/?k=';
+			$store_go_url       = site_url() . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $prosper_aff_url)) . ',SL,';
+			$product_search_url = site_url('/') . $base_url;	
+						
+			$text = ' ' . $text . ' ';
+			if ($options['Match'])
+			{
+				foreach ($options['Match'] as $i => $match)
+				{			
+					if (!empty($match))
+					{
+						$val[$match] =  $options['Query'][$i] ? $options['Query'][$i] : $match;
+					}
+				}
 
-            if ($options['Enable_PPS'])
-            {
-                $preg_flags = $options['Case_Sensitive'] ? 's' : 'si';
-                $target 	= $options['Target'] ? '_blank' : '_self';
-                $base_url   = $options['Base_URL'];
+				
+				$i = 0;				
+				foreach ($val as $old_text => $new_text)
+				{ 				
+					$limit = $options['PerPage'][$i] ? $options['PerPage'][$i] : 5;
+					$case  = isset($options['Case'][$i]) ? '' : 'i';
+					$query = rawurlencode(trim($new_text));	
+					//$qText = 'q="' . $old_text . '"';
+					preg_match('/q=\".+?\"/', $text, $qText);
 
-                $text = ' ' . $text . ' ';
-                if ($options['Auto_Link'])
-                {
-                    foreach (explode( "\n", $options['Auto_Link']) as $line)
-                    {
-                        $parts = array_map('trim', explode("=>", $line, 2));
+					$text = str_ireplace($qText[0], $base = base64_encode($qText[0]), $text);
+					
+					if ($random)
+					{							
+						preg_match_all('/\b' . $old_text . '\b/' . $case, $text, $matches, PREG_PATTERN_ORDER);
 
-                        $val[$parts[0]] =  $parts[1];
-                    }
+						$matches = $matches[0];
 
-                    foreach ($val as $old_text => $new_text)
-                    {
-                        $query = urlencode(trim(empty($new_text) ? $old_text : $new_text));
+						if($case == 'i')
+						{
+							$old_text = strtolower($old_text);
+							$text = preg_replace('/\b' . $old_text . '\b/i', $old_text, $text);						
+						}
 
-                        $new_text = '<a href="' . (!$base_url ? '/products/query/' : '/' . $base_url . '/query/') . urlencode($query) . '" target="' . $target . '" class="prosperent-kw">' . $old_text . '</a>';
-                        $text = preg_replace("|(?!<.*?)\b$old_text\b(?![^<>]*?>)|$preg_flags", $new_text, $text);
-                    }
-                    // Remove links within links
-                    $text = preg_replace( "#(<a [^>]+>)(.*)<a [^>]+>([^<]*)</a>([^>]*)</a>#iU", "$1$2$3$4</a>" , $text );
-                }
-            }
+						$newText = explode($old_text, $text);
+						
+						if ($limit < count($matches))
+						{
+							$rand_keys = array_rand($matches, $limit);
+							
+							if ($limit > 1)
+							{
+								foreach($rand_keys as $key)
+								{
+									if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+									{
+										$matches[$key] = '<a href="' . $store_go_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $matches[$key] . '</a>';
+									}							
+									else
+									{
+										$matches[$key] = '<a href="' . $product_search_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $matches[$key] . '</a>';								
+									}						
+								}	
+							}	
+							else
+							{
+								if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+								{
+									$matches[$rand_keys] = '<a href="' . $store_go_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $matches[$rand_keys] . '</a>';
+								}							
+								else
+								{
+									$matches[$rand_keys] = '<a href="' . $product_search_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $matches[$rand_keys] . '</a>';								
+								}	
+							}
+						}
+						else
+						{
+							foreach($matches as $p => $match)
+							{
+								if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+								{
+									$matches[$p] = '<a href="' . $store_go_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $match . '</a>';
+								}							
+								else
+								{
+									$matches[$p] = '<a href="' . $product_search_url . $query . '" target="' . $target . '" class="prosperent-kw">' . $match . '</a>';
+								}						
+							}	
+						}
+
+						$content = array();
+						foreach ($newText as $x => $new)
+						{
+							$content[] = $new . $matches[$x];						
+						}			
+
+						$text = implode('', $content);
+					}
+					else
+					{
+						if (!isset($options['Enable_PPS']) || isset($options['LTM'][$i]) == 1)
+						{					
+							$text = preg_replace('/\b' . $old_text . '\b/' . $case, '<a href="' . $store_go_url . $query . '" target="' . $target . '" class="prosperent-kw">$0</a>', $text, $limit);
+						}
+						else
+						{
+							$text = preg_replace('/\b' . $old_text . '\b/' . $case, '<a href="' . $product_search_url . $query . '" target="' . $target . '" class="prosperent-kw">$0</a>', $text, $limit);
+						}
+					}
+					
+					$text = str_ireplace($base, $qText[0], $text);
+					
+					$i++;
+				}		
+				
+				// Remove links within links
+				$text = preg_replace( "#(<a [^>]+>)(.*)<a [^>]+>([^<]*)</a>([^>]*)</a>#iU", "$1$2$3$4</a>" , $text );
+			}
 
             return trim($text);
         }
-
+		
         public function prospere_stylesheets()
         {
             // Product Search CSS for results and search
             // List View
-            wp_register_style( 'prospere_main_style', plugins_url('/css/productSearchList.css', __FILE__) );
+            wp_register_style( 'prospere_main_style', plugins_url('/css/products.css', __FILE__) );
             wp_enqueue_style( 'prospere_main_style' );
-
-            wp_register_style( 'prospere_product_style', plugins_url('/css/productPage.css', __FILE__) );
-            wp_enqueue_style( 'prospere_product_style' );
-
-            // Product Search CSS for IE7, a few changes to align objects in IE 7
-            wp_enqueue_style('prospere_IE_7', plugins_url('/css/productSearch-IE7.css', __FILE__));
-            wp_enqueue_style( 'prospere_IE_7' );
         }
 
         public function store_shortcode()
-        {
+        {			
+			$this->storeChecker();
+		
             ob_start();
             include(PROSPER_PATH . 'products.php');
             $store = ob_get_clean();
             return $store;
         }
+		
+		public function storeChecker()
+		{
+			global $prosper_admin;
+			$options = $prosper_admin->get_option('prosper_advanced');
+			if (!$options['Manual_Base'])
+			{
+				if (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name)
+				{
+					if (!is_front_page())
+					{
+						$options['Base_URL'] = get_post()->post_name;					
+					}
+					elseif (is_front_page() && get_post()->post_name != 'products')
+					{
+						$options['Base_URL'] = 'null';
+					}
+					
+					update_option('prosper_advanced', $options);
+
+					$page     = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL'] . '/') : 'products/';
+					$pageName = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']) : 'pagename=products';
+
+					
+					add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
+					add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
+					add_rewrite_rule($page . '(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
+					
+					flush_rewrite_rules();
+				}
+			}
+		}
 
         public function search_shortcode()
         {
@@ -620,7 +807,7 @@ if (!class_exists('Prosperent_Suite'))
         }
 
         public function prosper_title($title, $sep, $seplocation)
-        {
+        { 
             if ( is_feed() )
             {
                 return $title;
@@ -644,20 +831,20 @@ if (!class_exists('Prosperent_Suite'))
 
             $options = $this->get_option();
             $sep = ' ' . (!$options['Title_Sep'] ? !$sep ? '|' : trim($sep) : trim($options['Title_Sep'])) . ' ';
-            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-            $query = ($sendParams['query'] ? $sendParams['query'] : ($options['Starting_Query'] ? $options['Starting_Query'] : ''));
-            $query = ucwords(urldecode(str_replace('+', ' ', $query)));
+            $page = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
             $page_num = $sendParams['page'] ? ' Page ' . $sendParams['page'] : '';
             $pagename = get_the_title();
             $blogname = get_bloginfo();
-            $brand = ucwords(urldecode($sendParams['brand']));
-            $merchant = ucwords(urldecode($sendParams['merchant']));
+            $brand = ucwords(rawurldecode($sendParams['brand']));
+            $merchant = ucwords(rawurldecode($sendParams['merchant']));
             $type = $sendParams['type'];
-            $state = ucwords(urldecode($sendParams['state']));
-            $city = ucwords(urldecode($sendParams['city']));
-            $zip = ucwords(urldecode($sendParams['zip']));
-            $celeb = ucwords(urldecode($sendParams['celeb']));
-            $celebQuery = ucwords(urldecode($sendParams['celebQuery']));
+			$query = ($sendParams['query'] ? $sendParams['query'] : (($options['Starting_Query'] && !$brand && !$merchant) ? $options['Starting_Query'] : ''));
+            $query = ucwords(rawurldecode(str_replace('+', ' ', $query)));
+            $state = ucwords(rawurldecode($sendParams['state']));
+            $city = ucwords(rawurldecode($sendParams['city']));
+            $zip = ucwords(rawurldecode($sendParams['zip']));
+            $celeb = ucwords(rawurldecode($sendParams['celeb']));
+            $celebQuery = ucwords(rawurldecode($sendParams['celebQuery']));
 
             if ('coup' == $type)
             {
@@ -665,12 +852,12 @@ if (!class_exists('Prosperent_Suite'))
             }
 
             if (get_query_var('cid'))
-            {
-                $query = preg_replace('/\(.+\)/i', '', urldecode(get_query_var('keyword')));
+            { 
+                $query = preg_replace('/\(.+\)/i', '', rawurldecode(get_query_var('keyword')));
                 $query = str_replace(',SL,', '/', $query);
                 $title = $query . $sep . $title;
             }
-            elseif (is_page($page))
+            elseif (is_page($page) && !get_query_var('cid'))
             {
                 if ('local' == $type)
                 {
@@ -740,93 +927,6 @@ if (!class_exists('Prosperent_Suite'))
             return $title;
         }
 
-        public function Prospere_Search()
-        {
-            $params = array_reverse(explode('/', get_query_var('queryParams')));
-
-            $sendParams = array();
-            if (!empty($params))
-            {
-                $params = array_reverse($params);
-                foreach ($params as $k => $p)
-                {
-                    //if the number is even, grab the next index value
-                    if (!($k & 1))
-                    {
-                        $sendParams[$p] = $params[$k + 1];
-                    }
-                }
-            }
-
-            $options = $this->get_option();
-            $query = $sendParams['query'];
-
-            $url = 'http://' . $_SERVER['HTTP_HOST'] . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']);
-            $prodSubmit = preg_replace('/\/$/', '', $url);
-            $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
-
-            $page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-
-            if (is_page($page) && $_POST['q'])
-            {
-                $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                $prodSubmit = preg_replace('/\/$/', '', $url);
-                $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
-                header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
-                exit;
-            }
-            elseif ($_POST['q'])
-            {
-                header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
-                exit;
-            }
-            ?>
-            <form id="search" method="POST" action="">
-                <table>
-                    <tr>
-                        <?php
-                        // if $logo_image is set to TRUE, this statement will output the Prosperent logo before the input box
-                        if ($options['Logo_Image'])
-                        {
-                            ?>
-                            <td class="image"><a href="http://prosperent.com" title="Prosperent Search"> <img src="<?php echo plugins_url('/img/logo_small.png', __FILE__); ?>" /> </a></td>
-                            <style type=text/css>
-                                #search-input {
-                                    margin-bottom:5px;
-                                }
-                            </style>
-                            <?php
-                        }
-                        else if ($options['Logo_imageSmall'])
-                        {
-                            ?>
-                            <td class="image"><a href="http://prosperent.com" title="Prosperent"> <img src="<?php echo plugins_url('/img/logo_smaller.png', __FILE__); ?>"/> </a></td>
-                            <style type=text/css>
-                                #branding img {
-                                    margin-bottom:6px;
-                                }
-                            </style>
-                            <?php
-                        }
-                        ?>
-                        <td>
-                            <table id="search-input" cellspacing="0">
-                                <tr>
-                                    <td class="srchBoxCont" nowrap>
-                                        <input class="srch_box" type="text" name="q" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
-                                    </td>
-                                    <td nowrap style="vertical-align:middle;">
-                                        <input class="submit" type="submit" id="searchsubmit" value="Search">
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-            <?php
-        }
-
         public function autoCompare_shortcode($atts, $content = null)
         {
             $options = $this->get_option();
@@ -837,20 +937,31 @@ if (!class_exists('Prosperent_Suite'))
                 'b'  => isset($b) ? $b : '',
                 'm'  => isset($m) ? $m : '',
                 'l'  => isset($l) ? intval($l) : 1,
-                'cl' => isset($cl) ? intval($cl) : 3,
-                'ct' => isset($ct) ? $ct : 'US'
+                'cl' => isset($cl) ? intval($cl) : '',
+                'ct' => isset($ct) ? $ct : 'US',
+				'id' => isset($id) ? $id : ''
             ), $atts));
 
             $query = $q ? $q : $content;
-
+			
             // Remove links within links
             $query = strip_tags($query);
             $content = strip_tags($content);
 
             if (!$c)
             {
-                require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                $prosperentApi = new Prosperent_Api(array(
+				if ($m && $id)
+				{
+					$catalogId = $id;
+					$productId = '';
+				}
+				else
+				{
+					$productId = $id;
+					$catalogId = '';
+				}
+				
+                $settings = array(
                     'api_key'        => $options['Api_Key'],
                     'query'          => trim($query),
                     'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
@@ -858,8 +969,22 @@ if (!class_exists('Prosperent_Suite'))
                     'enableFacets'   => TRUE,
                     'sortPrice'		 => '',
                     'filterMerchant' => $m,
-                    'filterBrand'	 => $b
-                ));
+                    'filterBrand'	 => $b,
+					'filterCatalogId' => $catalogId,
+					'filterProductId' => $productId
+                );
+				
+				if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+				{	
+					$settings = array_merge($settings, array(
+						'cacheBackend'   => 'FILE',
+						'cacheOptions'   => array(
+							'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+						)
+					));	
+				}
+				
+				$prosperentApi = new Prosperent_Api($settings);
 
                 switch ($ct)
                 {
@@ -876,6 +1001,7 @@ if (!class_exists('Prosperent_Suite'))
                         $currency = 'USD';
                         break;
                 }
+				
                 $results = $prosperentApi -> getAllData();
 
                 if ($results)
@@ -885,59 +1011,140 @@ if (!class_exists('Prosperent_Suite'))
                     $compare = ob_get_clean();
                     return $compare;
                 }
-                else
-                {
-                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                    $prosperentApi = new Prosperent_Api(array(
-                        'api_key'      => $options['Api_Key'],
-                        'query'        => $query,
-                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-                        'limit'        => $l,
-                        'sortPrice'	   => ''
-                    ));
+				else
+				{
+					$settings = array(
+						'api_key'        => $options['Api_Key'],
+						'query'          => trim($query),
+						'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+						'limit'          => $l,
+						'enableFacets'   => TRUE,
+						'sortPrice'		 => '',
+						'filterMerchant' => $m,
+						'filterBrand'	 => $b
+					);
+					
+					if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+					{	
+						$settings = array_merge($settings, array(
+							'cacheBackend'   => 'FILE',
+							'cacheOptions'   => array(
+								'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+							)
+						));	
+					}
+					
+					$prosperentApi = new Prosperent_Api($settings);
 
-                    switch ($ct)
-                    {
-                        case 'UK':
-                            $prosperentApi -> fetchUkProducts();
-                            $currency = 'GBP';
-                            break;
-                        case 'CA':
-                            $prosperentApi -> fetchCaProducts();
-                            $currency = 'CAD';
-                            break;
-                        default:
-                            $prosperentApi -> fetchProducts();
-                            $currency = 'USD';
-                            break;
-                    }
-                    $results = $prosperentApi -> getAllData();
+					switch ($ct)
+					{
+						case 'UK':
+							$prosperentApi -> fetchUkProducts();
+							$currency = 'GBP';
+							break;
+						case 'CA':
+							$prosperentApi -> fetchCaProducts();
+							$currency = 'CAD';
+							break;
+						default:
+							$prosperentApi -> fetchProducts();
+							$currency = 'USD';
+							break;
+					}
+					
+					$results = $prosperentApi -> getAllData();
 
-                    if ($results)
-                    {
-                        ob_start();
-                        include(PROSPER_PATH . 'compare_short.php');
-                        $compare = ob_get_clean();
-                        return $compare;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
+					if ($results)
+					{
+						ob_start();
+						include(PROSPER_PATH . 'compare_short.php');
+						$compare = ob_get_clean();
+						return $compare;
+					}
+					else
+					{
+						$settings = array(
+							'api_key'      => $options['Api_Key'],
+							'query'        => $query,
+							'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+							'limit'        => $l,
+							'sortPrice'	   => ''
+						);
+
+						if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+						{	
+							$settings = array_merge($settings, array(
+								'cacheBackend'   => 'FILE',
+								'cacheOptions'   => array(
+									'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+								)
+							));	
+						}
+						
+						$prosperentApi = new Prosperent_Api($settings);
+						
+						switch ($ct)
+						{
+							case 'UK':
+								$prosperentApi -> fetchUkProducts();
+								$currency = 'GBP';
+								break;
+							case 'CA':
+								$prosperentApi -> fetchCaProducts();
+								$currency = 'CAD';
+								break;
+							default:
+								$prosperentApi -> fetchProducts();
+								$currency = 'USD';
+								break;
+						}
+						
+						$results = $prosperentApi -> getAllData();
+
+						if ($results)
+						{
+							ob_start();
+							include(PROSPER_PATH . 'compare_short.php');
+							$compare = ob_get_clean();
+							return $compare;
+						}
+						else
+						{
+							return;
+						}
+					}
+				}
             }
             else
             {
-                require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                $prosperentApi = new Prosperent_Api(array(
+				if ($id)
+				{
+					$couponId = $id;
+				}
+			
+			    $settings = array(
                     'api_key'        => $options['Api_Key'],
                     'query'          => $query,
                     'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
                     'limit'          => $l,
                     'enableFacets'   => TRUE,
                     'sortPrice'		 => '',
-                    'filterMerchant' => $m
-                ));
+                    'filterMerchant' => $m,
+					'filterCouponId' => $id
+					
+                );
+				
+				if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+				{	
+					$settings = array_merge($settings, array(
+						'cacheBackend'   => 'FILE',
+						'cacheOptions'   => array(
+							'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+						)
+					));	
+				}
+				
+				$prosperentApi = new Prosperent_Api($settings);
 
                 $prosperentApi -> fetchCoupons();
                 $results = $prosperentApi -> getAllData();
@@ -951,64 +1158,140 @@ if (!class_exists('Prosperent_Suite'))
                 }
                 else
                 {
-                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                    $prosperentApi = new Prosperent_Api(array(
-                        'api_key'      => $options['Api_Key'],
-                        'query'        => $query,
-                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-                        'limit'        => $l,
-                        'sortPrice'	   => ''
-                    ));
+					$settings = array(
+						'api_key'        => $options['Api_Key'],
+						'query'          => $query,
+						'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+						'limit'          => $l,
+						'enableFacets'   => TRUE,
+						'sortPrice'		 => '',
+						'filterMerchant' => $m
+					);
+					
+					if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+					{	
+						$settings = array_merge($settings, array(
+							'cacheBackend'   => 'FILE',
+							'cacheOptions'   => array(
+								'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+							)
+						));	
+					}
+					
+					$prosperentApi = new Prosperent_Api($settings);
 
-                    $prosperentApi -> fetchCoupons();
-                    $results = $prosperentApi -> getAllData();
+					$prosperentApi -> fetchCoupons();
+					$results = $prosperentApi -> getAllData();
 
-                    if ($results)
-                    {
-                        ob_start();
-                        include(PROSPER_PATH . 'compare_coup.php');
-                        $compare = ob_get_clean();
-                        return $compare;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
+					if ($results)
+					{
+						ob_start();
+						include(PROSPER_PATH . 'compare_coup.php');
+						$compare = ob_get_clean();
+						return $compare;
+					}
+					else
+					{
+						$settings = array(
+							'api_key'      => $options['Api_Key'],
+							'query'        => $query,
+							'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+							'limit'        => $l,
+							'sortPrice'	   => ''
+						);
+						
+						if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+						{	
+							$settings = array_merge($settings, array(
+								'cacheBackend'   => 'FILE',
+								'cacheOptions'   => array(
+									'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+								)
+							));	
+						}					
+						
+						$prosperentApi = new Prosperent_Api($settings);
+
+						$prosperentApi -> fetchCoupons();
+						$results = $prosperentApi -> getAllData();
+
+						if ($results)
+						{
+							ob_start();
+							include(PROSPER_PATH . 'compare_coup.php');
+							$compare = ob_get_clean();
+							return $compare;
+						}
+						else
+						{
+							return;
+						}
+					}
+				}
             }
         }
 
         public function linker_shortcode($atts, $content = null)
         {
-            $options = $this->get_option();
-            $target   = $options['Target'] ? '_blank' : '_self';
-
+            $options 			= $this->get_option();
+            $target  		    = $options['Target'] ? '_blank' : '_self';
+			$prosper_aff_url 	= 'http://prosperent.com/store/product/' . $options['UID'] . '-427-0/?k=';
+			$store_go_url 		= site_url() . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $prosper_aff_url)) . ',SL,';
+			$base_url   		= $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '/query/' : $options['Base_URL'] . '/query/') : 'products/query/';
+			$product_search_url = site_url('/') . $base_url;	
+			
             extract(shortcode_atts(array(
                 'q'   => isset($q) ? $q : '',
-                'gtm' => isset($gtm) ? $gtm : '',
+                'gtm' => isset($gtm) ? 1 : 0,
                 'b'   => isset($b) ? $b : '',
                 'm'   => isset($m) ? $m : '',
-                'ct'  => isset($ct) ? $ct : 'US'
+                'ct'  => isset($ct) ? $ct : 'US',
+				'id'  => isset($id) ? $id : ''
             ), $atts));
 
             $query = $q ? $q : $content;
-
+			
+			if ($m)
+			{
+				$catalogId = $id;
+				$productId = '';
+			}
+			else
+			{
+				$productId = $id;
+				$catalogId = '';
+			}
+			
             // Remove links within links
             $query = strip_tags($query);
-            $content = strip_tags($content);
+            $content = $content ? strip_tags($content) : $query;
 
             if ($gtm || !$options['Enable_PPS'])
             {
-                require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                $prosperentApi = new Prosperent_Api(array(
-                    'api_key'        => $options['Api_Key'],
-                    'query'          => $query,
-                    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-                    'limit'          => 1,
-                    'enableFacets'   => TRUE,
-                    'filterBrand'    => $b,
-                    'filterMerchant' => $m
-                ));
+                $settings = array(
+                    'api_key'         => $options['Api_Key'],
+                    'query'           => $query,
+                    'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+                    'limit'           => 1,
+                    'enableFacets'    => TRUE,
+                    'filterBrand'     => $b,
+                    'filterMerchant'  => $m,
+					'filterCatalogId' => $catalogId,
+					'filterProductId' => $productId,
+					'enableFullData' => 0
+                );
+								
+				if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+				{	
+					$settings = array_merge($settings, array(
+						'cacheBackend'   => 'FILE',
+						'cacheOptions'   => array(
+							'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+						)
+					));	
+				}
+				
+				$prosperentApi = new Prosperent_Api($settings);
 
                 switch ($ct)
                 {
@@ -1029,17 +1312,32 @@ if (!class_exists('Prosperent_Suite'))
 
                 if ($results)
                 {
-                    return '<a href="' . $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $results[0]['affiliate_url'])) . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
+                    return '<a href="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $results[0]['affiliate_url'])) . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
                 }
                 else
                 {
-                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                    $prosperentApi = new Prosperent_Api(array(
-                        'api_key'      => $options['Api_Key'],
-                        'query'        => $query,
-                        'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-                        'limit'        => 1
-                    ));
+                    $settings = array(
+                        'api_key'        => $options['Api_Key'],
+                        'query'          => $query,
+                        'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+                        'limit'          => 1,							
+						'enableFacets'   => TRUE,
+						'filterBrand'    => $b,
+						'filterMerchant' => $m,
+						'enableFullData' => 0
+                    );
+					
+					if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+					{	
+						$settings = array_merge($settings, array(
+							'cacheBackend'   => 'FILE',
+							'cacheOptions'   => array(
+								'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+							)
+						));	
+					}
+					
+					$prosperentApi = new Prosperent_Api($settings);
 
                     switch ($ct)
                     {
@@ -1060,19 +1358,46 @@ if (!class_exists('Prosperent_Suite'))
 
                     if ($results)
                     {
-                        return '<a href="' . $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $results[0]['affiliate_url'])) . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
+                        return '<a href="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $results[0]['affiliate_url'])) . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
                     }
                     else
                     {
-                        return;
+						$settings = array(
+							'api_key'      => $options['Api_Key'],
+							'query'        => $query,
+							'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+							'limit'        => 1,
+							'enableFullData' => 0
+						);
+						
+						if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+						{	
+							$settings = array_merge($settings, array(
+								'cacheBackend'   => 'FILE',
+								'cacheOptions'   => array(
+									'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+								)
+							));	
+						}
+						
+						$prosperentApi = new Prosperent_Api($settings);
+						
+						if ($results)
+						{
+							return '<a href="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $results[0]['affiliate_url'])) . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
+						}
+						else
+						{
+							return '<a href="' . $store_go_url . $query . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
+						}
                     }
                 }
             }
 
-            $fB = empty($b) ? '' : '/brand/' . urlencode($b);
-            $fM = empty($m) ? '' : '/merchant/' . urlencode($m);
+            $fB = empty($b) ? '' : '/brand/' . rawurlencode($b);
+            $fM = empty($m) ? '' : '/merchant/' . rawurlencode($m);
 
-            return '<a href="' . (!$options['Base_URL'] ? '/products' : '/' . $options['Base_URL']) . '/query/' . urlencode($query) . $fB . $fM . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
+            return '<a href="' . $product_search_url . rawurlencode($query) . $fB . $fM . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
         }
 
         public function autoLinker_custom_add()
@@ -1099,16 +1424,16 @@ if (!class_exists('Prosperent_Suite'))
         {
             ?>
             <script type="text/javascript">
-                QTags.addButton('auto-linker', 'auto-linker', '[linker]', '[/linker]', 0);
+                QTags.addButton('auto-linker', 'auto-linker', '[linker q="QUERY" gtm="true" b="BRAND" m="MERCHANT" ct="US"]', '[/linker]', 0);
             </script>
             <?php
         }
 
         public function qTagsCompare()
-        {
+        {		
             ?>
             <script type="text/javascript">
-                QTags.addButton('auto-compare', 'auto-compare', '[compare]', '[/compare]', 0);
+                QTags.addButton('auto-compare', 'auto-compare', '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" cl="COMPARISON LIMIT" ct="US"]', '[/compare]', 0);
             </script>
             <?php
         }
@@ -1137,48 +1462,103 @@ if (!class_exists('Prosperent_Suite'))
             return $plugin_array;
         }
 
-        public function prosperAds_css()
+        public function performAd_shortCode($atts, $content = null)
         {
-            // Performance Ad CSS for results and search
-            wp_register_style('prosper_perform_css', plugins_url('/css/performance_ads.css', __FILE__));
-            wp_enqueue_style('prosper_perform_css');
-        }
-
-        public function Prosper_Perform_Ads()
-        {
+            extract(shortcode_atts(array(
+                'q' => isset($q) ? $q : '',
+				'utt' => isset($utt) ? $utt : 0,
+				'utg' => isset($utg) ? $utg : 0,
+				'h'  => isset($h) ? $h : 90,
+				'w'  => isset($w) ? $w : 'auto'
+            ), $atts));
+			
             $options = $this->get_option();
 
-            $posttags = get_the_tags();
-            $count=0;
-            if ($posttags)
+			$fallback = array();
+			if ($utg)
+			{
+				$posttags = get_the_tags();
+				if ($posttags) 
+				{
+					foreach($posttags as $tag) 
+					{
+						$fallback[] = strtolower($tag->name); 
+					}
+				}				
+			}
+
+			if($q)
+			{
+				$newFallback = explode(',', $q);
+				foreach ($newFallback as $fall)
+				{
+					$fall = strtolower(trim($fall));
+					$fallback[] = $fall;
+				}
+			}
+
+			if($utt)
+			{
+				$fallback[] = strtolower(get_the_title());
+			}
+				
+			if ($options['Remove_Tags'])
+			{
+				$removeTags = explode(',', $options['Remove_Tags']);			
+				$fbacks = array_flip($fallback);
+
+				foreach ($removeTags as $remove)
+				{ 
+					$remove = trim($remove);
+					if(isset($fbacks[$remove]))
+					{
+						unset($fbacks[$remove]);
+					}
+				}	
+				$fallback = array_flip($fbacks);		
+			}
+			
+			$fallback = implode(",", $fallback);
+			
+			$height = preg_replace('/px|em|%/i', '', $h);
+			$width = $w == 'auto' ? '' : preg_replace('/px|em|%/i', '', $w);
+			            
+            return '<p><div class="prosperent-pa" style="height:' . $height . 'px; width:' . $width . 'px;" prosperent_pa_uid="' . $options['UID'] . '" prosperent_pa_fallback_query="' . $fallback . '" prosperent_pa_fallback_query_is_default ="' . ($fallback ? 1 : 0) . '"; ></div></p>';
+            
+        }
+				
+		public function performAd_custom_add()
+        {
+            // Add only in Rich Editor mode
+            if (get_user_option('rich_editing') == 'true')
             {
-                foreach($posttags as $tag)
-                {
-                    $count++;
-                    if (1 == $count)
-                    {
-                        $tag = $tag->name;
-                    }
-                }
+                add_filter('mce_external_plugins', array($this, 'performAd_tiny_register'));
+                add_filter('mce_buttons', array($this, 'performAd_tiny_add'));
             }
-
-            $fallback = isset($tag) ? $tag : $options['content_fallBack'] ? $options['content_fallBack'] : '';
-
+        }
+		
+		public function qTagsPerformAd()
+        {
             ?>
-            <div class="prosperent-pa" style="height:90px;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>"></div>
+            <script type="text/javascript">
+                QTags.addButton('performance ad', 'performance_ad', '[perform_ad top="TOPIC" h="HEIGHT" w="WIDTH" ut="USE TAGS"]', '[/perform_ad]', 0);
+            </script>
             <?php
         }
+
+        public function performAd_tiny_add($buttons)
+        {
+            array_push($buttons, "|", "performAd");
+            return $buttons;
+        }
+
+        public function performAd_tiny_register($plugin_array)
+        {
+            $plugin_array["performAd"] = PROSPER_URL . 'js/performAd.min.js';
+            return $plugin_array;
+        }		
     }
 
-    new Prosperent_Suite();
-
-    function prospere_header()
-    {
-        do_action('prospere_header');
-    }
-
-    function performance_ads()
-    {
-        do_action('performance_ads');
-    }
+	global $prosper_suite;
+	$prosper_suite = new Prosperent_Suite();
 }

@@ -1,5 +1,5 @@
 <?php
-$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+$base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
 $url = site_url('/') . $base;
 
 switch ($options['Country'])
@@ -18,14 +18,25 @@ switch ($options['Country'])
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
+$settings = array(
     'api_key'         => $options['Api_Key'],
     'limit'           => 1,
     'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
     'enableFacets'    => $options['Enable_Facets'],
     'filterCatalogId' => get_query_var('cid')
-));
+);
+
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 
 /*
 /  Fetching results and pulling back all data
@@ -49,18 +60,36 @@ switch ($options['Country'])
 }
 $record = $prosperentApi -> getAllData();
 
+if (empty($record))
+{
+	header('Location: ' . $url . '/query/' . htmlentities(rawurlencode(get_query_var('keyword'))));
+    exit;
+}
+
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
+$settings = array(
     'api_key'         => $options['Api_Key'],
     'limit'           => 10,
     'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
     'enableFacets'    => $options['Enable_Facets'],
     'filterProductId' => $record[0]['productId'],
-    'groupBy'		  => 'productId'
-));
+    'groupBy'		  => 'productId',
+	'enableFullData'  => 0
+);
+
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 
 switch ($options['Country'])
 {
@@ -81,9 +110,9 @@ $result = $prosperentApi -> getAllData();
 ?>
 <div id="product" itemscope itemtype="http://data-vocabulary.org/Product">
     <div class="productBlock">
-        <div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><cite itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></cite></a></div>
+        <div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><cite itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></cite></a></div>
         <div class="productImage">
-            <a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" ></a>
+            <a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" /></a>
         </div>
         <div class="productContent">
             <div class="productDescription" itemprop="description"><?php
@@ -115,11 +144,11 @@ $result = $prosperentApi -> getAllData();
                         $category = trim($category);
                         if (preg_match('/' . $query . '/i', $category))
                         {
-                            echo '<a href="' . $url . '/query/' . urlencode($category) . '"><cite itemprop="category">' . $category . '</cite></a>';
+                            echo '<a href="' . $url . '/query/' . rawurlencode($category) . '"><cite itemprop="category">' . $category . '</cite></a>';
                         }
                         else
                         {
-                            echo '<a href="' . $url . '/query/' . urlencode($category) . '+' . urlencode($query) . '"><cite itemprop="category">' . $category . '</cite></a>';
+                            echo '<a href="' . $url . '/query/' . rawurlencode($category) . '+' . rawurlencode($query) . '"><cite itemprop="category">' . $category . '</cite></a>';
                         }
 
                         if ($i < ($catCount - 1))
@@ -135,7 +164,7 @@ $result = $prosperentApi -> getAllData();
                 }
                 if($record[0]['brand'])
                 {
-                    echo '<div class="prodBrand"><u>Brand</u>: <a href="' . $url . '/brand/' . urlencode($result[0]['brand']) . '"><cite itemprop="brand">' . $record[0]['brand'] . '</cite></a></div><br>';
+                    echo '<div class="prodBrand"><u>Brand</u>: <a href="' . $url . '/brand/' . rawurlencode($result[0]['brand']) . '"><cite itemprop="brand">' . $record[0]['brand'] . '</cite></a></div><br>';
                 }
                 echo '<meta itemprop="currency" content="' . $currency . '" />';
                 echo '<p><div class="prodPrice" itemscope itemtype="http://data-vocabulary.org/Offer-aggregate">As low as <strong>' . ($currency == 'GBP' ? '&pound;' : '$') . '<cite itemprop="lowprice">' . ($result[0]['minPriceSale'] ? $result[0]['minPriceSale'] : $result[0]['minPrice']) . '</cite>' . '</strong> at <strong><cite itemprop="offerCount">' . $result[0]['groupCount'] . '</cite>' . ($result[0]['groupCount'] > 1 ? ' stores' : ' store') . '</strong></div></p>';
@@ -155,14 +184,25 @@ $result = $prosperentApi -> getAllData();
                 <?php
                 if ($result[0]['groupCount'] > 1)
                 {
-                    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-                    $prosperentApi = new Prosperent_Api(array(
+                    $settings = array(
                         'api_key'         => $options['Api_Key'],
                         'limit'           => 10,
                         'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
                         'enableFacets'    => $options['Enable_Facets'],
                         'filterProductId' => $record[0]['productId']
-                    ));
+                    );
+					
+					if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+					{	
+						$settings = array_merge($settings, array(
+							'cacheBackend'   => 'FILE',
+							'cacheOptions'   => array(
+								'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+							)
+						));	
+					}
+					
+					$prosperentApi = new Prosperent_Api($settings);
 
                     switch ($options['Country'])
                     {
@@ -188,7 +228,7 @@ $result = $prosperentApi -> getAllData();
                     echo '<td itemprop="seller">' . $product['merchant'] . '</td>';
                     echo '<td itemprop="price">' . ($currency == 'GBP' ? '&pound;' : '$') . ($product['price_sale'] ? $product['price_sale'] : $product['price']) . '</td>';
                     echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
-                    echo '<td itemprop="offerURL" itemscope itemtype="http://data-vocabulary.org/Offer-aggregate"><form style="margin:0; margin-bottom:5px;" action="' . $productPage . '/store/go/' . urlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) . '" target="' . $target. '" method="POST"><input type="submit" value="Visit Store"/></form></td>';
+                    echo '<td itemprop="offerURL" itemscope itemtype="http://data-vocabulary.org/Offer-aggregate"><form style="margin:0; margin-bottom:5px;" action="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) . '" target="' . $target. '" method="POST"><input type="submit" value="Visit Store"/></form></td>';
                     echo '</tr>';
                 }
 
@@ -202,14 +242,26 @@ $result = $prosperentApi -> getAllData();
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
-    'api_key'      => $options['Api_Key'],
-    'limit'        => $options['Same_Limit'],
-    'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-    'query'		   => $record[0]['keyword'],
-    'groupBy'	   => 'productId'
-));
+$settings = array(
+    'api_key'        => $options['Api_Key'],
+    'limit'          => $options['Same_Limit'],
+    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+    'query'		     => $record[0]['keyword'],
+    'groupBy'	   	 => 'productId',
+	'enableFullData' => 0
+);
+
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 
 switch ($options['Country'])
 {
@@ -237,16 +289,16 @@ if ($similar)
     foreach ($similar as $prod)
     {
         $price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
-        $prod['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']);
+        $prod['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']);
         ?>
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img src="<?php echo $prod['image_url']; ?>" title="<?php echo $prod['keyword']; ?>"></div></a>
+                    <a href="<?php echo $productPage . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img src="<?php echo $prod['image_url']; ?>" title="<?php echo $prod['keyword']; ?>" alt="<?php echo $prod['keyword']; ?>" /></div></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+                        <a href="<?php echo $productPage . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
                             <?php
                             if (strlen($prod['keyword']) > 60)
                             {
@@ -273,15 +325,27 @@ echo '<div class="clear"></div>';
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
-    'api_key'      => $options['Api_Key'],
-    'limit'        => $options['Same_Limit'],
-    'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-    'enableFacets' => $options['Enable_Facets'],
-    'filterBrand'  => $record[0]['brand'],
-    'groupBy'	   => 'productId'
-));
+$settings = array(
+    'api_key'        => $options['Api_Key'],
+    'limit'          => $options['Same_Limit'],
+    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
+    'enableFacets'   => $options['Enable_Facets'],
+    'filterBrand'    => $record[0]['brand'],
+    'groupBy'	   	 => 'productId',
+	'enableFullData' => 0
+);
+
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
 
 switch ($options['Country'])
 {
@@ -308,16 +372,16 @@ if ($sameBrand)
     foreach ($sameBrand as $brandProd)
     {
         $price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
-        $brandProd['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']);
+        $brandProd['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']);
         ?>
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><img src="<?php echo $brandProd['image_url']; ?>" title="<?php echo $brandProd['keyword']; ?>"></a>
+                    <a href="<?php echo $productPage . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><img src="<?php echo $brandProd['image_url']; ?>" title="<?php echo $brandProd['keyword']; ?>" alt="<?php echo $brandProd['keyword']; ?>" /></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle" style="text-align:center;font-size:12px;">
-                        <a href="<?php echo $productPage . '/product/' . urlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+                        <a href="<?php echo $productPage . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
                             <?php
                             if (strlen($brandProd['keyword']) > 60)
                             {

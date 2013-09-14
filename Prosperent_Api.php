@@ -47,7 +47,7 @@
 class Prosperent_Api implements Iterator
 {
     //constants
-    const VERSION = '2.1.6';
+    const VERSION = '2.1.9';
 
     const ENDPOINT_PRODUCT           = 'product';
     const ENDPOINT_UKPRODUCT         = 'ukproduct';
@@ -679,7 +679,8 @@ class Prosperent_Api implements Iterator
         {
             if (is_string($subNode))
             {
-                return $this->$accessPortion[$subNode];
+                $accessPortion = $this->$accessPortion;
+                return $accessPortion[$subNode];
             }
 
             return $this->$accessPortion;
@@ -1084,8 +1085,24 @@ class Prosperent_Api implements Iterator
             if ($result === false)
             {
                 $error = curl_error($ch);
-                curl_close($ch);
-                self::throwException($error, $this->get_exceptionHandler());
+
+                if (stristr($error, 'Operation timed out'))
+                {
+                    $result = array(
+                        'errors'   => array(
+                            array(
+                                'code' => 'timeout',
+                                'msg'  => 'The request to timed out'
+                            )
+                        ),
+                        'warnings' => array(),
+                        'data'     => array()
+                    );
+                }
+                else
+                {
+                    self::throwException($error, $this->get_exceptionHandler());
+                }
             }
 
             //set the info to a public property
@@ -1103,13 +1120,13 @@ class Prosperent_Api implements Iterator
             curl_close($ch);
 
             //return false if the result is empty
-            if (!strlen($result))
+            if (!is_array($result) && !strlen($result))
             {
                 return false;
             }
 
             //save the cache
-            if (is_object($this->_cache))
+            if (is_object($this->_cache) && !(is_array($result) && count($result['errors']) > 0)) 
             {
                 $this->_cache->save($result, $cacheKey);
                 $this->_cacheKey = $cacheKey;
@@ -1121,7 +1138,10 @@ class Prosperent_Api implements Iterator
         {
             $this->_response = $result;
 
-            $result = json_decode($result, true);
+            if (!is_array($result))
+            {
+                $result = json_decode($result, true);
+            }
 
             $this->_jsonResponse = $result;
 

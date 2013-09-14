@@ -17,6 +17,7 @@
                     var merchant = jQuery('#merchant').val();
                     var country = jQuery('#country').val();
                     var goToMerc = jQuery('#goToMerc').is(':checked');
+					var prodId = jQuery('#prodid').val();
                     var output = '[linker';
 
                     // Apply
@@ -40,6 +41,11 @@
                     {
                         output += ' ct="'+country+'"';
                     }
+                    if (prodId)
+                    {
+                        output += ' id="'+prodId+'"';
+                    }
+					
                     output += ']' + AutoLinker.local_ed.selection.getContent() + '[/linker]';
 
                     tinyMCEPopup.execCommand('mceReplaceContent', false, output);
@@ -91,7 +97,13 @@
                     showValues();
                 }
             }
-        </script>
+			
+			function getIdofItem(el)
+			{
+				document.getElementById("prodid").value = el.id;
+				showValues(el.id);
+			}			
+	    </script>
 
         <style type="text/css">
             #autoLinker {
@@ -153,12 +165,15 @@
                     <p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>You can change the query here, otherwise it will use the content you highlighted, this will not change the content on the page.</span></a></p>
                     <p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by brand to narrow down the search.</span></a></p>
                     <p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Filter by merchant to narrow down the search.</span></a></p>
-                    <p>Go Directly to Merchant: <input type="checkbox" id="goToMerc"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will link to the merchant's page, skipping the product page.</span></a></p>
+                    <p>Go Directly to Merchant: <input type="checkbox" id="goToMerc" checked="checked"/><a href="#" class="tooltip"><img style="margin-bottom:-2px;" border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Checking this will link to the merchant's page, skipping the product page.</span></a></p>
                     <p>Country: <select id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
-                    <input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed);"/>
+                    <p>ID: <input type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><img border="0" src="/wp-content/plugins/prosperent-suite/img/help.png"><span>This is set by clicking the product/coupon that you would like to users to go to when clicked.</span></a></p>
+					<input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed);" style="display:block;"/>					
                 </form>
             </div>
+			<br>
             <div style="float:left;font-size:12px;display:block;">Product Review:</div><p></br>
+			<span style="font-size:10px;"><strong>Note</strong>: Click the Product/Coupon that you would like to be displayed when a user clicks the link. If after you have set an item, it is removed from our catalog, we will use your query and any filters.</span>
             <div class="preview" style="display:none"></div>
         </div>
     </body>

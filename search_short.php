@@ -16,22 +16,20 @@ if (!empty($params))
 }
 
 $query = $sendParams['query'];
-$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+$base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
 $url = site_url('/') . $base;
 
-$page = !$options['Base_URL'] ? 'products' : $options['Base_URL'];
-
-if (is_page($page) && $_POST['q'])
+if (is_page($base) && $_POST['q'])
 {
     $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $prodSubmit = preg_replace('/\/$/', '', $url);
-    $newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $prodSubmit);
-    header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
+    $newQuery = str_replace(array('/query/' . $query, '/query/' . rawurlencode($query)), array('', ''), $prodSubmit);
+    header('Location: ' . $newQuery . '/query/' . rawurlencode(trim($_POST['q'])));
     exit;
 }
 elseif ($_POST['q'])
 {
-    header('Location: ' . $url . '/query/' . urlencode(trim($_POST['q'])));
+    header('Location: ' . $url . '/query/' . rawurlencode(trim($_POST['q'])));
     exit;
 }
 ?>

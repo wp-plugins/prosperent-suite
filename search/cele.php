@@ -3,7 +3,7 @@ if (!$celeb && $options['Celebrity_Query'])
 {
     $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $url = preg_replace('/\/$/', '', $url);
-    $url .= 'celeb/' . urlencode($options['Celebrity_Query']);
+    $url .= 'celeb/' . rawurlencode($options['Celebrity_Query']);
     $c = $options['Celebrity_Query'];
 }
 else
@@ -16,17 +16,22 @@ else
 $celebQuery = stripslashes($cq);
 $celeb = stripslashes($c);
 $celeSubmit = preg_replace('/\/$/', '', $url);
-$newQuery = str_replace(array('/query/' . $query, '/celebQuery/' . $celebQuery, '/page/' . $pageNumber), array('', '', ''), $celeSubmit);
-$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $celeSubmit);
 
-if ($_POST['cq'])
+if(is_front_page())
 {
-    header('Location: ' . $newQuery . '/celebQuery/' . urlencode($_POST['cq']));
+	$celeSubmit = site_url('/') . 'products';
+}
+
+if (isset($_POST['cq']))
+{
+	$newQuery = str_replace(array('/query/' . $query, '/celebQuery/' . $celebQuery, '/page/' . $pageNumber), array('', '', ''), $celeSubmit);
+    header('Location: ' . $newQuery . '/celebQuery/' . rawurlencode($_POST['cq']));
     exit;
 }
 
-if ($_POST['sort'])
+if (isset($_POST['sort']))
 {
+	$newSort = str_replace(array('/sort/' . $sendParams['sort'], '/page/' . $pageNumber), array('', ''), $celeSubmit);
     header('Location: ' . $newSort . '/sort/' . $_POST['sort']);
     exit;
 }
@@ -34,25 +39,54 @@ if ($_POST['sort'])
 /*
 /  Prosperent API Query
 */
-require_once(PROSPER_PATH . 'Prosperent_Api.php');
-$prosperentApi = new Prosperent_Api(array(
+$settings = array(
     'api_key'         => $options['Api_Key'],
-    'filterCelebrity' => $celeb ? $celeb : $celebDecode,
+    'filterCelebrity' => $celeb ? $celebDecode : '',
     'query'			  => $celebQuery,
     'filterBrand'	  => $filterBrand,
     'filterMerchant'  => $filterMerchant,
     'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
     'limit'           => $options['Api_Limit'],
     'sortPrice'	   	  => $sort,
-    'enableFacets'    => $options['Enable_Facets'],
-));
+    'enableFacets'    => $options['Enable_Facets']
+);
 
-$celebrityApi = new Prosperent_Api(array(
-    'api_key'         => $options['Api_Key'],
-    'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
-    'limit'           => 500,
-    'sortPrice'	   	  => 'celebrity asc'
-));
+if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+{	
+	$settings = array_merge($settings, array(
+		'cacheBackend'   => 'FILE',
+		'cacheOptions'   => array(
+			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+		)
+	));	
+}
+
+$prosperentApi = new Prosperent_Api($settings);
+
+if (!$celeb)
+{
+	$settings = array(
+		'api_key'         => $options['Api_Key'],
+		'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+		'limit'           => 500,
+		'sortPrice'	   	  => 'celebrity asc'
+	);
+
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+			)
+		));	
+	}
+	
+	$celebrityApi = new Prosperent_Api($settings);
+	
+	$celebrityApi->fetchCelebrities();
+	$celebrityResults = $celebrityApi -> getData();
+}
 
 /*
 /  Fetching results and pulling back all data
@@ -62,15 +96,13 @@ $celebrityApi = new Prosperent_Api(array(
 $prosperentApi -> fetch();
 $results = $prosperentApi -> getAllData();
 $totalFound = $prosperentApi -> getTotalRecordsFound();
-$celebrityApi->fetchCelebrities();
-$celebrityResults = $celebrityApi -> getData();
 
 echo $typeSelector;
 ?>
 
 <div class="prosper_searchform">
     <form class="searchform" method="POST" action="">
-        <input class="prosper_field" type="text" name="cq" id="s" placeholder="<?php echo !$options['Search_Bar_Text'] ? 'Search Products' : $options['Search_Bar_Text']; ?>">
+        <input class="prosper_field" type="text" name="cq" id="s" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : 'Search Products'; ?>">
         <input class="prosper_submit" type="submit" value="Search">
     </form>
 </div>
@@ -85,7 +117,7 @@ echo $typeSelector;
             {
                 foreach ($celebrityResults as $celebs)
                 {
-                    echo '<a style="font-size:12px;" href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/celeb/' . urlencode($celebs['celebrity']) . '">' . $celebs['celebrity'] . '</a><span style="font-size:12px; font-weight:bold;"> | </span>';
+                    echo '<a style="font-size:12px;" href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/celeb/' . rawurlencode($celebs['celebrity']) . '">' . $celebs['celebrity'] . '</a><span style="font-size:12px; font-weight:bold;"> | </span>';
                 }
             }
             else
@@ -105,7 +137,7 @@ echo $typeSelector;
 /*
 /  If no results displays 'No Results'
 */
-if (empty($results))
+if (empty($results) && $celeb)
 {
     header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
     echo '<div class="noResults">No Results</div>';
@@ -126,11 +158,22 @@ if (empty($results))
     $endRange   = date('Ymd');
 
     // fetch trends from api
-    require_once(PROSPER_PATH . 'Prosperent_Api.php');
-    $api = new Prosperent_Api(array(
+    $settings = array(
         'enableFacets' => 'productId'
-    ));
+    );
 
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+			)
+		));	
+	}
+	
+	$api = new Prosperent_Api($settings);
+	
     $api->setDateRange('commission', $startRange, $endRange)
         ->fetchTrends();
 
@@ -141,13 +184,25 @@ if (empty($results))
     }
 
     // fetch merchant data from api
-    $api = new Prosperent_Api(array(
+    $settings = array(
         'api_key'         => $options['Api_Key'],
         'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
         'filterProductId' => $keys,
         'limit' 	      => $options['Api_Limit']
-    ));
+    );
 
+	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	{	
+		$settings = array_merge($settings, array(
+			'cacheBackend'   => 'FILE',
+			'cacheOptions'   => array(
+				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+			)
+		));	
+	}
+	
+	$api = new Prosperent_Api($settings);
+	
     $api->fetch();
     $results = $api->getAllData() ;
 
@@ -181,14 +236,14 @@ if (empty($results))
         // Loop to return Products and corresponding information
         foreach ($results as $i => $record)
         {
-            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
             ?>
-            <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
+            <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                 <div class="productImage">
-                    <a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                    <a href="<?php echo $productPage . '/celebrity/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                 </div>
                 <div class="productContent">
-                    <div class="productTitle"><a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
+                    <div class="productTitle"><a href="<?php echo $productPage . '/celebrity/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']; ?></span></a></div>
                     <div class="productDescription"><?php
                         if (strlen($record['description']) > 200)
                         {
@@ -204,11 +259,11 @@ if (empty($results))
                         <?php
                         if($record['brand'] && !$filterBrand)
                         {
-                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/brand/' . urlencode($record['brand']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+                            echo '<span class="brandIn"><u>Brand</u>: <a href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/brand/' . rawurlencode($record['brand']) . '"><cite>' . $record['brand'] . '</cite></a></span>';
                         }
                         if($record['merchant'] && !$filterMerchant)
                         {
-                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/merchant/' . urlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+                            echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . str_replace('/page/' . $pageNumber, '', $celeSubmit) . '/merchant/' . rawurlencode($record['merchant']) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
                         }
                         ?>
                     </div>
@@ -231,7 +286,7 @@ if (empty($results))
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace('/', ',SL,', $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace('/', ',SL,', $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
                         <input type="submit" value="Visit Store"/>
                     </form>
                 </div>
@@ -266,10 +321,12 @@ else
     // Breaks the array into smaller chunks for each page depending on $limit
     $results = array_slice($results, $limitLower, $limit, true);
 
-    echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ucwords($celebDecode ? ($celebQuery ? $celebDecode . ' + ' . $celebQuery : $celebDecode) : ($celebQuery ? urldecode($celebQuery) : ($filterBrand ? urldecode($filterBrand) : urldecode($filterMerchant)))) . '</b>' . (($celebQuery && $celebDecode) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace('/celebQuery/' . $celebQuery, '', $celeSubmit) . '> [x]</a>' : '') . '</div>';
-    ?>
+	if ($celeb)
+	{
+		echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ucwords($celebDecode ? ($celebQuery ? $celebDecode . ' + ' . $celebQuery : $celebDecode) : ($celebQuery ? rawurldecode($celebQuery) : ($filterBrand ? rawurldecode($filterBrand) : rawurldecode($filterMerchant)))) . '</b>' . (($celebQuery && $celebDecode) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace('/celebQuery/' . $celebQuery, '', $celeSubmit) . '> [x]</a>' : '') . '</div>';
+	?>
 
-    <div class="prosper_priceSorter">
+    <div class="prosper_priceSorter" style="margin-top:10px;">
         <form class="sorterofprice" name="priceSorter" method="POST" action="" >
             <label for="PriceSort">Sort By: </label>
             <select name="sort" onChange="priceSorter.submit();">
@@ -283,17 +340,18 @@ else
 
     <div id="productList">
         <?php
+		
         // Loop to return Products and corresponding information
         foreach ($results as $i => $record)
         {
-            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. urlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
             ?>
-            <div class="<?php echo count($results) >= 2 ? 'productBlock' : 'productBlock0'; ?>">
+            <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                 <div class="productImage">
-                    <a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"></span></a>
+                    <a href="<?php echo $productPage . '/celebrity/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
                 </div>
                 <div class="productContent">
-                    <div class="productTitle"><a href="<?php echo $productPage . '/celebrity/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']?></span></a></div>
+                    <div class="productTitle"><a href="<?php echo $productPage . '/celebrity/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId']; ?>"><span><?php echo $record['keyword']?></span></a></div>
                     <div class="productDescription"><?php
                         if (strlen($record['description']) > 200)
                         {
@@ -324,7 +382,7 @@ else
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . urlencode(str_replace(array('/', 'http://prosperent.com/store/product/'), array(',SL,', ''), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('/', 'http://prosperent.com/store/product/'), array(',SL,', ''), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
                         <input type="submit" value="Visit Store"/>
                     </form>
                 </div>
@@ -334,6 +392,7 @@ else
         ?>
     </div>
     <?php
+	}
 }
 
-prosper_pagination($pages, $sendParams['page']);
+prosper_pagination($pages, $pageNumber);

@@ -2,7 +2,7 @@
 global $prosper_admin;
 $prosper_admin->admin_header( __( 'Product Search Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The Product Search is the center of the Shop. This will allow you to run a store on your WordPress blog. Play around with the following settings to alter the look of your own personal store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/products/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc">' . __( 'The Product Search is the center of the Shop. This will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/products/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on The Store...', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Enable_PPS', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
@@ -26,13 +26,13 @@ echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 //echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</h2>';
-echo $prosper_admin->textinput( 'Api_Limit', __( 'Number of results', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>API Limit (Max = 1000)</span></a>' );
+echo $prosper_admin->textinputsmall( 'Api_Limit', __( 'Number of results', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>API Limit (Max = 1000)</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosper_admin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Amount of products shown per page.</span></a>' );
+echo $prosper_admin->textinputsmall( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Amount of products shown per page.</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosper_admin->textinput( 'Same_Limit', __( 'Limits for Same/Similar Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>This limit will set the desired amount for the "Similar Products" and "Other Products from Brand" on the individual product pages.</span></a>' );
+echo $prosper_admin->textinputsmall( 'Same_Limit', __( 'Limit for Similar Products on Individual Product Pages', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>This limit will set the desired amount for the "Similar Products" and "Other Products from Brand" on the individual product pages.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 /*echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the products page...', 'prosperent-suite' ) . '</h2>';
@@ -43,10 +43,10 @@ echo '<h2 class="prosper_h2">' . __( 'Do you want to allow filtering of the resu
 echo $prosper_admin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosper_admin->textinput( 'Merchant_Facets', __( 'Amount of Merchants in filter bar', 'prosperent-suite' ) );
+echo $prosper_admin->textinputsmall( 'Merchant_Facets', __( 'Amount of Merchants in filter bar', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosper_admin->textinput( 'Brand_Facets', __( 'Amount of Brands in filter bar', 'prosperent-suite' ) );
+echo $prosper_admin->textinputsmall( 'Brand_Facets', __( 'Amount of Brands in filter bar', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosper_admin->textinput( 'Negative_Merchant', __( 'Want to hide some merchants from results?', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span><strong>Seperate by commas.</strong> <br>Negative Merchant Filter.</span></a>' );

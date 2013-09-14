@@ -1,0 +1,575 @@
+/*  Search Input Form and Image   */
+#search {
+    position: relative;
+    z-index:10000;
+    float: right;
+    margin: 5px -70px 0 0;
+}
+
+#search .image {
+    padding-right:5px;
+}
+
+#search-input {
+
+}
+
+#search-input .srchBoxCont {
+
+}
+
+#search-input .srch_box {
+    font-family: Arial, sans-serif;
+    font-size: 120%;
+    width: 200px;
+    height: 21px;
+    float: left;
+    border-radius: 0.3em;
+    margin-bottom:6px;
+}
+
+#search-input .srchButtonBorder {
+    height: 28px;
+    margin-bottom:6px;
+}
+
+.entry-content img, .comment-content img, .widget img {
+    max-width:170%
+}
+
+.entry-content table, .comment-content table {
+    margin:0;
+}
+
+/*  Products   */
+.noResults {
+    border-top: 1px solid #EDEDED;
+    font-size:2.4em;
+    margin-top:5px;
+    padding-top:15px;
+}
+
+.noResults-secondary {
+    padding-top:8px;
+    font-size:14px;
+}
+
+.noResults-padding{
+    min-height:30px
+}
+
+td {
+    border:none;
+}
+
+.prosper_priceSorter {
+    margin:0;
+    float:right;
+    padding:0 15px 0 0;
+    margin-top:4px;
+}
+
+.sorterofprice {
+    margin:0;
+}
+
+.sorterofprice  label {
+    padding-right:4px;
+    font-size:14px;
+    float:left;
+}
+
+.sorterofprice  select {
+    display:inline;
+    margin-bottom: 4px;
+    margin-top:-6px;
+}
+
+.prosper_searchform {
+    float:right;
+}
+
+.searchform {
+    margin:0;
+}
+
+.searchform .prosper_submit {
+    margin: -10px 0 0 0;
+    padding:4px 4px 6px;
+}
+
+.searchform .prosper_field {
+    width:60%;
+    padding:4px;
+    font-size:14px;
+}
+
+#facets {
+    margin:0;
+    font-size:11px;
+    width:100%;
+    border-top: 1px solid #EDEDED;
+    border-bottom:1px solid #EDEDED;
+    margin-top:5px;
+}
+
+#facets tr {
+    border:none;
+}
+
+#facets .brands {
+    width:48%;
+    float:left;
+    padding:5px;
+    border-top:0;
+}
+
+.brands .noBrands {
+    font-size:12px;
+}
+
+.brands .browseBrands {
+    font-size:13px;
+}
+
+.brands .filteredBrand {
+    font-size:13px;
+}
+
+#facets .merchants {
+    width:48%;
+    float:right;
+    padding:5px;
+    border-top:0;
+}
+
+#brandList {
+    margin:0;
+    border-bottom:1px solid #EDEDED;
+}
+
+#merchantList {
+    margin:0;
+    border-bottom:1px solid #EDEDED;
+}
+
+#brandList tr {
+   border:none;
+}
+
+#merchantList tr {
+    border:none;
+}
+
+.merchants .noMerchants {
+    font-size:12px;
+}
+
+.merchants .browseMerchants {
+    font-size:13px;
+}
+
+.merchants .filteredMerchants {
+    font-size:13px;
+}
+
+.table-seperator {
+    padding-bottom:4px;
+}
+
+.totalFound {
+    float:left;
+    padding: 0 0 0 15px;
+    margin-top:4px;
+}
+
+#productList {
+    width:100%;
+}
+
+#productList .productBlock0{
+    width:100%;
+    border-top:1px solid #EDEDED;
+    border-bottom:1px solid #EDEDED;
+    display:inline-block;
+    padding:4px 0;
+    height:auto;
+}
+
+#productList .productBlock {
+    border-top:1px solid #EDEDED;
+    display:inline-block;
+    padding:4px 0;
+    height:auto;
+    width:100%;
+}
+
+#productList .productImage {
+    width:135px;
+    float:left;
+}
+
+#productList .productImage span {
+    background: url("../img/loading.gif") no-repeat scroll 50% center transparent;
+    display: block;
+    min-height: 100px !important;
+    min-width: 100px !important;
+}
+
+#productList .productContent {
+    width:56%;
+    float:left;
+}
+
+.productContent .productTitle {
+    padding-bottom:5px;
+    font-size:14px;
+}
+
+.productContent .productDescription {
+    padding-bottom:5px;
+    font-size:12px;
+    -moz-hyphens: none;
+}
+
+.productContent .productBrandMerchant {
+    font-size:12px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+#productList .productEnd {
+    width:120px;
+    font-size:16px;
+    float:right;
+    text-align:center;
+}
+
+.productEnd .productPriceNoSale {
+    padding-bottom:15px;
+}
+
+.productEnd .productPrice {
+    padding-bottom:3px;
+}
+
+.productPrice span {
+    text-decoration: line-through;
+}
+
+.productEnd .productPriceSale {
+    padding-bottom:15px;
+}
+
+.productPriceSale span {
+    color:#cc6600;
+}
+
+#facets .filterImg {
+    margin-top:-64px;
+    padding-left:150px;
+}
+
+.productBrandMerchant  .brandIn {
+    display:inline-block;
+    width:46%;
+}
+
+.productBrandMerchant .merchantIn {
+    display:inline-block;
+}
+
+/* Coupons */
+#couponList {
+    width:100%;
+}
+
+#couponList .couponBlock0{
+    width:100%;
+    border-top:1px solid #EDEDED;
+    border-bottom:1px solid #EDEDED;
+    display:inline-block;
+    padding:4px 0;
+    height:auto;
+}
+
+#couponList .couponBlock {
+    border-top:1px solid #EDEDED;
+    display:inline-block;
+    padding:4px 0;
+    height:auto;
+    width:100%;
+}
+
+#couponList .couponImage {
+    width:120px;
+    float:left;
+}
+
+#couponList .couponContent {
+    width:78%;
+    float:right;
+}
+
+.couponContent .couponTitle {
+    padding-bottom:5px;
+    font-size:14px;
+}
+
+.couponContent .couponDescription {
+    padding-bottom:5px;
+    font-size:12px;
+}
+
+#couponList .couponVisit {
+    display:inline-block;
+    float:left;
+    padding:8px 0 2px 0;
+    width:120px;
+}
+
+.couponContent .couponCode {
+    padding:5px 0 0 0;
+    font-weight:bold;
+    font-size: 16px;
+}
+
+span.code_cc{
+    border:2px dashed #3079ed;
+    padding: 2px 3px;
+    font-weight:bold;
+    font-size:16px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius:8px;
+}
+
+.couponExpire {
+    font-size:14px;
+    color:red;
+    font-weight:bold;
+}
+
+/* Pagination */
+.pagination {
+    clear:both;
+    padding:20px 0;
+    position:relative;
+    font-size:11px;
+    line-height:13px;
+}
+
+.pagination span, .pagination a {
+    display:block;
+    float:left;
+    margin: 2px 2px 2px 0;
+    padding:6px 9px 5px 9px;
+    text-decoration:none;
+    width:auto;
+    color:#fff;
+    background: #555;
+}
+
+.pagination a:hover{
+    color:#fff;
+    background: #3279BB;
+}
+
+.pagination .current{
+    padding:6px 9px 5px 9px;
+    background: #3279BB;
+    color:#fff;
+}
+
+@media all and (max-width:400px) {
+    #facets .brands {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #productList .productBlock0{
+        width:100%;
+    }
+
+    #facets .merchants {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #facets .filterImg {
+        display:none;
+    }
+
+    #productList .productImage {
+        width:135px;
+        float:left;
+    }
+
+    #productList .productEnd {
+        width:100%;
+        font-size:16px;
+        float:right;
+    }
+
+    .priceSorter {
+        padding-left:10px;
+        padding-right:0;
+    }
+
+    .productEnd .productPrice {
+        display:none;
+    }
+
+    .productPrice span {
+        text-decoration: line-through;
+    }
+
+    .productEnd .visitImg {
+        float:right;
+        height:40px;
+    }
+
+    .productEnd .productPriceSale {
+        padding-bottom:0;
+        padding-top:6px;
+        display:inline-block;
+    }
+
+    .productContent .productDescription {
+        padding-bottom:2px;
+        font-size:12px;
+    }
+
+    #couponList .couponContent {
+        width:100%;
+        float:right;
+    }
+}
+
+@media all and (max-width:700px) and (min-width:420px) {
+    #facets .brands {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #facets .merchants {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #facets .filterImg {
+        margin-top:-60px;
+        padding-left:140px;
+    }
+
+    .productContent .productDescription {
+        padding-bottom:2px;
+        font-size:12px;
+    }
+
+    #productList .productImage {
+        width:135px;
+        float:left;
+    }
+
+    #productList .productEnd {
+        width:120px;
+        font-size:14px;
+        float:left;
+        padding-bottom:4px;
+    }
+
+    #productList .productContent {
+        width:60%;
+        float:right;
+        min-height:135px;
+    }
+
+    .productEnd .productPriceNoSale {
+        padding-bottom:5px;
+    }
+
+    .productEnd .productPrice {
+        float:left;
+        padding-bottom:3px;
+    }
+
+    .productPrice span {
+        text-decoration: line-through;
+    }
+
+    .productEnd .productPriceSale {
+        float:right;
+        padding:0;
+    }
+
+    #couponList .couponContent {
+        width:64%;
+        float:right;
+    }
+}
+
+@media all and (max-width:700px) and (min-width:580px) {
+    #productList .productContent {
+        width:72%;
+        min-height:135px;
+        float:right;
+    }
+
+    #couponList .couponContent {
+        width:72%;
+        float:right;
+    }
+}
+
+@media all and (max-width:800px) and (min-width:800px) {
+    #productList .productContent {
+        width:60%;
+        float:left;
+    }
+}
+
+@media all and (max-width:875px) and (min-width:780px) {
+    #facets .brands {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #facets .merchants {
+        width:100%;
+        padding:0;
+        border-top:0;
+    }
+
+    #productList .productContent {
+        width:68%;
+        min-height:135px;
+        float:right;
+    }
+
+    #productList .productEnd {
+        width:120px;
+        font-size:14px;
+        float:left;
+        padding-bottom:4px;
+    }
+}
+
+@media all and (max-width:900px) and (min-width:875px) {
+    #productList .productContent {
+        width:48%;
+        float:left;
+    }
+}
+
+@media all and (max-width:1024px) and (min-width:900px) {
+    #productList .productContent {
+        width:52%;
+        float:left;
+    }
+}

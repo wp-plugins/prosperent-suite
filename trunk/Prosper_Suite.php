@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1
+Version: 2.1.1
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -36,6 +36,8 @@ if (!class_exists('Prosperent_Suite'))
 
     class Prosperent_Suite extends Prosperent_Admin
     {
+		private $version;
+		
         /**
          * Constructor
          *
@@ -53,6 +55,13 @@ if (!class_exists('Prosperent_Suite'))
 
             $options = $this->get_option();
 			
+			if ( ! function_exists( 'get_plugins' ) )
+				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			
+			$plugin_folder = get_plugins( '/' . plugin_basename( dirname( __FILE__ ) ) );
+			$plugin_file = basename( ( __FILE__ ) );
+			$this->version = $plugin_folder[$plugin_file]['Version'];
+			
             register_activation_hook(__FILE__, array($this, 'prosper_activate'));
             register_deactivation_hook( __FILE__, array($this, 'prosper_deactivate'));
 
@@ -66,6 +75,10 @@ if (!class_exists('Prosperent_Suite'))
 
 			if ($options['Api_Key'] && preg_match('/\w{32,32}/i', $options['Api_Key']) && $options['UID'] && preg_match('/\d{6,6}/', $options['UID']))
 			{ 
+				if (isset($options['Enable_PL']))
+				{
+					add_action('wp_head', array($this, 'prosper_headerScript'));
+				}			
 				if (isset($options['Enable_PA']))
 				{
 					if(is_admin())
@@ -140,14 +153,20 @@ if (!class_exists('Prosperent_Suite'))
 		}
 		
 		public function prosperBadSettings()
-		{
-			
+		{			
 			$url = admin_url( 'admin.php?page=prosper_general' );
 			echo '<div class="error" style="padding:6px 0;">';
 			echo _e( '<span style="font-size:14px; padding-left:10px;">Your User Id or API Key is either incorrect or missing. </span><br>
 			<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent User ID</strong> and an <strong>API Key</strong>. Go to the Prosperent Suite <a href="' . $url . '">General Settings</a> and follow the directions to get your User Id and an API Key.</span>', 'my-text-domain' );
 			echo '</div>';		
 		}
+		
+		public function prosper_headerScript()
+        {
+			$options = $this->get_option();		
+						
+            echo '<script type="text/javascript">var _prosperent={"user_id":' . $options['UID'] . ', "pl_active":1};</script><script async type="text/javascript" src="http://prosperent.com/js/prosperent.js?v=' . $this->version . '"></script>';
+        }
 		
         /**
          * Retrieve an array of all the options the plugin uses. It can't use only one due to limitations of the options API.
@@ -187,9 +206,9 @@ if (!class_exists('Prosperent_Suite'))
 			if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
 			{	
 				$settings = array_merge($settings, array(
-					'cacheBackend'   => 'FILE',
-					'cacheOptions'   => array(
-						'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+					'cacheBackend'  => 'FILE',
+					'cacheOptions'  => array(
+						'cache_dir' => PROSPER_PATH . 'prosperent_cache'
 					)
 				));	
 			}
@@ -214,7 +233,7 @@ if (!class_exists('Prosperent_Suite'))
             $record = $prosperentApi -> getAllData();
 
             $page = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-            if (is_page($page))
+            if (is_page($page) && get_query_var('cid'))
             {
                 // Open Graph: FaceBook
                 echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/" />';
@@ -222,7 +241,7 @@ if (!class_exists('Prosperent_Suite'))
                 echo '<meta property="og:type" content="website" />';
                 echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
                 echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
-                echo '<meta property="og:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+                echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
 
                 // Twitter Cards
                 echo '<meta name="twitter:card" content="product">';
@@ -234,7 +253,7 @@ if (!class_exists('Prosperent_Suite'))
                 echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
                 echo '<meta name="twitter:label2" content="Brand">';
                 echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
-                echo '<meta name="twitter:title" content="' . $record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name') . '" />';
+                echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
             }
         }
 
@@ -257,7 +276,7 @@ if (!class_exists('Prosperent_Suite'))
 
         public function perform_header()
         {
-            echo '<script async type="text/javascript" src="http://prosperent.com/js/ad.js"></script>';
+            echo '<script async type="text/javascript" src="http://prosperent.com/js/ad.js?v=' . $this->version . '"></script>';
         }
 
         public function prosper_reroutes()
@@ -519,6 +538,15 @@ if (!class_exists('Prosperent_Suite'))
                 update_option( 'prosper_autoLinker', $opt );
             }
 
+			if (!is_array(get_option('prosper_prosperLinks')))
+            {
+				$opt = array(
+					'Enable_PL' 		 => 1
+				);
+                
+                update_option( 'prosper_prosperLinks', $opt );
+            }
+			
             if (!is_array(get_option('prosper_advanced')))
             {
                 if (is_array($old_options))
@@ -529,7 +557,8 @@ if (!class_exists('Prosperent_Suite'))
                         'Twitter_Site'	  => '',
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => $old_options['Additional_CSS'],
-                        'Image_Masking'	  => 0
+                        'Image_Masking'	  => 0,
+						'Base_URL'		  => 'products'
                     );
                 }
                 else
@@ -540,7 +569,8 @@ if (!class_exists('Prosperent_Suite'))
                         'Twitter_Site'	  => '',
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => '',
-                        'Image_Masking'	  => 0
+                        'Image_Masking'	  => 0,
+						'Base_URL'		  => 'products'
                     );
                 }
                 update_option( 'prosper_advanced', $opt );
@@ -744,14 +774,14 @@ if (!class_exists('Prosperent_Suite'))
         public function prospere_stylesheets()
         {
             // Product Search CSS for results and search
-            // List View
-            wp_register_style( 'prospere_main_style', plugins_url('/css/products.css', __FILE__) );
+            wp_register_style( 'prospere_main_style', PROSPER_URL . '/css/products.css', array(), $this->version );
             wp_enqueue_style( 'prospere_main_style' );
         }
 
         public function store_shortcode()
-        {			
+        {						            
 			$this->storeChecker();
+			$options = $this->get_option();
 		
             ob_start();
             include(PROSPER_PATH . 'products.php');
@@ -948,6 +978,9 @@ if (!class_exists('Prosperent_Suite'))
             $query = strip_tags($query);
             $content = strip_tags($content);
 
+			$b = explode(',', trim($b));
+			$m = explode(',', trim($m));
+
             if (!$c)
             {
 				if ($m && $id)
@@ -962,14 +995,14 @@ if (!class_exists('Prosperent_Suite'))
 				}
 				
                 $settings = array(
-                    'api_key'        => $options['Api_Key'],
-                    'query'          => trim($query),
-                    'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-                    'limit'          => $l,
-                    'enableFacets'   => TRUE,
-                    'sortPrice'		 => '',
-                    'filterMerchant' => $m,
-                    'filterBrand'	 => $b,
+                    'api_key'         => $options['Api_Key'],
+                    'query'           => trim($query),
+                    'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
+                    'limit'           => $l,
+                    'enableFacets'    => TRUE,
+                    'sortPrice'		  => '',
+                    'filterMerchant'  => $m,
+                    'filterBrand'	  => $b,
 					'filterCatalogId' => $catalogId,
 					'filterProductId' => $productId
                 );
@@ -1262,6 +1295,9 @@ if (!class_exists('Prosperent_Suite'))
 				$catalogId = '';
 			}
 			
+			$b = array_map('trim', explode(',', $b));
+			$m = array_map('trim', explode(',', $m));
+			
             // Remove links within links
             $query = strip_tags($query);
             $content = $content ? strip_tags($content) : $query;
@@ -1394,8 +1430,27 @@ if (!class_exists('Prosperent_Suite'))
                 }
             }
 
-            $fB = empty($b) ? '' : '/brand/' . rawurlencode($b);
-            $fM = empty($m) ? '' : '/merchant/' . rawurlencode($m);
+			$brands = array();
+			foreach ($b as $brand)
+			{
+				if (!preg_match('/^!/', $brand))
+				{
+					$brands[] = $brand;
+				}
+			}
+			
+			$merchants = array();
+			foreach ($m as $merchant)
+			{
+				if (!preg_match('/^!/', $merchant))
+				{
+					$merchants[] = $merchant;
+				}
+			}
+			
+            $fB = empty($brands) ? '' : '/brand/' . rawurlencode($brands[0]);
+            $fM = empty($merchants) ? '' : '/merchant/' . rawurlencode($merchants[0]);
+			
 
             return '<a href="' . $product_search_url . rawurlencode($query) . $fB . $fM . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
         }
@@ -1465,11 +1520,11 @@ if (!class_exists('Prosperent_Suite'))
         public function performAd_shortCode($atts, $content = null)
         {
             extract(shortcode_atts(array(
-                'q' => isset($q) ? $q : '',
+                'q'   => isset($q) ? $q : '',
 				'utt' => isset($utt) ? $utt : 0,
 				'utg' => isset($utg) ? $utg : 0,
-				'h'  => isset($h) ? $h : 90,
-				'w'  => isset($w) ? $w : 'auto'
+				'h'   => isset($h) ? $h : 90,
+				'w'   => isset($w) ? $w : 'auto'
             ), $atts));
 			
             $options = $this->get_option();

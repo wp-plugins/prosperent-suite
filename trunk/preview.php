@@ -6,9 +6,18 @@
     .noResults-secondary {
         font-size:14px;
     }
+	.couponBlock {
+		padding-bottom:6px;
+	}
+	.productBlock {
+		padding-bottom:6px;
+	}
 </style>
 <?php
     error_reporting(0);     
+
+	$merchant = explode(',', trim($_GET['merchant']));
+	$brand = explode(',', trim($_GET['brand']));
 	
 	require_once('Prosperent_Api.php');
     $settings = array(
@@ -17,7 +26,7 @@
         'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
         'limit'          => 100,
         'sortPrice'		 => '',
-        'filterMerchant' => $_GET['merchant']
+        'filterMerchant' => $merchant
     );
 	
 	if (file_exists('prosperent_cache') && substr(decoct(fileperms('prosperent_cache') ), 1) == '0777')
@@ -25,16 +34,16 @@
 		$settings = array_merge($settings, array(
 			'cacheBackend'   => 'FILE',
 			'cacheOptions'   => array(
-				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+				'cache_dir'  => 'prosperent_cache'
 			)
 		));	
 	}
 
 	$prosperentApi = new Prosperent_Api($settings);
-	
+
     if (!$_GET['coup'])
     {
-        $prosperentApi -> set_filterBrand($_GET['brand']);
+        $prosperentApi -> set_filterBrand($brand);
 
 		if ($_GET['merchant'] && $_GET['prodid'])
 		{
@@ -64,6 +73,21 @@
     }
     else
     {
+		$key = array_search('Zappos.com', $merchant);
+		if ($key || 0 === $key)
+		{
+			unset($merchant[$key]);
+		}
+
+		$key2 = array_search('6pm', $merchant);
+		if ($key2 || 0 === $key2)
+		{
+			unset($merchant[$key2]);
+		}
+
+		$merchants = array_merge($merchant, array('!Zappos.com', '!6pm'));
+		
+		$prosperentApi -> set_filterMerchant($merchants);
 		$prosperentApi -> set_filterCouponId($_GET['prodid']);
 
         $prosperentApi -> fetchCoupons();

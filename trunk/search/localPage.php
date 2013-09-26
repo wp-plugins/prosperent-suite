@@ -169,6 +169,7 @@ $sameCity = $prosperentApi -> getAllData();
 
 if ($sameCity)
 {
+	echo '<div class="clear"></div>';
 	echo '<div class="simTitle">Other Deals ' . ($city == 'Online' ? $city : 'in ' . $city) . '</div>';
 	echo '<div id="simProd">';
 	echo '<ul>';

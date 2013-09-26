@@ -28,7 +28,7 @@ class Prosperent_Admin
 
 	public function prosper_admin_css()
 	{
-		wp_register_style( 'prospere_admin_style', PROSPER_URL . 'css/admin.min.css');
+		wp_register_style( 'prospere_admin_style', PROSPER_URL . 'css/admin.min.css', array(), $this->version );
         wp_enqueue_style( 'prospere_admin_style');
 	}
 	
@@ -49,7 +49,7 @@ class Prosperent_Admin
 		if ( isset( $_GET['hide'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_hide_message' ) && current_user_can( 'manage_options' ) ) 
 		{
 			$this->hide_message();
-			wp_redirect( admin_url( 'admin.php?page=prosper_general' ) );
+			//wp_redirect( admin_url( 'admin.php?page=prosper_general' ) );
 		}	
 	}
 	
@@ -111,7 +111,7 @@ class Prosperent_Admin
 		register_setting( 'prosperent_perform_options', 'prosper_performAds' );
 		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );
 		register_setting( 'prosperent_linker_options', 'prosper_autoLinker' );
-		//register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
+		register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
 		register_setting( 'prosperent_advanced_options', 'prosper_advanced' );
 		
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) 
@@ -174,7 +174,7 @@ class Prosperent_Admin
 		add_submenu_page('prosper_general', __( 'Performance Ads', 'prosperent-suite' ), __( 'Performance Ads', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
 		add_submenu_page('prosper_general', __( 'Product Insert', 'prosperent-suite' ), __( 'Product Insert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'comparerPage' ) );
 		add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
-		//add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
+		add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
 		
 		global $submenu;

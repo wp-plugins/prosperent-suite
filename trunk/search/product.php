@@ -118,9 +118,9 @@ $result = $prosperentApi -> getAllData();
             <div class="productDescription" itemprop="description"><?php
                 if (strlen($record[0]['description']) > 200)
                 {
-                    echo substr($record[0]['description'], 0, 200);
+                    echo trim(substr($record[0]['description'], 0, 200));					
 					?>
-					<div id="moreDesc" style="display:inline-block;"> ... <a style="cursor:pointer;" onclick="showFullDesc('fullDesc'); hideMoreDesc('moreDesc');">more</a></div><span id="fullDesc" style="display:none; -moz-hyphens: manual;font-style:normal;"><?php echo substr($record[0]['description'], 200); ?></span>
+					<span id="moreDesc" style="display:inline-block;">... <a style="cursor:pointer;" onclick="showFullDesc('fullDesc'); hideMoreDesc('moreDesc');">more</a></span><span id="fullDesc" style="display:none;-moz-hyphens:manual;font-style:normal;"><?php echo trim(substr($record[0]['description'], 200)); ?></span>
 					<?php
                 }
                 else
@@ -366,6 +366,7 @@ switch ($options['Country'])
 $sameBrand = $prosperentApi -> getAllData();
 if ($sameBrand)
 {
+	echo '<div class="clear"></div>';
     echo '<div class="simTitle">Other Products from ' . $record[0]['brand'] . '</div>';
     echo '<div id="simProd">';
     echo '<ul>';

@@ -13,11 +13,6 @@
                 <?php
                 echo '<a href="' . $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
                 ?>
-                <div class="couponVisit">
-                    <form style="margin:0; text-align:center;" method="POST" action="<?php echo $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
-                        <input type="submit" value="Visit Store"/>
-                    </form>
-                </div>
             </div>
             <div class="couponContent">
                 <div class="couponTitle">
@@ -54,7 +49,11 @@
                 }
                 ?>
             </div>
-
+			<div class="couponVisit">
+				<form style="margin:0; text-align:center;" method="POST" action="<?php echo $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+					<input type="submit" value="Visit Store"/>
+				</form>
+			</div>
         </div>
         <?php
     }

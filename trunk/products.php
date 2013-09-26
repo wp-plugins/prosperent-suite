@@ -43,8 +43,6 @@ if ($prosperImgUrl = get_query_var('prosperImg'))
 	exit;
 }
 
-$options = $this->get_option();
-
 if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
 {  
 	$base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';

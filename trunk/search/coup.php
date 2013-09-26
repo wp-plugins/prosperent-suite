@@ -185,11 +185,6 @@ if (empty($results) || (empty($filterMerchants) && !$query))
                     <?php
                     echo '<a href="' . $productPage . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"><img src="' . ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) :  $record['image_url']) . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
                     ?>
-                    <div class="couponVisit">
-                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store"/>
-                        </form>
-                    </div>
                 </div>
                 <div class="couponContent">
                     <div class="couponTitle">
@@ -226,7 +221,11 @@ if (empty($results) || (empty($filterMerchants) && !$query))
                     }
                     ?>
                 </div>
-
+				<div class="couponVisit">
+					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+						<input type="submit" value="Visit Store"/>
+					</form>
+				</div>
             </div>
             <?php
         }
@@ -375,11 +374,11 @@ else
                     }
                     ?>
                 </div>
-                    <div class="couponVisit">
-                        <form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
-                            <input type="submit" value="Visit Store"/>
-                        </form>
-                    </div>
+				<div class="couponVisit">
+					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+						<input type="submit" value="Visit Store"/>
+					</form>
+				</div>
             </div>
             <?php
         }

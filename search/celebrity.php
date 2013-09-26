@@ -284,6 +284,7 @@ $sameBrand = $prosperentApi -> getAllData();
 
 if ($sameBrand)
 {
+	echo '<div class="clear"></div>';
 	echo '<div class="simTitle">Other Products from ' . $record[0]['brand'] . '</div>';
 	echo '<div id="simProd">';
 	echo '<ul>';

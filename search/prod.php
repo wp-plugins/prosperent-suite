@@ -35,7 +35,6 @@ if (isset($_POST['sort']))
     exit;
 }
 
-
 /*
 /  Prosperent API Query
 */
@@ -51,12 +50,12 @@ $settings = array(
 	'filterMerchant' => $filterMerchants
 );
 
-if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
 {	
 	$settings = array_merge($settings, array(
 		'cacheBackend'   => 'FILE',
 		'cacheOptions'   => array(
-			'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+			'cache_dir'  => PROSPER_CACHE
 		)
 	));	
 }
@@ -127,12 +126,12 @@ if (empty($results))
         'enableFacets'  => 'productId'
     );
 
-	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
 	{	
 		$settings = array_merge($settings, array(
 			'cacheBackend'   => 'FILE',
 			'cacheOptions'   => array(
-				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+				'cache_dir'  => PROSPER_CACHE
 			)
 		));	
 	}
@@ -156,12 +155,12 @@ if (empty($results))
         'limit' 	      => 15
     );
 	
-	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
 	{	
 		$settings = array_merge($settings, array(
 			'cacheBackend'   => 'FILE',
 			'cacheOptions'   => array(
-				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+				'cache_dir'  => PROSPER_CACHE
 			)
 		));	
 	}
@@ -440,9 +439,9 @@ else
 		<?php
 	}
 
-    echo '<div class="totalFound">' . $totalFound . ' results for <b>' . ucwords($query ? rawurldecode($query) : ($filterBrand ? rawurldecode($filterBrand) : rawurldecode($filterMerchant))) . '</b>' . ($query && ($filterMerchant || $filterBrand) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/query/' . $query), array('', ''), $prodSubmit) . '> [x]</a>' : '') . '</div>';
+    echo '<div class="totalFound" style="margin-top:none;">' . $totalFound . ' results for <b>' . ucwords($query ? rawurldecode($query) : ($filterBrand ? rawurldecode($filterBrand) : rawurldecode($filterMerchant))) . '</b>' . ($query && ($filterMerchant || $filterBrand) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/query/' . $query), array('', ''), $prodSubmit) . '> [x]</a>' : '') . '</div>';
     ?>
-
+	
     <div class="prosper_priceSorter">
         <form class="sorterofprice" name="priceSorter" method="POST" action="" >
             <label for="PriceSort">Sort By: </label>

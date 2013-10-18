@@ -6,11 +6,10 @@ $prosper_admin->admin_header( __( 'General Settings', 'prosperent-suite' ), true
 $options = get_site_option( 'prosper_general' );
 
 echo '<h2 class="prosper_h2">' . __( 'Your Settings (Required)', 'prosperent-suite' ) . '</h2>';
-echo $prosper_admin->textinputsmall( 'UID', __( '<strong>Prosperent User-Id</strong>', 'prosperent-suite' ), '');
-echo '<p class="prosper_desc">' . __( '1.) Sign Up (It\'s free) at <a href="http://prosperent.com/join" target="_blank">Prosperent</a><br>2.) Once you are logged in, look in the upper Right Hand corner for the 6 digit number that comes after your user-name. That is your UserId.<br><strong>Example</strong>: Welcome, Brandon (123456).  Your UserId would be <strong>123456</strong> in this case.', 'prosperent-suite' ) . '</p>';
+echo __( '<ol><li><a href="http://prosperent.com/join" target="_blank">Sign Up (It\'s free)</a>, if you haven\'t already.</li><li>Go to the <a href="http://prosperent.com/affiliate/install/" target="_blank">Prosperent Install</a> screen.</li><li>Ensure that your Campaign is set to WordPress.</li><li>Copy the API Key from step 3, and paste it into the box below.</li><li>Save your Settings!</li></ol>', 'prosperent-suite' );
 
 echo $prosper_admin->textinput( 'Api_Key', __( '<strong>Prosperent API Key</strong>', 'prosperent-suite' ), '');
-echo '<p class="prosper_descb">' . __( '1.) Go to the <a href="http://prosperent.com/affiliate/api" target="_blank">Prosperent API</a> page <br>2.) Click the API Keys tab<br>3.) Click either "Add New API Key" or copy an existing API Key<br>4.) Paste the API Key into this box', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_descb">' . __( '', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Target', __( 'Open Links in New Window or Tab', 'prosperent-suite' ));

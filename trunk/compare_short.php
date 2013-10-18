@@ -14,12 +14,12 @@ if ($cl)
 		'sortPrice'		  => 'asc'
 	);
 	
-	if (file_exists(PROSPER_PATH . 'prosperent_cache') && substr(decoct( fileperms(PROSPER_PATH . 'prosperent_cache') ), 1) == '0777')
+	if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
 	{	
 		$settings = array_merge($settings, array(
 			'cacheBackend'   => 'FILE',
 			'cacheOptions'   => array(
-				'cache_dir'  => PROSPER_PATH . 'prosperent_cache'
+				'cache_dir'  => PROSPER_CACHE
 			)
 		));	
 	}

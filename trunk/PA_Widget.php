@@ -83,9 +83,9 @@ class Performance_Ad_Widget extends WP_Widget
         $fallback = implode(",", $fallback);
 		$height = $instance['height'] ? preg_replace('/px|em|%/i', '', $instance['height']) : 150;
 		$width = $instance['width'] ? ($instance['width'] == 'auto' ? '' : preg_replace('/px|em|%/i', '', $instance['width'])) : '';
-		
+
         ?>
-		<div class="prosperent-pa" style="height: <?php echo $height . 'px'; ?>; width: <?php echo $width . 'px'; ?>;" prosperent_pa_uid="<?php echo $options['UID']; ?>" prosperent_pa_fallback_query="<?php echo $fallback; ?>" ></div>
+		<div class="prosperent-pa" style="height: <?php echo $height . 'px'; ?>; width: <?php echo $width . 'px'; ?>;" pa_topics="<?php echo $fallback; ?>" ></div>
 		<br>
         <?php
     }
@@ -116,8 +116,8 @@ class Performance_Ad_Widget extends WP_Widget
         <input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo esc_attr($width); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('Height:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Minimum = 54</span></a>
         <input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo esc_attr($height); ?>" /></p>
-		<p><label for="<?php echo $this->get_field_id('topic'); ?>"><?php _e('Topic:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span><strong>Seperate by commas.</strong> A topic is either a generic term that summarizes your site or a specific product.</span></a>
-        <input class="widefat" id="<?php echo $this->get_field_id('topic'); ?>" name="<?php echo $this->get_field_name('topic'); ?>" type="text" value="<?php echo esc_attr($topic); ?>" /></p>
+		<p><label for="<?php echo $this->get_field_id('topic'); ?>"><?php _e('Topic:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span><strong>Seperate by commas. Max 3 (including title and tags if used).</strong> A topic is either a generic term that summarizes your site or a specific product.</span></a>
+        <input class="widefat" id="<?php echo $this->get_field_id('topic'); ?>" name="<?php echo $this->get_field_name('topic'); ?>" type="text" value="<?php echo esc_attr($fallback); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id('usetags'); ?>"><?php _e('Use Tags as Topic:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Will add post tags to the fallback list if there are any.</span></a>
         <input id="<?php echo $this->get_field_id('usetags'); ?>" name="<?php echo $this->get_field_name('usetags'); ?>" type="checkbox" value="1" <?php echo checked( esc_attr($usetags), 1, false ); ?> /></p>
 		<p><label for="<?php echo $this->get_field_id('usetitle'); ?>"><?php _e('Use Title as Topic:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Will add page title to the fallback list.</span></a>

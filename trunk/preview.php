@@ -29,12 +29,12 @@
         'filterMerchant' => $merchant
     );
 	
-	if (file_exists('prosperent_cache') && substr(decoct(fileperms('prosperent_cache') ), 1) == '0777')
+	if (file_exists(ABSPATH . 'wp-content/prosperent_cache') && substr(decoct(fileperms(ABSPATH . 'wp-content/prosperent_cache') ), 1) == '0777')
 	{	
 		$settings = array_merge($settings, array(
 			'cacheBackend'   => 'FILE',
 			'cacheOptions'   => array(
-				'cache_dir'  => 'prosperent_cache'
+				'cache_dir'  => ABSPATH . 'wp-content/prosperent_cache'
 			)
 		));	
 	}

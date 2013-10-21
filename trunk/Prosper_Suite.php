@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.2
+Version: 2.1.3
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -1578,10 +1578,10 @@ if (!class_exists('Prosperent_Suite'))
 			
 			$fallback = implode(",", $fallback);
 			
-			$height = preg_replace('/px|em|%/i', '', $h);
-			$width = $w == 'auto' ? '' : preg_replace('/px|em|%/i', '', $w);
+			$height = $h ? ($h == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $h) . 'px') : 90 . 'px';
+			$width = $w ? ($w == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $w) . 'px') : '100%';
 			            
-            return '<p><div class="prosperent-pa" style="height:' . $height . 'px; width:' . $width . 'px;" pa_topics="' . $fallback . '"></div></p>';
+            return '<p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_topics="' . $fallback . '"></div></p>';
             
         }
 				

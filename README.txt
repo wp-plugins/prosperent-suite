@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.6.1
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,14 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1.3 =
+* Fixed Performance Ad bug when using auto as height/width
+
+= 2.1.2 =
+* Add campaign functionality
+* Fixed Auto Linker Bug
+* Moved Cache directory outside of plugin directory
 
 = 2.1.1 =
 * Added New ProsperLink functionality

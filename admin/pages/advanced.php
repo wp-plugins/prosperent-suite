@@ -20,8 +20,6 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 echo $prosper_admin->textinput( 'Title_Sep', __( 'Enter a title seperator', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Optional</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
-
-
 echo '<h2 class="prosper_h2">' . __( 'Changing the Base URL (Gets set Automatically by the Plugin now)', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Manual_Base', __( 'Change Base URL Manually', 'prosperent-suite' ), '', '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Check this box if you\'d like to change your site\'s Base URL manually. Helpful if it set incorrectly by the Plugin, or you have a special use case.</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
@@ -46,7 +44,7 @@ echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Additional CSS for the Shortcode Search Bar', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->textinput( 'Additional_CSS', __( 'Additional CSS', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Additional CSS for the shortcode search bar.</span></a>' );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 /*
 echo '<h2 class="prosper_h2">' . __( 'Logo Images for the Search Bar in the header', 'prosperent-suite' ) . '</h2>';
 echo $prosper_admin->checkbox( 'Logo_Image', __( 'Logo Image', 'prosperent-suite' ) );

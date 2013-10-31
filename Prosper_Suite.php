@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.3
+Version: 2.1.4
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -52,7 +52,7 @@ if (!class_exists('Prosperent_Suite'))
             add_action('init', array($this, 'do_output_buffer'));
             add_action('init', array($this, 'prosper_query_tag'), 1);
 
-			if (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
+			if ($options['Enable_Caching'] && !file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
 			{
 				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
 			}
@@ -80,7 +80,8 @@ if (!class_exists('Prosperent_Suite'))
 			if ($options['Api_Key'] && preg_match('/\w{32,32}/i', $options['Api_Key']))
 			{ 
 				add_action('wp_head', array($this, 'prosper_headerScript'));
-							
+				add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
+				
 				if (isset($options['Enable_PA']))
 				{
 					if(is_admin())
@@ -105,6 +106,11 @@ if (!class_exists('Prosperent_Suite'))
 					{ 
 						add_shortcode('compare', array($this, 'autoCompare_shortcode'));
 					}
+					
+					if ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages'])
+					{
+						add_filter('the_content', array($this, 'content_inserter'), 2);
+					}
 				}
 				if (isset($options['Enable_AL']))
 				{
@@ -121,8 +127,7 @@ if (!class_exists('Prosperent_Suite'))
 					$this->register_filters();
 				}
 				if (isset($options['Enable_PPS']))
-				{
-					add_action('wp_enqueue_scripts', array($this, 'prospere_stylesheets'));
+				{					
 					add_shortcode('prosper_store', array($this, 'store_shortcode'));
 					add_shortcode('prosper_search', array($this, 'search_shortcode'));
 					add_action('wp_head', array($this, 'ogMeta'));
@@ -147,9 +152,9 @@ if (!class_exists('Prosperent_Suite'))
 			$options = $this->get_option();
 			if (!$options['concealCacheMessage'])
 			{
-				echo '<div class="updated" style="padding:6px 0;">';
+				echo '<div class="error" style="padding:6px 0;">';
 				echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp_content</strong> directory and make it writable (0777). If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span><span style="font-size:12px;"><a style="margin-left:24px; margin-top:4px;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&hide&nonce='. wp_create_nonce( 'prosper_hide_message' )) . '">' . __( 'Hide this Message', 'prosperent-suite' ) . '</a></span>', 'my-text-domain' );
-				echo _e( '<br><span style="font-size:12px; padding-left:10px;font-weight:bold;">Note: The Prosperent Suite plugin will run fine without this.</span>', 'my-text-domain' );
+				echo _e( '<br><span style="font-size:16px; padding-left:10px;font-weight:bold;">Note: The Prosperent Suite plugin will run fine without this.</span>', 'my-text-domain' );
 				echo '</div>';	
 			}	
 		}
@@ -167,7 +172,7 @@ if (!class_exists('Prosperent_Suite'))
         {
 			$options = $this->get_option();		
 						
-            echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $options['Api_Key'] . '", "pl_active":' . ($options['Enable_PL'] ? 1 : 0) . ', "pa_active":' . ($options['Enable_PA'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="http://prosperent.com/js/prosperent.js"></script>';
+            echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $options['Api_Key'] . '", "pl_active":1, "pa_active":' . ($options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="http://prosperent.com/js/prosperent.js"></script>';
         }
 		
         /**
@@ -263,7 +268,7 @@ if (!class_exists('Prosperent_Suite'))
         {
             $options = $this->get_option();
 
-            add_filter('the_content', array($this, 'auto_linker'), 2);
+            add_filter('the_content', array($this, 'auto_linker'), 2);			
             add_filter('the_excerpt', array($this, 'auto_linker'), 2);
             add_filter('widget_text', array($this, 'auto_linker'), 2);
 
@@ -276,6 +281,56 @@ if (!class_exists('Prosperent_Suite'))
             }
         }
 
+		public function content_inserter($text)
+		{
+			$options = $this->get_option();
+			$text = ' ' . $text . ' ';
+			$exclude = array_map(
+				function($negative) { return '/\b' . trim($negative) . '\b/i'; },
+				explode(',', $options['prosper_inserter_negTitles'])
+			);
+			
+			$insert = '<p>[compare q="' . preg_replace($exclude, '', get_the_title()) . '" l="' . ($options['PI_Limit'] ? $options['PI_Limit'] : 1) . '"][/compare]</p>';
+			
+			if ('top' == $options['prosper_inserter'])
+			{
+				$content = $insert . $text;
+			}
+			else
+			{
+				$content = $text . $insert;
+			}
+			
+			if ($options['prosper_inserter_pages'] && $options['prosper_inserter_posts'])
+			{
+				if( is_singular() && is_main_query() ) 
+				{
+					$text = $content;
+				}
+				
+				if(is_single()) 
+				{
+					$text = $content;	
+				}
+			}
+			elseif($options['prosper_inserter_posts'])
+			{
+				if(is_single()) 
+				{
+					$text = $content;
+				}				
+			}
+			elseif($options['prosper_inserter_pages'])
+			{
+				if( is_singular() && is_main_query() ) 
+				{
+					$text = $content;
+				}
+			}		
+			
+			return trim($text);
+		}
+		
         public function prosper_reroutes()
         {
             $this->prosper_rewrite();
@@ -485,13 +540,17 @@ if (!class_exists('Prosperent_Suite'))
                 if (is_array($old_options))
                 {
                     $opt = array(
-                        'Enable_AC' => $old_options['Enable_AC']
+                        'Enable_AC'    => $old_options['Enable_AC'],
+						'Link_to_Merc' => 1,
+						'PI_Limit'	   => 1
                     );
                 }
                 else
                 {
                     $opt = array(
-                        'Enable_AC' => 1
+                        'Enable_AC'    => 1,
+						'Link_to_Merc' => 1,
+						'PI_Limit'	   => 1
                     );
                 }
                 update_option( 'prosper_autoComparer', $opt );
@@ -519,7 +578,8 @@ if (!class_exists('Prosperent_Suite'))
 			if (!is_array(get_option('prosper_prosperLinks')))
             {
 				$opt = array(
-					'Enable_PL' 		 => 1
+					'PL_LinkOpt' => 1,
+					'PL_LinkAff' => 1
 				);
                 
                 update_option( 'prosper_prosperLinks', $opt );

@@ -2,8 +2,8 @@
 Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 3.6.1
-Stable tag: 2.1.3
+Tested up to: 3.7.1
+Stable tag: 2.1.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,6 +112,14 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1.4 =
+* Added new ProsperLink options- Link Optimizer and Link Affiliator
+* Added option to enable caching
+* Added new options for Product Insert- You can now add a product insert to every page/post easily
+* Adjusted Performance Ad Widget
+* Fixed trends bug some were having
+* Product Insert works correctly even if the Product Search is deactivated (CSS and Links)
 
 = 2.1.3 =
 * Fixed Performance Ad bug when using auto as height/width

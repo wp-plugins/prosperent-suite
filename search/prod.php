@@ -123,7 +123,8 @@ if (empty($results))
     // fetch trends from api
 
     $settings = array(
-        'enableFacets'  => 'productId'
+        'enableFacets' => 'productId',
+		'limit'		   => 50
     );
 
 	if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
@@ -142,6 +143,7 @@ if (empty($results))
         ->fetchTrends();
 
     // set productId as key in array
+	$keys = array();
     foreach ($api->getFacets('productId') as $data)
     {
         $keys[] = $data['value'];
@@ -440,7 +442,8 @@ else
 	}
 
     echo '<div class="totalFound" style="margin-top:none;">' . $totalFound . ' results for <b>' . ucwords($query ? rawurldecode($query) : ($filterBrand ? rawurldecode($filterBrand) : rawurldecode($filterMerchant))) . '</b>' . ($query && ($filterMerchant || $filterBrand) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/query/' . $query), array('', ''), $prodSubmit) . '> [x]</a>' : '') . '</div>';
-    ?>
+
+	?>
 	
     <div class="prosper_priceSorter">
         <form class="sorterofprice" name="priceSorter" method="POST" action="" >
@@ -453,7 +456,7 @@ else
             <?php echo ($sort != 'rel' && '' != $sort) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $pageNumber, '/sort/' . $sort), array('', ''), $prodSubmit) . '> [x]</a>' : ''; ?>
         </form>
     </div>
-
+	
     <?php
     // Gets the count of results for Pagination
     $productCount = count($results);

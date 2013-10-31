@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.4
+Version: 2.1.5
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -52,7 +52,7 @@ if (!class_exists('Prosperent_Suite'))
             add_action('init', array($this, 'do_output_buffer'));
             add_action('init', array($this, 'prosper_query_tag'), 1);
 
-			if ($options['Enable_Caching'] && !file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
+			if ($options['Enable_Caching'] && !file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
 			{
 				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
 			}
@@ -149,14 +149,9 @@ if (!class_exists('Prosperent_Suite'))
 		
 		public function prosperNoticeWrite() 
 		{
-			$options = $this->get_option();
-			if (!$options['concealCacheMessage'])
-			{
-				echo '<div class="error" style="padding:6px 0;">';
-				echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp_content</strong> directory and make it writable (0777). If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span><span style="font-size:12px;"><a style="margin-left:24px; margin-top:4px;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&hide&nonce='. wp_create_nonce( 'prosper_hide_message' )) . '">' . __( 'Hide this Message', 'prosperent-suite' ) . '</a></span>', 'my-text-domain' );
-				echo _e( '<br><span style="font-size:16px; padding-left:10px;font-weight:bold;">Note: The Prosperent Suite plugin will run fine without this.</span>', 'my-text-domain' );
-				echo '</div>';	
-			}	
+			echo '<div class="error" style="padding:6px 0;">';
+			echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp_content</strong> directory and make it writable (0777). If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span><span style="font-size:12px;"></span>', 'my-text-domain' );
+			echo '</div>';	
 		}
 		
 		public function prosperBadSettings()

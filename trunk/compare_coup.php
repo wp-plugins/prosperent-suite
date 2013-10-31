@@ -6,8 +6,8 @@
     // Loop to return coupons and corresponding information
     foreach ($results as $i => $record)
     {
-		$goToUrl = '"' . ($options['Enable_PPS'] && !$options['Link_to_Merc'] ? $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"' : $record['affiliate_url'] . '" rel="nofollow"');
-		$formGoToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] ? $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] : $record['affiliate_url']);
+		$goToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] ? '"' . $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"' : ($options['Enable_PPS'] && $options['Link_to_Merc'] ? '"' . $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '"' : '"' . $record['affiliate_url'] . '" rel="nofollow"'));
+		$formGoToUrl = $options['Enable_PPS'] ? $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
         $record['image_url'] = $options['Image_Masking'] ? $startUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
         ?>
         <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">

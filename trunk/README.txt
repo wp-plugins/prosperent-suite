@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.7.1
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -11,18 +11,17 @@ Prosperent's Tools in one plugin help monetize your blog with ease.
 
 == Description ==
 
-= Deactivate any other Prosperent Plugins before use =
-
-To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
-
 This plugin contains the following Prosperent tools:
 
 * **Product Search-** Create a store within your blog.
-* **Performance Ads-** Display ads easily inside widgets, these ads are use an advanced content analyzer to display relevant ads.
-* **Auto-Linker-** Easily link products to the store or the merchant.
-* **Product Insert-** (formerly known as Auto-Comparer) Display a product within your post or page to easily show visitors product information.
+* **Performance Ads-** Display ads easily inside widgets or in content.
+* **Auto-Linker-** Easily link products to the store or a merchant.
+* **Product Insert-** Display a product within your post or page to easily show visitors products.
+* **ProsperLinks-** Contains a link-optimizer and link-affiliator to easily monetize links already in your blog.
 
 This suite will give you everything you need to easily start making money with your blog.
+
+To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
 **Look at the screenshots to get a brief overview of the tools and what you can do with them.**
 
@@ -112,6 +111,10 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1.5 =
+* Fixed bug in Product Insert URL
+* Updated Readme
 
 = 2.1.4 =
 * Added new ProsperLink options- Link Optimizer and Link Affiliator

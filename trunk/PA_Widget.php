@@ -6,7 +6,10 @@ class Performance_Ad_Widget extends WP_Widget
     public function __construct()
     {
         $widget_ops = array('classname' => 'performanceAds_sb_widget', 'description' => __("Adds a Performance Ad as a widget. Settings are in the widget."));
-        parent::__construct('performance_ad_sb', __('Performance Ads'), $widget_ops);
+        parent::__construct('performance_ad_sb', 
+							'Performance Ads', 
+							$widget_ops
+		);
     }
 	
     public function get_prosper_options_array()
@@ -36,6 +39,9 @@ class Performance_Ad_Widget extends WP_Widget
     {
         $options = $this->options();
 
+		extract($args);
+		echo $before_widget;
+		
 		$fallback = array();
 		if ($instance['usetags'])
 		{
@@ -81,13 +87,13 @@ class Performance_Ad_Widget extends WP_Widget
 		}
 
         $fallback = implode(",", $fallback);
-		$height = $instance['height'] ? ($instance['height'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['height']) . 'px') : 200 . 'px';
+		$height = $instance['height'] ? ($instance['height'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['height']) . 'px') : 150 . 'px';
 		$width = $instance['width'] ? ($instance['width'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['width']) . 'px') : '100%';
 
         ?>
 		<div class="prosperent-pa" style="height: <?php echo $height; ?>; width: <?php echo $width; ?>;" pa_topics="<?php echo $fallback; ?>" ></div>
-		<br>
         <?php
+		echo $after_widget;
     }
 
     public function update( $new_instance, $old_instance )
@@ -104,7 +110,7 @@ class Performance_Ad_Widget extends WP_Widget
 
     public function form( $instance )
     {
-        $instance = wp_parse_args( (array) $instance, array( 'height' => 200, 'width' => 'auto', 'topic' => '', 'usetags' => 0, 'usetitle' => 0) );
+        $instance = wp_parse_args( (array) $instance, array( 'height' => 150, 'width' => 'auto', 'topic' => '', 'usetags' => 0, 'usetitle' => 0) );
 		$width = $instance['width'];
 		$height = $instance['height'];
 		$fallback = $instance['topic'];
@@ -114,7 +120,7 @@ class Performance_Ad_Widget extends WP_Widget
         ?>		
 		<p><label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Width:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Using <strong>auto</strong> will scale the ad to fit.<br>Minimum = 77</span></a>
         <input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo esc_attr($width); ?>" /></p>
-		<p><label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('Height:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Using <strong>auto</strong> will scale the ad to fit.<br>Minimum = 54</span></a>
+		<p><label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('Height:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span>Minimum = 54</span></a>
         <input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo esc_attr($height); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id('topic'); ?>"><?php _e('Topic:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_URL . '/img/help.png'; ?>"><span><strong>Seperate by commas. Max 3 (including title and tags if used).</strong> A topic is either a generic term that summarizes your site or a specific product.</span></a>
         <input class="widefat" id="<?php echo $this->get_field_id('topic'); ?>" name="<?php echo $this->get_field_name('topic'); ?>" type="text" value="<?php echo esc_attr($fallback); ?>" /></p>

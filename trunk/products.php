@@ -204,8 +204,8 @@ foreach ($endpoints as $endpoint)
 	}
 }
 
-$keys = array_keys($sepEnds);
-$startingType = $keys[0];
+$newEnds = array_keys($sepEnds);
+$startingType = $newEnds[0];
 
 $type = !isset($sendParams['type']) ? $startingType : $sendParams['type'];
 

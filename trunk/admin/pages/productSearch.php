@@ -76,7 +76,7 @@ echo $prosper_admin->textinput( 'Celebrity_Query', __( 'Celebrity Query (Celeb N
 echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
 
 echo $prosper_admin->textinput( 'Local_Query', __( 'Local Query (City, State or State)', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Default query for local, either "city, state" or "state". If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );
-echo '<p class="prosper_descb">' . __( ".", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
 
 //echo $prosper_admin->textinput( 'Travel_Query', __( 'Travel Query (Destination)', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Default query for travel. If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );
 //echo '<p class="prosper_descb">' . __( ".", 'prosperent-suite' ) . '</p>';

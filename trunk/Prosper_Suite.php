@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.5
+Version: 2.1.6
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -52,12 +52,12 @@ if (!class_exists('Prosperent_Suite'))
             add_action('init', array($this, 'do_output_buffer'));
             add_action('init', array($this, 'prosper_query_tag'), 1);
 
-			if ($options['Enable_Caching'] && !file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
+            $options = $this->get_option();
+			
+			if ($options['Enable_Caching'] && (substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777') || !file_exists(PROSPER_CACHE))
 			{
 				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
 			}
-
-            $options = $this->get_option();
 			
 			if ( ! function_exists( 'get_plugins' ) )
 				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
@@ -1358,7 +1358,7 @@ if (!class_exists('Prosperent_Suite'))
 			
             // Remove links within links
             $query = strip_tags($query);
-            $content = $content ? strip_tags($content) : $query;
+			$content = $content ? (preg_match('/<img/i', $content) ? $content : strip_tags($content)) : $query;
 
             if ($gtm || !$options['Enable_PPS'])
             {

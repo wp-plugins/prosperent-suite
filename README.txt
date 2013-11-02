@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.7.1
-Stable tag: 2.1.5
+Stable tag: 2.1.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -111,6 +111,10 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 2.1.6 =
+* AutoLinker now works for images (Highlight the image like you word to link a phrase and press the autolink button)
+* Updated Caching warning
 
 = 2.1.5 =
 * Fixed bug in Product Insert URL

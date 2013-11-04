@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.6
+Version: 2.1.7
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -278,14 +278,26 @@ if (!class_exists('Prosperent_Suite'))
 
 		public function content_inserter($text)
 		{
+			function prosper_negative($negative)
+			{
+				return '/\b' . trim($negative) . '\b/i';
+			}
+		
 			$options = $this->get_option();
 			$text = ' ' . $text . ' ';
 			$exclude = array_map(
-				function($negative) { return '/\b' . trim($negative) . '\b/i'; },
+				"prosper_negative",
 				explode(',', $options['prosper_inserter_negTitles'])
 			);
+
+			$newTitle = preg_replace($exclude, '', get_the_title());
 			
-			$insert = '<p>[compare q="' . preg_replace($exclude, '', get_the_title()) . '" l="' . ($options['PI_Limit'] ? $options['PI_Limit'] : 1) . '"][/compare]</p>';
+			if (!$newTitle)
+			{
+				return trim($text);
+			}
+			
+			$insert = '<p>[compare q="' . $newTitle . '" l="' . ($options['PI_Limit'] ? $options['PI_Limit'] : 1) . '"][/compare]</p>';
 			
 			if ('top' == $options['prosper_inserter'])
 			{

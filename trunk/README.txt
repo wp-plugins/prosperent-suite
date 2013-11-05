@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.7.1
-Stable tag: 2.1.7
+Stable tag: 2.1.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,8 +112,11 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.1.8 =
+* Squashed bug in product insert
+
 = 2.1.7 =
-* Fixed bug in Product Inserter for all pages/posts (had annonymous function that required php5.3)
+* Fixed bug in Product Inserter for all pages/posts (had anonymous function that required php5.3)
 
 = 2.1.6 =
 * AutoLinker now works for images (Highlight the image like you word to link a phrase and press the autolink button)

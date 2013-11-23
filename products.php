@@ -158,7 +158,7 @@ $celebDecode    = rawurldecode($celeb);
 $merchantDecode = rawurldecode($filterMerchant);
 $brandDecode 	= rawurldecode($filterBrand);
 
-$productPage = 'http://' . $_SERVER['HTTP_HOST'];
+$productPage = site_url();
 
 $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $url = preg_replace('/\/$/', '', $url);

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.8
+Version: 2.1.9
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -54,7 +54,7 @@ if (!class_exists('Prosperent_Suite'))
 
             $options = $this->get_option();
 			
-			if ($options['Enable_Caching'] && (substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777') || !file_exists(PROSPER_CACHE))
+			if ($options['Enable_Caching'] && substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777')
 			{
 				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
 			}
@@ -238,7 +238,7 @@ if (!class_exists('Prosperent_Suite'))
             if (is_page($page) && get_query_var('cid'))
             {
                 // Open Graph: FaceBook
-                echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/" />';
+                echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
                 echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
                 echo '<meta property="og:type" content="website" />';
                 echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
@@ -275,11 +275,17 @@ if (!class_exists('Prosperent_Suite'))
                 add_filter('get_comment_excerpt', array($this, 'auto_linker'), 11);
             }
         }
-
+		
 		public function content_inserter($text)
 		{		
 			$options = $this->get_option();
-			$text = ' ' . $text . ' ';
+			$newTitle = get_the_title();
+
+			if (preg_match('/\[prosperNewQuery="(.+)"\]/i', $text, $regs))
+			{
+				$newTitle = $regs[1];
+				$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
+			}
 			
 			if ($options['prosper_inserter_negTitles'])
 			{
@@ -296,11 +302,7 @@ if (!class_exists('Prosperent_Suite'))
 					explode(',', $options['prosper_inserter_negTitles'])
 				);
 
-				$newTitle = preg_replace($exclude, '', get_the_title());
-			}
-			else
-			{
-				$newTitle = get_the_title();
+				$newTitle = preg_replace($exclude, '', $newTitle);
 			}
 			
 			if (!$newTitle)
@@ -345,7 +347,7 @@ if (!class_exists('Prosperent_Suite'))
 					$text = $content;
 				}
 			}		
-			
+
 			return trim($text);
 		}
 		
@@ -1050,7 +1052,6 @@ if (!class_exists('Prosperent_Suite'))
                 'b'  => isset($b) ? $b : '',
                 'm'  => isset($m) ? $m : '',
                 'l'  => isset($l) ? intval($l) : 1,
-                'cl' => isset($cl) ? intval($cl) : '',
                 'ct' => isset($ct) ? $ct : 'US',
 				'id' => isset($id) ? $id : ''
             ), $atts));

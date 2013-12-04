@@ -12,8 +12,8 @@ if (!$options['Enable_PPS'])
 
 $target = $options['Target'] ? '_blank' : '_self';
 $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-$prodSubmit = site_url('/') . $base;
-$startUrl = site_url();
+$prodSubmit = home_url('/') . $base;
+$startUrl = home_url();
 
 ?>
 <div id="productList">

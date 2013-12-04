@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.2
+Version: 2.2.1
 Author: Prosperent Brandon
 License: GPLv3
 

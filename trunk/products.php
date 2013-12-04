@@ -78,7 +78,7 @@ if (preg_match('/\?/', $_SERVER['REQUEST_URI']))
 		$newPageString = 'page/' . $pageNumber . '/';
 	}
 	
-	header('Location:' . site_url('/') . $base . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
+	header('Location:' . home_url('/') . $base . '/' . $newQueryString . $newMerchantString . $newBrandString . $newCelebString . $newPageString);
 	exit;
 }
 
@@ -97,7 +97,7 @@ function prosper_pagination($pages = '', $paged, $range = 8)
 
 	if (is_front_page())
 	{
-		$newPage = site_url('/') . 'products/page/'; 
+		$newPage = home_url('/') . 'products/page/'; 
 	}
 
 	if(1 != $pages)
@@ -165,7 +165,7 @@ $url = preg_replace('/\/$/', '', $url);
 
 if(is_front_page())
 {
-	$url = site_url('/') . 'products';
+	$url = home_url('/') . 'products';
 }
 
 $endpoints = array();

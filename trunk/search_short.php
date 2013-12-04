@@ -17,7 +17,7 @@ if (!empty($params))
 
 $query = $sendParams['query'];
 $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-$url = site_url('/') . $base;
+$url = home_url('/') . $base;
 
 if (is_page($base) && $_POST['q'])
 {

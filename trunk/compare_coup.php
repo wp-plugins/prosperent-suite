@@ -1,7 +1,7 @@
 <div id="couponList">
     <?php
     $target = $options['Target'] ? '_blank' : '_self';
-    $startUrl = site_url();
+    $startUrl = home_url();
 	
     // Loop to return coupons and corresponding information
     foreach ($results as $i => $record)

@@ -144,12 +144,16 @@ if (empty($results) || (empty($filterMerchants) && !$query))
     // set productId as key in array
     foreach ($api->getFacets('keyword') as $data)
     {
-        $keys[] = $data['value'];
+		if (!preg_match('/zappos|6pm/i', $data['value']))
+		{
+			$keys[] = '*' . $data['value'] . '*';
+		}
     }
 
     // fetch merchant data from api
     $settings = array(
         'api_key'         => $options['Api_Key'],
+		'filterMerchant'  => array('!Zappos.com', '!6pm'),
         'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
         'filterKeyword'   => $keys,
         'limit' 	      => 15

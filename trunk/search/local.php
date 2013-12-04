@@ -219,7 +219,7 @@ echo $typeSelector;
 /  was in the search field, displays 'No Results'
 */
 if (empty($results))
-{
+{ 
     header( $_SERVER['SERVER_PROTOCOL']." 404 Not Found", true, 404 );
     echo '<div class="noResults">No Results</div>';
 
@@ -263,7 +263,7 @@ if (empty($results))
     // set productId as key in array
     foreach ($api->getFacets('keyword') as $data)
     {
-        $keys[] = $data['value'];
+        $keys[] = '*' . $data['value'] . '*';
     }
 
     // fetch merchant data from api

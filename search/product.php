@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-$url = site_url('/') . $base;
+$url = home_url('/') . $base;
 
 switch ($options['Country'])
 {
@@ -107,12 +107,14 @@ switch ($options['Country'])
         break;
 }
 $result = $prosperentApi -> getAllData();
+
+$record[0]['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])) : $record[0]['affiliate_url'];
 ?>
 <div id="product" itemscope itemtype="http://data-vocabulary.org/Product">
     <div class="productBlock">
-        <div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><cite itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></cite></a></div>
+        <div class="productTitle"><a href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><cite itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></cite></a></div>
         <div class="productImage">
-            <a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" /></a>
+            <a itemprop="offerURL" href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" /></a>
         </div>
         <div class="productContent">
             <div class="productDescription" itemprop="description"><?php
@@ -224,11 +226,13 @@ $result = $prosperentApi -> getAllData();
 
                 foreach ($result as $product)
                 {
+					$product['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) : $product['affiliate_url'];
+					
                     echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
                     echo '<td itemprop="seller">' . $product['merchant'] . '</td>';
                     echo '<td itemprop="price">' . ($currency == 'GBP' ? '&pound;' : '$') . ($product['price_sale'] ? $product['price_sale'] : $product['price']) . '</td>';
                     echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
-                    echo '<td itemprop="offerURL" itemscope itemtype="http://data-vocabulary.org/Offer-aggregate"><form style="margin:0; margin-bottom:5px;" action="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) . '" target="' . $target. '" method="POST"><input type="submit" value="Visit Store"/></form></td>';
+                    echo '<td itemprop="offerURL" itemscope itemtype="http://data-vocabulary.org/Offer-aggregate"><form style="margin:0; margin-bottom:5px;" action="' . $product['affiliate_url'] . '" target="' . $target. '" method="POST" rel="nofollow"><input type="submit" value="Visit Store"/></form></td>';
                     echo '</tr>';
                 }
 
@@ -288,7 +292,7 @@ if ($similar)
 
     foreach ($similar as $prod)
     {
-        $price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
+        $price			   = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
         $prod['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $prod['image_url']);
         ?>
             <li>
@@ -372,7 +376,7 @@ if ($sameBrand)
     echo '<ul>';
     foreach ($sameBrand as $brandProd)
     {
-        $price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
+        $price 					= $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
         $brandProd['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $brandProd['image_url']);
         ?>
             <li>

@@ -9,8 +9,11 @@ echo '<h2 class="prosper_h2">' . __( 'Delete Options on Uninstall', 'prosperent-
 echo $prosper_admin->checkbox( 'Option_Delete', __( 'Delete Options on Plugin Uninstall', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "<strong>Checking this will delete options on Uninstall. On reinstallation, some options will be added automatically.</strong>", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Image URL Masking', 'prosperent-suite' ) . '</h2>';
-echo $prosper_admin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosperent-suite' ), '', '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Masks the image urls to, they will now match your website\'s URL. Test before you fully commit to this. It may cause images to load slowly.</span></a>' );
+echo '<h2 class="prosper_h2">' . __( 'URL Masking', 'prosperent-suite' ) . '</h2>';
+echo $prosper_admin->checkbox( 'URL_Masking', __( ' Affiliate URL Masking', 'prosperent-suite' ), '', '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Masks the  affiliate urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause redirection issue with some active plugins.</span></a>' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosper_admin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosperent-suite' ), '', '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_URL . '/img/help.png"><span>Masks the image urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause images to load slowly.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Title Structure', 'prosperent-suite' ) . '</h2>';

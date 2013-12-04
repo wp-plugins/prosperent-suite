@@ -158,7 +158,7 @@ $celebDecode    = rawurldecode($celeb);
 $merchantDecode = rawurldecode($filterMerchant);
 $brandDecode 	= rawurldecode($filterBrand);
 
-$productPage = site_url();
+$productPage = home_url();
 
 $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $url = preg_replace('/\/$/', '', $url);
@@ -211,7 +211,14 @@ $type = !isset($sendParams['type']) ? $startingType : $sendParams['type'];
 
 $sepEnds[$type] = strip_tags($sepEnds[$type]);
 
-$typeSelector = '<div class="typeselector" style="display:inline-block; margin-top:9px;">' . implode(' | ', $sepEnds) . '</div>';
+if (count($sepEnds) > 1)
+{
+	$typeSelector = '<div class="typeselector" style="display:inline-block; margin-top:9px;">' . implode(' | ', $sepEnds) . '</div>';
+}
+else
+{
+	$typeSelector = '';
+}
 
 $filterBrands = array();
 $filterMerchants = array();
@@ -263,12 +270,11 @@ if ($options['Negative_Merchant'])
 
 if (get_query_var('cid'))
 {            
-	$keyword = rawurldecode(get_query_var('keyword'));
-	$keyword = str_replace(',SL,', '/', $keyword);
+	$keyword 	 = rawurldecode(get_query_var('keyword'));
+	$keyword 	 = str_replace(',SL,', '/', $keyword);
+	$prosperPage = get_query_var('prosperPage');
 
-	$urlParts = preg_split('/\//', $_SERVER['REQUEST_URI']);
-
-	switch ($urlParts[1])
+	switch ($prosperPage)
 	{ 
 		case 'coupon':
 			include(PROSPER_PATH . 'search/coupon.php');

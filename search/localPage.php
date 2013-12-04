@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-$url = site_url('/') . $base . '/type/local';
+$url = home_url('/') . $base . '/type/local';
 
 /*
 /  Prosperent API Query
@@ -47,12 +47,14 @@ $interval = abs($expires - $today) / (60*60*24);
 $city = null == $record[0]['city'] ? 'Online' : $record[0]['city'];
 $zip = null == $record[0]['zipCode'] ? 'Online' : $record[0]['zipCode'];
 $state = null == $record[0]['state'] ? 'Online' : $record[0]['state'];
+
+$record[0]['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])) : $record[0]['affiliate_url'];
 ?>
 <div id="product">
 	<div class="productBlock">
-		<div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></span></a></div>
+		<div class="productTitle"><a href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></span></a></div>
 		<div class="productImage">
-			<a href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><span><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" /></span></a>
+			<a href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><span><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" /></span></a>
 		</div>
 		<div class="productContent">
 			<div class="productDescription" itemprop="description"><?php
@@ -122,7 +124,7 @@ $state = null == $record[0]['state'] ? 'Online' : $record[0]['state'];
 				echo '<td>' . $city . '</td>';
 				echo '<td>$' . ($record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price']) . '</td>';
 				echo '<meta itemprop="priceCurrency" content="USD"/>';
-				echo '<td><form style="margin:0; margin-bottom:5px;" action="' . $productPage . '/store/go/' . rawurlencode(str_replace(array('/', 'http://prosperent.com/store/product/'), array(',SL,', ''), $record[0]['affiliate_url'])) . '" target="' . $target. '" method="POST"><input type="submit" value="Visit Store"/></form></td>';
+				echo '<td><form style="margin:0; margin-bottom:5px;" action="' . $record[0]['affiliate_url'] . '" target="' . $target. '" method="POST" rel="nofollow"><input type="submit" value="Visit Store"/></form></td>';
 				echo '</tr>';
 				?>
 			</table>		

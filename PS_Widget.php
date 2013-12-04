@@ -46,7 +46,7 @@ class ProsperStore_Widget extends WP_Widget
             echo $before_title . $title . $after_title;
 
         $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-        $url = site_url('/') . $base;
+        $url = home_url('/') . $base;
 
         if (isset($_POST['q']))
         {

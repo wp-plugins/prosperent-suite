@@ -6,20 +6,20 @@
     // Loop to return coupons and corresponding information
     foreach ($results as $i => $record)
     {
-		$goToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] ? '"' . $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '"' : ($options['Enable_PPS'] && $options['Link_to_Merc'] ? '"' . $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '"' : '"' . $record['affiliate_url'] . '" rel="nofollow"'));
-		$formGoToUrl = $options['Enable_PPS'] ? $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
+		$goToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] && $options['URL_Masking'] ? '"' . $startUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['couponId'] . '" rel="nofollow"' : ($options['Enable_PPS'] && $options['Link_to_Merc'] && $options['URL_Masking'] ? '"' . $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow"' : '"' . $record['affiliate_url'] . '" rel="nofollow"'));
+		$formGoToUrl = $options['Enable_PPS'] && $options['URL_Masking'] ? $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
         $record['image_url'] = $options['Image_Masking'] ? $startUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
         ?>
         <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
             <div class="couponImage">
                 <?php
-                echo '<a href="' . $goToUrl . '><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
+                echo '<a href=' . $goToUrl . '><img src="' . $record['image_url'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>';
                 ?>
             </div>
             <div class="couponContent">
                 <div class="couponTitle">
                     <?php
-                    echo '<a href="' . $goToUrl . ' target="' . $target . '">' . $record['keyword'] . '</a>';
+                    echo '<a href=' . $goToUrl . ' target="' . $target . '">' . $record['keyword'] . '</a>';
                     ?>
                 </div>
                 <?php
@@ -52,7 +52,7 @@
                 ?>
             </div>
 			<div class="couponVisit">
-				<form style="margin:0; text-align:center;" method="POST" action="<?php echo $formGoToUrl . '" target="' . $target; ?>">
+				<form style="margin:0; text-align:center;" method="POST" action="<?php echo $formGoToUrl . '" target="' . $target; ?>" rel="nofollow">
 					<input type="submit" value="Visit Store"/>
 				</form>
 			</div>

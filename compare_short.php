@@ -20,8 +20,8 @@ $startUrl = site_url();
 	<?php
 	foreach ($results as $i => $record)
 	{
-		$goToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] ? '"' . $startUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '"' : ($options['Enable_PPS'] && $options['Link_to_Merc'] ? '"' . $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '"' : '"' . $record['affiliate_url'] . '" rel="nofollow"'));
-		$formGoToUrl = $options['Enable_PPS'] ? $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
+		$goToUrl = ($options['Enable_PPS'] && !$options['Link_to_Merc'] && $options['URL_Masking'] ? '"' . $startUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '" rel="nofollow"' : ($options['Enable_PPS'] && $options['Link_to_Merc'] && $options['URL_Masking'] ? '"' . $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow"' : '"' . $record['affiliate_url'] . '" rel="nofollow"'));
+		$formGoToUrl = $options['Enable_PPS'] && $options['URL_Masking'] ? $startUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 		$brandGoToUrl = $options['Enable_PPS'] ? '"' . $prodSubmit . '/brand/' . rawurlencode($record['brand']) . '"' : '"' . $record['affiliate_url'] . '" rel="nofollow"';
 		$merchantGoToUrl = $options['Enable_PPS'] ? '"' . $prodSubmit . '/merchant/' . rawurlencode($record['merchant']) . '"' : '"' . $record['affiliate_url'] . '" rel="nofollow"';
 		$record['image_url'] = $options['Image_Masking'] ? $startUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
@@ -74,7 +74,7 @@ $startUrl = site_url();
 					<?php
 				}
 				?>
-				<form style="margin:0;" action="<?php echo $formGoToUrl . ' target="' . $target; ?>" method="POST">
+				<form style="margin:0;" action="<?php echo $formGoToUrl . ' target="' . $target; ?>" method="POST" rel="nofollow">
 					<input type="submit" value="Visit Store"/>
 				</form>
 			</div>

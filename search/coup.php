@@ -18,7 +18,7 @@ $coupSubmit = $url;
 
 if(is_front_page())
 {
-	$coupSubmit = site_url('/') . 'products';
+	$coupSubmit = home_url('/') . 'products';
 }
 
 if (isset($_POST['q']))
@@ -121,8 +121,8 @@ if (empty($results) || (empty($filterMerchants) && !$query))
 
     // fetch trends from api
     $settings = array(
-        'enableFacets'  => 'keyword',
-        'filterCatalog' => 'coupons'
+        'enableFacets'  	 => 'keyword',
+        'filterSubinterface' => 2
     );
 	
 	if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
@@ -166,10 +166,10 @@ if (empty($results) || (empty($filterMerchants) && !$query))
 		));	
 	}
 	
-	$api = new Prosperent_Api($settings);
+	$coupApi = new Prosperent_Api($settings);
 	
-    $api->fetchCoupons();
-    $results = $api->getAllData() ;
+    $coupApi->fetchCoupons();
+    $results = $coupApi->getAllData();
 
     echo '<div class="totalFound">Browse these <strong>trending coupons</strong></div>';
     ?>
@@ -179,6 +179,7 @@ if (empty($results) || (empty($filterMerchants) && !$query))
         // Loop to return coupons and corresponding information
         foreach ($results as $i => $record)
         {
+			$record['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
             ?>
             <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
                 <div class="couponImage">
@@ -222,7 +223,7 @@ if (empty($results) || (empty($filterMerchants) && !$query))
                     ?>
                 </div>
 				<div class="couponVisit">
-					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" rel="nofollow">
 						<input type="submit" value="Visit Store"/>
 					</form>
 				</div>
@@ -332,6 +333,7 @@ else
         // Loop to return coupons and corresponding information
         foreach ($results as $i => $record)
         {
+			$record['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
             ?>
             <div class="<?php echo $i > 0 ? 'couponBlock' : 'couponBlock0'; ?>">
                 <div class="couponImage">
@@ -375,7 +377,7 @@ else
                     ?>
                 </div>
 				<div class="couponVisit">
-					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>">
+					<form style="margin:0; text-align:center;" method="POST" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" rel="nofollow">
 						<input type="submit" value="Visit Store"/>
 					</form>
 				</div>

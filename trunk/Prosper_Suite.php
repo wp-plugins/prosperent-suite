@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 2.1.9
+Version: 2.2
 Author: Prosperent Brandon
 License: GPLv3
 
@@ -424,8 +424,9 @@ if (!class_exists('Prosperent_Suite'))
 
         public function prosper_query_tag()
         {
-            $GLOBALS['wp']->add_query_var( 'keyword' );
-            $GLOBALS['wp']->add_query_var( 'cid' );
+            $GLOBALS['wp']->add_query_var( 'prosperPage' );
+			$GLOBALS['wp']->add_query_var( 'keyword' );
+			$GLOBALS['wp']->add_query_var( 'cid' );
             $GLOBALS['wp']->add_query_var( 'storeUrl' );
             $GLOBALS['wp']->add_query_var( 'queryParams' );
             $GLOBALS['wp']->add_query_var( 'prosperImg' );
@@ -438,14 +439,14 @@ if (!class_exists('Prosperent_Suite'))
             $page     = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL'] . '/') : 'products/';
             $pageName = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']) : 'pagename=products';
 
-            add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-            add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
-            add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-            add_rewrite_rule($page . '(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
+            add_rewrite_rule('([^/]+)/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid&cid=$matches[3]', 'top');
+            /*add_rewrite_rule('travel/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('coupon/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('product/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+            add_rewrite_rule('celebrity/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');*/
+            add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
+            add_rewrite_rule('img/([^/]+)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
+            add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
         }
 
         public function prosper_default()
@@ -616,6 +617,7 @@ if (!class_exists('Prosperent_Suite'))
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => $old_options['Additional_CSS'],
                         'Image_Masking'	  => 0,
+						'URL_Masking'	  => 0,
 						'Base_URL'		  => 'products'
                     );
                 }
@@ -628,6 +630,7 @@ if (!class_exists('Prosperent_Suite'))
                         'Twitter_Creator' => '',
                         'Additional_CSS'  => '',
                         'Image_Masking'	  => 0,
+						'URL_Masking'	  => 0,
 						'Base_URL'		  => 'products'
                     );
                 }
@@ -712,8 +715,8 @@ if (!class_exists('Prosperent_Suite'))
 			$base_url   		= $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '/query/' : $options['Base_URL'] . '/query/') : 'products/query/';
 			$target 			= $options['Target'] ? '_blank' : '_self';
 			$prosper_aff_url    = 'http://prosperent.com/store/product/' . $options['UID'] . '-427-0/?k=';
-			$store_go_url       = site_url() . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $prosper_aff_url)) . ',SL,';
-			$product_search_url = site_url('/') . $base_url;	
+			$store_go_url       = home_url() . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $prosper_aff_url)) . ',SL,';
+			$product_search_url = home_url('/') . $base_url;	
 						
 			$text = ' ' . $text . ' ';
 			if ($options['Match'])
@@ -895,16 +898,15 @@ if (!class_exists('Prosperent_Suite'))
 
 					$page     = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL'] . '/') : 'products/';
 					$pageName = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : 'pagename=' . $options['Base_URL']) : 'pagename=products';
-
 					
-					add_rewrite_rule('local/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-					add_rewrite_rule('travel/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-					add_rewrite_rule('coupon/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-					add_rewrite_rule('product/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-					add_rewrite_rule('celebrity/([^/]*)/cid/([^/]*)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-					add_rewrite_rule('store/go/([^/]*)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
-					add_rewrite_rule('img/([^/]*)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-					add_rewrite_rule($page . '(.*)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
+					add_rewrite_rule('local/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('travel/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('coupon/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('product/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('celebrity/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
+					add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
+					add_rewrite_rule('img/([^/]+)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
+					add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
 					
 					flush_rewrite_rules();
 				}
@@ -1052,10 +1054,16 @@ if (!class_exists('Prosperent_Suite'))
                 'b'  => isset($b) ? $b : '',
                 'm'  => isset($m) ? $m : '',
                 'l'  => isset($l) ? intval($l) : 1,
+				'cl'  => isset($cl) ? intval($cl) : '',
                 'ct' => isset($ct) ? $ct : 'US',
 				'id' => isset($id) ? $id : ''
             ), $atts));
 
+			if ($cl && ($cl > $l))
+			{
+				$l = $cl;
+			}			
+			
             $query = $q ? $q : $content;
 			
             // Remove links within links
@@ -1353,7 +1361,7 @@ if (!class_exists('Prosperent_Suite'))
             $options 			= $this->get_option();
             $target  		    = $options['Target'] ? '_blank' : '_self';
 			$base_url   		= $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '/query/' : $options['Base_URL'] . '/query/') : 'products/query/';
-			$product_search_url = site_url('/') . $base_url;	
+			$product_search_url = home_url('/') . $base_url;	
 			
             extract(shortcode_atts(array(
                 'q'   => isset($q) ? $q : '',

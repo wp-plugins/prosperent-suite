@@ -1,6 +1,6 @@
 <?php
 $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-$url = site_url('/') . $base . '/type/coup';
+$url = home_url('/') . $base . '/type/coup';
 
 /*
 /  Prosperent API Query
@@ -43,13 +43,15 @@ if (empty($record))
 $expires = strtotime($record[0]['expiration_date']);
 $today = strtotime(date("Y-m-d"));
 $interval = abs($expires - $today) / (60*60*24);
+
+$record[0]['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])) : $record[0]['affiliate_url'];
 ?>
 
 <div id="coupon" itemscope itemtype="http://data-vocabulary.org/Product">
 	<div class="productBlock">
-		<div class="productTitle"><a href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></span></a></div>
+		<div class="productTitle"><a href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $record[0]['keyword']); ?></span></a></div>
 		<div class="productImage">
-			<a itemprop="offerURL" href="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record[0]['affiliate_url'])); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>
+			<a itemprop="offerURL" href="<?php echo $record[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record[0]['image_url'])) : $record[0]['image_url']); ?>" title="<?php echo $record[0]['keyword']; ?>" alt="<?php echo $record[0]['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></a>
 		</div>
 		<div class="productContent">
 			<div class="productDescription" itemprop="description"><?php
@@ -123,6 +125,7 @@ $interval = abs($expires - $today) / (60*60*24);
 				<?php			
 				foreach ($record as $product)
 				{
+					$product['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) : $product['affiliate_url'];
 					$expires = strtotime($product['expirationDate']);
 					$today = strtotime(date("Y-m-d"));
 					$interval = abs($expires - $today) / (60*60*24);
@@ -138,7 +141,7 @@ $interval = abs($expires - $today) / (60*60*24);
 					{
 						echo '<td>---</td>';
 					}					
-					echo '<td><form style="margin:0; margin-bottom:5px;" action="' . $product['affiliate_url'] . '" target="' . $target. '" method="POST"><input type="submit" value="Visit Store"/></form></td>';
+					echo '<td><form style="margin:0; margin-bottom:5px;" action="' . $product['affiliate_url'] . '" target="' . $target. '" method="POST" rel="nofollow"><input type="submit" value="Visit Store"/></form></td>';
 					echo '</tr>';
 				}
 				?>

@@ -101,7 +101,7 @@ $localSubmit = preg_replace('/\/$/', '', $url);
 
 if(is_front_page())
 {
-	$localSubmit = site_url('/') . 'products';
+	$localSubmit = home_url('/') . 'products';
 }
 
 if (isset($_POST['state']))
@@ -314,8 +314,9 @@ if (empty($results))
                     continue;
                 }
 
-                $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
-                ?>
+                $record['image_url'] 	 = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+                $record['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
+				?>
                 <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                     <div class="productImage">
                         <a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
@@ -377,7 +378,7 @@ if (empty($results))
                             <?php
                         }
                         ?>
-                        <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                        <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" method="POST" rel="nofollow">
                             <input type="submit" value="Visit Store"/>
                         </form>
                     </div>
@@ -664,8 +665,9 @@ else
                 continue;
             }
 
-            $record['image_url'] = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
-            ?>
+            $record['image_url'] 	 = $options['Image_Masking'] ? $productPage  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), preg_replace('/\/250x250\//', '/125x125/', $record['image_url']))) : preg_replace('/\/250x250\//', '/125x125/', $record['image_url']);
+            $record['affiliate_url'] = $options['URL_Masking'] ? $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
+			?>
             <div class="<?php echo $i > 0 ? 'productBlock' : 'productBlock0'; ?>">
                 <div class="productImage">
                     <a href="<?php echo $productPage . '/local/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['localId']; ?>" ><span><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></span></a>
@@ -727,7 +729,7 @@ else
                         <?php
                     }
                     ?>
-                    <form style="margin:0;" action="<?php echo $productPage . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" target="' . $target; ?>" method="POST">
+                    <form style="margin:0;" action="<?php echo $record['affiliate_url'] . '" target="' . $target; ?>" method="POST" rel="nofollow">
                         <input type="submit" value="Visit Store"/>
                     </form>
                 </div>

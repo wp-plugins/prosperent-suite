@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.7.1
-Stable tag: 2.1.9
+Stable tag: 2.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -112,8 +112,15 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 == Changelog ==
 
+= 2.2 =
+* Added option to mask URLs
+* Fixed redirection issue some were having
+* Adjusted subdirectory bug fix from last release
+* Fixed Product Insert Coupon URL bug
+* Adjusted some CSS properties
+
 = 2.1.9 =
-* Added new feature to content inserter. By placing [prosperNewQuery="TEXT HERE"] you can change the phrase that the content inserter uses as the query for that page's product insert. 
+* Added new feature to content inserter. By placing [prosperNewTitle="TEXT HERE"] you can change the phrase that the content inserter would use normally.
 * Fixed subdirectory issue with the product store.
 * Removed Comparison Limit from Product Insert. Use normal limit now, and you can still make a comparison happen.
 

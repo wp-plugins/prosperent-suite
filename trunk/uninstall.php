@@ -1,7 +1,5 @@
 <?php
-require_once('Prosper_Suite.php');
-
-$options = Prosperent_Suite::get_option();
+$options = get_option('prosper_advanced');
 
 if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
     exit ();

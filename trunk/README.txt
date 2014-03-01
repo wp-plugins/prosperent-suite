@@ -1,9 +1,9 @@
 === Prosperent Suite ===
 Contributors: Prosperent Brandon
-Tags: Prosperent, products, search, money, SEO, affiliate, links, ad, ads, product search, store, affiliate links, shortcode, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
+Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.7.1
-Stable tag: 2.2.1
+Stable tag: 3.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -73,8 +73,7 @@ Log in to **Prosperent.com** every so often to check your stats.
 
 = Available ShortCodes =
 
-* `[prosper_store][/prosper_store]`- for the search results
-* `[prosper_search][/prosper_search]`- for a search box
+All short codes now have a button in the editors for easy input.
 
 = Additional Notes for Installation =
 
@@ -111,6 +110,23 @@ Log in to **Prosperent.com** every so often to check your stats.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.0 =
+* Huge update, so I went straight to 3.0 with this one
+* Added new options
+* Added the ability to use themes (There's a forum post at the Prosperent Community->Prosperent Plugins->Wordpress Plugin Suite, if you want to read more about themes and how to make your own.)
+* Fixed Various Bugs
+* Added Grid View
+* Added many new options
+* Completely Rewrote the plugin for added Optimization
+* Added one Button that hold all the short codes in Visual mode
+* Added Prosper_Store and Prosper_Search as short code buttons.
+* Updated Coupons and Local to make use of the new data
+* Sort has been fixed
+* Fixed the prosperent png since they updated wordpress' admin section
+* Added option to change the label for each store
+* Fixed trends
+* Fixed routes
 
 = 2.2.1 =
 * Fixed Trending Coupons

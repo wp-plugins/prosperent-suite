@@ -65,10 +65,19 @@ class ProsperSearchController
 				$data['url'] = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
 			}
 			
+			if (strlen($_POST['state']) > 2)
+			{
+				$state = $this->searchModel->states[strtolower($_POST['state'])];
+			}
+			else
+			{
+				$state = $_POST['state'];
+			}
+			
 			$postArray = array(
-				'query' 	 => $_POST['q'],
-				'sort' 		 => $_POST['sort'],
-				'state' 	 => $_POST['state']
+				'query' => $_POST['q'],
+				'sort' 	=> $_POST['sort'],
+				'state' => $state
 			);
 			
 			$this->searchModel->getPostVars($postArray, $data);
@@ -408,11 +417,11 @@ class ProsperSearchController
 		}
 		elseif ($params['zip'])
 		{
-			$title = ucwords(rawurldecode($backStates[$params['zip']])) . '</strong>';
+			$title = ucwords(rawurldecode($params['zip'])) . '</strong>';
 		}
 		elseif ($params['state'])
 		{
-			$title = ucwords(rawurldecode($params['state'])) . '</strong>';
+			$title = ucwords(rawurldecode($backStates[$params['state']])) . '</strong>';
 			$title .= '<a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/state/' . $params['state']), '', $url) . '> [x]</a>';
 		}	
 		else
@@ -625,7 +634,7 @@ class ProsperSearchController
 		$keyword 	 = rawurldecode(get_query_var('keyword'));
 		$keyword 	 = str_replace(',SL,', '/', $keyword);
 		$target 	 = isset($options['Target']) ? '_blank' : '_self';
-		
+				
 		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
 		if (preg_match($match, $_SERVER['HTTP_REFERER']))
@@ -636,7 +645,6 @@ class ProsperSearchController
 		{
 			$returnUrl = $matchingUrl . '/query/' . get_query_var('keyword');
 		}
-		
 		
 		if ('coupon' === $prosperPage)
 		{

@@ -53,17 +53,17 @@ class ProsperAdminController
 	/**
 	 * Register the settings page for the Network settings.
 	 */
-	function register_network_settings_page() 
+	function registerNetworkSettingsPage() 
 	{
-		add_menu_page( __('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'delete_users', 'prosper_general', array( $this, 'network_config_page' ), PROSPER_IMG . '/prosperentWhite.png' );
+		add_menu_page( __('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'delete_users', 'prosper_general', array( $this, 'networkConfigPage' ), PROSPER_IMG . '/prosperentWhite.png' );
 	}
 		
 	/**
 	 * Loads the form for the network configuration page.
 	 */
-	function network_config_page() 
+	function networkConfigPage() 
 	{
-		require_once(PROSPER_VIEW . '/prosperadmin/network.php' );
+		require_once(PROSPER_VIEW . '/prosperadmin/network-phtml.php' );
 	}
 		
 	/**

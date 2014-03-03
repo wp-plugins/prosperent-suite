@@ -21,7 +21,7 @@ abstract class Model_Base
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
 			
-			if (isset($this->_options['Enable_Caching']) &&  (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0755'))
+			if (isset($this->_options['Enable_Caching']) &&  (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777'))
 			{
 				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
 			}
@@ -269,7 +269,7 @@ abstract class Model_Base
 			'visitor_ip'   => $_SERVER['REMOTE_ADDR']	
 		));	
 
-		if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0755')
+		if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
 		{
 			$settings = array_merge($settings, $this->apiCaching($lifetime));	
 		}

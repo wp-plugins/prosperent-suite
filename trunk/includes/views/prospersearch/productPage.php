@@ -7,17 +7,17 @@
 <div class="backTo" style="display:inline-block;padding-top:4px; color:#00AFF0;font-weight:bold;"><a href="<?php echo $returnUrl; ?>">&#8592;&nbsp;Return to Search Results</a></div>
 
 <div id="product" itemscope itemtype="http://data-vocabulary.org/Product">
-    <div class="productTitle"><a href="<?php echo ($options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $mainRecord[0]['keyword']); ?></span></a></div>
+    <div class="productTitle"><a href="<?php echo ($options['URL_Masking'] ? $matchingUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $mainRecord[0]['keyword']); ?></span></a></div>
     <div class="productBlock">
 		<div class="productImage" style="text-align:center;">
-            <a itemprop="offerURL" href="<?php echo ($options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $mainRecord[0]['image_url'])) : $mainRecord[0]['image_url']); ?>" title="<?php echo $mainRecord[0]['keyword']; ?>"/></a>
+            <a itemprop="offerURL" href="<?php echo ($options['URL_Masking'] ? $matchingUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $mainRecord[0]['image_url'])) : $mainRecord[0]['image_url']); ?>" title="<?php echo $mainRecord[0]['keyword']; ?>"/></a>
         	<br>
 			<?php
 			if (count($results) <= 1 )
 			{
 				?>
 				<div class="prosperVisit">		
-					<a itemprop="offerURL" href="<?php echo $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><input type="submit" id="submit" value="Visit Store"/></a>				
+					<a itemprop="offerURL" href="<?php echo $options['URL_Masking'] ? $matchingUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow"><input type="submit" id="submit" value="Visit Store"/></a>				
 				</div>	
 			<?php
 			}
@@ -70,7 +70,7 @@
 					}
 					else
 					{
-						echo '<div class="prodBrand"><u>Location</u>: <strong>' . $mainRecord[0]['city'] . ($mainRecord[0]['state'] ? ', ' . $mainRecord[0]['state'] : '') . ($mainRecord[0]['zip'] ? ' ' . $mainRecord[0]['zip'] : '') . '</strong></div>';
+						echo '<div class="prodBrand"><u>Location</u>: <strong><a href="' . $matchingUrl . '/city/' . rawurlencode($mainRecord[0]['city']) . '"><span itemprop="category">' . $mainRecord[0]['city'] . '</span></a>' . ($mainRecord[0]['state'] ? ', ' . '<a href="' . $matchingUrl . '/state/' . rawurlencode($mainRecord[0]['state']) . '"><span itemprop="category">' . $mainRecord[0]['state'] . '</span></a>' : '') . ($mainRecord[0]['zip'] ? ' ' . '<a href="' . $matchingUrl . '/zip/' . rawurlencode($mainRecord[0]['zip']) . '"><span itemprop="category">' . $mainRecord[0]['zip'] . '</span></a>' : '') . '</strong></div>';
 					}
 				}
                 if($mainRecord[0]['category'])
@@ -86,11 +86,11 @@
                         $category = trim($category);
                         if (preg_match('/' . $query . '/i', $category))
                         {
-                            echo '<a href="' . $homeUrl . '/query/' . rawurlencode($category) . '"><span itemprop="category">' . $category . '</span></a>';
+                            echo '<a href="' . $matchingUrl . '/query/' . rawurlencode($category) . '"><span itemprop="category">' . $category . '</span></a>';
                         }
                         else
                         {
-                            echo '<a href="' . $homeUrl . '/query/' . rawurlencode($category) . '+' . rawurlencode($query) . '"><span itemprop="category">' . $category . '</span></a>';
+                            echo '<a href="' . $matchingUrl . '/query/' . rawurlencode($category) . '+' . rawurlencode($query) . '"><span itemprop="category">' . $category . '</span></a>';
                         }
 
                         if ($i < ($catCount - 1))
@@ -106,11 +106,11 @@
                 }
 				if($mainRecord[0]['merchant'])
 				{
-					echo '<div class="prodBrand"><u>Merchant</u>: <a href="' . $homeUrl . '/merchant/' . rawurlencode($mainRecord[0]['merchant']) . '"><span itemprop="seller">' . $mainRecord[0]['merchant'] . '</span></a></div>';
+					echo '<div class="prodBrand"><u>Merchant</u>: <a href="' . $matchingUrl . '/merchant/' . rawurlencode($mainRecord[0]['merchant']) . '"><span itemprop="seller">' . $mainRecord[0]['merchant'] . '</span></a></div>';
 				}
                 if($mainRecord[0]['brand'])
                 {
-                    echo '<div class="prodBrand"><u>Brand</u>: <a href="' . $homeUrl . '/brand/' . rawurlencode($mainRecord[0]['brand']) . '"><span itemprop="brand">' . $mainRecord[0]['brand'] . '</span></a></div>';
+                    echo '<div class="prodBrand"><u>Brand</u>: <a href="' . $matchingUrl . '/brand/' . rawurlencode($mainRecord[0]['brand']) . '"><span itemprop="brand">' . $mainRecord[0]['brand'] . '</span></a></div>';
                 }
 				if($mainRecord[0]['coupon_code'])
 				{
@@ -131,7 +131,7 @@
 							<?php                
 							foreach ($results as $product)
 							{
-								$product['affiliate_url'] = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) : $product['affiliate_url'];
+								$product['affiliate_url'] = $options['URL_Masking'] ? $matchingUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $product['affiliate_url'])) : $product['affiliate_url'];
 								$priceSale = $product['priceSale'] ? $product['priceSale'] : $product['price_sale'];
 								
 								echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
@@ -181,11 +181,11 @@ if (count($similar) > 1)
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></div></a>
+                    <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></div></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+                        <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
                             <?php
                             if (strlen($keyword) > 42)
                             {
@@ -226,11 +226,11 @@ if (count($sameBrand) > 1)
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
+                    <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+                        <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
                             <?php
 							
                             if (strlen($keyword) > 42)

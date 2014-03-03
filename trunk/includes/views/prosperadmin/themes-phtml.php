@@ -5,7 +5,7 @@ $prosperAdmin = new Model_Admin();
 $prosperAdmin->adminHeader( __( 'Themes and CSS', 'prosperent-suite' ), true, 'prosperent_themescss_options', 'prosper_themes' );
 
 echo '<h2 class="prosper_h2">' . __( 'Change the Theme for the Search', 'prosperent-suite' ) . '</h2>';
-echo __( '<ol><li>Create a <strong>prosperent-theme</strong> directory inside your <strong>wp-content</strong> directory.</li><li>Import new theme directories.<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>New theme directories should contain one or all of the following: <br>&bull;&nbsp;<strong>product.php</strong><br>&bull;&nbsp;<strong>productPage.php</strong><br>&bull;&nbsp;a <strong>css file</strong> <br>(The CSS file can be named anything, the plugin is looking for the extension .css).</span></a></li><li>Select the desired theme below.</li></ol>', 'prosperent-suite' );
+echo __( '<ol><li>Create a <strong>prosperent-themes</strong> directory inside your <strong>wp-content</strong> directory.</li><li>Import new theme directories.<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>New theme directories should contain one or all of the following: <br>&bull;&nbsp;<strong>product.php</strong><br>&bull;&nbsp;<strong>productPage.php</strong><br>&bull;&nbsp;a <strong>css file</strong> <br>(The CSS file can be named anything, the plugin is looking for the extension .css).</span></a></li><li>Select the desired theme below.</li></ol>', 'prosperent-suite' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 if (file_exists(PROSPER_THEME))

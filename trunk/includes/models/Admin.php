@@ -480,7 +480,7 @@ class Model_Admin extends Model_Base
 		?>
 		<img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/><?php echo '<h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1>';?>
 
-		<h2 id="prosper-title"><?php echo $title; ?></h2>
+		<h1 id="prosper-title"><?php echo $title; ?></h1>
 		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:800px; padding: 0 20px 0 0;">
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">

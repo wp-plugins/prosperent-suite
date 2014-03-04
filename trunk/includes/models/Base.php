@@ -204,6 +204,14 @@ abstract class Model_Base
 		), $atts, $shortcode);
 	}
 	
+	/**
+	 * Flush the rewrite rules.
+	 */
+	public function prosperFlushRules()
+	{
+		flush_rewrite_rules();
+	}	
+	
 	public function prosperCustomAdd()
 	{
 		// Add only in Rich Editor mode

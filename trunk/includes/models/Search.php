@@ -491,39 +491,40 @@ class Model_Search extends Model_Base
 	public function storeChecker()
 	{
 		$options = get_option('prosper_advanced');
-		
+
 		if (!$options['Manual_Base'])
 		{
 			if (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name)
 			{
 				if (!is_front_page())
 				{
-					$options['Base_URL'] = get_post()->post_name;					
+					$opts = array_merge($options, array(
+						'Base_URL' => get_post()->post_name	
+					));				
 				}
 				elseif (is_front_page() && get_post()->post_name != 'products')
 				{
-					$options['Base_URL'] = 'null';
+					$opts = array_merge($options, array(
+						'Base_URL' => 'null'
+					));
 				}
-				
-				update_option('prosper_advanced', $options);
 
-				$page     = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL'] . '/') : 'products/';
-				$pageName = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : 'pagename=' . $this->_options['Base_URL']) : 'pagename=products';
+				update_option('prosper_advanced', $opts);
+
+				$newOptions = get_option('prosper_advanced');
+				$page     = $newOptions['Base_URL'] ? ($newOptions['Base_URL'] == 'null' ? '' : $newOptions['Base_URL'] . '/') : 'products/';
+				$pageName = $newOptions['Base_URL'] ? ($newOptions['Base_URL'] == 'null' ? '' : 'pagename=' . $newOptions['Base_URL']) : 'pagename=products';
 				
-				add_rewrite_rule('([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid&cid=$matches[3]', 'top');
-				/*add_rewrite_rule('travel/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-				add_rewrite_rule('coupon/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-				add_rewrite_rule('product/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-				add_rewrite_rule('celebrity/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');*/
+				add_rewrite_rule('^([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 				add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
 				add_rewrite_rule('img/([^/]+)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
 				add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
 				
-				flush_rewrite_rules();
+				$this->prosperFlushRules();
 			}
 		}
 	}
-
+	
 	public function prosperTitle($title, $sep, $seplocation)
 	{ 
 		if ( is_feed() )

@@ -297,9 +297,9 @@ elseif ($params['view'] === 'grid')
                     <div class="prodTitle">
                         <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>" >
                             <?php
-                            if (strlen($keyword) > 42)
+                            if (strlen($keyword) > 40)
                             {
-                                echo substr($keyword, 0, 42) . '...';
+                                echo substr($keyword, 0, 40) . '...';
                             }
                             else
                             {

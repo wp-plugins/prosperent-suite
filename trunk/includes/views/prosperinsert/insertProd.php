@@ -5,6 +5,7 @@ if ($pieces['v'] === 'grid')
     echo '<ul>';
     foreach ($results as $record)
     {
+		$record['affiliate_url'] = $this->_options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 		$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
         $price 	   = $priceSale ? $priceSale : $record['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);

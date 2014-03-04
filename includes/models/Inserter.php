@@ -215,7 +215,6 @@ class Model_Inserter extends Model_Base
 				}
 			}	
 		}
-
 		
 		// CHECK INTO THIS AFTER STORE IS COMPLETE
 		if (!$this->_options['Enable_PPS'])

@@ -119,7 +119,7 @@ elseif (!$params['celebrity']&& $params['type'] == 'cele')
 	echo '<div class="noResults-secondary"><strong>Please select a Celebrity above.</strong></div>';
 }
 ?>
-<div class="totalFound" style="margin-top:none;"><?php echo (($totalFound > 0 && isset($title)) ? number_format($totalFound) . ' results for <strong>' . $title : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>')); ?></b></div>
+<div class="totalFound" style="margin-top:none;"><?php echo (($totalFound > 0 && isset($title)) ? number_format($totalFound) . ' results for <strong>' . preg_replace('/\(.+\)/i', '', $title) : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>')); ?></b></div>
 
 <div class="prosper_priceSorter">
 	<form class="sorterofprice" name="priceSorter" method="POST" action="" >
@@ -159,7 +159,7 @@ if (!$params['view'] || $params['view'] === 'list')
 			?>
 			<div class="productBlock">
 				<div class="productImage">
-					<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 				</div>
 				<div class="productContent">
 					<?php
@@ -264,7 +264,8 @@ if (!$params['view'] || $params['view'] === 'list')
 					}
 					?>
 					<div class="prosperVisit">
-						<form action="<?php echo $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
+					
+						<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
 							<input type="submit" id="submit" value="Visit Store"/>
 						</form>
 					</div>	
@@ -321,3 +322,4 @@ elseif ($params['view'] === 'grid')
 }
 
 $this->searchModel->prosperPagination($results, $params['page']);
+echo '</br>';

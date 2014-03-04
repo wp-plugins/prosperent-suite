@@ -16,7 +16,7 @@ abstract class Model_Base
 	{
 		$this->_options = $this->getOptions();
 		$this->_version = $this->getVersion();
-
+	
 		if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
@@ -264,8 +264,17 @@ abstract class Model_Base
 	
 	public function apiCall ($settings, $fetch, $lifetime = '84600')
 	{	
+		if (empty($this->_options))
+		{
+			$options = $this->getOptions();
+		}
+		else
+		{
+			$options = $this->_options;
+		}	
+	
 		$settings = array_merge($settings, array(
-			'api_key' 	   => $this->_options['Api_Key'],
+			'api_key' 	   => $options['Api_Key'],
 			'visitor_ip'   => $_SERVER['REMOTE_ADDR']	
 		));	
 
@@ -287,6 +296,15 @@ abstract class Model_Base
 	
 	public function trendsApiCall ($settings, $fetch, $lifetime = '3600')
 	{
+		if (empty($this->_options))
+		{
+			$options = $this->getOptions();
+		}
+		else
+		{
+			$options = $this->_options;
+		}	
+
 		if ($fetch === 'fetchCoupons')
 		{
 			$filter  = 'filterCouponId';
@@ -353,13 +371,13 @@ abstract class Model_Base
 		}
 
 		// fetch merchant data from api
-		$settings = array_merge($settings, array(
+		$settings = array_merge(array(
 			$filter		   => $keys,
 			'limit' 	   => 15,
 			'enableFacets' => FALSE
-		));
+		), $settings);
 
-		$results = $this->apiCall($settings, $fetch);
+		$results = $this->apiCall($settings, $fetch, $lifetime);
 
 		return $results;
 	}

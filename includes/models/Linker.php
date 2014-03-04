@@ -25,11 +25,11 @@ class Model_Linker extends Model_Base
 
 		// Note that the priority must be set high enough to avoid links inserted by the plugin from
 		// getting omitted as a result of any link stripping that may be performed.
-		/*if ($this->_options['Auto_Link_Comments'])
+		if ($this->_options['Auto_Link_Comments'])
 		{
 			add_filter('get_comment_text', array($this, 'autoLinker'), 11);
 			add_filter('get_comment_excerpt', array($this, 'autoLinker'), 11);
-		}*/
+		}
 	}	
 	
 	public function qTagsLinker()

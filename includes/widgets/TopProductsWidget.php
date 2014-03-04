@@ -41,53 +41,35 @@ class TopProductsWidget extends WP_Widget
 
         echo $before_widget;
         if ( $title )
-            echo $before_title . $title . $after_title;
-            // calculate date range
-            $prevNumDays = 30;
-            $startRange  = date('Ymd', time() - 86400 * $prevNumDays);
-            $endRange    = date('Ymd');
-			$country 	 = $options['Country'];
+            echo $before_title . $title . $after_title;			
 			
-            // fetch trends from api
-            require_once(PROSPER_PATH . 'ProsperentApi.php');
-            $api = new Prosperent_Api(array(
-                'enableFacets'  => 'catalogId',
-                'filterCatalog' => $country
-            ));
-
-            $api->setDateRange('commission', $startRange, $endRange)
-                ->fetchTrends();
-
-            // set catalogId as key in array
-            foreach ($api->getFacets('catalogId') as $data)
-            {
-                $keys[] = $data['value'];
-            }
-
-            // fetch merchant data from api
-            $api = new Prosperent_Api(array(
-                'api_key'         => $options['Api_Key'],
-                'visitor_ip'      => $_SERVER['REMOTE_ADDR'],
-                'filterCatalogId' => $keys,
-                'limit' 	      => $instance['numProd']
-            ));
-
-			if ($country === 'US')
+			require_once(PROSPER_MODELS . '/Search.php');
+			$modelSearch = new Model_Search();
+						
+			if ($options['Country'] === 'US')
 			{
-				$api -> fetchProducts();
+				$fetch = 'fetchProducts';
 			}
-			elseif($country === 'UK')
+			elseif($options['Country'] === 'UK')
 			{
-				$api -> fetchUkProducts();
+				$fetch = 'fetchUkProducts';
 			}
 			else
 			{
-				$api -> fetchCaProducts();
+				$fetch = 'fetchCaProducts';
 			}
+
+			$settings = array(
+				'limit' 		 => $instance['numProd']  ? $instance['numProd'] : 5,
+				'enableFullData' => 0
+			);
+
+			$allData = $modelSearch->trendsApiCall($settings, $fetch);			
+            
             ?>
             <table>
             <?php
-            foreach ($api->getAllData() as $record)
+            foreach ($allData['results'] as $record)
             {
                 echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . home_url() . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . $record['keyword'] . '</a></td></tr>';
             }

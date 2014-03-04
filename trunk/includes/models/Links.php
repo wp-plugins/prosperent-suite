@@ -11,7 +11,4 @@ class Model_Links extends Model_Base
 	{
 
 	}
-	
-
-
 }

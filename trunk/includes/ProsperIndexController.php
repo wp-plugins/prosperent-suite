@@ -22,6 +22,45 @@ class ProsperIndexController
 		add_action('init', array($prosperActivate, 'doOutputBuffer'));	
 		add_action('init', array($prosperActivate, 'prosperQueryTag'), 1);
 		add_action('init', array($prosperActivate, 'init'));
+		
+		add_action('template_redirect', array($this, 'checkToFix'), 1);
+
+		$rules = get_option('rewrite_rules');
+		if (!$rules['store/go/([^/]+)/?'])
+		{
+			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			if (!is_plugin_active('simple-urls/plugin.php'))
+			{
+				add_action( 'init', array($prosperActivate, 'prosperReroutes' ));
+			}
+		}
+	}
+	
+	public function checkToFix()
+	{		
+		if(get_query_var('queryParams') || get_query_var('cid') || get_query_var('keyword'))
+		{
+			if (has_action('wpseo_head'))
+			{
+				add_filter('wpseo_canonical', array($this, 'fixWpSeoCanonical'));
+				return;
+			}
+		
+			remove_action('wp_head', 'rel_canonical');
+			add_action('wp_head', array($this, 'prosperFixCanonical'));
+		}
+	}
+
+	public function fixWpSeoCanonical()
+	{
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
+		return $url;
+	}
+	
+	public function prosperFixCanonical()
+	{
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];			
+		return '<link rel="canonical" href="' . esc_url($url) . '" />';
 	}
 }
  

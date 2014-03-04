@@ -12,7 +12,7 @@ if ($pieces['v'] === 'grid')
 		
 		if ($pieces['gtm'] && $this->_options['URL_Masking'])
 		{
-			$goToUrl = '"' . $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow" target="' . $target . '"';
+			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 		}
 		elseif ($this->_options['Enable_PPS'] && !$pieces['gtm']) 
 		{
@@ -26,7 +26,7 @@ if ($pieces['v'] === 'grid')
             <li <?php echo ($params['type'] === 'coup' ? 'class="coupBlock"' : ''); ?>>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href=<?php echo $goToUrl; ?>><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' ? 'class="gridImg"' : ''); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+                    <a href=<?php echo $goToUrl; ?>><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' ? 'class="gridImg"' : ''); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
@@ -63,12 +63,13 @@ else
 		// Loop to return Products and corresponding information
 		foreach ($results as $record)
 		{						
-			$record['affiliate_url'] = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
+			$record['affiliate_url'] = $this->_options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 			$cid = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
+			$baseUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
 
 			if ($pieces['gtm'] && $this->_options['URL_Masking'])
 			{
-				$goToUrl = '"' . $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow" target="' . $target . '"';
+				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 			}
 			elseif ($this->_options['Enable_PPS'] && !$pieces['gtm']) 
 			{
@@ -81,7 +82,7 @@ else
 			?>
 			<div class="productBlock" style="border:none;">
 				<div class="productImage">
-					<a href=<?php echo $goToUrl; ?>><span <?php echo ($imageLoader ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					<a href=<?php echo $goToUrl; ?>><span <?php echo ($imageLoader ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 				</div>
 				<div class="productContent">
 					<?php
@@ -140,11 +141,11 @@ else
 						<?php
 						if($record['brand'])
 						{
-							echo '<span class="brandIn"><u>Brand</u>: ' . (!$params['brand'] ? '<a href="' . ($this->_options['Enable_PPS'] ? str_replace('/page/' . $params['page'], '', $url) . '/brand/' . rawurlencode($record['brand']) : $goToUrl) . '"><cite>' . $record['brand'] . '</cite></a>' : $record['brand']) . '</span>';
+							echo '<span class="brandIn"><u>Brand</u>: <a href="' . ($this->_options['Enable_PPS'] ? $baseUrl  . '/brand/' . rawurlencode($record['brand']) : $goToUrl) . '"><cite>' . $record['brand'] . '</cite></a></span>';
 						}
 						if($record['merchant'])
 						{
-							echo '<span class="merchantIn"><u>Merchant</u>: ' . (!$params['merchant'] ? '<a href="' . ($this->_options['Enable_PPS'] ? str_replace('/page/' . $params['page'], '', $url) . '/merchant/' . rawurlencode($record['merchant']) : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a>' : $record['merchant']) . '</span>';
+							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['Enable_PPS'] ? $baseUrl . '/merchant/' . rawurlencode($record['merchant']) : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
 						}				
 						?>
 					</div>
@@ -173,7 +174,7 @@ else
 					}
 					?>
 					<div class="prosperVisit">
-						<form action="<?php echo $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
+						<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
 							<input type="submit" value="Visit Store"/>
 						</form>
 					</div>	

@@ -29,7 +29,7 @@ if (file_exists(PROSPER_THEME))
 else
 {
 		echo '<div class="update-nag" style="padding:6px 0;">';
-		echo _e( '<span style="font-size:14px; padding-left:10px;">There is an issue with your <strong>prosperent-theme</strong> directory. </span><br>', 'my-text-domain' );
+		echo _e( '<span style="font-size:14px; padding-left:10px;">There is an issue with your <strong>prosperent-themes</strong> directory. </span><br>', 'my-text-domain' );
 		echo _e('<span style="font-size:14px; padding-left:10px;">Check that it is inside your <strong>wp-content</strong> directory and spelt correctly.</span></br>', 'my-text-domain' ); 		
 		echo '</div>';		
 }

@@ -43,7 +43,7 @@ class TopProductsWidget extends WP_Widget
         if ( $title )
             echo $before_title . $title . $after_title;			
 			
-			require_once(PROSPER_MODELS . '/Search.php');
+			require_once(PROSPER_MODEL . '/Search.php');
 			$modelSearch = new Model_Search();
 						
 			if ($options['Country'] === 'US')
@@ -71,7 +71,7 @@ class TopProductsWidget extends WP_Widget
             <?php
             foreach ($allData['results'] as $record)
             {
-                echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . home_url() . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . $record['keyword'] . '</a></td></tr>';
+                echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . home_url() . '/product/' . urlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
             }
             ?>
             </table>

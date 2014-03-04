@@ -161,14 +161,6 @@ class Model_Activate extends Model_Base
 		$this->prosperFlushRules();
 	}
 	
-	/**
-	 * Flush the rewrite rules.
-	 */
-	public function prosperFlushRules()
-	{
-		flush_rewrite_rules();
-	}	
-	
 	public function prosperStoreInstall()
 	{
 		foreach ($this->_pages as $i => $pages)

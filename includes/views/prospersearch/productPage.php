@@ -181,11 +181,11 @@ if (count($similar) > 1)
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></div></a>
+                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></div></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
                             <?php
                             if (strlen($keyword) > 42)
                             {
@@ -226,11 +226,11 @@ if (count($sameBrand) > 1)
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
+                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($prosperPage != 'coupon' && $prosperPage != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $matchingUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
                             <?php
 							
                             if (strlen($keyword) > 42)

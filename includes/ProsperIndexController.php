@@ -22,9 +22,8 @@ class ProsperIndexController
 		add_action('init', array($prosperActivate, 'doOutputBuffer'));	
 		add_action('init', array($prosperActivate, 'prosperQueryTag'), 1);
 		add_action('init', array($prosperActivate, 'init'));
-		
 		add_action('template_redirect', array($this, 'checkToFix'), 1);
-
+		
 		$rules = get_option('rewrite_rules');
 		if (!$rules['store/go/([^/]+)/?'])
 		{

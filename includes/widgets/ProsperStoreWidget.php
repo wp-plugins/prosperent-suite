@@ -12,7 +12,7 @@ class ProsperStoreWidget extends WP_Widget
 
     public function widget( $args, $instance )
     {
-        $options = get_option('prosper_productSearch');
+        $options = get_option('prosper_advanced');
 
         extract($args);
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
@@ -20,16 +20,6 @@ class ProsperStoreWidget extends WP_Widget
         echo $before_widget;
         if ( $title )
             echo $before_title . $title . $after_title;
-
-        $base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
-        $url = home_url('/') . $base;
-
-        if (isset($_POST['q']))
-        {
-			$newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $url);
-            header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
-            exit;
-        }
 		
 		$width = preg_replace('/px|em|%/i', '', $instance['width']);
 		$width .= $instance['widthStyle'];

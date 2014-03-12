@@ -81,7 +81,7 @@ else
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 			}
 			?>
-			<div class="productBlock" style="border:none;">
+			<div class="productBlock">
 				<div class="productImage">
 					<a href=<?php echo $goToUrl; ?>><span <?php echo ($imageLoader ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 				</div>

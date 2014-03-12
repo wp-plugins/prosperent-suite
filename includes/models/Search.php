@@ -382,7 +382,7 @@ class Model_Search extends Model_Base
 			$query = $params['query'];
 		}		
 
-		$base = $options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products';
+		$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
 		$url = home_url('/') . $base;
 
 		if (is_page($base) && $_POST['q'])
@@ -462,7 +462,7 @@ class Model_Search extends Model_Base
 		$allData = $this->apiCall($settings, $fetch);
 		$record = $allData['results'];
 
-		$page = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL']) : 'products';
+		$page = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		if (is_page($page) && get_query_var('cid'))
 		{
 			$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
@@ -502,18 +502,12 @@ class Model_Search extends Model_Base
 						'Base_URL' => get_post()->post_name	
 					));				
 				}
-				elseif (is_front_page() && get_post()->post_name != 'products')
-				{
-					$opts = array_merge($options, array(
-						'Base_URL' => 'null'
-					));
-				}
 
 				update_option('prosper_advanced', $opts);
 
 				$newOptions = get_option('prosper_advanced');
-				$page     = $newOptions['Base_URL'] ? ($newOptions['Base_URL'] == 'null' ? '' : $newOptions['Base_URL'] . '/') : 'products/';
-				$pageName = $newOptions['Base_URL'] ? ($newOptions['Base_URL'] == 'null' ? '' : 'pagename=' . $newOptions['Base_URL']) : 'pagename=products';
+				$page     = $newOptions['Base_URL'] ? $newOptions['Base_URL'] . '/' : 'products/';
+				$pageName = $newOptions['Base_URL'] ? 'pagename=' . $newOptions['Base_URL'] : 'pagename=products';
 				
 				add_rewrite_rule('^([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 				add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
@@ -538,7 +532,7 @@ class Model_Search extends Model_Base
 		}
 
 		$sep      	 = ' ' . (!$this->_options['Title_Sep'] ? !$sep ? '|' : trim($sep) : trim($this->_options['Title_Sep'])) . ' ';
-		$page     	 = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL']) : 'products';
+		$page     	 = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		$page_num 	 = $params['page'] ? ' Page ' . $params['page'] : '';
 		$pagename 	 = get_the_title();
 		$blogname 	 = get_bloginfo();
@@ -634,7 +628,8 @@ class Model_Search extends Model_Base
 		
 		if(is_front_page())
 		{
-			$url = home_url('/') . 'products';
+			$base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
+			$url = home_url('/') . $base;
 		}
 
 		$sepEnds 	  = $this->getEndpoints($params, $url);

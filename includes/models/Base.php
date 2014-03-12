@@ -46,7 +46,7 @@ abstract class Model_Base
 			if (isset($this->_options['Enable_PPS']))
 			{					
 				require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
-				if ($this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL']) : 'products')
+				if ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products')
 				{
 					add_action('wp_enqueue_scripts', array($this, 'productStoreJs'));	
 				}

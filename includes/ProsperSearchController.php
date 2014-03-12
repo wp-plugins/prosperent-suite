@@ -62,7 +62,7 @@ class ProsperSearchController
 		{
 			if (get_query_var('cid'))
 			{
-				$data['url'] = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
+				$data['url'] = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
 			}
 			
 			if (strlen($_POST['state']) > 2)
@@ -635,7 +635,7 @@ class ProsperSearchController
 		$keyword 	 = str_replace(',SL,', '/', $keyword);
 		$target 	 = isset($options['Target']) ? '_blank' : '_self';
 				
-		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
+		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
 		if (preg_match($match, $_SERVER['HTTP_REFERER']))
 		{

@@ -151,7 +151,7 @@ class Model_Activate extends Model_Base
 			$opt = array(
 				'Set_Theme' => 'Default'
 			);			
-			update_option( 'prosper_advanced', $opt );
+			update_option( 'prosper_themes', $opt );
 		}
 	}
 	
@@ -222,8 +222,8 @@ class Model_Activate extends Model_Base
 
 	public function prosperRewrite()
 	{
-		$page     = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL'] . '/') : 'products/';
-		$pageName = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : 'pagename=' . $this->_options['Base_URL']) : 'pagename=products';
+		$page     = $this->_options['Base_URL'] ? $this->_options['Base_URL'] . '/' : 'products/';
+		$pageName = $this->_options['Base_URL'] ? 'pagename=' . $this->_options['Base_URL'] : 'pagename=products';
 		
 		add_rewrite_rule('^([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 		add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');

@@ -103,7 +103,7 @@ class Model_Inserter extends Model_Base
 	public function inserterShortcode($atts, $content = null)
 	{
 		$target  = $this->_options['Target'] ? '_blank' : '_self';
-		$base 	 = $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '' : $this->_options['Base_URL']) : 'products';
+		$base 	 = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		$homeUrl = home_url();
 		$type 	 = 'product';
 

@@ -45,7 +45,7 @@ class Model_Linker extends Model_Base
 	public function linkerShortcode($atts, $content = null)
 	{
 		$target  		    = $this->_options['Target'] ? '_blank' : '_self';
-		$base_url   		= $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '/query/' : $this->_options['Base_URL'] . '/query/') : 'products/query/';
+		$base_url   		= $this->_options['Base_URL'] ? $this->_options['Base_URL'] . '/query/' : 'products/query/';
 		$product_search_url = home_url('/') . $base_url;	
 		
 		extract($this->shortCodeExtract($atts, $this->_shortcode));
@@ -232,7 +232,7 @@ class Model_Linker extends Model_Base
 	public function autoLinker($text)
 	{		
 		$random 			= FALSE;
-		$base_url   		= $this->_options['Base_URL'] ? ($this->_options['Base_URL'] == 'null' ? '/query/' : $this->_options['Base_URL'] . '/query/') : 'products/query/';
+		$base_url   		= $this->_options['Base_URL'] ? $this->_options['Base_URL'] . '/query/' : 'products/query/';
 		$target 			= $this->_options['Target'] ? '_blank' : '_self';
 		$prosper_aff_url    = 'http://prosperent.com/store/product/' . $this->_options['UID'] . '-427-0/?k=';
 		$store_go_url       = home_url() . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $prosper_aff_url)) . ',SL,';

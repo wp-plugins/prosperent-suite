@@ -82,7 +82,7 @@ class Model_Activate extends Model_Base
 				'coupLabel'			 => 'Coupons',
 				'celeLabel'			 => 'Celebrity Products',
 				'localLabel'	     => 'Local Deals',
-				'Product_View'		 => 'grid'
+				'Product_View'		 => 'list'
 			);
 			update_option( 'prosper_productSearch', $opt );
 		}

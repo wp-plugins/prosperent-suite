@@ -11,7 +11,7 @@ echo $prosperAdmin->checkbox( 'Enable_AC', __( '<strong>Yes!</strong>', 'prosper
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Insert Products into All Posts/Pages', 'prosperent-suite' ) . '</h2>';
-echo '<p class="prosper_settingDesc" style="border:none;">' . __( 'This uses the Page/Post titles to create a Product Insert either above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br>For example, if you use review in the titles you can exclude it from the Product Insert query by inserting that below.', 'prosperent-suite' ) . '</p>';								
+echo '<p class="prosper_settingDesc" style="border:none;">' . __( 'This uses the Page/Post titles to create a Product Insert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br>For example, if you use review in the titles you can exclude it from the Product Insert query by inserting that below.', 'prosperent-suite' ) . '</p>';								
 
 echo $prosperAdmin->checkbox( 'prosper_inserter_posts', __( 'Add Product Insert to <strong>All</strong> Posts?', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';

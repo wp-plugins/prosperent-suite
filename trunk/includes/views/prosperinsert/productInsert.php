@@ -1,11 +1,11 @@
 <?php
 $url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-$result = preg_replace('/wp-content.*/i', '', $url)
+$result = preg_replace('/wp-content.*/i', '', $url);
 ?>
 <html>
     <head>
         <title>Product/Coupon Insert</title>
-        <script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
+        <script data-cfasync="false"type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
         <script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
         <script data-cfasync="false" type="text/javascript">
             var AutoCompare = {
@@ -16,14 +16,14 @@ $result = preg_replace('/wp-content.*/i', '', $url)
                 },
 
                 insert : function insertAutoCompareSection(ed) {
-                    var query = jQuery('#query').val();
-                    var brand = jQuery('#brand').val();
+                    var query = jQuery('#query').val();                    
                     var merchant = jQuery('#merchant').val();
                     var limit = jQuery('#limit').val();
                     var country = jQuery('#country').val();
 					var view = jQuery('#view').val();
                     var goToMerc = jQuery('#goToMerc').is(':checked');
-					var coup = jQuery('#coup').is(':checked');					
+					var coup = jQuery('#coup').is(':checked');			
+					var brand = jQuery('#brand').val();					
 					var prodId = jQuery('#prodid').val();
                     var output = '[compare';
 
@@ -40,7 +40,7 @@ $result = preg_replace('/wp-content.*/i', '', $url)
                     {
                         output += ' c="'+coup+'"';
                     }
-                    if (brand)
+                    if (brand && !coup)
                     {
                         output += ' b="'+brand+'"';
                     }
@@ -80,6 +80,9 @@ $result = preg_replace('/wp-content.*/i', '', $url)
             var t;
             function showValues()
             {
+				var coup = jQuery('#coup').is(':checked');		
+				jQuery('#brand').prop('disabled', coup);
+				
                 clearTimeout(t);
 
                 var str = '';
@@ -188,20 +191,20 @@ $result = preg_replace('/wp-content.*/i', '', $url)
         <div id="autoCompare">
             <div align="center"> 
                 <form action="/" method="get" accept-charset="utf-8">
-                    <p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
-                    <p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
-                    <p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
-                    <p>Country: <select id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
-                    <p>Limit: <input type="text" id="limit" style="width:50px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>                    
-                    <p>Grid View<input style="padding-left:4px;" type="radio" name="view" value="grid" id="view" checked/>List View<input type="radio" name="view" value="list" id="view"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>
-					<p>Go Directly to Merchant: <input type="checkbox" id="goToMerc" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>
-					<p>Use Coupons: <input type="checkbox" name="coup" id="coup" onChange="showValues();"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>
-                    <p>ID: <input type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><span>This is set by clicking the product/coupon that you would like to users to go to when clicked.</span></a></p>
-					<input type="submit" value="Submit" class="button-primary" id="auto_compare_submit" onClick="javascript:AutoCompare.insert(AutoCompare.local_ed);"/>
+                    <p>Query: <input tabindex="1" type="text" name="q" id="query" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
+					<p>Merchant: <input tabindex="2" type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
+                    <p>Brand: <input tabindex="3" type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
+					<p>Country: <select tabindex="4" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
+                    <p>Limit: <input tabindex="5" type="text" id="limit" style="width:50px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>                    
+                    <p>Grid View<input tabindex="6" style="padding-left:4px;" type="radio" name="view" value="grid" id="view" checked/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List View<input tabindex="7" type="radio" name="view" value="list" id="view"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>
+					<p>Go Directly to Merchant: <input tabindex="8" type="checkbox" id="goToMerc" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>
+					<p>Use Coupons: <input tabindex="9" type="checkbox" name="coup" id="coup" onChange="showValues();"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>
+                    <p>ID: <input type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><span>This is set by clicking the product/coupon below that you would like to users to go to.</span></a></p>
+					<input tabindex="10" type="submit" value="Submit" class="button-primary" id="auto_compare_submit" onClick="javascript:AutoCompare.insert(AutoCompare.local_ed);"/>
                 </form>
             </div>
             <div style="float:left;font-size:12px;display:block;">Product Review:</div><p></br>
-			<span style="font-size:10px;"><strong>Note</strong>: Click the Product/Coupon that you would like to be displayed when a user clicks the link. If after you have set an item, it is removed from our catalog, we will use your query and any filters.</span>
+			<span style="font-size:10px;"><strong>Note</strong>: Click the Product/Coupon that you would like to be displayed when a user clicks the link.</span>
             <div class="preview" style="display:none"></div>
         </div>
     </body>

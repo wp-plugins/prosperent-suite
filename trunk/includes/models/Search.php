@@ -135,20 +135,20 @@ class Model_Search extends Model_Base
 
 		if ($brand)
 		{
-			array_push($filterBrands, $brand);
+			array_push($filterBrands, str_replace(',SL,', '/', $brand));
 		}
 		if($this->_options['Positive_Brand'])
 		{
-			$plusBrands = explode(',', stripslashes($this->_options['Positive_Brand']));
+			$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
 
 			foreach ($plusBrands as $postive)
 			{
 				array_push($filterBrands, trim($postive));
 			}
 		}
-		if($options['Negative_Brand'])
+		if($this->_options['Negative_Brand'])
 		{
-			$minusBrands = explode(',', stripslashes($options['Negative_Brand']));
+			$minusBrands = array_map('stripslashes', explode(',', $this->_options['Negative_Brand']));
 
 			foreach ($minusBrands as $negative)
 			{
@@ -165,27 +165,27 @@ class Model_Search extends Model_Base
 
 		if ($merchant)
 		{
-			array_push($filterMerchants, $merchant);
+			array_push($filterMerchants, str_replace(',SL,', '/', $merchant));
 		}
-		if ($options['Positive_Merchant'])
+		if ($this->_options['Positive_Merchant'])
 		{
-			$plusMerchants = explode(',', stripslashes($options['Positive_Merchant']));
+			$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
 
 			foreach ($plusMerchants as $positive)
 			{
 				array_push($filterMerchants, trim($positive));
 			}
 		}
-		if ($options['Negative_Merchant'])
+		if ($this->_options['Negative_Merchant'])
 		{
-			$minusMerchants = explode(',', stripslashes($options['Negative_Merchant']));
+			$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
 
 			foreach ($minusMerchants as $negative)
 			{
 				array_push($filterMerchants, '!' . trim($negative));
 			}
 		}
-		
+
 		return $filterMerchants;
 	}	
 	
@@ -206,7 +206,7 @@ class Model_Search extends Model_Base
 					$facet['value'] = 'Online';
 				}
 				
-				$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode($facet['value']) . '>' . $facet['value'] . '</a>';
+				$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value'])) . '>' . $facet['value'] . '</a>';
 			}
 		}
 		
@@ -224,7 +224,7 @@ class Model_Search extends Model_Base
 			$dir = PROSPER_THEME . '/' . $this->_options['Set_Theme'];
 			if($newTheme = glob($dir . "/*.php"))
 			{			
-				foreach ($newTheme as $file)
+				foreach ($newTheme as $theme)
 				{
 					if (preg_match('/product.php/i', $theme))
 					{
@@ -399,7 +399,7 @@ class Model_Search extends Model_Base
 			exit;
 		}		
 
-		require_once(PROSPER_VIEW . '/prospersearch/searchShort.phtml');
+		require_once(PROSPER_VIEW . '/prospersearch/searchShort.php');
 	}
 	
 	public function ogMeta()
@@ -635,14 +635,14 @@ class Model_Search extends Model_Base
 		$sepEnds 	  = $this->getEndpoints($params, $url);
 		$typeSelector = $this->getTypeSelector($sepEnds, $params['type']);
 		$newEnds 	  = array_keys($sepEnds);
-		$brands    	  = isset($params['brand']) ? rawurldecode(stripslashes($params['brand'])) : '';
-		$merchants 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
+		$brand    	  = isset($params['brand']) ? rawurldecode(stripslashes($params['brand'])) : '';
+		$merchant 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
 
 		return array(
 			'startingType' => $newEnds[0],
 			'filters'	   => array(
-				'brands' 	=> $this->getBrands($brands),
-				'merchants' => $this->getMerchants($merchants)
+				'brands' 	=> $this->getBrands($brand),
+				'merchants' => $this->getMerchants($merchant)
 			),
 			'typeSelector' => $typeSelector,
 			'params'	   => $params,

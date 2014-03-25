@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.8.1
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,7 +21,7 @@ This plugin contains the following Prosperent tools:
 
 This suite will give you everything you need to easily start making money with your blog.
 
-To view a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
+To view a tutorials and a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
 **Look at the screenshots to get a brief overview of the tools and what you can do with them.**
 
@@ -40,33 +40,22 @@ Well these reasons should help you with that question:
 
 == Screenshots ==
 
-1.	As you can see in the image, we can add a phrase, but we can also map that phrase to a more specific product. Say for example we want to link the word shoe to a specific Nike running shoe every time it appears on our blog.
-    Simply type: shoes => Nike Running Shoes - Now, every instance of the word "shoes" on your blog is hyperlinked to a "Nike Running Shoes" product search results page.
-2.	Highlight the product in your post and hit our Auto Link button in the editor. We pop up a screen so you can narrow down the product to an exact brand and merchant, determine if you want clicks on the link to go to the merchant directly, or to a search result page, and hit submit.
-3.  This is what it will look like to your visitor, an ordinary link in your posts.
-4.  When you click the link, you are either sent straight to the merchants site, or to your built in search page (which is also part of our plugin suite).
-5.  While you are writing a new blog post (or editing an old one) you will now see a Prosperent Auto Compare icon in the editor tool bar. Click that and you can now type a product name, even restrict the results to a specific merchant/brand, and set the limit for the number of products to show or compare. You could also check the coupon box and enter a more generic term to display coupons instead (we have a few...well nearly 40,000 of those too . ) At the bottom of the box you see a preview of the product that will show up, then hit the submit button.
-6.  This is how it will look in your blog post or page.
-7.  This image shows a few of the features of the Prosperent Suite.--  A widget for the search bar, where a visitor can input a product search and be directed to the store. -- There's a sidebar ad unit, it analyzes the content of your blog to create a very targeted ad. -- A sidebar widget that displays the top sold products. -- And lastly, a content ad unit. It auto-scales to fit the content area. --
-8.  This shows the store that is created by the plugin. It uses your blog's styling so it fits nicely within the content.
-
 == Installation ==
 
-= To ensure the new reroutes are working correctly, it's best to deactivate and reactivate the plugin. =
+Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
-    * Once signed in, you will create an **Api Key** and find your **User Id** which you'll need to input in the settings.
-    * Click the API tab in the menu, then click API Keys on the submenu and click Add New API Key. This will get you the API key you'll need so commissions can be tracked back to you. Name it whatever you'd like and you'll see that its created a key for you.
-    * Next look for your User Id which can be found near your name in the upper right had corner.
+    * Once signed in, go to the [instal](http://prosperent.com/affiliate/install/) screen.
+    * Set your campaign to WordPress if you haven't already
+    * Copy the API Key from Step 3.
 2.	Upload the **prosperent-suite** folder to the **/wp-content/plugins/** directory.
 3.	Activate the plugin through the *Plugins* menu in WordPress.
-4.	Go to the **Prosperent Settings** under Settings and edit those that you'd like.
-5.  Go to *Appearance* and then *Widgets* in your admin menu.
+4.	Go to the **Prosperent Settings** under Settings and edit those that you'd like. 
+5.  Go to General Settings to input your API Key.
+6.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
-6.  When making a page/post there are two new buttons at your disposal, the Auto-Linker and Product Insert.
-    * Auto-Linker allows you to link words to the product page or the merchant's site, depending on which options you choose to utilize. There is also a text-area in the settings to match more commonly used words.
-    * Product Insert allows you to place products or coupons within content on your pages/posts. Some products will use the comparison feature which will list similar products from other merchants so your viewer can find the best price.
+7.  When making a page/post all the short code on in the Prosperent Button. (the one with the gear on it, in the visual editor, else each one has their own button in the Text editor)
 
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.
 Log in to **Prosperent.com** every so often to check your stats.
@@ -77,18 +66,7 @@ All short codes now have a button in the editors for easy input.
 
 = Additional Notes for Installation =
 
-* This plugin automatically creates a *new page* called product. Go into that page and change the title to whatever you would like to be visible.
-* You can change the placeholder text in the *search bars* by using the **Search Bar Placeholder Text** setting under the Product Search section of the settings.
-* Also, now that the results are shortcoded, you can add `[prosper_store][/prosper_store]` to any page.
-* Reminder, if you use a different page from `/products` to display search results change the **Base_URL** Setting under the Product Search section.
-
-= Advanced Installation Options =
-
-* To add the performance ad after the first post on each page
-    * Go into your themes directory and open `index.php`. Add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if(!isset($show_ads) && is_plugin_active('prosper-suite/Prosper_Suite.php')){ performance_ads(); $show_ads = 1; } ?>` after `<?php while ( have_posts() ) : the_post(); ?>` and before the `<?php endwhile; ?>`
-* To add the performance ad to each post's page, before the comment section
-    * Go into your themes directory and open `content-single.php`. Add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if (is_plugin_active('prosper-suite/Prosper_Suite.php')) { performance_ads(); } ?>` after `<?php endif; ?>` and before `</footer><!-- .entry-meta -->`
-* If you want to add the search box in the header of your page, add `<?php include_once(ABSPATH . 'wp-admin/includes/plugin.php'); if (is_plugin_active('prosper-suite/Prosper_Suite.php')) { prospere_header(); } ?>` in your themes `header.php` file where you'd like it to be located.
+* This plugin automatically creates a *new page* called products. Go into that page and change the title to whatever you would like to be visible.
 
 == Frequently Asked Questions ==
 
@@ -110,6 +88,22 @@ All short codes now have a button in the editors for easy input.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.0.7 =
+* Fixed content placement and product store
+* Added Recent Searches Widget
+* Option to add categories to No Resaults on product searches, and Top Products widget (will help with niche sites)
+* Added option to change grid view image sizes
+* Fixed some theme issues
+* Plugin will now try to create prosperent_cache and prosperent-themes directories
+* Added button to clear cache under General Options (only visible when Caching is enabled)
+* Cache times are now variables for easy changing in the prosperent-suite.php file
+* Recent Searches show up at the bottom of Product Search settings, to allow you to delete unwanted searches
+* Fixed bug with '/' in brand/merchant names
+* Fixed bug that some servers weren't rendering short code .phtml 
+* Fixed WordPress Demo URLs
+* Updated README.txt
+* [Prosperent Demo](http://wordpress.prosperentdemo.com/) has been redone to offer a more in depth guide
 
 = 3.0.6 =
 * Fixed product search widget, broke it in last update

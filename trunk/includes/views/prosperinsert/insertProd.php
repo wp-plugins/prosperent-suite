@@ -11,11 +11,11 @@ if ($pieces['v'] === 'grid')
 		$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 		$cid 	   = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
 		
-		if ($pieces['gtm'] && $this->_options['URL_Masking'])
+		if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 		{
 			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 		}
-		elseif ($this->_options['Enable_PPS'] && !$pieces['gtm']) 
+		elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 		{
 			$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '"';
 		}		
@@ -68,11 +68,11 @@ else
 			$cid = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
 			$baseUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
 
-			if ($pieces['gtm'] && $this->_options['URL_Masking'])
+			if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 			{
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 			}
-			elseif ($this->_options['Enable_PPS'] && !$pieces['gtm']) 
+			elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
 				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '"';
 			}		

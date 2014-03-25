@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ProsperSearch Controller
  *
@@ -23,7 +22,7 @@ class ProsperSearchController
 		
 		$this->searchModel->init();
 
-		add_shortcode('prosper_store', array($this, 'storeShortcode'));
+		add_shortcode('prosper_store', array($this, 'storecode'));
 		add_shortcode('prosper_search', array($this->searchModel, 'searchShortcode'));
 		add_action('wp_head', array($this->searchModel, 'ogMeta'));
 		add_filter('wp_title', array($this->searchModel, 'prosperTitle'), 20, 3);
@@ -34,7 +33,15 @@ class ProsperSearchController
 			add_action('admin_print_footer_scripts', array($this->searchModel, 'qTagsSearch'));	
 		}
     }
-		
+	
+	public function storecode()
+	{
+		ob_start();
+		$this->storeShortcode();
+		$store = ob_get_clean();
+		return $store;
+	}
+	
 	public function storeShortcode()
 	{				
 		$options 	 = $this->searchModel->_options;
@@ -79,6 +86,18 @@ class ProsperSearchController
 				'sort' 	=> $_POST['sort'],
 				'state' => $state
 			);
+
+			if ($postArray['query'])
+			{				
+				$recentOptions = get_option('prosper_productSearch');
+				$recentOptions['recentSearches'][] = $postArray['query'];
+				if (count($recentOptions['recentSearches']) > $recentOptions['numRecentSearch'])
+				{
+					$remove = array_shift($recentOptions['recentSearches']);
+				}
+				
+				update_option('prosper_productSearch', $recentOptions);				
+			}
 			
 			$this->searchModel->getPostVars($postArray, $data);
 		}
@@ -215,7 +234,7 @@ class ProsperSearchController
 				'imageSize'	=> $params['view'] === 'grid' ? '250x250' : '125x125'
 			);
 			
-			$allData   = $this->searchModel->trendsApiCall($settings, $fetch);
+			$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
 			$results   = $allData['results'];	
 			$noResults = true;
 			$trend     = 'Trending Products';
@@ -226,7 +245,7 @@ class ProsperSearchController
 				$newTrendsTitle = 'No Trending Products at this Time';
 			}
 		}
-		
+
 		require_once($searchPage);
 	}
 
@@ -235,7 +254,6 @@ class ProsperSearchController
 		$filters 	     = $data['filters'];
 		$params 	     = $data['params'];
 		$typeSelector    = $data['typeSelector'];
-		//$filterCelebrity = $params['celeb'];
 		$fetch 			 = 'fetchCoupons';
 		$target 	     = isset($options['Target']) ? '_blank' : '_self';
 		$searchTitle     = 'Coupons';
@@ -289,14 +307,13 @@ class ProsperSearchController
 				'query'           => $query,
 				'sortBy'	      => rawurldecode($params['sort']),
 				'filterMerchant'  => $filters['merchants'],
-				//'filterCelebrity' => rawurldecode($params['celeb']),
 				'enableFacets'    => $options['Enable_Facets'] ? array('merchant') : FALSE,
 				'limit'			  => $options['Api_Limit']
 			);	
 			
 			$settings = array_filter($settings);
 
-			$allData = $this->searchModel->apiCall($settings, $fetch, '3600');
+			$allData = $this->searchModel->apiCall($settings, $fetch, PROSPER_CACHE_COUPS);
 		}
 		
 		if ($results = $allData['results'])
@@ -464,7 +481,7 @@ class ProsperSearchController
 		
 		$settings = array_filter($settings);
 
-		$allData = $this->searchModel->apiCall($settings, 'fetchLocal', '3600');
+		$allData = $this->searchModel->apiCall($settings, 'fetchLocal', PROSPER_CACHE_COUPS);
 		$results = $allData['results'];
 		
 		if ($results)
@@ -662,6 +679,7 @@ class ProsperSearchController
 			$fetch  = 'fetchProducts';
 			$filter = 'filterCatalogId';
 			$group  = 'productId';
+			$brand  = true;
 		}
 		else
 		{
@@ -680,6 +698,8 @@ class ProsperSearchController
 				$fetch = 'fetchUkProducts';
 				$currency = 'GBP';
 			}
+			
+			$brand  = true;
 			$filter = 'filterCatalogId';
 			$group  = 'productId';
 		}
@@ -732,7 +752,7 @@ class ProsperSearchController
 			$allData3 = $this->searchModel->apiCall($settings3, $fetch);
 			$results = $allData3['results'];
 		}
-		if ($options['Similar_Limit'] > 0)
+		if ($options['Similar_Limit'] > 0 && $brand == true)
 		{
 			/*
 			/  SIMILAR
@@ -752,30 +772,33 @@ class ProsperSearchController
 		if ($options['Same_Limit'] > 0)
 		{
 			/*
-			/  SAME BRAND/ MERCHANT
+			/  SAME BRAND
 			*/
 			$settings5 = array(
-				'limit'          => $options['Same_Limit'],
-				'groupBy'	   	 => $group,
-				'enableFullData' => 0,
-				'imageSize'		 => $image ? $image : ''
+				'limit'       => $options['Same_Limit'],
+				'groupBy'	  => $group,
+				'imageSize'   => $image ? $image : '',
+				'filterBrand' => $mainRecord[0]['brand']
 			);
-			
-			if ($params['type'] === 'prod' || $params['type'] === 'cele')
-			{
-				$settings5 = array_merge($settings5, array('filterBrand' => $mainRecord[0]['brand']));
-				$otherName = $mainRecord[0]['brand'];
-			}
-			else
-			{
-				$settings5 = array_merge($settings5, array('filterMerchant' => $mainRecord[0]['merchant']));
-				$otherName = $mainRecord[0]['merchant'];
-			}
-			
-			$settings5 = array_filter($settings5);
 
 			$allData5 = $this->searchModel->apiCall($settings5, $fetch);
 			$sameBrand = $allData5['results'];		
+		}
+		
+		if ($options['Same_Limit_Merchant'] > 0)
+		{ 
+			/*
+			/  SAME MERCHANT
+			*/
+			$settings6 = array(
+				'limit'          => $options['Same_Limit_Merchant'],
+				'groupBy'	   	 => $group,
+				'imageSize'		 => $image ? $image : '',
+				'filterMerchant' => $mainRecord[0]['merchant']
+			);
+			
+			$allData6 = $this->searchModel->apiCall($settings6, $fetch);
+			$sameMerchant = $allData6['results'];		
 		}
 		
 		require_once($productPage);	

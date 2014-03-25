@@ -26,6 +26,15 @@ class ProsperStoreWidget extends WP_Widget
 
         if (isset($_POST['q']))
         {
+			$recentOptions = get_option('prosper_productSearch');
+			$recentOptions['recentSearches'][] = $_POST['q'];
+			if (count($recentOptions['recentSearches']) > $recentOptions['numRecentSearch'])
+			{
+				$remove = array_shift($recentOptions['recentSearches']);
+			}
+			
+			update_option('prosper_productSearch', $recentOptions);				
+		
 			$newQuery = str_replace(array('/query/' . $query, '/query/' . urlencode($query)), array('', ''), $url);
             header('Location: ' . $newQuery . '/query/' . urlencode(trim($_POST['q'])));
             exit;

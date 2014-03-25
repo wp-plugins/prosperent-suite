@@ -1,10 +1,21 @@
+<script type="text/javascript">
+function deleteMyParent(el)
+{
+	var linkCarrier = document.getElementById("linkCarrier");
+    window.setTimeout(function() {
+        linkCarrier.removeChild(el);
+    }, 50);
+
+    return false;
+}
+</script>
 <?php
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 
 $prosperAdmin->adminHeader( __( 'Product Search Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The Product Search is the center of the Shop. This will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/products/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc">' . __( 'The Product Search is the center of the Shop. This will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on The Store...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_PPS', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
@@ -33,6 +44,10 @@ echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the products pa
 echo $prosperAdmin->radio( 'Product_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), '' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
+echo '<h2 class="prosper_h2">' . __( 'Grid Image Size', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'Grid_Img_Size', __( 'Enter image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>Only changes the size for <strong>grid</strong> product images. (does not change local/coupon images)<br><br>Will change the image size on the product pages as well for the same/similar product sections.<br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
 echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->textinput( 'Api_Limit', __( 'Number of results', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>API Limit (Max = 1000)</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
@@ -40,7 +55,10 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 echo $prosperAdmin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>Amount of products shown per page.</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->textinput( 'Same_Limit', __( 'Limit for Same Brand/Merchant Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>This limit will set the desired amount for the "Other Products from Brand/Merchant" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
+echo $prosperAdmin->textinput( 'Same_Limit', __( 'Limit for Same Brand Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>This limit will set the desired amount for the "Other Products from Brand" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'Same_Limit_Merchant', __( 'Limit for Same Merchant Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>This limit will set the desired amount for the "Other Products from Merchant" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->textinput( 'Similar_Limit', __( 'Limit for Similar Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>This limit will set the desired amount for the "Similar Products" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
@@ -66,6 +84,9 @@ echo $prosperAdmin->textinput( 'Positive_Brand', __( 'Want to only show certain 
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Default Queries', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'No_Results_Categories', __( 'Filter by Categories on<br>Products No Results Page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>If there are no results for a query, entering categories here will filter the trending products by those categories, helpful for niche sites. Will only work for <strong>Product</strong> searches.</br>May result is less Trend Products.</span></a>' );
+echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
+
 echo $prosperAdmin->textinput( 'Starting_Query', __( 'Products Query', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>If no query has been given, this will be used. If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );
 echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
 
@@ -76,6 +97,31 @@ echo $prosperAdmin->textinput( 'Celebrity_Query', __( 'Celebrity- Celeb Name', '
 echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->textinput( 'Local_Query', __( 'Local- City, State or State', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>Default query for local, either "city, state" or "state". If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );
-echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
+
+$options = get_option('prosper_productSearch');
+
+if ($options['numRecentSearch'] && $options['recentSearches'])
+{
+	echo '<p class="prosper_descb">' . __( ".", 'prosperent-suite' ) . '</p>';
+
+	echo '<h2 class="prosper_h2">' . __( 'Recent Searches', 'prosperent-suite' ) . '</h2>';
+	echo $prosperAdmin->hidden( 'numRecentSearch');
+	echo '<div id="linkCarrier" style="margin-left:20px;">';
+	for ($i = 0; $i < count($options['recentSearches']); $i++)
+	{
+		echo '<span id="ALFields' . $i . '">';
+		echo $prosperAdmin->textinputnewinline( 'recentSearches', $i ); 
+		echo '<a style="margin:3px 0 0 10px; vertical-align:baseline;" onClick="deleteMyParent(this.parentNode);" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_productSearch&deleteRecent=' . $i . '&nonce='. wp_create_nonce( 'prosper_delete_recent' )) . '">' . __( 'Delete', 'prosperent-suite' ) . '</a>';
+		echo '</span>';
+		echo '<br class="clear" />';
+	}
+	
+	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+	echo '</div>';
+}
+else
+{
+	echo '<p class="prosper_desc">' . __( ".", 'prosperent-suite' ) . '</p>';
+}
 
 $prosperAdmin->adminFooter();

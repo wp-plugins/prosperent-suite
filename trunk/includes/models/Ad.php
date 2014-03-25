@@ -15,7 +15,7 @@ class Model_Ad extends Model_Base
 	{	
 		$id 	 = 'performanceAd';
 		$display = 'Performance Ad';
-		$arg1 	 = '[perform_ad top="TOPIC" h="90" w="auto" ut="USE TAGS?"]';
+		$arg1 	 = '[perform_ad q="TOPIC" h="90" w="auto" utt="USE TAGS?" utt="USE TITLE?"]';
 		$arg2 	 = '[/perform_ad]';		
 	
 		$this->qTagsProsper($id, $display, $arg1, $arg2);
@@ -59,7 +59,7 @@ class Model_Ad extends Model_Base
 		}
 
 		$fallback = implode(",", $fallback);
-		
+
 		$height = $h ? ($h == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $h) . 'px') : 90 . 'px';
 		$width = $w ? ($w == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $w) . 'px') : '100%';
 

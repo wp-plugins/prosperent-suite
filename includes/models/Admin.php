@@ -30,12 +30,26 @@ class Model_Admin extends Model_Base
 			$this->deleteLinks($_GET['delete']);
 			wp_redirect( admin_url( 'admin.php?page=prosper_autoLinker' ) );
 		}		
-
-		if ( isset( $_GET['hide'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_hide_message' ) && current_user_can( 'manage_options' ) ) 
+		
+		if ( isset( $_GET['deleteRecent'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_delete_recent' ) && current_user_can( 'manage_options' ) ) 
 		{
-			$this->hideMessage();
-			//wp_redirect( admin_url( 'admin.php?page=prosper_general' ) );
-		}	
+			$this->deleteRecent($_GET['deleteRecent']);
+			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch' ) );
+		}
+		
+		if ( isset( $_GET['clearCache'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_clear_cache' ) && current_user_can( 'manage_options' ) ) 
+		{
+			$cacheDir = glob(PROSPER_CACHE . '/*'); 
+
+			shell_exec('rm -rf ' . PROSPER_CACHE . '/*');			
+			
+			wp_redirect( admin_url( 'admin.php?page=prosper_general&cacheCleared' ) );
+		}
+		
+		if ( isset( $_GET['cacheCleared'] ))
+		{
+			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
+		}
     }	
 	
 	public function addLinks()
@@ -49,6 +63,16 @@ class Model_Admin extends Model_Base
 
 		update_option('prosper_autoLinker', $options);
 	}	
+	
+	public function deleteRecent($optNum) 
+	{	
+		$options = get_option('prosper_productSearch');
+		$intOptNum = intval($optNum);			
+				
+		array_splice($options['recentSearches'], $intOptNum, 1);
+
+		update_option('prosper_productSearch', $options);
+	}
 	
 	public function deleteLinks($optNum) 
 	{	
@@ -76,14 +100,6 @@ class Model_Admin extends Model_Base
 		$options['LinkAmount'] = $intLinks - 1;
 
 		update_option('prosper_autoLinker', $options);
-	}
-	
-	public function hideMessage()
-	{	
-		$options = get_option('prosper_advanced');
-		
-		$options['concealCacheMessage'] = TRUE;
-		update_option('prosper_advanced', $options);
 	}
 	
 	public function prosperAdminCss()
@@ -128,6 +144,7 @@ class Model_Admin extends Model_Base
 		register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
 		register_setting( 'prosperent_advanced_options', 'prosper_advanced' );
 		register_setting( 'prosperent_themescss_options', 'prosper_themes' );
+		register_setting( 'prosperent_generator_options', 'prosper_generator' );
 		
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) 
 		{
@@ -287,7 +304,7 @@ class Model_Admin extends Model_Base
 	 * @param string $class   The class of the object.
 	 * @return string
 	 */
-	public function textinput( $var, $label, $option = '', $tooltip = '', $class = 'prosper_textinput' ) 
+	public function textinput( $var, $label, $option = '', $tooltip = '', $class = 'prosper_textinput') 
 	{
 		if ( empty( $option ) )
 			$option = $this->currentOption;
@@ -298,7 +315,30 @@ class Model_Admin extends Model_Base
 		if ( isset( $options[$var] ) )
 			$val = esc_attr( $options[$var] );
 
-		return '<label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="' . $class . '" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>' . '<br class="clear" />';
+		return '<label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="' . $class . '" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>'. '<br class="clear" />';
+	}
+
+	/**
+	 * Create a Text input field.
+	 *
+	 * @param string $var    The variable within the option to create the text input field for.
+	 * @param string $label  The label to show for the variable.
+	 * @param string $option The option the variable belongs to.	 
+	 * @param string $tooltip The tooltip for the option
+	 * @return string
+	 */
+	public function textinputnewinline( $var, $arrayNum, $option = '', $tooltip = '' ) 
+	{
+		if ( empty( $option ) )
+			$option = $this->currentOption;
+
+		$options = get_option( $option );
+
+		$val = '';
+		if ( isset( $options[$var][$arrayNum] ) )
+			$val = esc_attr( $options[$var][$arrayNum] );
+			
+		return '<input class="prosper_textinput" style="width:auto;margin:2px;" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . $var . '][' . $arrayNum . ']" value="' . $val . '"/>' . $tooltip;	
 	}
 	
 	/**
@@ -400,17 +440,17 @@ class Model_Admin extends Model_Base
 
 		$var_esc = esc_attr( $var );
 
-		$output = '<br/><label class="prosper_radio">' . $label . ':</label>';
+		$output = '<label class="prosper_radio">' . $label . ':</label><br><br><span style="margin-left:40px;">';
 		if (empty($label))
 		{
-			$output = '<br/><label class="prosper_radio"></label>';
+			$output = '<label class="prosper_radio"></label>';
 		}
 		
 		foreach ( $values as $key => $value ) {
 			$key = esc_attr( $key );
-			$output .= '<input type="radio" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']" value="' . $key . '" ' . ( $options[$var] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radio" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
+			$output .= '<input type="radio" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']" value="' . $key . '" ' . ( $options[$var] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radiofor" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
 		}
-		$output .= '<br/>';
+		$output .= '</span>';
 
 		return $output;
 	}

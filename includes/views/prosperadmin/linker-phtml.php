@@ -18,7 +18,7 @@ $options = get_option('prosper_autoLinker');
 
 $prosperAdmin->adminHeader( __( 'Auto-Linker Settings', 'prosperent-suite' ), true, 'prosperent_linker_options', 'prosper_autoLinker' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The AutoLinker is a useful tool for to link words, brands, or products to either the search page or straight to the merchant. <br><br>The Auto-Linker has two different ways to link.. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/auto-comparer/">WordPress Prosperent Demo: Auto-linker</a> for more information and to see how it looks.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc">' . __( 'The AutoLinker is a useful tool for to link words, brands, or products to either the search page or straight to the merchant. <br><br>The Auto-Linker has two different ways to link.. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/auto-linker/">WordPress Prosperent Demo: Auto-linker</a> for more information and to see how it looks.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on the Auto-Linker...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_AL', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
@@ -28,7 +28,7 @@ echo '<h2 class="prosper_h2">' . __( 'Matching Settings', 'prosperent-suite' ) .
 echo $prosperAdmin->checkbox( 'Auto_Link_Comments', __( 'Do you want to match text inside comments?', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Text to Highlight and the Query to Match to that Text', 'prosperent-suite' ) . '</h2>';
+echo '<h2 class="prosper_h2">' . __( 'Auto Link in Content', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->hidden( 'LinkAmount' );
 
 if ($options['LinkAmount'])

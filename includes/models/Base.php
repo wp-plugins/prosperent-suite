@@ -21,9 +21,14 @@ abstract class Model_Base
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
 			
-			if (isset($this->_options['Enable_Caching']) &&  (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) != '0777'))
+			if (isset($this->_options['Enable_Caching']) &&  (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) <= 0755))
 			{
-				add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
+				shell_exec('mkdir ' . PROSPER_CACHE);
+
+				if ((!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) <= 0755))
+				{
+					add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
+				}
 			}
 			
 			require_once(PROSPER_PATH . 'ProsperentApi.php');
@@ -59,7 +64,7 @@ abstract class Model_Base
 			if (isset($this->_options['Enable_PPS']) || isset($this->_options['Enable_AC']))
 			{
 				add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));	
-			}
+			}	
 		}
 		else
 		{
@@ -118,7 +123,7 @@ abstract class Model_Base
 		}
 		if (isset($ps['Enable_PPS']))
 		{
-			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget'));		
+			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget', 'RecentSearchesWidget'));		
 		}
 		
 		foreach ($widgets as $widget)
@@ -131,17 +136,17 @@ abstract class Model_Base
 	public function prosperStylesheets()
 	{
 		$css = PROSPER_CSS . '/products.min.css';
-		
+
 		// Product Search CSS for results and search
 		if ($this->_options['Set_Theme'] != 'Default')
 		{
 			$dir = PROSPER_THEME . '/' . $this->_options['Set_Theme'];
 			if($newTheme = glob($dir . "/*.css"))
 			{			
-				$css = $newTheme[0];
+				$css = str_replace(' ', '%20', (content_url(preg_replace('/.*\/wp-content/i', '', $newTheme[0]))));
 			}
 		}
-	
+
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
 	}	
@@ -166,7 +171,9 @@ abstract class Model_Base
 	public function prosperNoticeWrite() 
 	{
 		echo '<div class="error" style="padding:6px 0;">';
-		echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp_content</strong> directory and make it writable (0777). If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span><span style="font-size:12px;"></span>', 'my-text-domain' );
+		echo _e( '<span style="font-size:14px; padding-left:10px;">The plugin was <strong>unable</strong> to create the <strong>prosperent_cache</strong> directory inside <strong>wp-content</strong>.</span><br><br>', 'my-text-domain' );
+		echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp-content</strong> directory and make it writable (0777).</span><br>', 'my-text-domain' );
+		echo _e( '<span style="font-size:14px; padding-left:10px;">If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span>', 'my-text-domain');
 		echo '</div>';	
 	}
 	
@@ -185,8 +192,8 @@ abstract class Model_Base
 	{	
 		return shortcode_atts(array(
 			'q'   => '',
-			'utt' => false,
-			'utg' => false,
+			'utt' => 0,
+			'utg' => 0,
 			'h'   => 90,
 			'w'   => 'auto',			
 			'c'   => 0,
@@ -196,9 +203,9 @@ abstract class Model_Base
 			'cl'  => '',
 			'ct'  => 'US',
 			'id'  => '',			
-			'gtm' => false,
+			'gtm' => 0,
 			'v'   => 'list',
-			'w'	  => 210,
+			'w'	  => '',
 			'ws'  => 'px',
 			'css' => ''
 		), $atts, $shortcode);
@@ -270,7 +277,7 @@ abstract class Model_Base
 		delete_option("prosperent_store_page_id");
 	}
 	
-	public function apiCall ($settings, $fetch, $lifetime = '84600')
+	public function apiCall ($settings, $fetch, $lifetime = PROSPER_CACHE_PRODS)
 	{	
 		if (empty($this->_options))
 		{
@@ -280,17 +287,17 @@ abstract class Model_Base
 		{
 			$options = $this->_options;
 		}	
-	
+
 		$settings = array_merge($settings, array(
 			'api_key' 	   => $options['Api_Key'],
 			'visitor_ip'   => $_SERVER['REMOTE_ADDR']	
 		));	
 
-		if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) == '0777')
+		if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
 		{
 			$settings = array_merge($settings, $this->apiCaching($lifetime));	
 		}
-		
+
 		$prosperentApi = new Prosperent_Api($settings);
 
 		$prosperentApi->$fetch();
@@ -302,7 +309,7 @@ abstract class Model_Base
 		return array('results' => $results, 'total' => $totalFound, 'facets' => $facets);
 	}
 	
-	public function trendsApiCall ($settings, $fetch, $lifetime = '3600')
+	public function trendsApiCall ($settings, $fetch, $categories = array(), $lifetime = PROSPER_CACHE_COUPS)
 	{
 		if (empty($this->_options))
 		{
@@ -346,11 +353,12 @@ abstract class Model_Base
 		$endDate     = date('Ymd');
 
 		$apiCall = array(
-			'api_key' 	   => $this->_options['Api_Key'],
-			'visitor_ip'   => $_SERVER['REMOTE_ADDR'],	
-			'limit'		   => 50,
-			'enableFacets' => array('catalogId'),
-			'filterCatalog' => $catalog
+			'api_key' 	     => $this->_options['Api_Key'],
+			'visitor_ip'     => $_SERVER['REMOTE_ADDR'],	
+			'limit'		     => 50,
+			'enableFacets'   => array('catalogId'),
+			'filterCatalog'  => $catalog,
+			'filterCategory' => $categories
 		);
 
 		$api = new Prosperent_Api($apiCall);

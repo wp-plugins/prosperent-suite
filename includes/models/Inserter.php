@@ -20,7 +20,7 @@ class Model_Inserter extends Model_Base
 	{
 		$id 	 = 'productInsert';
 		$display = 'Product Insert';
-		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" cl="COMPARISON LIMIT" ct="US"]';
+		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" ct="US" gtm="GO TO MERCHANT?" c="USE COUPONS?" v="GRID OR LIST"]';
 		$arg2 	 = '[/compare]';		
 	
 		$this->qTagsProsper($id, $display, $arg1, $arg2);
@@ -59,7 +59,7 @@ class Model_Inserter extends Model_Base
 			return trim($text);
 		}
 		
-		$insert = '<p>[compare q="' . $newTitle . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '"][/compare]</p>';
+		$insert = '<p>[compare q="' . $newTitle . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/compare]</p>';
 		
 		if ('top' == $this->_options['prosper_inserter'])
 		{
@@ -112,7 +112,7 @@ class Model_Inserter extends Model_Base
 		// Remove links within links
 		$content = strip_tags($content);
 
-		if (!$pieces['c'])
+		if (!$pieces['c'] || $pieces['c'] === 'false')
 		{
 			if ($pieces['ct'] === 'UK')
 			{

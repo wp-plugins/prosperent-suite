@@ -49,7 +49,7 @@ if ($filterArray)
 				else
 				{
 					echo '<div style="min-height:35px;">';
-					echo rawurldecode($params[$i]);
+					echo str_replace(',SL,', '/', rawurldecode($params[$i]));
 					echo '</br><a href=' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]), '', $url) . '>clear filter</a>';
 					if ($i === 'brand')
 					{
@@ -279,8 +279,9 @@ if (!$params['view'] || $params['view'] === 'list')
 } 
 elseif ($params['view'] === 'grid')
 {
+	$gridImage = ($options['Grid_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Grid_Img_Size']) : 200) . 'px';
 	echo '<div id="simProd" style="border-top: 2px solid #ddd;">';
-    echo '<ul>';
+    echo '<ul>';	
     foreach ($pagedResults as $record)
     {
 		$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
@@ -291,7 +292,7 @@ elseif ($params['view'] === 'grid')
             <li <?php echo ($params['type'] === 'coup' ? 'class="coupBlock"' : ''); ?>>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' && $params['type'] != 'local' ? 'class="gridImg"' : ''); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+                    <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' && $params['type'] != 'local' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">

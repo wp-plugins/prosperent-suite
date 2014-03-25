@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 3.0.6
+Version: 3.0.7
 Author: Prosperent Brandon
 Author URI: http://prosperent.com
 Plugin URI: http://community.prosperent.com/forumdisplay.php?35-Wordpress-Plugin-Suite
@@ -23,6 +23,13 @@ License: GPLv3
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+// Default caching time for products (in seconds)
+if (!defined( 'PROSPER_CACHE_PRODS'))
+    define( 'PROSPER_CACHE_PRODS', 604800 );
+// Default caching time for trends and coupons (in seconds)
+if (!defined( 'PROSPER_CACHE_COUPS'))
+    define( 'PROSPER_CACHE_COUPS', 3600 );
 
 if (!defined( 'WP_CONTENT_DIR'))
     define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );

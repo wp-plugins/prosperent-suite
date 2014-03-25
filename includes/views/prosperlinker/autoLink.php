@@ -20,7 +20,7 @@ $result = preg_replace('/wp-content.*/i', '', $url)
                     var brand = jQuery('#brand').val();
                     var merchant = jQuery('#merchant').val();
                     var country = jQuery('#country').val();
-                    var goToMerc = jQuery('#goToMerc').is(':checked');
+                    var goTo = jQuery('#goTo:checked').val();
 					var prodId = jQuery('#prodid').val();
                     var output = '[linker';
 
@@ -29,9 +29,9 @@ $result = preg_replace('/wp-content.*/i', '', $url)
                     {
                         output += ' q="'+query+'"';
                     }
-                    if (goToMerc)
+                    if (goTo)
                     {
-                        output += ' gtm="'+goToMerc+'"';
+                        output += ' gtm="'+goTo+'"';
                     }
                     if (brand)
                     {
@@ -173,13 +173,25 @@ $result = preg_replace('/wp-content.*/i', '', $url)
         <div id="autoLinker">
             <div align="center">
                 <form action="/" method="get" accept-charset="utf-8">
-                    <p>Query: <input type="text" name="q" id="query" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>You can change the query here, otherwise it will use the content you highlighted, this will not change the content on the page.</span></a></p>
-                    <p>Brand: <input type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.(ie. !Nike)</span></a></p>
-                    <p>Merchant: <input type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name. (ie. !Zappos.com)</span></a></p>
-                    <p>Go Directly to Merchant: <input type="checkbox" id="goToMerc" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page.</span></a></p>
-                    <p>Country: <select id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
-                    <p>ID: <input type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><span>This is set by clicking the product/coupon that you would like to users to go to when clicked.</span></a></p>
-					<input type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed);" style="display:block;"/>					
+                    <p>Query: <input tabindex="1" type="text" name="q" id="query" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>You can change the query here, otherwise it will use the content you highlighted, this will not change the content on the page.</span></a></p>
+                    <p>Brand: <input tabindex="2" type="text" id="brand" name="brand" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.(ie. !Nike)</span></a></p>
+                    <p>Merchant: <input tabindex="3" type="text" id="merchant" name="merchant" style="width:125px" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name. (ie. !Zappos.com)</span></a></p>
+					<p>Country: <select tabindex="6" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
+					<table style="font-size:13px;">
+						<tr>
+							<td><strong>Go To:</strong></td>
+						</tr>
+						<tr>
+							<td><input tabindex="2" type="radio" id="goTo" name="goTo" value="merchant" checked="checked"/></td><td>Merchant Page<a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+						<tr>	
+							<td><input type="radio" id="goTo" name="goTo" value="prodPage"/></td><td>Product Page<a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
+						</tr>
+						<tr>					
+							<td><input type="radio" id="goTo" name="goTo" value="prodResults" /></td><td>Product Results<a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+						</tr>
+					</table>					
+                    <p>ID: <input tabindex="7" type="text" name="prodid" id="prodid" style="width:150px" readonly="readonly"/><a href="#" class="tooltip"><span>This is set by clicking the product/coupon that you would like to users to go to when clicked.</span></a></p>
+					<input tabindex="8" type="submit" value="Submit" class="button-primary" id="auto_link_submit" onClick="javascript:AutoLinker.insert(AutoLinker.local_ed);" style="display:block;"/>					
                 </form>
             </div>
 			<br>

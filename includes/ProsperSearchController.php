@@ -136,6 +136,15 @@ class ProsperSearchController
 		$typeSelector   = $data['typeSelector'];
 		$target 	    = isset($options['Target']) ? '_blank' : '_self';
 
+		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
+		{
+			$imageSize = '250x250';
+		}
+		else
+		{
+			$imageSize = '125x125';
+		}
+
 		if ($options['Country'] === 'US')
 		{
 			$fetch = 'fetchProducts';
@@ -193,7 +202,7 @@ class ProsperSearchController
 		);
 
 		if ($query || $filters['brands'] || $filters['merchants'])
-		{
+		{			
 			$settings = array(
 				'query'          => $query,
 				'sortBy'	     => rawurldecode($params['sort']),
@@ -202,9 +211,9 @@ class ProsperSearchController
 				'filterMerchant' => $filters['merchants'],
 				'enableFacets'   => $options['Enable_Facets'] ? array('brand', 'merchant') : FALSE,
 				'limit'			 => $options['Api_Limit'],
-				'imageSize'		 => $params['view'] === 'grid' ? '250x250' : '125x125'
+				'imageSize'		 => $imageSize
 			);	
-			
+
 			$settings = array_filter($settings);
 			
 			$allData = $this->searchModel->apiCall($settings, $fetch);
@@ -214,8 +223,8 @@ class ProsperSearchController
 		{
 			$filterArray = $this->searchModel->buildFacets($allData['facets'], $params, $url);
 			
-			$brands 	= array_splice($filterArray['brand'], 0, $this->_options['Merchant_Facets'] ? $this->_options['Merchant_Facets'] : 10);
-			$merchants = array_splice($filterArray['merchant'], 0, $this->_options['Merchant_Facets'] ? $this->_options['Merchant_Facets'] : 10);
+			$brands    = array_splice($filterArray['brand'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10));
+			$merchants = array_splice($filterArray['merchant'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10));
 		
 			sort($filterArray['brand']);
 			sort($filterArray['merchant']);
@@ -231,7 +240,7 @@ class ProsperSearchController
 		else
 		{
 			$settings = array(
-				'imageSize'	=> $params['view'] === 'grid' ? '250x250' : '125x125'
+				'imageSize'	=> $imageSize
 			);
 			
 			$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
@@ -257,7 +266,7 @@ class ProsperSearchController
 		$fetch 			 = 'fetchCoupons';
 		$target 	     = isset($options['Target']) ? '_blank' : '_self';
 		$searchTitle     = 'Coupons';
-	
+		
 		if (!$params['query'] && !$params['merchant'] && $options['Coupon_Query'])
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -324,7 +333,7 @@ class ProsperSearchController
 			{
 				$filterArray = $this->searchModel->buildFacets($allData['facets'], $params, $url);
 				
-				$merchants = array_splice($filterArray['merchant'], 0, $this->_options['Merchant_Facets'] ? $this->_options['Merchant_Facets'] : 10);
+				$merchants = array_splice($filterArray['merchant'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10));
 			
 				sort($filterArray['merchant']);
 				
@@ -446,6 +455,15 @@ class ProsperSearchController
 			$title = 'Online Deals</strong>';
 		}
 	
+		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
+		{
+			$imageSize = '250x250';
+		}
+		else
+		{
+			$imageSize = '125x125';
+		}
+	
 		$sortArray = array(
 			'Price: High to Low' 		  => 'price desc',
 			'Price: Low to High' 		  => 'price asc',
@@ -467,7 +485,7 @@ class ProsperSearchController
 			'filterState'    => $filterState,
 			'filterMerchant' => rawurldecode($params['merchant']),
 			'limit'			 => $options['Api_Limit'],
-			'imageSize'		 => '125x125'
+			'imageSize'		 => $imageSize
 		);	
 		
 		if ((!$filterCity && !$filterZip && !$params['state']) || $filterCity == 'Online' || $filterZip == 'Online')
@@ -492,8 +510,8 @@ class ProsperSearchController
 			{
 				$filterArray = $this->searchModel->buildFacets($allData['facets'], $params, $url);
 								
-				$cities = array_splice($filterArray['city'], 0, $this->_options['Merchant_Facets'] ? $this->_options['Merchant_Facets'] : 10);
-				$zips	 = array_splice($filterArray['zip'], 0, $this->_options['Merchant_Facets'] ? $this->_options['Merchant_Facets'] : 10);
+				$cities = array_splice($filterArray['city'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10));
+				$zips	= array_splice($filterArray['zip'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 10));
 			
 				sort($filterArray['city']);
 				sort($filterArray['zip']);
@@ -509,7 +527,7 @@ class ProsperSearchController
 				'filterCity'     => 'null',
 				'filterState'    => 'null',
 				'limit'			 => $options['Api_Limit'],
-				'imageSize'		 => '125x125'
+				'imageSize'		 => $imageSize
 			);	
 		
 		
@@ -523,7 +541,7 @@ class ProsperSearchController
 		else
 		{
 			$settings = array(
-				'imageSize' => '125x125'
+				'imageSize' => $imageSize
 			);
 			
 			$allData   = $this->searchModel->trendsApiCall($settings, 'fetchLocal');
@@ -548,6 +566,15 @@ class ProsperSearchController
 		$typeSelector = $data['typeSelector'];
 		$target 	  = isset($options['Target']) ? '_blank' : '_self'; 
 
+		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
+		{
+			$imageSize = '250x250';
+		}
+		else
+		{
+			$imageSize = '125x125';
+		}
+		
 		if (!$params['celebrity'] && $options['Celebrity_Query'])
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -610,7 +637,7 @@ class ProsperSearchController
 				'filterCelebrity' => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'enableFacets'    => $options['Enable_Facets'] ? array('celebrity') : FALSE,
 				'limit'			  => $options['Api_Limit'],
-				'imageSize'		  => $params['view'] === 'grid' ? '250x250' : '125x125'
+				'imageSize'		  => $imageSize
 			);	
 			
 			$settings = array_filter($settings);
@@ -626,7 +653,7 @@ class ProsperSearchController
 		{
 			$settings = array(
 				'enableFacets' => 'productId',
-				'imageSize'	   => $params['view'] === 'grid' ? '250x250' : '125x125'				
+				'imageSize'	   => $imageSize				
 			);
 
 			$allData   = $this->searchModel->trendsApiCall($settings, 'fetchProducts');
@@ -651,7 +678,9 @@ class ProsperSearchController
 		$keyword 	 = rawurldecode(get_query_var('keyword'));
 		$keyword 	 = str_replace(',SL,', '/', $keyword);
 		$target 	 = isset($options['Target']) ? '_blank' : '_self';
-				
+		$type   	 = 'product';
+		$backStates = array_flip($this->searchModel->states);
+
 		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
 		if (preg_match($match, $_SERVER['HTTP_REFERER']))
@@ -667,12 +696,13 @@ class ProsperSearchController
 		{
 			$fetch  = 'fetchCoupons';
 			$filter = 'filterCouponId';
+			$type   = 'coupon';
 		}
 		elseif ('local' === $prosperPage)
 		{
 			$fetch  = 'fetchLocal';
 			$filter = 'filterLocalId';
-			$image  = '125x125';
+			$type   = 'local';
 		}
 		elseif ('celebrity' === $prosperPage)
 		{
@@ -682,7 +712,7 @@ class ProsperSearchController
 			$brand  = true;
 		}
 		else
-		{
+		{		
 			if ($options['Country'] === 'US')
 			{
 				$fetch = 'fetchProducts';
@@ -752,7 +782,7 @@ class ProsperSearchController
 			$allData3 = $this->searchModel->apiCall($settings3, $fetch);
 			$results = $allData3['results'];
 		}
-		if ($options['Similar_Limit'] > 0 && $brand == true)
+		if ($options['Similar_Limit'] > 0)
 		{
 			/*
 			/  SIMILAR
@@ -765,11 +795,19 @@ class ProsperSearchController
 				'imageSize'		 => $image ? $image : ''
 			);
 
+			if ($prosperPage = 'local')
+			{	
+				$fullState  = $backStates[$mainRecord[0]['state']];
+				$settings4  = array_merge($settings4, array(
+					'filterState' => $mainRecord[0]['state']
+				));				
+			}
+			
 			$allData4 = $this->searchModel->apiCall($settings4, $fetch);
 			$similar = $allData4['results'];
 		}
 		
-		if ($options['Same_Limit'] > 0)
+		if ($options['Same_Limit'] > 0 && $brand == true)
 		{
 			/*
 			/  SAME BRAND
@@ -796,6 +834,14 @@ class ProsperSearchController
 				'imageSize'		 => $image ? $image : '',
 				'filterMerchant' => $mainRecord[0]['merchant']
 			);
+			
+			if ($prosperPage = 'local')
+			{
+				$fullState  = $backStates[$mainRecord[0]['state']];
+				$settings6 = array_merge($settings6, array(
+					'filterState' => $mainRecord[0]['state']
+				));
+			}
 			
 			$allData6 = $this->searchModel->apiCall($settings6, $fetch);
 			$sameMerchant = $allData6['results'];		

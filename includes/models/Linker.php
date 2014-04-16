@@ -44,11 +44,12 @@ class Model_Linker extends Model_Base
 	
 	public function linkerShortcode($atts, $content = null)
 	{
-		$options = $this->_options;
-		$target  = $options['Target'] ? '_blank' : '_self';
-		$base    = $options['Base_URL'] ? $options['Base_URL'] : 'products';
-		$homeUrl = home_url('/');	
-		$storeUrl = $homeUrl . $base;	
+		$options   = $this->_options;
+		$target    = $options['Target'] ? '_blank' : '_self';
+		$base      = $options['Base_URL'] ? $options['Base_URL'] : 'products';
+		$homeUrl   = home_url('/');	
+		$maskedUrl = home_url('/') . 'store/go/';
+		$storeUrl  = $homeUrl . $base;	
 			
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 
@@ -57,31 +58,79 @@ class Model_Linker extends Model_Base
 
 		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
 		{
-			if ($pieces['ct'] === 'UK')
-			{
-				$fetch = 'fetchUkProducts';
+			if ($pieces['ft'] == 'fetchProducts')
+			{		
+				$type = '';
+				$page = 'product';
+				
+				if ($pieces['ct'] === 'UK')
+				{
+					$fetch = 'fetchUkProducts';
+				}
+				elseif ($pieces['ct'] === 'CA')
+				{
+					$fetch = 'fetchCaProducts';
+				}
+				else 
+				{
+					$fetch = 'fetchProducts';
+				}	
+				
+				$settings = array(
+					'limit'           => 1,
+					'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+					'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+					'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',
+					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+				);
 			}
-			elseif ($pieces['ct'] === 'CA')
+			else
 			{
-				$fetch = 'fetchCaProducts';
+				$fetch = $pieces['ft'];
+				
+				if ($fetch === 'fetchCoupons')
+				{
+					$type = '/type/coup/';
+					$page = 'coupon';
+				
+					$settings = array(
+						'limit'           => 1,
+						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+						'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+					);				
+				}
+				elseif ($fetch === 'fetchLocal')
+				{
+					$type = '/type/local/';
+					$page = 'local';
+				
+					require_once(PROSPER_MODEL . '/Search.php');
+					$searchModel = new Model_Search();
+					if (strlen($pieces['state']) > 2)
+					{
+						$state = $searchModel->states[strtolower($pieces['state'])];
+					}
+					else
+					{
+						$state = $pieces['state'];
+					}
+
+					$settings = array(
+						'limit'           => 1,
+						'filterState'	  => $state ? $state : '',
+						'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
+						'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
+						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+						'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+					);
+				}
 			}
-			else 
-			{
-				$fetch = 'fetchProducts';
-			}	
-			
-			$settings = array(
-				'limit'           => 1,
-				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant'  => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',
-				'filterBrand'	  => $pieces['b'] ? explode(',', trim($pieces['b'])) : '',				
-				'filterProductId' => !$pieces['m'] && $pieces['id'] ? $pieces['id'] : '',
-				'filterCatalogId' => $pieces['m'] && $pieces['id'] ? $pieces['id'] : ''				
-			);
 
 			$settings = array_filter($settings);			
 			$settings = array_merge(array('enableFullData' => 0), $settings);
-	
+
 			if (count($settings) < 3)
 			{
 				return $content;
@@ -108,16 +157,15 @@ class Model_Linker extends Model_Base
 						break;
 					}	 
 				}
-			}
-			
-			
+			}			
+
 			if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
 			{
-				$affUrl = $options['URL_Masking'] ? $storeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
+				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
 			}
 			else if ($pieces['gtm'] === 'prodPage')
 			{				
-				$affUrl = $homeUrl . 'product/' . rawurlencode(str_replace('/', ',SL,', $allData['results'][0]['keyword'])) . '/cid/' . $allData['results'][0]['catalogId'];
+				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['results'][0]['keyword'])) . '/cid/' . $allData['results'][0]['catalogId'];
 			}
 			
 			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
@@ -153,7 +201,7 @@ class Model_Linker extends Model_Base
 
 		if ($fB || $fM || $query)
 		{
-			return '<a href="' . $storeUrl . $query . $fB . $fM . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
+			return '<a href="' . $storeUrl . $query . $fB . $fM . $type . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
 		}
 		else 
 		{

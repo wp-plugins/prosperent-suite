@@ -25,13 +25,21 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 echo $prosperAdmin->radio( 'prosper_insertView', array('grid'=> 'Grid', 'list'=> 'List'), __( 'Which view do you want to use?', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->textinput( 'PI_Limit', __( 'Number of Products to Insert', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>Product Insert of Page/Post Limit</span></a>', 'prosper_textinputsmall' );
+$options = get_option('prosper_autoComparer');
+
+if($options['prosper_insertView'] == 'grid' || !isset($options['prosper_insertView']))
+{
+	echo $prosperAdmin->textinput( 'prosper_insertGridImage', __( 'Enter <strong>Grid</strong> Image Width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Only changes the size for <strong>grid</strong> content inserter product images.</span></a>', 'prosper_textinputsmall');
+	echo '<p class="prosper_desc">' . __( "Defaults to 200.", 'prosperent-suite' ) . '</p>';
+}
+	
+echo $prosperAdmin->textinput( 'PI_Limit', __( 'Number of Products to Insert', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Product Insert of Page/Post Limit</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->textinput( 'prosper_inserter_negTitles', __( 'Words to exclude from Titles', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span><strong>Seperate by commas.</strong></span></a>' );
+echo $prosperAdmin->textinput( 'prosper_inserter_negTitles', __( 'Words to exclude from Titles', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span><strong>Seperate by commas.</strong></span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->checkbox( 'Link_to_Merc', __( 'Link to Merchant', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>This will only change what the Title and Image link to. The Visit Store button will always link to the merchant.</span></a>' );
+echo $prosperAdmin->checkbox( 'Link_to_Merc', __( 'Link to Merchant', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>This will only change what the Title and Image link to. The Visit Store button will always link to the merchant.</span></a>' );
 echo '<p class="prosper_desc">' . __( "Note: The Product Insert will always link to the Merchant if the Product Store is disabled.", 'prosperent-suite' ) . '</p>';
 
 $prosperAdmin->adminFooter();

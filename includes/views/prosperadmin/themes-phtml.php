@@ -43,7 +43,7 @@ else
 }
 
 
-echo __( '<ol><li>Place new theme directories inside <strong>prosperent-themes</strong>.<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span>New theme directories should contain one or all of the following: <br>&bull;&nbsp;<strong>product.php</strong><br>&bull;&nbsp;<strong>productPage.php</strong><br>&bull;&nbsp;a <strong>css file</strong> <br>(The CSS file can be named anything, the plugin is looking for the extension .css).</span></a></li><li>Select the desired theme.</li></ol>', 'prosperent-suite' );
+echo __( '<ol><li>Place new theme directories inside <strong>prosperent-themes</strong>.<a href="#" class="prosper_tooltip"><span style="max-width:465px;">New theme directories should contain one or all of the following: <br>&bull;&nbsp;<strong>product.php</strong>- this is for the product results<br>&bull;&nbsp;<strong>productPage.php</strong> - this is for the individual product pages<br>&bull;&nbsp;<strong>insertProd.php</strong> - this is for the Inserter<br>&bull;&nbsp;a <strong>CSS file</strong> - contains the CSS for product.php, productPage.php and insertProd.php<br>(The CSS file can be named anything, the plugin is looking for the extension .css).</span></a></li><li>Select the desired theme.</li></ol>', 'prosperent-suite' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 

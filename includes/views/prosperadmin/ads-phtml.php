@@ -27,7 +27,7 @@ echo $prosperAdmin->checkbox( 'Enable_PA', __( '<strong>Yes!</strong>', 'prosper
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Remove Common Words from Topics', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->textinput( 'Remove_Tags', __( 'Common Words', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><img border="0" src="' . PROSPER_IMG . '/help.png"><span><strong>Seperate by Commas. </strong>This removes common tags from being used as topics if you select "Use Tags as Topics" in the widget.</span></a>' );
+echo $prosperAdmin->textinput( 'Remove_Tags', __( 'Common Words', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span><strong>Seperate by Commas. </strong>This removes common tags from being used as topics if you select "Use Tags as Topics" in the widget.</span></a>' );
 echo '<p class="prosper_desc">' . __( "Common words are either tags or titles. These can be words that you use across multiple pages or very common words, such as 'shopping' or 'products'. Words that might not come back with a product that you want. <strong><br>Case is not important.</strong>", 'prosperent-suite' ) . '</p>';
 
 

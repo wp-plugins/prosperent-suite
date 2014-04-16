@@ -492,7 +492,7 @@ class Model_Search extends Model_Base
 	{
 		$options = get_option('prosper_advanced');
 
-		if (!$options['Manual_Base'])
+		if (!isset($options['Manual_Base']))
 		{
 			if (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name)
 			{
@@ -506,8 +506,8 @@ class Model_Search extends Model_Base
 				update_option('prosper_advanced', $opts);
 
 				$newOptions = get_option('prosper_advanced');
-				$page     = $newOptions['Base_URL'] ? $newOptions['Base_URL'] . '/' : 'products/';
-				$pageName = $newOptions['Base_URL'] ? 'pagename=' . $newOptions['Base_URL'] : 'pagename=products';
+				$page       = isset($newOptions['Base_URL']) ? $newOptions['Base_URL'] . '/' : 'products/';
+				$pageName   = isset($newOptions['Base_URL']) ? 'pagename=' . $newOptions['Base_URL'] : 'pagename=products';
 				
 				add_rewrite_rule('^([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 				add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
@@ -598,7 +598,7 @@ class Model_Search extends Model_Base
 						$title =  $title;
 						break;
 					case '1':
-						$title =  $title . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
+						$title =  $blogname . $sep . $pagename . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
 						break;
 					case '2':
 						$title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;

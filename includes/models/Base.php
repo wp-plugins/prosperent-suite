@@ -191,23 +191,29 @@ abstract class Model_Base
 	public function shortCodeExtract($atts, $shortcode)
 	{	
 		return shortcode_atts(array(
-			'q'   => '',
-			'utt' => 0,
-			'utg' => 0,
-			'h'   => 90,
-			'w'   => 'auto',			
-			'c'   => 0,
-			'b'   => '',
-			'm'   => '',
-			'l'   => 1,
-			'cl'  => '',
-			'ct'  => 'US',
-			'id'  => '',			
-			'gtm' => 0,
-			'v'   => 'list',
-			'w'	  => '',
-			'ws'  => 'px',
-			'css' => ''
+			'q'      => '', // query
+			'utt'    => 0, // use Title as Topics
+			'utg'    => 0, // use Tags as Topics
+			'h'      => 90, // height
+			'w'      => 'auto',	// width	
+			'c'      => 0, // use coupons, deprecated
+			'b'      => '', // brand
+			'm'      => '', // merchant
+			'l'      => 1, // limit
+			'cl'     => '', // comparison limit, deprecated
+			'ct'     => 'US', // country
+			'id'     => '',  // product/catalog id	
+			'gtm'    => 0, // go to merchant
+			'v'      => 'list', // view
+			'w'	     => '', // width
+			'ws'     => 'px', // width style (px, em, %)
+			'css'    => '', // additional css
+			'state'  => '', // state
+			'city'   => '', // city 
+			'z'	 	 => '', // zipCode
+			'ft'  	 => 'fetchProducts', // fetch method
+			'sale'   => 0, // on sale products only
+			'gimgsz' => 200	 // grid image size		
 		), $atts, $shortcode);
 	}
 	
@@ -231,7 +237,14 @@ abstract class Model_Base
 	
 	public function prosperTinyRegister($plugin_array)
 	{		
-		$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?q=ver=1' . $this->_version;
+		if (get_bloginfo('version') >= 3.9)
+		{
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version;
+		}
+		else
+		{
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version;
+		}
 		return $plugin_array;
 	}	
 	

@@ -71,7 +71,7 @@ class ProsperStoreWidget extends WP_Widget
         ?>
         <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
         <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
-		<p><label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Text Field Width:'); ?></label><a href="#" class="prosper_tooltip_widget"><img border="0" src="<?php echo PROSPER_IMG . '/help.png'; ?>"><span>Width of the text field in the Search Widget. Use the buttons below to choose the best ending, (%, px, or em). If left empty, the default is 52%.</span></a>
+		<p><label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Text Field Width:'); ?></label><a href="#" class="prosper_tooltip"><span>Width of the text field in the Search Widget. Use the buttons below to choose the best ending, (%, px, or em). If left empty, the default is 52%.</span></a>
         <input class="widefat" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo esc_attr($width); ?>" /></p>
 		<div style="text-align:center;">
 			<input type="radio" name="<?php echo $this->get_field_name('widthStyle'); ?>" value="%" <?php echo checked( esc_attr($widthStyle), '%', false ); ?> /> <strong>%</strong>

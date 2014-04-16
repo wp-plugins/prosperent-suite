@@ -1,87 +1,149 @@
-<style>
-    .noResults {
-        font-size:2.4em;
-    }
-
-    .noResults-secondary {
-        font-size:14px;
-    }
-	.couponBlock {
-		padding-bottom:6px;
-	}
-	.productBlock {
-		padding-bottom:6px;
-	}
-</style>
 <?php
-error_reporting(0);     
-$merchant = explode(',', trim($_GET['merchant']));
-$brand = explode(',', trim($_GET['brand']));
+error_reporting(0);   
+$params = array_filter($_GET); 
+$type = $params['type'];
 
-require_once('../../ProsperentApi.php');
-$settings = array(
-	'api_key'        => '7b0a5297441c39be99fda92fc784b516',
-	'query'          => $_GET['q'],
-	'visitor_ip'     => $_SERVER['REMOTE_ADDR'],
-	'limit'          => 100,
-	'filterMerchant' => $merchant
+$states = array(
+	'alabama'		 =>'AL',
+	'alaska'		 =>'AK',
+	'arizona'		 =>'AZ',
+	'arkansas'		 =>'AR',
+	'california'	 =>'CA',
+	'colorado'		 =>'CO',
+	'connecticut'	 =>'CT',
+	'DC'	 		 =>'DC',
+	'delaware'		 =>'DE',
+	'florida'		 =>'FL',
+	'georgia'		 =>'GA',
+	'hawaii'		 =>'HI',
+	'idaho'		 	 =>'ID',
+	'illinois'		 =>'IL',
+	'indiana'		 =>'IN',
+	'iowa'			 =>'IA',
+	'kansas'		 =>'KS',
+	'kentucky'		 =>'KY',
+	'louisiana'		 =>'LA',
+	'maine'			 =>'ME',
+	'maryland'		 =>'MD',
+	'massachusetts'	 =>'MA',
+	'michigan'		 =>'MI',
+	'minnesota'		 =>'MN',
+	'mississippi'	 =>'MS',
+	'missouri'		 =>'MO',
+	'montana'		 =>'MT',
+	'nebraska'		 =>'NE',
+	'nevada'		 =>'NV',
+	'new hampshire'	 =>'NH',
+	'new jersey'	 =>'NJ',
+	'new mexico'	 =>'NM',
+	'new york'		 =>'NY',
+	'north carolina' =>'NC',
+	'north dakota'	 =>'ND',
+	'ohio'			 =>'OH',
+	'oklahoma'		 =>'OK',
+	'oregon'		 =>'OR',
+	'pennsylvania'	 =>'PA',
+	'rhode island'   =>'RI',
+	'south carolina' =>'SC',
+	'south dakota'   =>'SD',
+	'tennessee'      =>'TN',
+	'texas'			 =>'TX',
+	'utah'			 =>'UT',
+	'vermont'		 =>'VT',
+	'virginia'		 =>'VA',
+	'washington'	 =>'WA',
+	'west virginia'	 =>'WV',
+	'wisconsin'		 =>'WI',
+	'wyoming'		 =>'WY'
 );
 
-$prosperentApi = new Prosperent_Api($settings);
-
-if (!$_GET['coup'])
+if ($type == 'coup')
 {
-	$prosperentApi -> set_filterBrand($brand);
-	$prosperentApi -> set_imageSize('125x125');
+	$fetch = 'fetchCoupons';
+	$merchants = array_map('trim', explode(',', $params['coupm']));
 
-	if ($_GET['merchant'] && $_GET['prodid'])
-	{
-		$prosperentApi -> set_filterCatalogId($_GET['prodid']);
-	}
-	elseif ($_GET['prodid'])
-	{
-		$prosperentApi -> set_filterProductId($_GET['prodid']);
-	}
-	
-	switch ($_GET['country'])
-	{
-		case 'UK':
-			$prosperentApi -> fetchUkProducts();
-			$currency = 'GBP';
-			break;
-		case 'CA':
-			$prosperentApi -> fetchCaProducts();
-			$currency = 'CAD';
-			break;
-		default:
-			$prosperentApi -> fetchProducts();
-			$currency = 'USD';
-			break;
-	}       
-}
-else
-{
-	$key = array_search('Zappos.com', $merchant);
+	$key = array_search('Zappos.com', $merchants);
 	if ($key || 0 === $key)
 	{
-		unset($merchant[$key]);
+		unset($merchants[$key]);
 	}
 
-	$key2 = array_search('6pm', $merchant);
+	$key2 = array_search('6pm', $merchants);
 	if ($key2 || 0 === $key2)
 	{
-		unset($merchant[$key2]);
+		unset($merchants[$key2]);
 	}
 
-	$merchants = array_merge($merchant, array('!Zappos.com', '!6pm'));
-	
-	$prosperentApi -> set_filterMerchant($merchants);
-	$prosperentApi -> set_imageSize('120x60');
-	$prosperentApi -> set_filterCouponId($_GET['prodid']);
+	$merchants = array_merge($merchants, array('!Zappos.com', '!6pm'));
 
-	$prosperentApi -> fetchCoupons();
+	$settings = array(
+		'query'          => trim($params['coupq']),
+		'filterMerchant' => $merchants,
+		'imageSize'		 => '120x60'
+	);
+
+}
+elseif ($type == 'local')
+{
+	$fetch = 'fetchLocal';
+	
+	if (strlen($params['state']) > 2)
+	{
+		$state = $states[strtolower(trim($params['state']))];
+	}
+	else
+	{
+		$state = trim($params['state']);
+	}
+	
+	$merchants = array_map('trim', explode(',', $params['localm']));
+
+	$settings = array(
+		'query'          => trim($params['localq']),
+		'filterMerchant' => $merchants,
+		'filterState'	 => $state,
+		'filterCity'	 => trim($params['city']),
+		'filterZipCode'	 => trim($params['zipCode']),
+		'imageSize'		 => '125x125'
+	);
+}
+else 
+{
+	if ($params['country'] === 'UK')
+	{
+		$fetch = 'fetchUkProducts';
+	}
+	elseif ($params['country'] === 'CA')
+	{
+		$fetch = 'fetchCaProducts';
+	}
+	else 
+	{
+		$fetch = 'fetchProducts';
+	}
+
+	$merchants = array_map('trim', explode(',', $params['prodm']));
+	$brands = array_map('trim', explode(',', $params['prodb']));
+
+	$settings = array(
+		'query'          => trim($params['prodq']),
+		'filterMerchant' => $merchants,
+		'filterBrand'    => $brands,
+		'imageSize'		 => '125x125',
+		'groupBy'	     => 'productId',
+		'filterPriceSale' => $params['onSale'] ? '0.01,' : ''		
+	);
 }
 
+$settings = array_merge(array(
+	'api_key'        => '7b0a5297441c39be99fda92fc784b516',
+	'limit'          => 100,
+	'enableFacets'	 => FALSE
+), $settings);
+
+require_once('../../ProsperentApi.php');
+$prosperentApi = new Prosperent_Api($settings);
+$prosperentApi -> $fetch();
 $results = $prosperentApi -> getAllData();	
 
 if ($results)
@@ -90,12 +152,24 @@ if ($results)
 	<div id="productList">
 	<?php
 		foreach ($results as $record)
-		{				
+		{			
+			if ($type == 'coup')
+			{
+				$prosperId = $record['couponId'];
+			}
+			elseif ($type == 'local')
+			{
+				$prosperId = $record['localId'];
+			}
+			else
+			{
+				$prosperId = $record['productId'];
+			}		
 			?>
-			<div id="<?php echo $_GET['coup'] ? $record['couponId'] : $_GET['merchant'] ? $record['catalogId'] : $record['productId']; ?>" onClick="getIdofItem(this);">
+			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull">
 				<div class="productBlock">
 					<div class='productImage'>
-						<span><img src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span></a>
+						<span><img class="newImage" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
 					</div>
 					<div class='productContent'>
 						<div class='productTitle'><span><?php echo $record['keyword']; ?></span></a></div>
@@ -120,7 +194,7 @@ if ($results)
 							echo '<div class="couponCode" style="font-weight:bold; padding:5px 0 0 0;">Coupon Code: <span class="code_cc" style="border:2px dashed #3079ed; padding: 2px 3px; font-weight:bold; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius:8px;">' . $record['coupon_code'] . '</span></div>';
 						}
 						
-						if (!$_GET['coup']): ?>
+						if ($type != 'coup' && $type != 'local'): ?>
 						<div class='productDescription'><?php
 							if (strlen($record['description']) > 200)
 							{

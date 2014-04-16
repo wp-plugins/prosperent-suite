@@ -166,30 +166,32 @@
 
 <?php
 $gridImage = ($options['Grid_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Grid_Img_Size']) : 200) . 'px';
+$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
 if (count($similar) > 1)
 {
     echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Similar ' . ($prosperPage === 'coupon' || $prosperPage === 'local' ? 'Deals' : 'Products') . '</div>';
+    echo '<div class="simTitle">Similar ' . (($type === 'coupon' || $type === 'local') ? 'Deals' : 'Products') . ($type === 'local' ? ' for' . ucwords($fullState) : '') . '</div>';
     echo '<div id="simProd">';
     echo '<ul>';
-
     foreach ($similar as $prod)
     {
-        $price = $prod['price_sale'] ? $prod['price_sale'] : $prod['price'];
-		$keyword = preg_replace('/\(.+\)/i', '', $prod['keyword']);
+		$priceSale = $prod['priceSale'] ? $prod['priceSale'] : $prod['price_sale'];
+        $price 	   = $priceSale ? $priceSale : $prod['price'];
+		$keyword   = preg_replace('/\(.+\)/i', '', $prod['keyword']);
+		$cid 	   = $type === 'coupon' ? $prod['couponId'] : ($type === 'local' ? $prod['localId'] : $prod['catalogId']);
         ?>
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>"><div><img <?php echo ($params['type'] != 'coup' && $params['type'] != 'local' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></div></a>
+                    <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo $classLoad; ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $prod['catalogId']; ?>" >
+                        <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" >
                             <?php
-                            if (strlen($keyword) > 42)
+                            if (strlen($keyword) > 40)
                             {
-                                echo substr($keyword, 0, 42) . '...';
+                                echo substr($keyword, 0, 40) . '...';
                             }
                             else
                             {
@@ -202,7 +204,7 @@ if (count($similar) > 1)
                 </div>
                 <div class="clear"></div>
             </div>
-			<?php if ($price && $params['type'] != 'coup'): ?>
+			<?php if ($price && $type != 'coupon'): ?>
 			<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
 			<?php endif; ?>
             </li>
@@ -215,27 +217,29 @@ if (count($similar) > 1)
 if (count($sameBrand) > 1)
 {
 	echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Other ' . ($prosperPage === 'coupon' || $prosperPage === 'local' ? 'Deals' : 'Products') . ' from ' . $mainRecord[0]['brand'] . '</div>';
+    echo '<div class="simTitle">Other Products from ' . $mainRecord[0]['brand'] . '</div>';
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($sameBrand as $brandProd)
     {
-        $price = $brandProd['price_sale'] ? $brandProd['price_sale'] : $brandProd['price'];
-		$keyword = preg_replace('/\(.+\)/i', '', $brandProd['keyword']);
+		$priceSale = $brandProd['priceSale'] ? $brandProd['priceSale'] : $brandProd['price_sale'];
+        $price 	   = $priceSale ? $priceSale : $brandProd['price'];
+		$keyword   = preg_replace('/\(.+\)/i', '', $brandProd['keyword']);
+		$cid 	   = $brandProd['catalogId'];
         ?>
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' && $params['type'] != 'local' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
+                    <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo $classLoad; ?>><img <?php echo 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $brandProd['catalogId']; ?>" >
+                        <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $cid; ?>" >
                             <?php
 							
-                            if (strlen($keyword) > 42)
+                            if (strlen($keyword) > 40)
                             {
-                                echo substr($keyword, 0, 42) . '...';
+                                echo substr($keyword, 0, 40) . '...';
                             }
                             else
                             {
@@ -246,7 +250,7 @@ if (count($sameBrand) > 1)
                     </div>                    
                 </div>			
             </div>
-			<?php if ($price && $params['type'] != 'coup'): ?>
+			<?php if ($price && $type != 'coupon'): ?>
 			<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
 			<?php endif; ?>
             </li>
@@ -259,27 +263,29 @@ if (count($sameBrand) > 1)
 if (count($sameMerchant) > 1)
 {
 	echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Other ' . ($prosperPage === 'coupon' || $prosperPage === 'local' ? 'Deals' : 'Products') . ' from ' . $mainRecord[0]['merchant'] . '</div>';
+    echo '<div class="simTitle">Other ' . ($type === 'coupon' || $type === 'local' ? 'Deals' : 'Products') . ' from ' . $mainRecord[0]['merchant'] . ($type === 'local' ? ' for ' . ucwords($fullState) : '') . '</div>';
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($sameMerchant as $merchantProd)
     {
-        $price = $merchantProd['price_sale'] ? $merchantProd['price_sale'] : $merchantProd['price'];
-		$keyword = preg_replace('/\(.+\)/i', '', $merchantProd['keyword']);
+		$priceSale = $merchantProd['priceSale'] ? $merchantProd['priceSale'] : $merchantProd['price_sale'];
+        $price 	   = $priceSale ? $priceSale : $merchantProd['price'];
+		$keyword   = preg_replace('/\(.+\)/i', '', $merchantProd['keyword']);
+		$cid 	   = $type === 'coupon' ? $merchantProd['couponId'] : ($type === 'local' ? $merchantProd['localId'] : $merchantProd['catalogId']);
         ?>
             <li>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $merchantProd['catalogId']; ?>"><span <?php echo ($prosperPage === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' && $params['type'] != 'local' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $merchantProd['image_url'])) : $merchantProd['image_url']); ?>"/></span></a>
+                    <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>"><span <?php echo $classLoad; ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $merchantProd['image_url'])) : $merchantProd['image_url']); ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">
-                        <a href="<?php echo $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $merchantProd['catalogId']; ?>" >
+                        <a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" >
                             <?php
 							
-                            if (strlen($keyword) > 42)
+                            if (strlen($keyword) > 40)
                             {
-                                echo substr($keyword, 0, 42) . '...';
+                                echo substr($keyword, 0, 40) . '...';
                             }
                             else
                             {
@@ -290,7 +296,7 @@ if (count($sameMerchant) > 1)
                     </div>                    
                 </div>			
             </div>
-			<?php if ($price && $params['type'] != 'coup'): ?>
+			<?php if ($price && $type != 'coupon'): ?>
 			<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
 			<?php endif; ?>
             </li>

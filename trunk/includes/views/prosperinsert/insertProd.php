@@ -1,6 +1,7 @@
 <?php
 if ($pieces['v'] === 'grid')
 {
+	$gridImage = ($pieces['gimgsz'] ? preg_replace('/\s?(px|em|%)/i', '', $pieces['gimgsz']) : 200) . 'px';
 	echo '<div id="simProd">';
     echo '<ul>';
     foreach ($results as $record)
@@ -9,7 +10,7 @@ if ($pieces['v'] === 'grid')
 		$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
         $price 	   = $priceSale ? $priceSale : $record['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
-		$cid 	   = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
+		$cid 	   = $record[$recordId];
 		
 		if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 		{
@@ -24,10 +25,10 @@ if ($pieces['v'] === 'grid')
 			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
 		}
         ?>
-            <li <?php echo ($params['type'] === 'coup' ? 'class="coupBlock"' : ''); ?>>
+            <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : ''); ?>>
             <div class="listBlock">
                 <div class="prodImage">
-                    <a href=<?php echo $goToUrl; ?>><span <?php echo ($params['type'] === 'coup' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($params['type'] != 'coup' ? 'class="gridImg"' : ''); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+                    <a href=<?php echo $goToUrl; ?>><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : ''); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
                 </div>
                 <div class="prodContent">
                     <div class="prodTitle">

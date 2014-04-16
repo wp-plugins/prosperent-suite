@@ -108,12 +108,73 @@ class Model_Inserter extends Model_Base
 		$type 	 = 'product';
 
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
+		$pieces = array_filter($pieces);
 		
+		$fetch = $pieces['ft'];
+
 		// Remove links within links
 		$content = strip_tags($content);
 
-		if (!$pieces['c'] || $pieces['c'] === 'false')
+		$id = array_map('trim', explode(',',  rtrim($pieces['id'], ",")));
+		
+		$limit = 1;		
+		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
 		{
+			$limit = $pieces['cl'];
+		}
+		elseif ($pieces['l'] > 1)
+		{			
+			$limit = $pieces['l'];
+		}
+		elseif ($id)
+		{
+			$limit = count($id);
+		}
+		
+		if ($fetch === 'fetchLocal')
+		{
+			$recordId = 'localId';
+			$type = 'local';
+		
+			$searchModel = new Model_Search();
+			if (strlen($pieces['state']) > 2)
+			{
+				$state = $searchModel->states[strtolower($pieces['state'])];
+			}
+			else
+			{
+				$state = $pieces['state'];
+			}
+
+			$settings = array(
+				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
+				'limit'           => $limit,
+				'filterState'	  => $state ? $state : '',
+				'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
+				'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
+				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+				'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+			);
+		}
+		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
+		{		
+			$recordId = 'couponId';
+			
+			$settings = array(
+				'imageSize'		 => '120x60',
+				'limit'          => $limit,
+				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+				'filterMerchant' => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',		
+				'filterCouponId' => $pieces['id'] ? $pieces['id'] : '',
+			);			
+
+			$imageLoader = 'small';
+			$type = 'coupon';
+		}
+		elseif ($fetch === 'fetchProducts')
+		{
+			$recordId = 'catalogId';
 			if ($pieces['ct'] === 'UK')
 			{
 				$fetch = 'fetchUkProducts';
@@ -131,90 +192,47 @@ class Model_Inserter extends Model_Base
 			}	
 
 			$settings = array(
-				'imageSize'		  => $pieces['v'] === 'grid' ? '250x250' : '125x125',
-				'limit'           => ($pieces['cl'] && $pieces['cl'] > $pieces['l']) ? $pieces['cl'] : ($pieces['l'] || $pieces['l'] > 1) ? $pieces['l'] : 1,
+				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
+				'limit'           => $limit,
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant'  => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',
-				'filterBrand'	  => $pieces['b'] ? explode(',', trim($pieces['b'])) : '',				
-				'filterProductId' => !$pieces['m'] && $pieces['id'] ? $pieces['id'] : '',
-				'filterCatalogId' => $pieces['m'] && $pieces['id'] ? $pieces['id'] : ''
+				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
+				'filterProductId' => $id ? $id : '',
+				'filterPriceSale' => $pieces['sale'] ? '0.01,' : ''
 			);
-
-			$settings = array_filter($settings);
-
-			if (count($settings) < 3)
-			{
-				return;
-			}
-			
-			$allData = $this->apiCall($settings, $fetch);
-
-			if (!$allData['results'])
-			{
-				$count = count($settings);
-				for ($i = 0; $i <= $count; $i++)
-				{
-					array_pop($settings);
-
-					if(count($settings) < 3)
-					{
-						return;
-					}
-				
-					$allData = $this->apiCall($settings, $fetch);
-					
-					if ($allData['results'])
-					{
-						break;
-					}	 
-				}
-			}
-			
-			$prodSubmit = home_url('/') . $base;
 		}
-		else
-		{		
-			$settings = array(
-				'imageSize'		 => '120x60',
-				'limit'          => ($pieces['cl'] && $pieces['cl'] > $pieces['l']) ? $pieces['cl'] : ($pieces['l'] || $pieces['l'] > 1) ? $pieces['l'] : 1,
-				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant' => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',		
-				'filterCouponId' => $pieces['id'] ? $pieces['id'] : '',
-			);
-
-			$settings = array_filter($settings);
-	
-			$imageLoader = 'small';
-			$type = 'coupon';
-			
-			if (count($settings) < 3)
-			{
-				return;
-			}
 		
-			$allData = $this->apiCall($settings, 'fetchCoupons');
+		$settings = array_filter($settings);
 
-			if (!$allData['results'])
-			{
-				$count = count($settings);
-				for ($i = 0; $i <= $count; $i++)
-				{
-					array_pop($settings);
-
-					if(count($settings) < 3)
-					{
-						return;
-					}
-				
-					$allData = $this->apiCall($settings, $fetch);
-					
-					if ($allData['results'])
-					{
-						break;
-					}	 
-				}
-			}	
+		if (count($settings) < 3)
+		{
+			return;
 		}
+		
+		$allData = $this->apiCall($settings, $fetch);
+
+		if (!$allData['results'])
+		{
+			$count = count($settings);
+			for ($i = 0; $i <= $count; $i++)
+			{
+				array_pop($settings);
+
+				if(count($settings) < 3)
+				{
+					return;
+				}
+			
+				$allData = $this->apiCall($settings, $fetch);
+				
+				if ($allData['results'])
+				{
+					break;
+				}	 
+			}
+		}
+		
+		$prodSubmit = home_url('/') . $base;	
 		
 		// CHECK INTO THIS AFTER STORE IS COMPLETE
 		if (!$this->_options['Enable_PPS'])
@@ -230,8 +248,26 @@ class Model_Inserter extends Model_Base
 		
 		$results = $allData['results'];
 		
+		$insertProd = PROSPER_VIEW . '/prosperinsert/insertProd.php';
+		
+		// Inserter PHTML file
+		if ($this->_options['Set_Theme'] != 'Default')
+		{
+			$dir = PROSPER_THEME . '/' . $this->_options['Set_Theme'];
+			if($newTheme = glob($dir . "/*.php"))
+			{			
+				foreach ($newTheme as $theme)
+				{
+					if (preg_match('/insertProd.php/i', $theme))
+					{
+						$insertProd = $theme;
+					}			
+				}
+			}
+		}
+		
 		ob_start();
-		require(PROSPER_VIEW . '/prosperinsert/insertProd.php');
+		require($insertProd);
 		$insert = ob_get_clean();
 		return $insert;
 	}

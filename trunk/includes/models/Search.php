@@ -194,22 +194,16 @@ class Model_Search extends Model_Base
 		$facetsNew = array();	
 		foreach ($facets as $i => $facetArray)
 		{		
-			foreach ($facetArray as $facet)
+			if ($i === 'zipCode')
 			{
-				if ($i === 'zipCode')
-				{
-					$i = 'zip';
-				}
-				
-				if ($facet['value'] == 'null')
-				{
-					$facet['value'] = 'Online';
-				}
-				
+				$i = 'zip';
+			}
+			
+			foreach ($facetArray as $facet)
+			{							
 				$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value'])) . '>' . $facet['value'] . '</a>';
 			}
 		}
-		
 		return $facetsNew;
 	}
 	
@@ -248,21 +242,21 @@ class Model_Search extends Model_Base
 		{
 			$title = $this->_options['prodLabel'] ? $title = $this->_options['prodLabel'] : 'Products'; 
 		
-			$sepEnds['prod'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celeb/' . $params['celeb'], '/type/' . $params['type'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '">' . $title . '</a>';
+			$sepEnds['prod'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '">' . $title . '</a>';
 		}
 		
 		if ($this->_options['Coupon_Endpoint'])
 		{
 			$title = $this->_options['coupLabel'] ? $title = $this->_options['coupLabel'] : 'Coupons'; 
 		
-			$sepEnds['coup'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celeb/' . $params['celeb'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/coup">' . $title . '</a>';
+			$sepEnds['coup'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/coup">' . $title . '</a>';
 		}
 				
 		if ($this->_options['Local_Endpoint'])
 		{
 			$title = $this->_options['localLabel'] ? $title = $this->_options['localLabel'] : 'Local Deals'; 
 		
-			$sepEnds['local'] = '<a href="' . str_replace(array('/page/' . $params['page'], '/celeb/' . $params['celeb'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/query/' . $params['query'], '/sort/' . $params['sort'], '/merchant/' . $params['merchant'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/local">' . $title . '</a>';
+			$sepEnds['local'] = '<a href="' . str_replace(array('/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/query/' . $params['query'], '/sort/' . $params['sort'], '/merchant/' . $params['merchant'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/local">' . $title . '</a>';
 		}
 		
 		if ($this->_options['Celebrity_Endpoint'])

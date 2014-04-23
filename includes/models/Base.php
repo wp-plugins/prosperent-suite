@@ -306,11 +306,11 @@ abstract class Model_Base
 			'visitor_ip'   => $_SERVER['REMOTE_ADDR']	
 		));	
 
-		if (file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
+		if ($options['Enable_Caching'] && file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
 		{
 			$settings = array_merge($settings, $this->apiCaching($lifetime));	
-		}
-
+		}		
+			
 		$prosperentApi = new Prosperent_Api($settings);
 
 		$prosperentApi->$fetch();

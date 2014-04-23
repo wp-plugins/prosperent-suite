@@ -116,13 +116,13 @@ class Model_Inserter extends Model_Base
 		$content = strip_tags($content);
 
 		$id = array_map('trim', explode(',',  rtrim($pieces['id'], ",")));
-		
+
 		$limit = 1;		
 		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
 		{
 			$limit = $pieces['cl'];
 		}
-		elseif ($pieces['l'] > 1)
+		elseif ($pieces['l'] >= 1)
 		{			
 			$limit = $pieces['l'];
 		}
@@ -130,15 +130,15 @@ class Model_Inserter extends Model_Base
 		{
 			$limit = count($id);
 		}
-		
+
 		if ($fetch === 'fetchLocal')
 		{
 			$recordId = 'localId';
 			$type = 'local';
 		
-			$searchModel = new Model_Search();
 			if (strlen($pieces['state']) > 2)
 			{
+				$searchModel = new Model_Search();
 				$state = $searchModel->states[strtolower($pieces['state'])];
 			}
 			else

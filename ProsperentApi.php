@@ -496,7 +496,9 @@ class Prosperent_Api implements Iterator
         'enableFacets',
         'enableQuerySuggestion',
         'enableJsonCompression',
-        'enableFullData'
+        'enableFullData',
+		'sortBy',
+		'groupBy'
     );
 
     /**

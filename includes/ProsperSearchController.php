@@ -102,11 +102,9 @@ class ProsperSearchController
 			$this->searchModel->getPostVars($postArray, $data);
 		}
 
-		$data['params']['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
-
 		if (get_query_var('cid'))
 		{  
-			$this->productPageAction($data, $homeUrl,$productPage, $options);
+			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
 
@@ -115,15 +113,19 @@ class ProsperSearchController
 		switch ($type)
 		{
 			case 'prod': 
+				$data['params']['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
 				$this->productAction($data, $homeUrl, 'product', $searchPage, $options);
 				break;
 			case 'coup':
+				$data['params']['view'] = !$params['view'] ? $options['Coupon_View'] : $params['view'];
 				$this->couponAction($data, $homeUrl, 'coupon', $searchPage, $options);
 				break;
 			case 'cele':
+				$data['params']['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
 				$this->celebrityAction($data, $homeUrl, 'celebrity', $searchPage, $options);
 				break;
 			case 'local':
+				$data['params']['view'] = !$params['view'] ? $options['Coupon_View'] : $params['view'];
 				$this->localAction($data, $homeUrl, 'local', $searchPage, $options);
 				break;				
 		}
@@ -181,8 +183,11 @@ class ProsperSearchController
 		 */ 
 		if ($query)
 		{
-			$title = ucwords($query) . '</strong>';
-			$title .= ($params['merchant'] || $params['brand']) ? '<a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url) . '> [x]</a>' : '';
+			$title = '<strong>' . ucwords($query) . '</strong>';
+			if ($params['brand'] || $params['merchant'])
+			{
+				$demolishUrl = str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url);
+			}
 		}
 		elseif ($params['brand'])
 		{
@@ -192,9 +197,9 @@ class ProsperSearchController
 		{
 			$title = ucwords(rawurldecode($params['merchant'])) . '</strong>';
 		}
-		
+
 		$sortArray = array(
-			'Relevancy'			 => '',
+			'Relevancy'			 => 'rel',
 			'Price: High to Low' => 'price desc',
 			'Price: Low to High' => 'price asc',
 			'Merchant: A-Z' 	 => 'merchant asc',
@@ -205,7 +210,7 @@ class ProsperSearchController
 		{			
 			$settings = array(
 				'query'          => $query,
-				'sortBy'	     => rawurldecode($params['sort']),
+				'sortBy'	     => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
 				'groupBy'	     => 'productId',
 				'filterBrand'    => $filters['brands'],
 				'filterMerchant' => $filters['merchants'],
@@ -215,7 +220,7 @@ class ProsperSearchController
 			);	
 
 			$settings = array_filter($settings);
-			
+
 			$allData = $this->searchModel->apiCall($settings, $fetch);
 		}
 
@@ -277,7 +282,7 @@ class ProsperSearchController
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$url = preg_replace('/\/$/', '', $url);
-			$q = $params['query'];
+			$q = rawurldecode($params['query']);
 		}
 
 		$query = $q ? stripslashes($q) : null;
@@ -287,14 +292,17 @@ class ProsperSearchController
 		 */ 
 		if ($query)
 		{
-			$title = ucwords($query) . '</strong>';
-			$title .= ($params['merchant'] || $params['brand']) ? '<a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url) . '> [x]</a>' : '';
+			$title = '<strong>' . ucwords($query) . '</strong>';
+			if ($params['merchant'])
+			{
+				$demolishUrl = str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url);
+			}
 		}
 		elseif ($params['merchant'])
 		{
 			$title = ucwords(rawurldecode($params['merchant'])) . '</strong>';
 		}
-        	
+
 		$sortArray = array(
 			'Price: High to Low' 		  => 'price desc',
 			'Price: Low to High' 		  => 'price asc',
@@ -433,27 +441,18 @@ class ProsperSearchController
 		/*
 		 * Get title for results line
 		 */ 
-		if ($filterCity === 'Online' || $filterZip === 'Online')
+		if ($params['city'])
 		{
-			$title = 'Online Deals</strong>';
-		}
-		elseif ($params['city'])
-		{
-			$title = ucwords(rawurldecode($params['city'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['city'])) . '</strong>';
 		}
 		elseif ($params['zip'])
 		{
-			$title = ucwords(rawurldecode($params['zip'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['zip'])) . '</strong>';
 		}
 		elseif ($params['state'])
 		{
-			$title = ucwords(rawurldecode($backStates[$params['state']])) . '</strong>';
-			$title .= '<a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/state/' . $params['state']), '', $url) . '> [x]</a>';
+			$title = '<strong>' . ucwords(rawurldecode($backStates[$params['state']])) . '</strong>';			
 		}	
-		else
-		{
-			$title = 'Online Deals</strong>';
-		}
 	
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
 		{
@@ -477,26 +476,21 @@ class ProsperSearchController
 			'ZipCode: Low to High' 		  => 'zipCode asc',
 		);	
 				
-		$settings = array(
-			'sortBy'	     => rawurldecode($params['sort']),
-			'enableFacets'   => $options['Enable_Facets'] ? array('city', 'zipCode') : FALSE,
-			'filterZipCode'  => $filterZip,
-			'filterCity'     => $filterCity,
-			'filterState'    => $filterState,
-			'filterMerchant' => rawurldecode($params['merchant']),
-			'limit'			 => $options['Api_Limit'],
-			'imageSize'		 => $imageSize
-		);	
-		
-		if ((!$filterCity && !$filterZip && !$params['state']) || $filterCity == 'Online' || $filterZip == 'Online')
-		{
-			$settings = array_merge($settings, array(			
-				'filterZipCode'  => 'null',
-				'filterCity'     => 'null',
-				'filterState'    => 'null'
-			));
+		if ($filterZip || $filterCity || $filterState)
+		{			
+			$settings = array(
+				'sortBy'	     => rawurldecode($params['sort']),
+				'enableFacets'   => $options['Enable_Facets'] ? array('city', 'zipCode') : FALSE,
+				'filterZipCode'  => $filterZip,
+				'filterCity'     => $filterCity,
+				'filterState'    => $filterState,
+				'filterMerchant' => rawurldecode($params['merchant']),
+				'limit'			 => $options['Api_Limit'],
+				'imageSize'		 => $imageSize,
+				'query'			 => $params['query']
+			);	
 		}
-		
+			
 		$settings = array_filter($settings);
 
 		$allData = $this->searchModel->apiCall($settings, 'fetchLocal', PROSPER_CACHE_COUPS);
@@ -520,34 +514,17 @@ class ProsperSearchController
 				$secondaryFilters = array('city' => $filterArray['city'], 'zipCode' => $filterArray['zip']);
 			}
 		}
-		elseif(!$results) 
-		{
-			$settings = array(
-				'filterZipCode'  => 'null',
-				'filterCity'     => 'null',
-				'filterState'    => 'null',
-				'limit'			 => $options['Api_Limit'],
-				'imageSize'		 => $imageSize
-			);	
-		
-		
-			$settings = array_filter($settings);
-
-			$allData = $this->searchModel->apiCall($settings, 'fetchLocal', '3600');
-			$results   = $allData['results'];
-			$noResults = true;
-			$trend 	   = 'Online Deals';
-		}
 		else
 		{
 			$settings = array(
-				'imageSize' => $imageSize
+				'filterState' => $filterState,
+				'imageSize'   => $imageSize
 			);
 			
 			$allData   = $this->searchModel->trendsApiCall($settings, 'fetchLocal');
 			$results   = $allData['results'];
 			$noResults = true;
-			$trend 	   = 'local deals';
+			$trend 	   = 'Trending Local Deals';
 			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );	
 
 			if (!$results)
@@ -584,8 +561,8 @@ class ProsperSearchController
 		else
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-			$c = $params['celebrity'];
-			$q = $params['query'];
+			$c = rawurldecode($params['celebrity']);
+			$q = rawurldecode($params['query']);
 		}
 			
 		$query = stripslashes($q);	
@@ -593,19 +570,23 @@ class ProsperSearchController
 		if ($params['celebrity'])
 		{			
 			$title = ucwords(rawurldecode($params['celebrity'])) . '</strong>';
-			$title .= $params['query'] ? ' &raquo; ' . $params['query'] . '<a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url) . '> [x]</a>' : '';
+			$title .= $params['query'] ? ' &raquo; ' . $params['query'] : '';
+			if ($params['query'])
+			{
+				$demolishUrl = str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url);
+			}
 		}
 		elseif ($params['query'])
 		{
-			$title = ucwords(rawurldecode($params['query'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['query'])) . '</strong>';
 		}
 		elseif ($params['brand'])
 		{
-			$title = ucwords(rawurldecode($params['brand'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['brand'])) . '</strong>';
 		}
 		elseif ($params['merchant'])
 		{
-			$title = ucwords(rawurldecode($params['merchant'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['merchant'])) . '</strong>';
 		}
 			
 		$sortArray = array(
@@ -628,7 +609,7 @@ class ProsperSearchController
 
 		$mainFilters = array('celebrity' => $filterArray);
 
-		if ($params['celebrity'] || $query || $filters['merchant'])
+		if ($params['celebrity'] || $query || $filters['merchants'] || $filters['brands'])
 		{
 			$settings = array(
 				'query'           => $query,
@@ -637,7 +618,8 @@ class ProsperSearchController
 				'filterCelebrity' => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'enableFacets'    => $options['Enable_Facets'] ? array('celebrity') : FALSE,
 				'limit'			  => $options['Api_Limit'],
-				'imageSize'		  => $imageSize
+				'imageSize'		  => $imageSize,
+				'filterBrand'	  => $filters['brands']
 			);	
 			
 			$settings = array_filter($settings);
@@ -680,36 +662,27 @@ class ProsperSearchController
 		$target 	 = isset($options['Target']) ? '_blank' : '_self';
 		$type   	 = 'product';
 		$backStates = array_flip($this->searchModel->states);
-
-		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
-		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
-		if (preg_match($match, $_SERVER['HTTP_REFERER']))
-		{
-			$returnUrl = $_SERVER['HTTP_REFERER'];
-		}
-		else
-		{
-			$returnUrl = $matchingUrl . '/query/' . get_query_var('keyword');
-		}
 		
 		if ('coupon' === $prosperPage)
 		{
-			$fetch  = 'fetchCoupons';
-			$filter = 'filterCouponId';
-			$type   = 'coupon';
+			$fetch   = 'fetchCoupons';
+			$filter  = 'filterCouponId';
+			$type    = 'coupon';
+			$urltype = 'coup';
 		}
 		elseif ('local' === $prosperPage)
 		{
-			$fetch  = 'fetchLocal';
-			$filter = 'filterLocalId';
-			$type   = 'local';
+			$fetch   = 'fetchLocal';
+			$filter  = 'filterLocalId';
+			$urltype = $type = 'local';
 		}
 		elseif ('celebrity' === $prosperPage)
 		{
-			$fetch  = 'fetchProducts';
-			$filter = 'filterCatalogId';
-			$group  = 'productId';
-			$brand  = true;
+			$fetch   = 'fetchProducts';
+			$filter  = 'filterCatalogId';
+			$group   = 'productId';
+			$brand   = true;
+			$urltype = 'cele';
 		}
 		else
 		{		
@@ -729,9 +702,22 @@ class ProsperSearchController
 				$currency = 'GBP';
 			}
 			
-			$brand  = true;
-			$filter = 'filterCatalogId';
-			$group  = 'productId';
+			$brand   = true;
+			$filter  = 'filterCatalogId';
+			$group   = 'productId';			
+			$urltype = 'prod';
+		}		
+				
+		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/' . $urltype;
+		
+		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
+		if (preg_match($match, $_SERVER['HTTP_REFERER']))
+		{
+			$returnUrl = $_SERVER['HTTP_REFERER'];
+		}
+		else
+		{
+			$returnUrl = $matchingUrl . '/query/' . get_query_var('keyword');
 		}
 
 		/*

@@ -40,8 +40,11 @@ echo $prosperAdmin->checkbox( 'Geo_Locate', __( 'Turn on Geo-Location', 'prosper
 echo $prosperAdmin->textinput( 'localLabel', __( 'Local Deals Label', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Changes the headline above the store when active. Default is "Local Deals".</span></a>', 'prosper_textinputsmallindent');
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the products page...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->radio( 'Product_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), '' );
+echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the results pages...', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->radio( 'Product_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), 'Product/Celebrity Results' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->radio( 'Coupon_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), 'Coupon/Local Results' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Grid Image Size', 'prosperent-suite' ) . '</h2>';

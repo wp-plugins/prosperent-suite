@@ -14,15 +14,15 @@ if ($pieces['v'] === 'grid')
 		
 		if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 		{
-			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
+			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
 		}
 		elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 		{
-			$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '"';
+			$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 		}		
 		else
 		{
-			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
+			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
 		}
         ?>
             <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
@@ -33,7 +33,7 @@ if ($pieces['v'] === 'grid')
 				<?php
 				if ($record['promo'])
 				{					
-					echo '<div class="promo"><span><a href="' . $goToUrl . '">' . $record['promo'] . '!</a></span></div>';
+					echo '<div class="promo"><span><a href=' . $goToUrl . '>' . $record['promo'] . '!</a></span></div>';
 				}
 				elseif($record['expiration_date'] || $record['expirationDate'])
 				{
@@ -44,15 +44,15 @@ if ($pieces['v'] === 'grid')
 
 					if ($interval <= 20 && $interval > 0)
 					{
-						echo '<div class="couponExpire"><span><a href="' . $goToUrl . '">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
+						echo '<div class="couponExpire"><span><a href=' . $goToUrl . '>' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
 					}
 					elseif ($interval <= 0)
 					{
-						echo '<div class="couponExpire"><span><a href="' . $goToUrl . '">Ends Today!</a></span></div>';
+						echo '<div class="couponExpire"><span><a href=' . $goToUrl . '>Ends Today!</a></span></div>';
 					}
 					else
 					{
-						echo '<div class="couponExpire"><span><a href="' . $goToUrl . '">Expires Soon!</a></span></div>';
+						echo '<div class="couponExpire"><span><a href=' . $goToUrl . '>Expires Soon!</a></span></div>';
 					}
 				}
 				?>
@@ -68,7 +68,7 @@ if ($pieces['v'] === 'grid')
 				</div>
 
 				<div class="prosperVisit">
-					<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
+					<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
 						<input type="submit" id="submit" value="Visit Store"/>
 					</form>
 				</div>	
@@ -93,15 +93,15 @@ else
 
 			if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 			{
-				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
+				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
 			}
 			elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
-				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '"';
+				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 			}		
 			else
 			{
-				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow" target="' . $target . '"';
+				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
 			}
 			?>
 			<div class="productBlock">
@@ -165,11 +165,11 @@ else
 						<?php
 						if($record['brand'])
 						{
-							echo '<span class="brandIn"><u>Brand</u>: <a href="' . ($this->_options['Enable_PPS'] ? $baseUrl  . '/brand/' . rawurlencode($record['brand']) : $goToUrl) . '"><cite>' . $record['brand'] . '</cite></a></span>';
+							echo '<span class="brandIn"><u>Brand</u>: <a href=' . ($this->_options['Enable_PPS'] ? '"' . $baseUrl  . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"' : $goToUrl) . '><cite>' . $record['brand'] . '</cite></a></span>';
 						}
 						if($record['merchant'])
 						{
-							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['Enable_PPS'] ? $baseUrl . '/merchant/' . rawurlencode($record['merchant']) : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['Enable_PPS'] ? '"' . $baseUrl . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"' : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
 						}				
 						?>
 					</div>
@@ -198,7 +198,7 @@ else
 					}
 					?>
 					<div class="prosperVisit">
-						<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow">
+						<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
 							<input type="submit" value="Visit Store"/>
 						</form>
 					</div>	

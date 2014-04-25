@@ -103,7 +103,7 @@ class ProsperSearchController
 		}
 
 		if (get_query_var('cid'))
-		{  
+		{ 
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
@@ -163,15 +163,19 @@ class ProsperSearchController
 			$currency = 'GBP';
 		}
 
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['brand'] && !$params['merchant'] && $options['Starting_Query'])
-		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		{			
+			if (is_front_page())
+			{
+				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
+			}
+			
 			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities(rawurlencode($options['Starting_Query']));
 			$q = $options['Starting_Query'];
 		}
 		else
 		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$url = preg_replace('/\/$/', '', $url);
 			$q = rawurldecode($params['query']);
 		}
@@ -272,15 +276,19 @@ class ProsperSearchController
 		$target 	     = isset($options['Target']) ? '_blank' : '_self';
 		$searchTitle     = 'Coupons';
 		
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['merchant'] && $options['Coupon_Query'])
-		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		{			
+			if (is_front_page())
+			{
+				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
+			}
+			
 			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities(rawurlencode($options['Coupon_Query']));
 			$q = $options['Coupon_Query'];
 		}
 		else
 		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$url = preg_replace('/\/$/', '', $url);
 			$q = rawurldecode($params['query']);
 		}
@@ -379,9 +387,15 @@ class ProsperSearchController
 		$searchPost   = 'state';
 		$target 	  = isset($options['Target']) ? '_blank' : '_self'; 
 		$searchTitle  = 'Local Deals';
-
+		
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
 		if (!$filterState && $options['Local_Query'])
 		{
+			if (is_front_page())
+			{
+				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
+			}
+			
 			$localQuery = preg_split('/,/', $options['Local_Query']);
 
 			if(count($localQuery) > 2)
@@ -394,7 +408,7 @@ class ProsperSearchController
 				}
 				else
 				{
-					$filterState = $states[$localQuery[0]];
+					$filterState = $this->searchModel->states[$localQuery[0]];
 				}
 
 				$url = $url . '/state/' . rawurlencode($filterState) . '/city/' . rawurlencode($filterCity);
@@ -406,21 +420,14 @@ class ProsperSearchController
 			}
 			else
 			{
-				$filterState = $states[$localQuery[0]];
+				$filterState = $this->searchModel->states[strtolower($localQuery[0])];
 				$url = $url . '/state/' . rawurlencode($filterState);
 			}
 		}
 		else
-		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		{			
 			$url = preg_replace('/\/$/', '', $url);
 		}
-		
-		if ($filterState)
-		{
-			$stateFull = strtolower($filterState);
-			$state = $this->searchModel->states[$stateFull];
-		}	
 			
 		$backStates = array_flip($this->searchModel->states);
 	
@@ -441,17 +448,17 @@ class ProsperSearchController
 		/*
 		 * Get title for results line
 		 */ 
-		if ($params['city'])
+		if ($params['city'] || $filterCity)
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['city'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode(($params['city'] ? $params['city'] : $filterCity))) . '</strong>';
 		}
-		elseif ($params['zip'])
+		elseif ($params['zip'] || $filterZip)
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['zip'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode(($params['zip'] ? $params['zip'] : $filterZip))) . '</strong>';
 		}
-		elseif ($params['state'])
+		elseif ($params['state'] || $filterState)
 		{
-			$title = '<strong>' . ucwords(rawurldecode($backStates[$params['state']])) . '</strong>';			
+			$title = '<strong>' . ucwords(rawurldecode($backStates[($params['state'] ? $params['state'] : $filterState)])) . '</strong>';			
 		}	
 	
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
@@ -552,17 +559,28 @@ class ProsperSearchController
 			$imageSize = '125x125';
 		}
 		
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['celebrity'] && $options['Celebrity_Query'])
 		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			if (is_front_page())
+			{
+				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
+			}
+			
 			$url = preg_replace('/\/$/', '', $url) . 'celebrity/' . rawurlencode($options['Celebrity_Query']);
 			$c = $options['Celebrity_Query'];
 		}
-		else
+		elseif ($params['celebrity'] || $params['query'])
 		{
-			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$c = rawurldecode($params['celebrity']);
 			$q = rawurldecode($params['query']);
+		}
+		else
+		{
+			if (is_front_page())
+			{
+				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
+			}
 		}
 			
 		$query = stripslashes($q);	
@@ -661,7 +679,7 @@ class ProsperSearchController
 		$keyword 	 = str_replace(',SL,', '/', $keyword);
 		$target 	 = isset($options['Target']) ? '_blank' : '_self';
 		$type   	 = 'product';
-		$backStates = array_flip($this->searchModel->states);
+		$backStates  = array_flip($this->searchModel->states);
 		
 		if ('coupon' === $prosperPage)
 		{

@@ -162,13 +162,15 @@ class Model_Linker extends Model_Base
 			if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
 			{
 				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
+				$rel = 'nofollow,nolink';
 			}
 			else if ($pieces['gtm'] === 'prodPage')
 			{				
 				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['results'][0]['keyword'])) . '/cid/' . $allData['results'][0]['catalogId'];
+				$rel = 'nolink';
 			}
 			
-			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw">' . $content . '</a>';
+			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" rel="' . $rel . '">' . $content . '</a>';
 		}
 
 		$brands = array();

@@ -37,7 +37,7 @@ class RecentSearchesWidget extends WP_Widget
 			{
 				foreach ($options['recentSearches'] as $query)
 				{
-					echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . $url . rawurlencode(str_replace('/', ',SL,', $query)) . '">' . ucwords(preg_replace('/\(.+\)/i', '', $query)) . '</a></td></tr>';
+					echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . $url . rawurlencode(str_replace('/', ',SL,', $query)) . '" rel="nolink">' . ucwords(preg_replace('/\(.+\)/i', '', $query)) . '</a></td></tr>';
 				}
 			}
 			else

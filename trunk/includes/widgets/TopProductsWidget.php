@@ -49,7 +49,7 @@ class TopProductsWidget extends WP_Widget
 			<?php
 			foreach ($allData['results'] as $record)
 			{
-				echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . home_url() . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
+				echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . home_url() . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'] . '" rel="nolink">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
 			}
 			?>
 		</table>

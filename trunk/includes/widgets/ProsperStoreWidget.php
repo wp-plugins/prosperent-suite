@@ -44,7 +44,7 @@ class ProsperStoreWidget extends WP_Widget
 		$width .= $instance['widthStyle'];
 				
         ?>
-        <form class="searchform" method="POST" action="">
+        <form class="searchform" method="POST" action="" rel="nolink">
             <input class="prosper_field" type="text" name="q" id="s" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : 'Search Products'; ?>" style="margin:14px 0 0 18px;width:<?php echo $width; ?>;">
             <input class="prosper_submit" id="submit" type="submit" value="Search" style="margin-top: 14px;">
         </form>

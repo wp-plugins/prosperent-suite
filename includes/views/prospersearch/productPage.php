@@ -10,7 +10,7 @@
     <div class="productTitle"><a href="<?php echo ($options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $mainRecord[0]['keyword']); ?></span></a></div>
     <div class="productBlock">
 		<div class="productImage" style="text-align:center;">
-            <a itemprop="offerURL" href="<?php echo ($options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $mainRecord[0]['image_url'])) : $mainRecord[0]['image_url']); ?>" title="<?php echo $mainRecord[0]['keyword']; ?>"/></a>
+            <a itemprop="offerURL" href="<?php echo ($options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']); ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><img itemprop="image" src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $mainRecord[0]['image_url'])) : $mainRecord[0]['image_url']); ?>" alt="<?php echo $mainRecord[0]['keyword']; ?>" title="<?php echo $mainRecord[0]['keyword']; ?>"/></a>
         	<br>
 			<?php
 			if (count($results) <= 1 )
@@ -178,7 +178,7 @@ if (count($similar) > 1)
             <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
 				<div class="listBlock">
 					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad; ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;"'); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" title="<?php echo $prod['keyword']; ?>" /></span></a>
+						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $prod['image_url'])) : $prod['image_url']); ?>" alt="<?php echo $prod['keyword']; ?>" title="<?php echo $prod['keyword']; ?>" /></span></a>
 					</div>
 					<?php
 					if ($prod['promo'])
@@ -246,7 +246,7 @@ if (count($sameBrand) > 1)
             <li style="width:<?php echo $gridImage; ?>!important;">
 				<div class="listBlock">
 					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad; ?>><img <?php echo 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>"/></span></a>
+						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $brandProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?>><img <?php echo 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $brandProd['image_url'])) : $brandProd['image_url']); ?>" alt="<?php echo $brandProd['keyword']; ?>" title="<?php echo $brandProd['keyword']; ?>"/></span></a>
 					</div>
 					<div class="prodContent">
 						<div class="prodTitle">
@@ -285,7 +285,7 @@ if (count($sameMerchant) > 1)
             <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
 				<div class="listBlock">
 					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad; ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;"'); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $merchantProd['image_url'])) : $merchantProd['image_url']); ?>"/></span></a>
+						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px""'); ?> src="<?php echo ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $merchantProd['image_url'])) : $merchantProd['image_url']); ?>" alt="<?php echo $merchantProd['keyword']; ?>" title="<?php echo $merchantProd['keyword']; ?>"/></span></a>
 					</div>
 					<?php
 					if ($record['promo'])

@@ -19,7 +19,7 @@ class Model_Inserter extends Model_Base
 	public function qTagsInsert()
 	{
 		$id 	 = 'productInsert';
-		$display = 'Product Insert';
+		$display = 'ProsperInsert';
 		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" ct="US" gtm="GO TO MERCHANT?" c="USE COUPONS?" v="GRID OR LIST"]';
 		$arg2 	 = '[/compare]';		
 	
@@ -115,15 +115,15 @@ class Model_Inserter extends Model_Base
 		// Remove links within links
 		$content = strip_tags($content);
 
-		$id = array_map('trim', explode(',',  rtrim($pieces['id'], ",")));
-
+		$id = $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '';
+		
 		$limit = 1;		
 		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
 		{
 			$limit = $pieces['cl'];
 		}
-		elseif ($pieces['l'] >= 1)
-		{			
+		elseif ($pieces['l'] > 1)
+		{		
 			$limit = $pieces['l'];
 		}
 		elseif ($id)
@@ -154,7 +154,7 @@ class Model_Inserter extends Model_Base
 				'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
-				'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+				'filterLocalId'   => $id,		
 			);
 		}
 		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
@@ -166,7 +166,7 @@ class Model_Inserter extends Model_Base
 				'limit'          => $limit,
 				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant' => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',		
-				'filterCouponId' => $pieces['id'] ? $pieces['id'] : '',
+				'filterCouponId' => $id,
 			);			
 
 			$imageLoader = 'small';
@@ -197,7 +197,7 @@ class Model_Inserter extends Model_Base
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
 				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
-				'filterProductId' => $id ? $id : '',
+				'filterProductId' => $id,
 				'filterPriceSale' => $pieces['sale'] ? '0.01,' : ''
 			);
 		}

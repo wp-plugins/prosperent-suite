@@ -5,8 +5,8 @@ class PerformAdWidget extends WP_Widget
     {
         parent::__construct(
 			'performance_ad_sb', 
-			'Performance Ads', 
-			array('classname' => 'performanceAds_sb_widget', 'description' => __("Adds a Performance Ad as a widget. Settings are in the widget."))
+			'ProsperAds', 
+			array('classname' => 'performanceAds_sb_widget', 'description' => __("Adds a ProsperAd as a widget. Settings are in the widget."))
 		);
     }
 	

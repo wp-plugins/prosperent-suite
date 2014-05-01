@@ -71,7 +71,7 @@ class Model_Search extends Model_Base
 	public function qTagsStore()
 	{	
 		$id 	 = 'prosperStore';
-		$display = 'Prosper Store';
+		$display = 'ProsperShop';
 		$arg1 	 = '[prosper_store]';
 		$arg2 	 = '[/prosper_store]';		
 	
@@ -81,7 +81,7 @@ class Model_Search extends Model_Base
 	public function qTagsSearch()
 	{	
 		$id 	 = 'prosperSearch';
-		$display = 'Prosper Search';
+		$display = 'Prosper Search Bar';
 		$arg1 	 = '[prosper_search w="WIDTH" css="ADDITIONAL CSS"]';
 		$arg2 	 = '[/prosper_search]';		
 	
@@ -137,25 +137,28 @@ class Model_Search extends Model_Base
 		{
 			array_push($filterBrands, str_replace(',SL,', '/', $brand));
 		}
-		if($this->_options['Positive_Brand'])
+		else
 		{
-			$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
-
-			foreach ($plusBrands as $postive)
+			if($this->_options['Positive_Brand'])
 			{
-				array_push($filterBrands, trim($postive));
+				$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
+
+				foreach ($plusBrands as $postive)
+				{
+					array_push($filterBrands, trim($postive));
+				}
+			}
+			if($this->_options['Negative_Brand'])
+			{
+				$minusBrands = array_map('stripslashes', explode(',', $this->_options['Negative_Brand']));
+
+				foreach ($minusBrands as $negative)
+				{
+					array_push($filterBrands, '!' . trim($negative));
+				}
 			}
 		}
-		if($this->_options['Negative_Brand'])
-		{
-			$minusBrands = array_map('stripslashes', explode(',', $this->_options['Negative_Brand']));
-
-			foreach ($minusBrands as $negative)
-			{
-				array_push($filterBrands, '!' . trim($negative));
-			}
-		}
-		
+			
 		return $filterBrands;
 	}
 	
@@ -167,22 +170,25 @@ class Model_Search extends Model_Base
 		{
 			array_push($filterMerchants, str_replace(',SL,', '/', $merchant));
 		}
-		if ($this->_options['Positive_Merchant'])
+		else
 		{
-			$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
-
-			foreach ($plusMerchants as $positive)
+			if ($this->_options['Positive_Merchant'])
 			{
-				array_push($filterMerchants, trim($positive));
+				$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
+
+				foreach ($plusMerchants as $positive)
+				{
+					array_push($filterMerchants, trim($positive));
+				}
 			}
-		}
-		if ($this->_options['Negative_Merchant'])
-		{
-			$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
-
-			foreach ($minusMerchants as $negative)
+			if ($this->_options['Negative_Merchant'])
 			{
-				array_push($filterMerchants, '!' . trim($negative));
+				$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
+
+				foreach ($minusMerchants as $negative)
+				{
+					array_push($filterMerchants, '!' . trim($negative));
+				}
 			}
 		}
 

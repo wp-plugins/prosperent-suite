@@ -13,11 +13,11 @@ function deleteMyParent(el)
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 
-$prosperAdmin->adminHeader( __( 'Product Search Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
+$prosperAdmin->adminHeader( __( 'ProsperShop Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The Product Search is the center of the Shop. This will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc">' . __( 'ProsperShop will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on The Store...', 'prosperent-suite' ) . '</h2>';
+echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperShop...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_PPS', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 

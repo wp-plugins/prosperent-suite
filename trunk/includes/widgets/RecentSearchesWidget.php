@@ -6,7 +6,7 @@ class RecentSearchesWidget extends WP_Widget
 	    parent::__construct(
 			'prosper_recent_searches', 
 			'Recent Searches', 
-			array('classname' => 'recent_searches_widget', 'description' => __( "Displays the most recent searches of the Product Search."))
+			array('classname' => 'recent_searches_widget', 'description' => __( "Displays the most recent searches of the ProsperShop."))
 		);
     }
 

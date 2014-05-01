@@ -35,7 +35,7 @@ class Model_Linker extends Model_Base
 	public function qTagsLinker()
 	{
 		$id 	 = 'autoLinker';
-		$display = 'Auto Linker';
+		$display = 'Auto-Linker';
 		$arg1 	 = '[linker q="QUERY" gtm="true" b="BRAND" m="MERCHANT" ct="US"]';
 		$arg2 	 = '[/linker]';		
 	

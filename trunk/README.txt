@@ -3,7 +3,7 @@ Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 3.9
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,10 +13,10 @@ Prosperent's Tools in one plugin help monetize your blog with ease.
 
 This plugin contains the following Prosperent tools:
 
-* **Product Search-** Create a store within your blog.
-* **Performance Ads-** Display ads easily inside widgets or in content.
+* **ProsperShop-** Create a store within your blog.
+* **ProsperAds-** Display ads easily inside widgets or in content.
 * **Auto-Linker-** Easily link products to the store or a merchant.
-* **Product Insert-** Display a product within your post or page to easily show visitors products.
+* **ProsperInsert-** Display a product within your post or page to easily show visitors products.
 * **ProsperLinks-** Contains a link-optimizer and link-affiliator to easily monetize links already in your blog.
 
 This suite will give you everything you need to easily start making money with your blog.
@@ -32,7 +32,7 @@ Well these reasons should help you with that question:
 * **We are here for you-** We are always around to answer questions, office guidance and make sure you have everything you need to make a living online.
 * **Traffic optimization-** Our algorithm's are always making sure every click you send us goes to the HIGHEST PAYING and HIGHEST CONVERTING merchant at that moment.
 * **Size-** Because of our high volume, we work with the best Merchants and negotiate the highest commissions out there. Yes, we take a percentage of each commission (30% by default) instead of charging you a monthly fee, but because of our size, we more than make up for that with higher commission rates.
-* **Automatic access to top merchants-** Once you sign up with us (for Free), you have access to all 3000+ merchants that we work with.
+* **Automatic access to top merchants-** Once you sign up with us (for Free), you have access to all 4,500 merchants that we work with.
 * **Clean data-** We clean the data feeds and resize images while serving it all from our global Content Delivery Network which means the images on your site load lightning fast at all times
 * **Big data-** We have mountains of conversion data. We know which merchants are converting, the brands that are hot, and the products that sell at various times throughout the year. We crunch all of this data and give you access to it all.
 * **Limitless and fast!-** We handle over 1.6 billion requests per month with no signs of slowing down. Fire off a request to our api, search tens of millions of products, and get back results within a few milliseconds.
@@ -45,7 +45,7 @@ Well these reasons should help you with that question:
 Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
 1.	Head over to [Prosperent](http://prosperent.com) and click Join, its *Free* to do so. Create your account and sign in.
-    * Once signed in, go to the [instal](http://prosperent.com/affiliate/install/) screen.
+    * Once signed in, go to the [install](http://prosperent.com/affiliate/install/) screen.
     * Set your campaign to WordPress if you haven't already
     * Copy the API Key from Step 3.
 2.	Upload the **prosperent-suite** folder to the **/wp-content/plugins/** directory.
@@ -57,7 +57,7 @@ Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
 7.  When making a page/post all the short code on in the Prosperent Button. (the one with the gear on it, in the visual editor, else each one has their own button in the Text editor)
 
-*Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize attributes of each.
+*Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize each.
 Log in to **Prosperent.com** every so often to check your stats.
 
 = Available ShortCodes =
@@ -73,7 +73,7 @@ All short codes now have a button in the editors for easy input.
 1. **What is Prosperent?**
     * Prosperent is a company that is serious about getting you the tools that simplify your life as an affiliate marketer. We manage relationships with merchants, clean datafeeds, and provide a variety of publisher tools to get products on your site quickly and easily.
 2. **How many merchants does Prosperent work with?**
-    * Currently over 2,000 and growing.
+    * Currently over 4,500 and growing.
 3. **How many products does Prosperent have?**
     * We currently index and search against almost 50 million products.
 4. **Where can publishers go to get help?**
@@ -88,6 +88,11 @@ All short codes now have a button in the editors for easy input.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.1.3 =
+* Rebranded Some Parts of the plugin
+* Fixed bugs with filter settings
+* Removed second window from Dialog boxes
 
 = 3.1.2 =
 * Fixed grid image issues

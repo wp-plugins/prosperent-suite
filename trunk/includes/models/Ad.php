@@ -14,7 +14,7 @@ class Model_Ad extends Model_Base
 	public function qTagsAd()
 	{	
 		$id 	 = 'performanceAd';
-		$display = 'Performance Ad';
+		$display = 'ProsperAd';
 		$arg1 	 = '[perform_ad q="TOPIC" h="90" w="auto" utt="USE TAGS?" utt="USE TITLE?"]';
 		$arg2 	 = '[/perform_ad]';		
 	
@@ -22,7 +22,7 @@ class Model_Ad extends Model_Base
 	}
 	
    /**
-	* Performs shortcode extraction for Performance Ads
+	* Performs shortcode extraction for ProsperAds
 	*
 	* @param array  $atts    Attributes from the shortcode
 	* @param string $content Content on the page/post

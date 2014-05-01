@@ -2,14 +2,14 @@
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 
-$prosperAdmin->adminHeader( __( 'Performance Ad Settings', 'prosperent-suite' ), true, 'prosperent_perform_options', 'prosper_performAds' );
+$prosperAdmin->adminHeader( __( 'ProsperAd Settings', 'prosperent-suite' ), true, 'prosperent_perform_options', 'prosper_performAds' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The Performance Ads are content based ads. We build out a list of phrases that relates to your content. We then split test those phrases on a page by page basis to determine the best performing phrase. So over time you end up showing the most relevant phrase on each page that displays our ads.
+echo '<p class="prosper_settingDesc">' . __( 'ProsperAds are content based ads. We build out a list of phrases that relates to your content. We then split test those phrases on a page by page basis to determine the best performing phrase. So over time you end up showing the most relevant phrase on each page that displays our ads.
 											  <br><br>
 											  If you provide a topic for the ad, we will use that to display the best fitting products according to the given topic.  
 											  
 											  <br><br>
-											  You can change the widget sizes and topic inside the widget settings when you move it to your sidebar or footer. Each performance ad unit will accept up to 5 comma seperated topics, 
+											  You can change the widget sizes and topic inside the widget settings when you move it to your sidebar or footer. Each ProsperAd unit will accept up to 5 comma seperated topics, 
 											  including any tags or the page title if you choose to use those.
 											  
 											  <br><br>
@@ -17,12 +17,12 @@ echo '<p class="prosper_settingDesc">' . __( 'The Performance Ads are content ba
 											  box.
 											  
 											  <br><br>
-											  Also, there is a button in the page/post editior that will place shortcode for Performance Ads. This allows you to easily place Performance Ads in your content.
+											  Also, there is a button in the page/post editior that will place shortcode for ProsperAds. This allows you to easily place ProsperAds in your content.
 											  
-											  <br><br>To read more about Performance Ads or see them in action, head to 
-											  <a href="http://wordpress.prosperentdemo.com/performance-ads/">WordPress Prosperent Demo: Performance Ads</a>', 'prosperent-suite' ) . '</p>';
+											  <br><br>To read more about ProsperAds or see them in action, head to 
+											  <a href="http://wordpress.prosperentdemo.com/performance-ads/">WordPress Prosperent Demo: ProsperAds</a>', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on Performance Ads...', 'prosperent-suite' ) . '</h2>';
+echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperAds...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_PA', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 

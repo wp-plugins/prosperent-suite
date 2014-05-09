@@ -89,6 +89,10 @@ All short codes now have a button in the editors for easy input.
 
 == Changelog ==
 
+= 3.1.4 =
+* Fixed StoreChecker 
+* Fixed Advanced Options that were being cleared
+
 = 3.1.3 =
 * Rebranded Some Parts of the plugin
 * Fixed bugs with filter settings
@@ -378,4 +382,4 @@ Deactivate any other Prosperent Plugins before use.
 
 == Notes ==
 
-If you have any questions or suggestions, please feel free to ask me here or on the [Prosperent Community](http://community.prosperent.com/forum.php), or email me Prosperent Brandon at brandon@prosperent.com.
+If you have any questions or suggestions, please feel free to ask me here, on the [Prosperent Community](http://community.prosperent.com/forum.php) or email me Prosperent Brandon at brandon@prosperent.com.

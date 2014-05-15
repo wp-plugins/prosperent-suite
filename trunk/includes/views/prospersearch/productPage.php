@@ -145,12 +145,12 @@
 					$priceSale = $mainRecord[0]['priceSale'] ? $mainRecord[0]['priceSale'] : $mainRecord[0]['price_sale'];
 					if(empty($priceSale) || $mainRecord[0]['price'] <= $priceSale)
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>$' . $mainRecord[0]['price'] . '</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . $mainRecord[0]['price'] . '</strong></div>';
 					}
 					else
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>$' . $priceSale . '</strong></div>';
-						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>$' . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2, '.', '')) . '!</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</strong></div>';
+						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>' . ($currency == 'GBP' ? '&pound;' : '$') . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2, '.', '')) . '!</strong></div>';
 					}
 				}
 				?>

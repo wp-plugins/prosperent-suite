@@ -6,10 +6,10 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 <html>
     <head>
         <title>ProsperShop Search Bar</title>
-		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.3'; ?>">
+		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.5'; ?>">
         <script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
         <script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.3'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.5'; ?>"></script>
 		<script type="text/javascript">function setFocus(){document.getElementById("width").focus()};</script>
     </head>
     <base target="_self" />

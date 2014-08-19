@@ -6,10 +6,10 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 <html>
     <head>
         <title>ProsperAd</title>
-		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.3'; ?>">
+		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.5'; ?>">
         <script data-cfasync="false"type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
         <script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.3'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.5'; ?>"></script>
 		<script type="text/javascript">function setFocus(){document.getElementById("height").focus()};</script>
     </head>
     <base target="_self" />
@@ -17,7 +17,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
         <form action="/" method="get" id="prosperSCForm">
 			<fieldset style="font-size:14px;">
 				<legend>Performance Ad</legend>	
-				<input type="hidden" name="prosperSC" id="prosperSC" value="performAd"/>
+				<input type="hidden" name="prosperSC" id="prosperSC" value="perform_ad"/>
 				<p><label>Height:</label><input class="prosperShortTextSC" tabindex="1" type="text" id="height" /><a href="#" class="tooltip"><span>The height of your in content ad unit.</span></a></p>
 				<p><label>Width:</label><input class="prosperShortTextSC" tabindex="2" type="text" id="width" /><a href="#" class="tooltip"><span>The width of your in content ad unit. Entering 'auto' or leaving this field blank will make it auto-adjust to your content's width.</span></a></p>				
 				<p><label><u><b>Topics</b></u></label></p><br>

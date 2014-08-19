@@ -164,7 +164,7 @@ class ProsperSearchController
 		}
 
 		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		if (!$params['query'] && !$params['brand'] && !$params['merchant'] && $options['Starting_Query'])
+		if (!$params['query'] && !$params['brand'] && !$params['category'] && !$params['merchant'] && $options['Starting_Query'])
 		{			
 			if (is_front_page())
 			{
@@ -210,14 +210,16 @@ class ProsperSearchController
 			'Merchant: Z-A' 	 => 'merchant desc'			
 		);
 
-		if ($query || $filters['brands'] || $filters['merchants'])
+		if ($query || $filters['brands'] || $filters['merchants'] || $filters['category'])
 		{			
+		
 			$settings = array(
 				'query'          => $query,
 				'sortBy'	     => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
 				'groupBy'	     => 'productId',
 				'filterBrand'    => $filters['brands'],
 				'filterMerchant' => $filters['merchants'],
+				'filterCategory' => $filters['category'],
 				'enableFacets'   => $options['Enable_Facets'] ? array('brand', 'merchant') : FALSE,
 				'limit'			 => $options['Api_Limit'],
 				'imageSize'		 => $imageSize
@@ -326,12 +328,13 @@ class ProsperSearchController
 			'Rank: Low to High' 	  	  => 'rank asc'
 		);
 		
-		if ($query || $filters['merchants'])
+		if ($query || $filters['merchants'] || $filters['category'])
 		{
 			$settings = array(
 				'query'           => $query,
 				'sortBy'	      => rawurldecode($params['sort']),
-				'filterMerchant'  => $filters['merchants'],
+				'filterMerchant'  => $filters['merchants'],			
+				'filterCategory'  => $filters['category'],
 				'enableFacets'    => $options['Enable_Facets'] ? array('merchant') : FALSE,
 				'limit'			  => $options['Api_Limit']
 			);	
@@ -483,14 +486,15 @@ class ProsperSearchController
 			'ZipCode: Low to High' 		  => 'zipCode asc',
 		);	
 				
-		if ($filterZip || $filterCity || $filterState)
+		if ($filterZip || $filterCity || $filterState || $filters['category'])
 		{			
 			$settings = array(
 				'sortBy'	     => rawurldecode($params['sort']),
 				'enableFacets'   => $options['Enable_Facets'] ? array('city', 'zipCode') : FALSE,
 				'filterZipCode'  => $filterZip,
 				'filterCity'     => $filterCity,
-				'filterState'    => $filterState,
+				'filterState'    => $filterState,		
+				'filterCategory' => $filters['category'],
 				'filterMerchant' => rawurldecode($params['merchant']),
 				'limit'			 => $options['Api_Limit'],
 				'imageSize'		 => $imageSize,

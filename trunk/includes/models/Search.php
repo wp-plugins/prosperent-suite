@@ -640,12 +640,14 @@ class Model_Search extends Model_Base
 		$newEnds 	  = array_keys($sepEnds);
 		$brand    	  = isset($params['brand']) ? rawurldecode(stripslashes($params['brand'])) : '';
 		$merchant 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
+		$category 	  = isset($params['category']) ? rawurldecode(stripslashes($params['category'])) : '';	
 
 		return array(
 			'startingType' => $newEnds[0],
 			'filters'	   => array(
 				'brands' 	=> $this->getBrands($brand),
-				'merchants' => $this->getMerchants($merchant)
+				'merchants' => $this->getMerchants($merchant),
+				'category'	=> $category
 			),
 			'typeSelector' => $typeSelector,
 			'params'	   => $params,

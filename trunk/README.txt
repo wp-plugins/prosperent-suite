@@ -2,8 +2,8 @@
 Contributors: Prosperent Brandon
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 3.9.1
-Stable tag: 3.1.5
+Tested up to: 3.9.2
+Stable tag: 3.1.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,6 +88,11 @@ All short codes now have a button in the editors for easy input.
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.1.6 =
+* Fixed shortcodes for ProsperAds and ProsperInsert
+* Updated ProsperShop (products, coupons and local) to allow for filtering by category (eg. YOURBLOG.com/shop/category/automotive)
+* Updated ProsperentAPI
 
 = 3.1.5 =
 * Fixed currency on product pages

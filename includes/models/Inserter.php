@@ -187,7 +187,6 @@ class Model_Inserter extends Model_Base
 			}
 			else 
 			{
-				$fetch = 'fetchProducts';
 				$currency = 'USD';
 			}	
 

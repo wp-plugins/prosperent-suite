@@ -14,5 +14,4 @@ echo '<h2 class="prosper_h2">' . __( 'Turn on Link Optimizer...', 'prosperent-su
 echo $prosperAdmin->checkbox( 'PL_LinkOpt', __( 'Yes!', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Takes a merchant URL and tries to find a higher converting/ higher paying merchant to send the click to.</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-
 $prosperAdmin->adminFooter();

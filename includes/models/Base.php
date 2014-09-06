@@ -12,6 +12,17 @@ abstract class Model_Base
 	
 	public $widget;
 	
+	private $_endPoints = array(
+		'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
+		'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
+		'fetchUkProducts'  => 'http://api.prosperent.com/api/uk/search?',
+		'fetchCaProducts'  => 'http://api.prosperent.com/api/ca/search?',
+		'fetchCoupons'	   => 'http://api.prosperent.com/api/coupon/search?',
+		'fetchLocal'	   => 'http://api.prosperent.com/api/local/search?',
+		'fetchCelebrities' => 'http://api.prosperent.com/api/celebrity?',
+		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'
+	);
+	
 	public function init()
 	{
 		$this->_options = $this->getOptions();
@@ -299,27 +310,74 @@ abstract class Model_Base
 		else
 		{
 			$options = $this->_options;
-		}	
+		}		
 
+		/*if ($options['prosperSid'])
+		{
+			$sid = '';
+			foreach ($options['prosperSid'] as $sidPiece)
+			{
+				switch ($sidPiece)
+				{
+					case 'blogname':
+						$sid .= get_bloginfo('name');
+						break;
+					case 'interface':
+						$sid .= 'api';
+						break;
+					case 'query':
+						$sid .= $settings['query'];
+						break;
+					case 'page':
+						$sid .= get_the_title();
+						break;	
+					case 'pageNumber':
+						$sid .= 'page';
+						break;
+				}
+			}
+		}*/
+		
 		$settings = array_merge($settings, array(
 			'api_key' 	   => $options['Api_Key'],
-			'visitor_ip'   => $_SERVER['REMOTE_ADDR']	
+			'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
+			'sid'		   => ($_SESSION['PROS_SID'] ? $_SESSION['PROS_SID'] : ''),
 		));	
+		
+		// Set the URL
+		$url = $this->_endPoints[$fetch] . http_build_query ($settings);
 
-		if ($options['Enable_Caching'] && file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
+		$curl = curl_init();
+
+		// Set options
+		curl_setopt_array($curl, array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => $url,
+			CURLOPT_CONNECTTIMEOUT => 30,
+			CURLOPT_TIMEOUT => 30
+		));
+
+		// Send the request
+		$response = curl_exec($curl);
+
+		// Close request
+		curl_close($curl);
+
+		// Convert the json response to an array
+		$response = json_decode($response, true);
+
+		// Check for errors
+		if (count($response['errors']))
+		{
+			throw new Exception(implode('; ', $response['errors']));
+		}
+
+		/*if ($options['Enable_Caching'] && file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
 		{
 			$settings = array_merge($settings, $this->apiCaching($lifetime));	
-		}		
-			
-		$prosperentApi = new Prosperent_Api($settings);
-
-		$prosperentApi->$fetch();
-
-		$results 	= $prosperentApi -> getAllData();
-		$totalFound = $prosperentApi -> getTotalRecordsFound();
-		$facets 	= $prosperentApi -> getFacets();
+		}*/		
 		
-		return array('results' => $results, 'total' => $totalFound, 'facets' => $facets);
+		return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
 	}
 	
 	public function trendsApiCall ($settings, $fetch, $categories = array(), $lifetime = PROSPER_CACHE_COUPS)
@@ -361,27 +419,56 @@ abstract class Model_Base
 		}
 		
 		// calculate date range
-		$prevNumDays = 30;
+		$prevNumDays = 60;
 		$startDate   = date('Ymd', time() - 86400 * $prevNumDays);
-		$endDate     = date('Ymd');
-
+		$endDate     = date('Ymd');		
+		
 		$apiCall = array(
-			'api_key' 	     => $this->_options['Api_Key'],
-			'visitor_ip'     => $_SERVER['REMOTE_ADDR'],	
-			'limit'		     => 50,
-			'enableFacets'   => array('catalogId'),
-			'filterCatalog'  => $catalog,
-			'filterCategory' => $categories
+			'api_key' 	     	   => $this->_options['Api_Key'],
+			'visitor_ip'     	   => $_SERVER['REMOTE_ADDR'],	
+			'limit'		     	   => $options['Pagination_Limit'],
+			'enableFacets'   	   => array('catalogId'),
+			'filterCatalog'  	   => $catalog,
+			'filterCategory' 	   => $categories,			
+			'filterCommissionDate' => $startDate . ',' . $endDate
 		);
 
-		$api = new Prosperent_Api($apiCall);
-	
-		$api->setDateRange('commission', $startDate, $endDate)
-			->fetchTrends();
+		$apiCall = array_filter($apiCall);
+		
+		// Set the URL
+		$url = $this->_endPoints['fetchTrends'] . http_build_query ($apiCall);
+
+		$curl = curl_init();
+
+		// Set options
+		curl_setopt_array($curl, array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => $url,
+			CURLOPT_CONNECTTIMEOUT => 30,
+			CURLOPT_TIMEOUT => 30
+		));
+
+		// Send the request
+		$response = curl_exec($curl);
+
+		// Close request
+		curl_close($curl);
+
+		// Convert the json response to an array
+		$response = json_decode($response, true);
+
+		// Check for errors
+		if (count($response['errors']) || empty($response['facets']['catalogId']))
+		{
+			return array();
+		}
+
+		//$api->setDateRange('commission', $startDate, $endDate)
+		//	->fetchTrends();
 		
 		// set productId as key in array
 		$keys = array();
-		foreach ($api->getFacets('catalogId') as $data)
+		foreach ($response['facets']['catalogId'] as $data)
 		{
 			$keys[] = $data['value'];
 		}
@@ -399,10 +486,10 @@ abstract class Model_Base
 			$filter = 'filterCatalogId';
 		}
 
-		// fetch merchant data from api
+		// fetch trend data from api
 		$settings = array_merge(array(
 			$filter		   => $keys,
-			'limit' 	   => 15,
+			'limit'		   => $options['Pagination_Limit'],
 			'enableFacets' => FALSE
 		), $settings);
 

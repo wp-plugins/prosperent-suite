@@ -456,7 +456,45 @@ class Model_Admin extends Model_Base
 	}
 
 	/**
-	 * Create a postbox widget.
+	 * Create a MultiCheckbox input field.
+	 *
+	 * @param string $var    The variable within the option to create the file upload field for.
+	 * @param array  $values The checkbox options to choose from.
+	 * @param string $label  The label to show for the variable.
+	 * @param string $option The option the variable belongs to.
+	 * @param string $tooltip The tooltip for the option.
+	 * @return string
+	 */
+	public function multiCheckbox( $var, $values, $label, $option = '' , $tooltip = '') 
+	{
+		if ( empty( $option ) )
+			$option = $this->currentOption;
+
+		$options = get_option( $option );
+
+		if ( !isset( $options[$var] ) )
+			$options[$var] = false;
+
+		$var_esc = esc_attr( $var );
+
+		$output = '<label class="prosper_radio">' . $label . ':' . $tooltip . '</label><br><br><span style="margin-left:40px;">';
+		if (empty($label))
+		{
+			$output = '<label class="prosper_radio"></label>';
+		}
+
+		foreach ( $values as $key => $value ) {
+
+			$key = esc_attr( $key );
+			$output .= '<input type="checkbox" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']['.$key.']" value="' . $key . '" ' . ( $options[$var][$key] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radiofor" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
+		}
+		$output .= '</span>';
+
+		return $output;
+	}
+	
+	/**
+     * Create a postbox widget.
 	 *
 	 * @param string $id      ID of the postbox.
 	 * @param string $title   Title of the postbox.

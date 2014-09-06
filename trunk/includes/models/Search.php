@@ -169,6 +169,14 @@ class Model_Search extends Model_Base
 		if ($merchant)
 		{
 			array_push($filterMerchants, str_replace(',SL,', '/', $merchant));
+			$allData = $this->apiCall(array(
+				'filterMerchant' => str_replace(',SL,', '/', $merchant)
+			), 'fetchMerchant', PROSPER_CACHE_PRODS);			
+
+			if ($allData['deepLinking'] == 1)
+			{
+				$url = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['domain']) . '&apiKey=' . $this->_options['apiKey'];
+			}	
 		}
 		else
 		{
@@ -207,7 +215,10 @@ class Model_Search extends Model_Base
 			
 			foreach ($facetArray as $facet)
 			{							
-				$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value'])) . '>' . $facet['value'] . '</a>';
+				if ($facet['value'])
+				{
+					$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value'])) . '>' . $facet['value'] . '</a>';
+				}
 			}
 		}
 		return $facetsNew;
@@ -303,10 +314,10 @@ class Model_Search extends Model_Base
 		return $typeSelector;
 	}	
 	
-	public function prosperPagination($results = '', $paged, $range = 8)
+	public function prosperPagination($totalAvailable = '', $paged, $range = 8)
 	{
 		$limit = $this->_options['Pagination_Limit'] ? $this->_options['Pagination_Limit'] : 10;
-		$pages = round(count($results) / $limit, 0);
+		$pages = round($totalAvailable / $limit, 0);
 		if(empty($paged)) $paged = 1;
 
 		if($pages == '')
@@ -433,17 +444,15 @@ class Model_Search extends Model_Base
 		}
 		else
 		{
-			if ($this->_options['Country'] === 'US')
-			{
-				$fetch = 'fetchProducts';
-				$currency = 'USD';
-			}
-			elseif ($this->_options['Country'] === 'CA')
+			$fetch = 'fetchProducts';
+			$currency = 'USD';
+
+			if ($this->_options['Country'] === 'CA')
 			{
 				$fetch = 'fetchCaProducts';
 				$currency = 'CAD';
 			}
-			else 
+			elseif ($this->_options['Country'] === 'UK')
 			{
 				$fetch = 'fetchUkProducts';
 				$currency = 'GBP';

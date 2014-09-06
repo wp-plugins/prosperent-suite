@@ -53,6 +53,9 @@ class Model_Linker extends Model_Base
 			
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 
+		$brands    = $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '';
+		$merchants = $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '';
+		
 		// Remove links within links
 		$content = $content ? (preg_match('/<img/i', $content) ? $content : strip_tags($content)) : $query;
 
@@ -79,8 +82,8 @@ class Model_Linker extends Model_Base
 				$settings = array(
 					'limit'           => 1,
 					'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-					'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
-					'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',
+					'filterMerchant'  => $merchants,
+					'filterBrand'	  => $brands,
 					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
 				);
 			}
@@ -96,7 +99,7 @@ class Model_Linker extends Model_Base
 					$settings = array(
 						'limit'           => 1,
 						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-						'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+						'filterMerchant'  => $merchants,
 						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
 					);				
 				}
@@ -122,7 +125,7 @@ class Model_Linker extends Model_Base
 						'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
 						'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-						'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
+						'filterMerchant'  => $merchants,
 						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
 					);
 				}
@@ -173,32 +176,31 @@ class Model_Linker extends Model_Base
 			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" rel="' . $rel . '">' . $content . '</a>';
 		}
 
-		$brands = array();
-		if ($pieces['b'])
-		{
-			foreach ($pieces['b'] as $brand)
+		$fB = '';
+		if ($brands)
+		{			
+			foreach ($brands as $brand)
 			{
 				if (!preg_match('/^!/', $brand))
 				{
-					$brands[] = $brand;
+					$fB = '/brand/' . $brand;
+					break;
 				}
 			}
 		}
 		
-		$merchants = array();
-		if ($pieces['m'])
+		$fM = '';
+		if ($merchants)
 		{
-			foreach ($pieces['m'] as $merchant)
+			foreach ($merchants as $merchant)
 			{
 				if (!preg_match('/^!/', $merchant))
 				{
-					$merchants[] = $merchant;
+					$fM = $merchant;
 				}
 			}
 		}
 
-		$fB    = empty($brands) ? '' : '/brand/' . rawurlencode($brands[0]);
-		$fM    = empty($merchants) ? '' : '/merchant/' . rawurlencode($merchants[0]);
 		$query = isset($pieces['q']) ? '/query/' . rawurlencode($pieces['q']) : '';
 
 		if ($fB || $fM || $query)

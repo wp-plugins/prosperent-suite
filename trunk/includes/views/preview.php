@@ -3,6 +3,17 @@ error_reporting(0);
 $params = array_filter($_GET); 
 $type = $params['type'];
 
+$endPoints = array(
+	'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
+	'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
+	'fetchUkProducts'  => 'http://api.prosperent.com/api/uk/search?',
+	'fetchCaProducts'  => 'http://api.prosperent.com/api/ca/search?',
+	'fetchCoupons'	   => 'http://api.prosperent.com/api/coupon/search?',
+	'fetchLocal'	   => 'http://api.prosperent.com/api/local/search?',
+	'fetchCelebrities' => 'http://api.prosperent.com/api/celebrity?',
+	'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'
+);
+
 $states = array(
 	'alabama'		 =>'AL',
 	'alaska'		 =>'AK',
@@ -83,6 +94,16 @@ if ($type == 'coup')
 	);
 
 }
+elseif ($type == 'merchant')
+{
+	$fetch = 'fetchMerchant';
+	$merchants = array_map('trim', explode(',', $params['merchantm']));
+
+	$settings = array(
+		'filterMerchant' =>  '*' . $merchants[0] . '*'
+	);
+
+}
 elseif ($type == 'local')
 {
 	$fetch = 'fetchLocal';
@@ -141,12 +162,35 @@ $settings = array_merge(array(
 	'enableFacets'	 => FALSE
 ), $settings);
 
-require_once('../../ProsperentApi.php');
-$prosperentApi = new Prosperent_Api($settings);
-$prosperentApi -> $fetch();
-$results = $prosperentApi -> getAllData();	
+// Set the URL
+$url = $endPoints[$fetch] . http_build_query ($settings);
 
-if ($results)
+$curl = curl_init();
+
+// Set options
+curl_setopt_array($curl, array(
+	CURLOPT_RETURNTRANSFER => 1,
+	CURLOPT_URL => $url,
+	CURLOPT_CONNECTTIMEOUT => 30,
+	CURLOPT_TIMEOUT => 30
+));
+
+// Send the request
+$response = curl_exec($curl);
+
+// Close request
+curl_close($curl);
+
+// Convert the json response to an array
+$response = json_decode($response, true);
+
+// Check for errors
+if (count($response['errors']))
+{
+	throw new Exception(implode('; ', $response['errors']));
+}
+
+if ($results = $response['data'])
 {
 	?>
 	<div id="productList">
@@ -156,6 +200,10 @@ if ($results)
 			if ($type == 'coup')
 			{
 				$prosperId = $record['couponId'];
+			}
+			elseif ($type == 'merchant')
+			{
+				$prosperId = $record['merchantId'];
 			}
 			elseif ($type == 'local')
 			{
@@ -169,7 +217,7 @@ if ($results)
 			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull">
 				<div class="productBlock">
 					<div class='productImage'>
-						<span><img class="newImage" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+						<span><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
 					</div>
 					<div class='productContent'>
 						<div class='productTitle'><span><?php echo $record['keyword']; ?></span></a></div>
@@ -209,11 +257,23 @@ if ($results)
 								<?php
 								if($record['brand'] && !$filterBrand)
 								{
-									echo '<span class="brandIn"><u>Brand</u>: <cite>' . $record['brand'] . '</cite></span><br>';
+									echo '<span class="brandIn">Brand: <cite>' . $record['brand'] . '</cite></span><br>';
 								}
 								if($record['merchant'] && !$filterMerchant)
 								{
-									echo '<span class="merchantIn"><u>Merchant</u>: <cite>' . $record['merchant'] . '</cite></span>';
+									echo '<span class="merchantIn">Merchant: <cite>' . $record['merchant'] . '</cite></span><br>';
+								}
+								if($record['deepLinking'])
+								{
+									echo '<span class="merchantIn">DeepLinking: <cite>' . ($record['deepLinking'] == 1 ? 'Yes' : 'No') . '</cite></span><br>';
+								}
+								if($record['category'])
+								{
+									echo '<span class="merchantIn">Category: <cite>' . $record['category'] . '</cite></span><br>';
+								}
+								if($record['minPaymentPercentage'] || $record['maxPaymentPercentage'])
+								{
+									echo '<span class="merchantIn">Payment Percentage: <cite>' . $record['minPaymentPercentage'] . '% to ' . $record['maxPaymentPercentage'] . '%</cite></span><br>';
 								}
 								?>
 							</div>

@@ -60,7 +60,7 @@ class Model_Linker extends Model_Base
 		$content = $content ? (preg_match('/<img/i', $content) ? $content : strip_tags($content)) : $query;
 
 		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
-		{
+		{	
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
 				$type = '';
@@ -84,9 +84,21 @@ class Model_Linker extends Model_Base
 					'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 					'filterMerchant'  => $merchants,
 					'filterBrand'	  => $brands,
-					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
+					'interface'		  => 'linker'
 				);
 			}
+			elseif ($pieces['ft'] == 'fetchMerchant')
+			{			
+				$fetch = 'fetchMerchant';
+				$type = '';
+				$page = 'product';
+				
+				$settings = array(
+					'limit' => 1,
+					'filterMerchant' => $merchants
+				);				
+			}	
 			else
 			{
 				$fetch = $pieces['ft'];
@@ -97,10 +109,11 @@ class Model_Linker extends Model_Base
 					$page = 'coupon';
 				
 					$settings = array(
-						'limit'           => 1,
-						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-						'filterMerchant'  => $merchants,
+						'limit'          => 1,
+						'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+						'filterMerchant' => $merchants,
 						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+						'interface'		 => 'linker'
 					);				
 				}
 				elseif ($fetch === 'fetchLocal')
@@ -126,7 +139,8 @@ class Model_Linker extends Model_Base
 						'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 						'filterMerchant'  => $merchants,
-						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
+						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
+						'interface'		  => 'linker'						
 					);
 				}
 			}
@@ -162,8 +176,59 @@ class Model_Linker extends Model_Base
 				}
 			}			
 
-			if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
+			if ($pieces['ft'] == 'fetchMerchant')
 			{
+				if ($allData['results'][0]['deepLinking'] == 1)
+				{
+					if ($options['prosperSid'] || $options['prosperSidText'])
+					{
+						$sid = '';
+						foreach ($options['prosperSid'] as $sidPiece)
+						{
+							switch ($sidPiece)
+							{
+								case 'blogname':
+									$sid .= get_bloginfo('name');
+									break;
+								case 'interface':
+									$sid .= 'linker';
+									break;
+								case 'query':
+									$sid .= $allData['results'][0]['merchant'];
+									break;
+								case 'page':
+									$sid .= get_the_title();
+									break;	
+							}
+						}
+						if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+						{
+							if ($regs[1] == '$_SERVER')
+							{
+								$sid .= $_SERVER[$regs[4]];
+							}
+							elseif ($regs[1] == '$_SESSION')
+							{
+								$sid .= $_SESSION[$regs[4]];
+							}
+							elseif ($regs[1] == '$_COOKIE')
+							{
+								$sid .= $_COOKIE[$regs[4]];
+							}				
+						}
+					}
+				
+					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['results'][0]['domain']) . '&apiKey=' . $options['Api_Key'] . '&sid=' . $sid;
+					$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $partAffUrl)) : $partAffUrl;
+					$rel = 'nofollow,nolink';
+				}
+				else
+				{
+					return $content;
+				}
+			}	
+			elseif ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
+			{			
 				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
 			}
@@ -274,7 +339,8 @@ class Model_Linker extends Model_Base
 					'enableFullData'  => 0,
 					'limit'           => 1,
 					'query'           => $newText,
-					'groupBy'		  => 'productId'		
+					'groupBy'		  => 'productId',
+					'interface'		  => 'linker'					
 				);
 
 				$settings = array_filter($settings);

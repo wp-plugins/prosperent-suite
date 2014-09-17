@@ -13,6 +13,7 @@ class PerformAdWidget extends WP_Widget
     public function widget( $args, $instance )
     {
 		$options = get_option('prosper_performAds');
+		$extOptions = get_option('');
 
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
@@ -69,8 +70,46 @@ class PerformAdWidget extends WP_Widget
 		$height = $instance['height'] ? ($instance['height'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['height']) . 'px') : 150 . 'px';
 		$width = $instance['width'] ? ($instance['width'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['width']) . 'px') : '100%';
 
+		if ($extOptions['prosperSid'] || $extOptions['prosperSidText'])
+		{
+			$sid = '';
+			foreach ($extOptions['prosperSid'] as $sidPiece)
+			{
+				switch ($sidPiece)
+				{
+					case 'blogname':
+						$sid .= get_bloginfo('name');
+						break;
+					case 'interface':
+						$sid .= 'pa';
+						break;
+					case 'query':
+						$sid .= $fallback;
+						break;
+					case 'page':
+						$sid .= get_the_title();
+						break;	
+				}
+			}
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $extOptions['prosperSidText'], $regs))
+			{
+				if ($regs[1] == '$_SERVER')
+				{
+					$sid .= $_SERVER[$regs[4]];
+				}
+				elseif ($regs[1] == '$_SESSION')
+				{
+					$sid .= $_SESSION[$regs[4]];
+				}
+				elseif ($regs[1] == '$_COOKIE')
+				{
+					$sid .= $_COOKIE[$regs[4]];
+				}				
+			}
+		}
+		
         ?>
-		<div class="prosperent-pa" style="height: <?php echo $height; ?>; width: <?php echo $width; ?>;" pa_topics="<?php echo $fallback; ?>" ></div>
+		<div class="prosperent-pa" style="height: <?php echo $height; ?>; width: <?php echo $width; ?>;" pa_sid="<?php echo $sid?>" pa_topics="<?php echo $fallback; ?>" ></div>
         <?php
 		echo $after_widget;
     }

@@ -166,17 +166,9 @@ class Model_Search extends Model_Base
 	{
 		$filterMerchants = array();
 
-		if ($merchant)
+		if ($merchant)		
 		{
 			array_push($filterMerchants, str_replace(',SL,', '/', $merchant));
-			$allData = $this->apiCall(array(
-				'filterMerchant' => str_replace(',SL,', '/', $merchant)
-			), 'fetchMerchant', PROSPER_CACHE_PRODS);			
-
-			if ($allData['deepLinking'] == 1)
-			{
-				$url = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['domain']) . '&apiKey=' . $this->_options['apiKey'];
-			}	
 		}
 		else
 		{
@@ -221,6 +213,7 @@ class Model_Search extends Model_Base
 				}
 			}
 		}
+
 		return $facetsNew;
 	}
 	
@@ -651,6 +644,18 @@ class Model_Search extends Model_Base
 		$merchant 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
 		$category 	  = isset($params['category']) ? rawurldecode(stripslashes($params['category'])) : '';	
 
+		if ($merchant)
+		{		
+			$allData = $this->apiCall(array(
+				'filterMerchant' => str_replace(',SL,', '/', $merchant)
+			), 'fetchMerchant', PROSPER_CACHE_PRODS);			
+
+			if ($allData['results'][0]['deepLinking'] == 1)
+			{
+				$merchantUrl = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['results'][0]['domain']) . '&apiKey=' . $this->_options['Api_Key'];
+			}	
+		}
+		
 		return array(
 			'startingType' => $newEnds[0],
 			'filters'	   => array(
@@ -660,7 +665,8 @@ class Model_Search extends Model_Base
 			),
 			'typeSelector' => $typeSelector,
 			'params'	   => $params,
-			'url'		   => $url			
+			'url'		   => $url,
+			'merchantUrl'  => $merchantUrl
 		);
 	}
 }

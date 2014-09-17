@@ -312,7 +312,7 @@ abstract class Model_Base
 			$options = $this->_options;
 		}		
 
-		/*if ($options['prosperSid'])
+		if ($options['prosperSid'] || $options['prosperSidText'])
 		{
 			$sid = '';
 			foreach ($options['prosperSid'] as $sidPiece)
@@ -323,7 +323,7 @@ abstract class Model_Base
 						$sid .= get_bloginfo('name');
 						break;
 					case 'interface':
-						$sid .= 'api';
+						$sid .= $settings['interface'] ? $settings['interface'] : 'api';
 						break;
 					case 'query':
 						$sid .= $settings['query'];
@@ -332,16 +332,31 @@ abstract class Model_Base
 						$sid .= get_the_title();
 						break;	
 					case 'pageNumber':
-						$sid .= 'page';
+						$sid .= $settings['page'];
 						break;
 				}
 			}
-		}*/
-		
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+			{
+				if ($regs[1] == '$_SERVER')
+				{
+					$sid .= $_SERVER[$regs[4]];
+				}
+				elseif ($regs[1] == '$_SESSION')
+				{
+					$sid .= $_SESSION[$regs[4]];
+				}
+				elseif ($regs[1] == '$_COOKIE')
+				{
+					$sid .= $_COOKIE[$regs[4]];
+				}				
+			}
+		}
+
 		$settings = array_merge($settings, array(
 			'api_key' 	   => $options['Api_Key'],
 			'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-			'sid'		   => ($_SESSION['PROS_SID'] ? $_SESSION['PROS_SID'] : ''),
+			'sid'		   => $sid,
 		));	
 		
 		// Set the URL
@@ -380,7 +395,7 @@ abstract class Model_Base
 		return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
 	}
 	
-	public function trendsApiCall ($settings, $fetch, $categories = array(), $lifetime = PROSPER_CACHE_COUPS)
+	public function trendsApiCall ($settings, $fetch, $categories = array(), $merchants = array(), $lifetime = PROSPER_CACHE_COUPS)
 	{
 		if (empty($this->_options))
 		{
@@ -430,6 +445,7 @@ abstract class Model_Base
 			'enableFacets'   	   => array('catalogId'),
 			'filterCatalog'  	   => $catalog,
 			'filterCategory' 	   => $categories,			
+			'filterMerchant'	   => $merchants,
 			'filterCommissionDate' => $startDate . ',' . $endDate
 		);
 

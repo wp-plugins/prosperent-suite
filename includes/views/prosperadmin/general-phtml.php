@@ -18,11 +18,11 @@ echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Target', __( 'Open Links in New Window/Tab', 'prosperent-suite' ));
 echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in a new window/tab <br><strong>Unchecked</strong> : opens link in the same window<br><strong>Will Not Change the Functionality of Performance Ads or ProsperLinks</strong>", 'prosperent-suite' ) . '</p>';
 
-/*
 echo '<h2 class="prosper_h2">' . __( 'SID Tracking', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->multiCheckbox( 'prosperSid',  array( 'blogname' => 'Blog Name', 'interface' => 'Interface', 'query' => 'Query/Topic', 'page' => 'Page', 'pageNumber' => 'Page Number' ), 'Select what you\'d like to be included in the SID ', '', '<a href="#" class="prosper_tooltip"><span>Choose a SID Tracking for your blog.<br><strong>Blog Name:</strong> Your Blog\'s Name<br><strong>Interface:</strong> Interface that the click/commission came from (api, pa, pl, pi, al).<br><strong>Query/Topic:</strong> Query or Topic (pa) that the click originated from<br><strong>Page:</strong> What page the click came from<br><strong>Page Number:</strong> If click came from Shop, which page the user was on<br><br>Defaults to <strong>blogname_interface</strong>.</span></a>' );
+echo '<p>';
+echo $prosperAdmin->textinput( 'prosperSidText', __( 'Other', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Additional info for SID tracking, can be a SESSION, SERVER, or COOKIE variable <br><strong>(eg. $_SERVER[\'HTTP_HOST\'] or $_SERVER[\"HTTP_HOST\"])</strong>.</span></a>', 'prosper_textinputsmallindent');
 echo '<p class="prosper_descb">' . __( "Each piece will be added to one another with an underscore (_) separator.", 'prosperent-suite' ) . '</p>';
-*/
 
 echo '<h2 class="prosper_h2">' . __( 'Caching', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_Caching', __( 'Turn on Caching', 'prosperent-suite' ));

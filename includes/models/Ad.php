@@ -63,7 +63,45 @@ class Model_Ad extends Model_Base
 		$height = $h ? ($h == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $h) . 'px') : 90 . 'px';
 		$width = $w ? ($w == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $w) . 'px') : '100%';
 
-		return '<p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_topics="' . $fallback . '"></div></p>';
+		if ($options['prosperSid'] || $options['prosperSidText'])
+		{
+			$sid = '';
+			foreach ($options['prosperSid'] as $sidPiece)
+			{
+				switch ($sidPiece)
+				{
+					case 'blogname':
+						$sid .= get_bloginfo('name');
+						break;
+					case 'interface':
+						$sid .= 'pa';
+						break;
+					case 'query':
+						$sid .= $fallback;
+						break;
+					case 'page':
+						$sid .= get_the_title();
+						break;	
+				}
+			}
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+			{
+				if ($regs[1] == '$_SERVER')
+				{
+					$sid .= $_SERVER[$regs[4]];
+				}
+				elseif ($regs[1] == '$_SESSION')
+				{
+					$sid .= $_SESSION[$regs[4]];
+				}
+				elseif ($regs[1] == '$_COOKIE')
+				{
+					$sid .= $_COOKIE[$regs[4]];
+				}				
+			}
+		}		
+		
+		return '<p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_sid="' . $sid . '" pa_topics="' . $fallback . '"></div></p>';
 		
 	}
 	

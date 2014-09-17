@@ -10,7 +10,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.5'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.51'; ?>"></script>
 		<script type="text/javascript">
 			var t;function showValues(){var b=getNewCurrent();clearTimeout(t);var c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div.preview").html(xmlhttp.responseText).show()};var d=window.location.pathname,b=d.substring(0,d.lastIndexOf("prosperlinker/"))+"preview.php?type="+b+"&";xmlhttp.open("GET",b+c,!0);t=setTimeout(function(){try{xmlhttp.send(),c=""}catch(a){}},500);c||clearTimeout(t)}
 			function showAddedValues(){var b=getNewCurrent(),c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div.added").html(xmlhttp.responseText).show()};var d=window.location.pathname,b=d.substring(0,d.lastIndexOf("prosperlinker/"))+"added.php?type="+b+"&";xmlhttp.open("GET",b+c,!0);xmlhttp.send()}
@@ -29,6 +29,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 					<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:mcTabs.displayTab('products_tab','products_panel');" onmousedown="return false;">Products</a></span></li>
 					<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:;" onclick="mcTabs.displayTab('coupons_tab','coupons_panel');" onmousedown="return false;">Coupons</a></span></li>
 					<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:;" onclick="javascript:mcTabs.displayTab('local_tab','local_panel');" onmousedown="return false;">Local Deals</a></span></li>
+					<li id="merchant_tab" aria-controls="merchant_panel"><span><a href="javascript:;" onclick="javascript:mcTabs.displayTab('merchant_tab','merchant_panel');" onmousedown="return false;">Merchants</a></span></li>
 				</ul>
 			</div>
 			<div class="panel_wrapper">
@@ -43,6 +44,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<table style="font-size:13px;">
 							<tr>
 								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" name="prodgoTo" id="prodGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="prodGoTo" name="prodgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
@@ -63,6 +65,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<table style="font-size:13px;">
 							<tr>
 								<td><label>Go To:</label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="coupGoTo" name="coupgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="coupGoTo" name="coupgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
@@ -86,6 +89,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<table style="font-size:13px;">
 							<tr>
 								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="localGoTo" name="localgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="localGoTo" name="prosperGoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
@@ -94,6 +98,23 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 							</tr>
 						</table>						
 						<input type="hidden" id="localid" name="localid"/>							
+					</fieldset>
+				</div>
+				
+				<div id="merchant_panel" class="panel">		
+					<fieldset style="font-size:14px;">
+						<legend>Merchant Linker</legend>					
+						<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>												
+						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name or merchantId you want to use, if they allow deepLinking (Linking straight to their main site)<strong>Use only one name or ID</strong>.</span></a></p>								
+						<table style="font-size:13px;">
+							<tr>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="merchantGoTo" name="merchantGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+							</tr>
+							<tr>					
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="merchantGoTo" name="merchantGoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+							</tr>
+						</table>						
+						<input type="hidden" id="merchantid" name="merchantid"/>							
 					</fieldset>
 				</div>
 			</div>

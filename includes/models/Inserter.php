@@ -154,7 +154,8 @@ class Model_Inserter extends Model_Base
 				'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
-				'filterLocalId'   => $id,		
+				'filterLocalId'   => $id,	
+				'interface'		  => 'insert'					
 			);
 		}
 		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
@@ -167,6 +168,7 @@ class Model_Inserter extends Model_Base
 				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant' => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',		
 				'filterCouponId' => $id,
+				'interface'		 => 'insert'					
 			);			
 
 			$imageLoader = 'small';
@@ -197,7 +199,8 @@ class Model_Inserter extends Model_Base
 				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
 				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
 				'filterProductId' => $id,
-				'filterPriceSale' => $pieces['sale'] ? '0.01,' : ''
+				'filterPriceSale' => $pieces['sale'] ? '0.01,' : '',
+				'interface'		 => 'insert'
 			);
 		}
 		

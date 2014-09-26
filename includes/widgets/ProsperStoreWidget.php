@@ -78,6 +78,7 @@ class ProsperStoreWidget extends WP_Widget
 			<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('widthStyle'); ?>" value="px" <?php echo checked( esc_attr($widthStyle), 'px', false ); ?> /> <strong>px</strong>
 			<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('widthStyle'); ?>" value="em" <?php echo checked( esc_attr($widthStyle), 'em', false ); ?> /> <strong>em</strong>
 		</div>
+		<br>
 		<?php
     }
 }

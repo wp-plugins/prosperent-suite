@@ -301,7 +301,7 @@ abstract class Model_Base
 		delete_option("prosperent_store_page_id");
 	}
 	
-	public function apiCall ($settings, $fetch, $lifetime = PROSPER_CACHE_PRODS)
+	public function apiCall ($settings, $fetch, $lifetime = PROSPER_CACHE_PRODS, $sid = '')
 	{	
 		if (empty($this->_options))
 		{
@@ -312,45 +312,49 @@ abstract class Model_Base
 			$options = $this->_options;
 		}		
 
-		if ($options['prosperSid'] || $options['prosperSidText'])
+		if (($options['prosperSid'] || $options['prosperSidText']) && !$sid)
 		{
-			$sid = '';
+			$sidArray = '';
 			foreach ($options['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
 				{
 					case 'blogname':
-						$sid .= get_bloginfo('name');
+						$sidArray[] = get_bloginfo('name');
 						break;
 					case 'interface':
-						$sid .= $settings['interface'] ? $settings['interface'] : 'api';
+						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
 						break;
 					case 'query':
-						$sid .= $settings['query'];
+						$sidArray[] = $settings['query'];
 						break;
 					case 'page':
-						$sid .= get_the_title();
-						break;	
-					case 'pageNumber':
-						$sid .= $settings['page'];
-						break;
+						$sidArray[] = get_the_title();
+						break;						
 				}
 			}
 			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
-					$sid .= $_SERVER[$regs[4]];
+					$sidArray[] = $_SERVER[$regs[4]];
 				}
 				elseif ($regs[1] == '$_SESSION')
 				{
-					$sid .= $_SESSION[$regs[4]];
+					$sidArray[] = $_SESSION[$regs[4]];
 				}
 				elseif ($regs[1] == '$_COOKIE')
 				{
-					$sid .= $_COOKIE[$regs[4]];
-				}				
+					$sidArray[] = $_COOKIE[$regs[4]];
+				}					
 			}
+			elseif (!preg_match('/\$/', $options['prosperSidText']))
+			{
+				$sidArray[] = $options['prosperSidText'];
+			}
+			
+			$sidArray = array_filter($sidArray);
+			$sid = implode('_', $sidArray);
 		}
 
 		$settings = array_merge($settings, array(
@@ -395,7 +399,7 @@ abstract class Model_Base
 		return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
 	}
 	
-	public function trendsApiCall ($settings, $fetch, $categories = array(), $merchants = array(), $lifetime = PROSPER_CACHE_COUPS)
+	public function trendsApiCall ($settings, $fetch, $categories = '', $merchants = '', $brands = '', $sid = '', $lifetime = PROSPER_CACHE_COUPS)
 	{
 		if (empty($this->_options))
 		{
@@ -418,6 +422,7 @@ abstract class Model_Base
 		}
 		else
 		{
+			$brandFilter = true;
 			$filter = 'filterCatalogId';
 			if ($this->_options['Country'] === 'US')
 			{
@@ -443,16 +448,56 @@ abstract class Model_Base
 			'visitor_ip'     	   => $_SERVER['REMOTE_ADDR'],	
 			'limit'		     	   => $options['Pagination_Limit'],
 			'enableFacets'   	   => array('catalogId'),
+			'filterCommissionDate' => $startDate . ',' . $endDate,
 			'filterCatalog'  	   => $catalog,
 			'filterCategory' 	   => $categories,			
 			'filterMerchant'	   => $merchants,
-			'filterCommissionDate' => $startDate . ',' . $endDate
+			'filterBrand'		   => $brandFilter ? $brands : ''
 		);
 
 		$apiCall = array_filter($apiCall);
-		
+
 		// Set the URL
-		$url = $this->_endPoints['fetchTrends'] . http_build_query ($apiCall);
+		$response = $this->trendsCurlCall($apiCall);
+
+		if ($response)
+		{				
+			// set productId as key in array
+			$keys = array();
+			foreach ($response['facets']['catalogId'] as $data)
+			{
+				$keys[] = $data['value'];
+			}
+
+			if ($fetch === 'fetchCoupons')
+			{
+				$filter = 'filterCouponId';
+			}
+			elseif ($fetch === 'fetchLocal')
+			{
+				$filter = 'filterLocalId';
+			}
+			else
+			{
+				$filter = 'filterCatalogId';
+			}
+
+			// fetch trend data from api
+			$settings = array_merge(array(
+				$filter		   => $keys,
+				'limit'		   => $options['Pagination_Limit'],
+				'enableFacets' => FALSE
+			), $settings);
+
+			$results = $this->apiCall($settings, $fetch, $lifetime, $sid);
+		}
+			
+		return (array) $results;
+	}
+	
+	public function trendsCurlCall($settings)
+	{
+		$url = $this->_endPoints['fetchTrends'] . http_build_query ($settings);
 
 		$curl = curl_init();
 
@@ -476,42 +521,26 @@ abstract class Model_Base
 		// Check for errors
 		if (count($response['errors']) || empty($response['facets']['catalogId']))
 		{
-			return array();
+			$count = count($settings);
+			for ($i = 0; $i <= $count; $i++)
+			{
+				array_pop($settings);
+
+				if(count($settings) < 5)
+				{
+					return ;
+				}
+			
+				$response = $this->trendsCurlCall($settings);
+
+				if ($response['facets']['catalogId'])
+				{
+					break;
+				}	 
+			}
 		}
 
-		//$api->setDateRange('commission', $startDate, $endDate)
-		//	->fetchTrends();
-		
-		// set productId as key in array
-		$keys = array();
-		foreach ($response['facets']['catalogId'] as $data)
-		{
-			$keys[] = $data['value'];
-		}
-
-		if ($fetch === 'fetchCoupons')
-		{
-			$filter = 'filterCouponId';
-		}
-		elseif ($fetch === 'fetchLocal')
-		{
-			$filter = 'filterLocalId';
-		}
-		else
-		{
-			$filter = 'filterCatalogId';
-		}
-
-		// fetch trend data from api
-		$settings = array_merge(array(
-			$filter		   => $keys,
-			'limit'		   => $options['Pagination_Limit'],
-			'enableFacets' => FALSE
-		), $settings);
-
-		$results = $this->apiCall($settings, $fetch, $lifetime);
-
-		return $results;
+		return $response;
 	}
 	
 	public function apiCaching($lifetime)

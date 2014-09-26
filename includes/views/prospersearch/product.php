@@ -2,7 +2,7 @@
 
 	<div class="prosper_searchform">
 		<form class="searchform" method="POST" action="" rel="nolink">
-			<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
+			<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
 			<input id="submit" class="prosper_submit" type="submit" value="Search">
 		</form>
 	</div>

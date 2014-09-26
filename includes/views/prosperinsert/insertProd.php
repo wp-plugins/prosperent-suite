@@ -15,7 +15,7 @@ if ($pieces['v'] === 'grid')
 		
 		if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 		{
-			$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
+			$goToUrl = '"' . $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow,nolink" target="' . $target . '"';
 		}
 		elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 		{
@@ -94,7 +94,7 @@ else
 
 			if (($pieces['gtm'] || $pieces['gtm'] === 'true') && $this->_options['URL_Masking'])
 			{
-				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
+				$goToUrl = '"' . $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) . '" rel="nofollow,nolink" target="' . $target . '"';
 			}
 			elseif ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{

@@ -13,7 +13,7 @@ class PerformAdWidget extends WP_Widget
     public function widget( $args, $instance )
     {
 		$options = get_option('prosper_performAds');
-		$extOptions = get_option('');
+		$extOptions = get_option('prosperSuite');
 
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );

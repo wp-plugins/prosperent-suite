@@ -96,6 +96,7 @@ class Model_Linker extends Model_Base
 				
 				$settings = array(
 					'limit' => 1,
+					'filterMerchantId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
 					'filterMerchant' => $merchants
 				);				
 			}	
@@ -152,7 +153,7 @@ class Model_Linker extends Model_Base
 			{
 				return $content;
 			}
-			
+
 			$allData = $this->apiCall($settings, $fetch);
 
 			if (!$allData['results'])
@@ -182,22 +183,22 @@ class Model_Linker extends Model_Base
 				{
 					if ($options['prosperSid'] || $options['prosperSidText'])
 					{
-						$sid = '';
+						$sidArray = array();
 						foreach ($options['prosperSid'] as $sidPiece)
 						{
 							switch ($sidPiece)
 							{
 								case 'blogname':
-									$sid .= get_bloginfo('name');
+									$sidArray[] = get_bloginfo('name');
 									break;
 								case 'interface':
-									$sid .= 'linker';
+									$sidArray[] = 'linker';
 									break;
 								case 'query':
-									$sid .= $allData['results'][0]['merchant'];
+									$sidArray[] = $allData['results'][0]['merchant'];
 									break;
 								case 'page':
-									$sid .= get_the_title();
+									$sidArray[] = get_the_title();
 									break;	
 							}
 						}
@@ -205,20 +206,27 @@ class Model_Linker extends Model_Base
 						{
 							if ($regs[1] == '$_SERVER')
 							{
-								$sid .= $_SERVER[$regs[4]];
+								$sidArray[] = $_SERVER[$regs[4]];
 							}
 							elseif ($regs[1] == '$_SESSION')
 							{
-								$sid .= $_SESSION[$regs[4]];
+								$sidArray[] = $_SESSION[$regs[4]];
 							}
 							elseif ($regs[1] == '$_COOKIE')
 							{
-								$sid .= $_COOKIE[$regs[4]];
+								$sidArray[] = $_COOKIE[$regs[4]];
 							}				
+						}			
+						elseif (!preg_match('/\$/', $options['prosperSidText']))
+						{
+							$sidArray[] = $options['prosperSidText'];
 						}
+						
+						$sidArray = array_filter($sidArray);
+						$sid = implode('_', $sidArray);
 					}
 				
-					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['results'][0]['domain']) . '&apiKey=' . $options['Api_Key'] . '&sid=' . $sid;
+					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode($allData['results'][0]['domain']);
 					$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $partAffUrl)) : $partAffUrl;
 					$rel = 'nofollow,nolink';
 				}

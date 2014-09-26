@@ -72,40 +72,54 @@ class PerformAdWidget extends WP_Widget
 
 		if ($extOptions['prosperSid'] || $extOptions['prosperSidText'])
 		{
-			$sid = '';
+			$sidArray = array();
 			foreach ($extOptions['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
 				{
 					case 'blogname':
-						$sid .= get_bloginfo('name');
+						$sidArray[] = get_bloginfo('name');
 						break;
 					case 'interface':
-						$sid .= 'pa';
+						$sidArray[] = 'pa';
 						break;
 					case 'query':
-						$sid .= $fallback;
+						$sidArray[] = $fallback;
 						break;
 					case 'page':
-						$sid .= get_the_title();
+						$sidArray[] = get_the_title();
 						break;	
+					case 'widgetName':
+						$sidArray[] = 'prosperAds';
+						break;
+					case 'widgetTitle':
+						$sidArray[] = $title;
+						break;						
 				}
 			}
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $extOptions['prosperSidText'], $regs))
+			
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
-					$sid .= $_SERVER[$regs[4]];
+					$sidArray[] = $_SERVER[$regs[4]];
 				}
 				elseif ($regs[1] == '$_SESSION')
 				{
-					$sid .= $_SESSION[$regs[4]];
+					$sidArray[] = $_SESSION[$regs[4]];
 				}
 				elseif ($regs[1] == '$_COOKIE')
 				{
-					$sid .= $_COOKIE[$regs[4]];
-				}				
+					$sidArray[] = $_COOKIE[$regs[4]];
+				}					
 			}
+			elseif (!preg_match('/\$/', $options['prosperSidText']))
+			{
+				$sidArray[] = $options['prosperSidText'];
+			}
+			
+			$sidArray = array_filter($sidArray);			
+			$sid = implode('_', $sidArray);
 		}
 		
         ?>

@@ -652,7 +652,7 @@ class Model_Search extends Model_Base
 
 			if ($allData['results'][0]['deepLinking'] == 1)
 			{
-				$merchantUrl = 'http://prosperent.com/api/linkaffiliator/redirect?' . 'url=' . rawurlencode($allData['results'][0]['domain']) . '&apiKey=' . $this->_options['Api_Key'];
+				$merchantUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $this->_options['Api_Key'] . '&url=' . rawurlencode($allData['results'][0]['domain']);
 			}	
 		}
 		

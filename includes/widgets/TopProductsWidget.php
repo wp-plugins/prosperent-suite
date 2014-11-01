@@ -47,33 +47,30 @@ class TopProductsWidget extends WP_Widget
 			$fetch = 'fetchCaProducts';
 		}
 		
-		if ($options['prosperSid'] || $options['prosperSidText'])
-		{					
-			$sidArray = '';
+		$sidArray = array();
+		if ($options['prosperSid'] && !$sid)
+		{
 			foreach ($options['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
-				{			
+				{
 					case 'blogname':
 						$sidArray[] = get_bloginfo('name');
 						break;
 					case 'interface':
-						$sidArray[] = 'api';
+						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
 						break;
 					case 'query':
-						$sidArray[] = implode('.', array_merge(array_map('trim', explode(',', $instance['categories'])), array_map('trim', explode(',', $instance['merchants'])), array_map('trim', explode(',', $instance['brands']))));
+						$sidArray[] = $settings['query'];
 						break;
 					case 'page':
 						$sidArray[] = get_the_title();
-						break;	
-					case 'widgetName':
-						$sidArray[] = 'topProducts';
-						break;
-					case 'widgetTitle':
-						$sidArray[] = $title;
 						break;						
 				}
 			}
+		}
+		if ($options['prosperSidText'] && !$sid)
+		{
 			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
@@ -93,10 +90,13 @@ class TopProductsWidget extends WP_Widget
 			{
 				$sidArray[] = $options['prosperSidText'];
 			}
-			
+		}
+		
+		if (!empty($sidArray))
+		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
-		}		
+		}	
 		
 		$settings = array(
 			'limit' 		 => $instance['numProd']  ? $instance['numProd'] : 5,
@@ -115,7 +115,7 @@ class TopProductsWidget extends WP_Widget
 			<?php
 			if ($allData)
 			{
-				foreach ($allData['results'] as $record)
+				foreach ($allData['data'] as $record)
 				{
 					if ($instance['goToMerch'] && $options['URL_Masking'])
 					{

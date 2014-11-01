@@ -1,119 +1,126 @@
-<?php echo $typeSelector; ?>
+<?php //echo $typeSelector; ?>
 
-	<div class="prosper_searchform">
-		<form class="searchform" method="POST" action="" rel="nolink">
-			<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
-			<input id="submit" class="prosper_submit" type="submit" value="Search">
-		</form>
-	</div>
-	<div class="clear"></div>
+<div class="prosper_searchform" style="width:70%;">
+	<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
+		<input id="s" style="width:60%;" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
+		<?php if ($typeSelector): ?>
+			<select style="padding:5px;display:inline;width:26%;" name="type">
+				<?php 				
+				foreach ($typeSelector as $i => $ends)
+				{
+					?>
+					<option <?php echo ($params['type'] == $i ? 'selected="selected"' : ''); ?> value="<?php echo $i; ?>">In: <strong><?php echo $ends; ?></strong></option>
+					<?php 
+				}
+				?>
+			</select>
+		<?php endif; ?>
+		<input id="submit" class="prosper_submit" type="submit" name="submit" value="Search">
+	</form>
+</div>
+<div class="clear"></div>
 <?php 
 
 if ($filterArray)
 {
 	?>
-	<table id="facets">
-		<tr>				
+	<div id="filterSidebar" style="width:19%; padding-left:2px;float:left;margin-top:6px; border:1px solid #ddd; background:#f2f0ee;">
+		<div>	
+			<?php 
+			if ($celebrityInfo)
+			{
+				echo '<div style="width:100%; margin:0; padding:4px 2px;border-bottom:2px solid #ddd;">';
+				echo $celebrityInfo['celebrity'] ? '<strong style="text-align:center;">' . $celebrityInfo['celebrity'] . '</strong>' : '';
+				echo '<div><img style="width:160px;" src="' . ($options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $celebrityInfo['image_url'])) : $celebrityInfo['image_url']) . '" alt="' . $celebrityInfo['celebrity'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
+				echo $celebrityInfo['age'] ? '<strong>Age:</strong> ' . $celebrityInfo['age'] : '';
+				echo $celebrityInfo['height'] ? '<br><strong>Height:</strong> ' . $celebrityInfo['height'] : '';
+				echo $celebrityInfo['dateBirth'] ? '<br><strong>DOB:</strong> ' . date('M j, Y', strtotime($celebrityInfo['dateBirth'])) : '<br><br>';	
+				echo '</div>';
+			}			
+			
+			if (!empty($pickedFacets)): ?>
+			<div style="width:100%; margin:0; padding:4px 2px;border-bottom:2px solid #ddd;">
+				<div class="activeFilters">
+					<span><?php echo implode('</span></div><div class="activeFilters"><span>', $pickedFacets);?></span>
+				</div>
+			</div>
+			<?php endif; ?>
+		
 			<?php			
 			$mainCount = count($mainFilters);
-			$z = 0;
+
  			foreach ($mainFilters as $i => $partials)
 			{				
 				if ($params['zip'])
 				{
 					$params['zipCode'] = $params['zip'];
 				}
-				$facetDir = $z === 0 ? 'left' : 'right';
-				?>
-				<td class="<?php echo $facetDir; ?>" style="width:<?php  echo (100 / $mainCount) - 2; ?>%; float:<?php echo $facetDir; ?>">
-				<?php
-				echo (empty($params[$i]) ? '<div class="browse' .  ucfirst($i) . '">' . ucfirst($i) . ': </div>' : '<div class="filtered' . ucfirst($i) . '">Filtered by: </div>');
-				if ((empty($facets[$i]) && !$params[$i]) && $i != 'celebrity')
-				{
-					if ($i === 'city')
-						$i = 'citie';
-					echo '<div class="no' .  $i . '">No ' .  $i . 's Found</div>';
-				}
-				else if (!$params[$i])
-				{			
-					echo implode('&nbsp;&nbsp;<strong>|</strong>  ', $partials);
 				
-					if (!empty($secondaryFilters[$i]))
-					{
-						if ($i === 'brand' || $i === 'city')
-							$x = 'merchant';
-						if ($i === 'merchant' || $i === 'zip')
-							$x = 'brand';
-						
-						?>
-						</br>
-						<a onclick="toggle_visibility('<?php echo $i; ?>List'); toggle_hidden('<?php echo $x; ?>List'); toggle_hidden('more<?php echo ucfirst($i); ?>s'); toggle_visibility('hide<?php echo ucfirst($i); ?>s'); toggle_hidden('hide<?php echo ucfirst($x); ?>s'); toggle_visibility('more<?php echo ucfirst($x); ?>s'); return false;" style="cursor:pointer; font-size:12px;"><span id="more<?php echo ucfirst($i); ?>s" style="display:block;">More <?php echo ucfirst($i); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></span></a>
-						<a onclick="toggle_hidden('<?php echo $i; ?>List'); toggle_hidden('hide<?php echo ucfirst($i); ?>s'); toggle_visibility('more<?php echo ucfirst($i); ?>s'); return false;" style="cursor:pointer; font-size:12px;"><span id="hide<?php echo ucfirst($i); ?>s" style="display:none;">Hide <?php echo ucfirst($i); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></span></a>
-						<?php	
-					}
-				}					
-				else
-				{				
-					if ($i == 'zipCode')
-						$i = 'zip';				
-						
-					echo '<div style="min-height:35px;">';
-					echo '<strong>' . str_replace(',SL,', '/', rawurldecode($params[$i])) . '</strong>';
+				$name = $i;
+				if ($i === 'city')
+					$name = 'citie';
+				if ($i === 'category')
+					$name = 'categorie';	
+				if ($i === 'zipCode')
+					$name = 'Zip Code';
+				?>
+				<div style="display:block;">				
+				
+					<div id="more<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>List'); toggle_hidden('more<?php echo ucfirst($i); ?>s'); toggle_visibility('hide<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:14px; font-weight:bold;"><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+					<div id="hide<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>List'); toggle_hidden('hide<?php echo ucfirst($i); ?>s'); toggle_visibility('more<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:14px;font-weight:bold;""><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
 
-					
-					if ($i === 'zip' || $i === 'city')
+					<?php		
+
+					if ((empty($mainFilters[$i]) && !$params[$i]) && $i != 'celebrity')
 					{
-						echo '</br><a href=' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]), '', $url) . '>clear filter</a>';
-						echo '<div>&nbsp;';
-					}
-					elseif ($i === 'brand')
-					{
-						echo '</br><a href=' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]), '', $url) . '>clear filter</a>';
-						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $homeUrl  . '/img/' . rawurlencode(str_replace('/', ',SL,',  ('brandlogos/120x60/' . $params[$i] . '.png'))) : 'http://img1.prosperent.com/images/brandlogos/120x60/' . $params[$i] . '.png') . '" alt="' . $params[$i] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
-					}
-					elseif ($i === 'celebrity')
-					{
-						echo $mainFilters[$i]['age'] ? '<br><strong>Age:</strong> ' . $mainFilters[$i]['age'] : '<br>';
-						echo $mainFilters[$i]['height'] ? '<br><strong>Height:</strong> ' . $mainFilters[$i]['height'] : '<br>';
-						echo $mainFilters[$i]['dateBirth'] ? '<br><strong>Date of Birth:</strong> ' . date('M j, Y', strtotime($mainFilters[$i]['dateBirth'])) : '<br><br>';
-						
-						echo '<div style="margin-top:-95px;padding-left:250px;"><img src="' . ($options['Image_Masking'] ? $homeUrl  . '/img/' . rawurlencode(str_replace('/', ',SL,', ('celebrity/250x250/' . $mainFilters[$i]['celebrityId'] . '/1.jpg'))) : 'http://img1.prosperent.com/images/celebrity/250x250/' . $mainFilters[$i]['celebrityId'] . '/1.jpg') . '" alt="' . $params[$i] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
+						echo '<div class="no' .  $i . '">No ' .  $i . 's Found</div>';
 					}
 					else
-					{
-						echo '</br><a href=' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]), '', $url) . '>clear filter</a>';
-						echo '<div style="margin-top:-50px;padding-left:150px;"><img src="' . ($options['Image_Masking'] ? $homeUrl  . '/img/' . rawurlencode(str_replace('/', ',SL,',  ('logos/120x60/' . $params[$i] . '.png'))) : 'http://img1.prosperent.com/images/logos/120x60/' . $params[$i] . '.png') . '" alt="' . $params[$i] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
-					}
-					
-					echo '</div>';
-				}
-				?>
-				</td>
+					{					
+						echo '<span id="' . $i . 'List" style="padding: 0 0 8px 12px;display:block;">' . implode('</br>', $partials);
+						if ($secondaryFilters[$i])
+						{
+							?>
+							<div id="moreExtra<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>ExtraList'); toggle_hidden('moreExtra<?php echo ucfirst($i); ?>s'); toggle_visibility('hideExtra<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:13px;font-weight:bold;"">More <?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+							<div id="hideExtra<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>ExtraList'); toggle_hidden('hideExtra<?php echo ucfirst($i); ?>s'); toggle_visibility('moreExtra<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:13px;font-weight:bold;"">More <?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
+							<?php
+							echo '<span id="' . $i . 'ExtraList" style="display:none;">' . implode('</br>', $secondaryFilters[$i]) . '</span>';
+						}				
+						
+						echo '</span>';
+					}				
+					?>
+				</div>
 				<?php
 				$z++;
-			}
+			}		
 			?>
+			<div id="morePriceRange" onclick="toggle_visibility('priceRangeSlider');  toggle_hidden('morePriceRange'); toggle_visibility('hidePriceRange'); return false;" style="display:none;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+			<div id="hidePriceRange" onclick="toggle_hidden('priceRangeSlider'); toggle_hidden('hidePriceRange'); toggle_visibility('morePriceRange'); return false;" style="display:block;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>		
+			<div id="priceRangeSlider" style="display:block;">
+				<div id="sliderRange"></div>
+				<form name="priceRange" method="POST" action="">
+					<input type="text" onChange="priceRange.submit();" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
+					<input type="text" onChange="priceRange.submit();" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>">
+				</form>
+			</div>
 			
-		</tr>
-		<tr>
-			<?php
-			if($secondaryFilters)
-			{
-				foreach ($secondaryFilters as $i => $secondaryPartials)
-				{
-					if (!empty($secondaryFilters[$i])) 
-					{ 
-						?>
-						<td id="<?php echo $i; ?>List" style="display:none; font-size:12px; width:100%;">
-							<?php echo implode('&nbsp;&nbsp;<strong>|</strong> &nbsp; ', $secondaryPartials); ?>
-						</td>
-						<?php 
-					}	
-				}
-			}			
-			?>
-		</tr>	
-	</table>
+			<div id="morePercentRange" onclick="toggle_visibility('percentRangeSlider'); toggle_hidden('morePercentRange'); toggle_visibility('hidePercentRange'); return false;" style="display:none;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+			<div id="hidePercentRange" onclick="toggle_hidden('percentRangeSlider'); toggle_hidden('hidePercentRange'); toggle_visibility('morePercentRange'); return false;" style="display:block;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
+			<div id="percentRangeSlider" style="display:block;">
+				<div id="sliderPercent"></div>
+				<form name="percentOffRange" method="POST" action="">
+					<input type="text" onChange="percentOffRange.submit();" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
+					<input type="text" onChange="percentOffRange.submit();" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
+					<?php if ($type == 'prod') : ?>
+					<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
+					<label style="display:inline-block;" for="onSale">On Sale Only</label>
+					<?php endif; ?>
+				</form>
+			</div>
+		
+		</div>	
+	</div>
 	<?php
 }
 
@@ -131,14 +138,9 @@ if ($noResults)
 	}
 	echo '<div class="noResults-padding"></div>';
 }
-
-if (strlen($title) > 60)
-{
-	$title = substr($title, 0, 60) . '...';
-}
 ?>
 
-<div class="totalFound" style="margin-top:none;"><?php echo (($totalFound > 0 && isset($title)) ? (number_format($totalFound) . ' results for ' . preg_replace('/\(.+\)/i', '', $title)) : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>')) . ($demolishUrl && !$trend ? '<a class="xDemolish" href=' . $demolishUrl . '> [x]</a>' : ''); ?></div>
+<div class="totalFound"><?php echo (($totalFound > 0 && isset($title)) ? (number_format($totalFound) . ' results for ' . preg_replace('/\(.+\)/i', '', $title)) : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>')) . ($demolishUrl && !$trend ? '<strong><a class="xDemolish" href=' . $demolishUrl . '> &#215;</a></strong>' : ''); ?></div>
 
 <div class="prosper_priceSorter">
 	<form class="sorterofprice" name="priceSorter" method="POST" action="" >
@@ -153,7 +155,7 @@ if (strlen($title) > 60)
 			}
 			?>
 		</select>
-		<?php echo (($params['sort'] != 'rel' && '' != $params['sort']) ? '<a style="font-size:11px;margin-top:-5px;" href=' . str_replace(array('/page/' . $params['page'], '/sort/' . $params['sort']), '', $url) . '> [x]</a>' : ''); ?>
+		<?php echo (($params['sort'] != 'rel' && '' != $params['sort']) ? '<strong><a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/sort/' . $params['sort']), '', $url) . '> &#215;</a></strong>' : ''); ?>
 	</form>
 </div>
 
@@ -161,14 +163,14 @@ if (strlen($title) > 60)
 	<a href="<?php echo str_replace(array('/view/' . $params['view']), '', $url) . '/view/list'; ?>"><span class="listIcon"></span></a>
 	<a href="<?php echo str_replace(array('/view/' . $params['view']), '', $url) . '/view/grid'; ?>"><span class="gridIcon"></span></a>
 </div>
-<div class="clear"></div>
+
 <?php
 //$pagedResults = $this->searchModel->prosperPages($results, $params['page']);
 
 if (!$params['view'] || $params['view'] === 'list') 
 { 
 	?>
-	<div id="productList">
+	<div id="productList" style="<?php echo ($filterArray ? 'width:80%' : 'width:100%'); ?>;float:right;">
 		<?php
 		if (!empty($results))
 		{
@@ -176,11 +178,11 @@ if (!$params['view'] || $params['view'] === 'list')
 			foreach ($results as $i => $record)
 			{			
 				$record['affiliate_url'] = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
-				$cid = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
+				$cid = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);				
 				?>
 				<div class="productBlock">
 					<div class="productImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+						<a href="<?php echo ($options['imageMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 					</div>
 					<div class="productContent">
 						<?php
@@ -210,7 +212,7 @@ if (!$params['view'] || $params['view'] === 'list')
 							}
 						}	
 						?>
-						<div class="productTitle"><a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>
+						<div class="productTitle"><a href="<?php echo ($options['titleMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>
 						<?php
 						if ($type != 'coupon' && $type != 'local')
 						{ 
@@ -281,7 +283,7 @@ if (!$params['view'] || $params['view'] === 'list')
 						?>
 						<div class="prosperVisit">					
 							<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" id="submit" value="Visit Store"/>
+								<input type="submit" id="submit" value="Visit Store" onClick="shopCheck();"/>
 							</form>
 						</div>	
 					</div>
@@ -289,15 +291,12 @@ if (!$params['view'] || $params['view'] === 'list')
 				<?php
 			}
 		}
-		?>
-	</div>
-	<?php 
 } 
 elseif ($params['view'] === 'grid')
 {
 	$gridImage = ($options['Grid_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Grid_Img_Size']) : 200) . 'px';
 	$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
-	echo '<div id="simProd" style="border-top: 2px solid #ddd;">';
+	echo '<div id="simProd" style="' . ($filterArray ? 'width:80%' : 'width:100%') . ';float:right;border-top: 2px solid #ddd;">';
     echo '<ul>';	
 	if (!empty($results))
 	{
@@ -311,7 +310,7 @@ elseif ($params['view'] === 'grid')
 				<li <?php echo 'style="width:' . $gridImage . '!important;"'; ?>>
 					<div class="listBlock">
 						<div class="prodImage">
-							<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href="<?php echo ($options['imageMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
 							<?php
 							if ($record['promo'])
@@ -320,7 +319,7 @@ elseif ($params['view'] === 'grid')
 							}
 							elseif($record['expiration_date'] || $record['expirationDate'])
 							{
-								$expirationDate = $record['expirationDate'] ? $record['expirationDate'] : $record['expiration_date'];
+								$expirationDate = $record['expirationDate'] ? $record['expirationDate'] : $record['expiration_date'];			
 								$expires = strtotime($expirationDate);
 								$today = strtotime(date("Y-m-d"));
 								$interval = ($expires - $today) / (60*60*24);
@@ -338,10 +337,15 @@ elseif ($params['view'] === 'grid')
 									echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
 								}
 							}
+							elseif ($type == 'coupon' || $type == 'local')
+							{
+
+								echo '<div class="promo">&nbsp;</div>';
+							}
 							?>
 						<div class="prodContent">
 							<div class="prodTitle">
-								<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid; ?>" rel="nolink">
+								<a href="<?php echo ($options['titleMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink">
 									<?php echo $keyword; ?>
 								</a>
 							</div>     
@@ -361,8 +365,8 @@ elseif ($params['view'] === 'grid')
 		}
 	}
     echo '</ul>';
-    echo '</div>';
 }
 
 $this->searchModel->prosperPagination($totalAvailable, $params['page']);
+echo '</div>';
 echo '</br>';

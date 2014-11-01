@@ -26,21 +26,11 @@ abstract class Model_Base
 	public function init()
 	{
 		$this->_options = $this->getOptions();
-		$this->_version = $this->getVersion();
+		$this->_version = $this->getVersion();	
 	
 		if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
-			
-			if (isset($this->_options['Enable_Caching']) &&  (!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) <= 0755))
-			{
-				shell_exec('mkdir ' . PROSPER_CACHE);
-
-				if ((!file_exists(PROSPER_CACHE) || substr(decoct( fileperms(PROSPER_CACHE) ), 1) <= 0755))
-				{
-					add_action( 'admin_notices', array($this, 'prosperNoticeWrite' ));
-				}
-			}
 			
 			require_once(PROSPER_PATH . 'ProsperentApi.php');
 
@@ -164,7 +154,6 @@ abstract class Model_Base
 	
 	public function productStoreJs()
 	{
-		// Product Search CSS for results and search
 		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
 		wp_enqueue_script( 'productStoreJS' );
 	}	
@@ -177,15 +166,6 @@ abstract class Model_Base
 		echo _e('<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent API Key</strong>.</span></br>', 'my-text-domain' ); 
 		echo _e('<span style="font-size:14px; padding-left:10px;">Go to the Prosperent Suite <a href="' . $url . '">General Settings</a> and follow the directions to get your API Key.</span>', 'my-text-domain' );
 		echo '</div>';		
-	}
-	
-	public function prosperNoticeWrite() 
-	{
-		echo '<div class="error" style="padding:6px 0;">';
-		echo _e( '<span style="font-size:14px; padding-left:10px;">The plugin was <strong>unable</strong> to create the <strong>prosperent_cache</strong> directory inside <strong>wp-content</strong>.</span><br><br>', 'my-text-domain' );
-		echo _e( '<span style="font-size:14px; padding-left:10px;">Please create the <strong>prosperent_cache</strong> directory inside your <strong>wp-content</strong> directory and make it writable (0777).</span><br>', 'my-text-domain' );
-		echo _e( '<span style="font-size:14px; padding-left:10px;">If you need assistance, <a href="http://codex.wordpress.org/Changing_File_Permissions">Changing File Permissions</a></span>', 'my-text-domain');
-		echo '</div>';	
 	}
 	
 	/**
@@ -301,7 +281,8 @@ abstract class Model_Base
 		delete_option("prosperent_store_page_id");
 	}
 	
-	public function apiCall ($settings, $fetch, $lifetime = PROSPER_CACHE_PRODS, $sid = '')
+	
+	public function apiCall ($settings, $fetch, $sid = '')
 	{	
 		if (empty($this->_options))
 		{
@@ -312,9 +293,9 @@ abstract class Model_Base
 			$options = $this->_options;
 		}		
 
-		if (($options['prosperSid'] || $options['prosperSidText']) && !$sid)
+		$sidArray = array();
+		if ($options['prosperSid'] && !$sid)
 		{
-			$sidArray = '';
 			foreach ($options['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
@@ -333,6 +314,9 @@ abstract class Model_Base
 						break;						
 				}
 			}
+		}
+		if ($options['prosperSidText'] && !$sid)
+		{
 			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
@@ -352,20 +336,91 @@ abstract class Model_Base
 			{
 				$sidArray[] = $options['prosperSidText'];
 			}
-			
+		}
+		
+		if (!empty($sidArray))
+		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
 		}
+		
+		if ($sid)
+		{
+			$settings['sid'] = $sid;
+		}
+		
+		if ($options['relThresh'])
+		{
+			$settings['relevancyThreshold'] =  $options['relThresh'];
+		}
 
 		$settings = array_merge($settings, array(
-			'api_key' 	   => $options['Api_Key'],
-			'visitor_ip'   => $_SERVER['REMOTE_ADDR'],
-			'sid'		   => $sid,
+			'api_key' 	   		 => $options['Api_Key']
 		));	
 		
 		// Set the URL
 		$url = $this->_endPoints[$fetch] . http_build_query ($settings);
+		
+		return $url;
+	}
+	
+	public function multiCurlCall ($urls = array())
+	{	
+		$curlCount = count($urls);
+		if ($curlCount < 1)
+		{
+			return array();
+		}
 
+		// array of curl handles
+		$curly = array();
+		// data to be returned
+		$result = array();
+
+		// multi handle
+		$mh = curl_multi_init();
+
+		// loop through $data and create curl handles
+		// then add them to the multi-handle
+		foreach ($urls as $id => $url) 
+		{
+			$curly[$id] = curl_init();
+
+			curl_setopt_array($curly[$id], array(CURLOPT_URL => $url,
+				CURLOPT_HEADER 		   => 0,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_TIMEOUT 	   => 30,
+				CURLOPT_CONNECTTIMEOUT => 30
+				)
+			);
+
+			curl_multi_add_handle($mh, $curly[$id]);
+		}
+
+		// execute the handles
+		$running = null;
+		do 
+		{
+			curl_multi_exec($mh, $running);
+		} while($running > 0);
+
+
+		// get content and remove handles
+		foreach($curly as $id => $c) 
+		{
+			$result[$id] = json_decode(curl_multi_getcontent($c), true);
+			curl_multi_remove_handle($mh, $c);
+		}
+
+		// all done
+		curl_multi_close($mh);
+
+		return $result;
+	}
+	
+	
+	public function singleCurlCall ($url = '')
+	{	
 		$curl = curl_init();
 
 		// Set options
@@ -396,10 +451,11 @@ abstract class Model_Base
 			$settings = array_merge($settings, $this->apiCaching($lifetime));	
 		}*/		
 		
-		return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
-	}
+		return $response;
+		//return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
+	}	
 	
-	public function trendsApiCall ($settings, $fetch, $categories = '', $merchants = '', $brands = '', $sid = '', $lifetime = PROSPER_CACHE_COUPS)
+	public function trendsApiCall ($settings, $fetch, $categories = '', $merchants = '', $brands = '', $sid = '')
 	{
 		if (empty($this->_options))
 		{
@@ -445,8 +501,6 @@ abstract class Model_Base
 		
 		$apiCall = array(
 			'api_key' 	     	   => $this->_options['Api_Key'],
-			'visitor_ip'     	   => $_SERVER['REMOTE_ADDR'],	
-			'limit'		     	   => $options['Pagination_Limit'],
 			'enableFacets'   	   => array('catalogId'),
 			'filterCommissionDate' => $startDate . ',' . $endDate,
 			'filterCatalog'  	   => $catalog,
@@ -464,9 +518,17 @@ abstract class Model_Base
 		{				
 			// set productId as key in array
 			$keys = array();
-			foreach ($response['facets']['catalogId'] as $data)
+			foreach ($response['facets']['catalogId'] as $i=> $data)
 			{
-				$keys[] = $data['value'];
+				if ($i < 50)
+				{
+					$keys[] = $data['value'];
+				}
+				else
+				{
+					break;
+				}
+				
 			}
 
 			if ($fetch === 'fetchCoupons')
@@ -486,12 +548,13 @@ abstract class Model_Base
 			$settings = array_merge(array(
 				$filter		   => $keys,
 				'limit'		   => $options['Pagination_Limit'],
-				'enableFacets' => FALSE
+				'sid'		   => $sid
 			), $settings);
 
-			$results = $this->apiCall($settings, $fetch, $lifetime, $sid);
+			$trendsUrl = $this->apiCall($settings, $fetch, $lifetime, $sid);
+			$results = $this->singleCurlCall($trendsUrl);
 		}
-			
+		
 		return (array) $results;
 	}
 	
@@ -541,18 +604,5 @@ abstract class Model_Base
 		}
 
 		return $response;
-	}
-	
-	public function apiCaching($lifetime)
-	{
-		$cache = array(
-			'cacheBackend'  => 'FILE',
-			'cacheOptions'  => array(
-				'cache_dir' => PROSPER_CACHE,
-				'lifetime'	=> $lifetime
-			)
-		);	
-		
-		return $cache;
 	}
 }

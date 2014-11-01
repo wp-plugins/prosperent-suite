@@ -13,11 +13,21 @@ echo $prosperAdmin->checkbox( 'Option_Delete', __( 'Delete Options on Plugin Uni
 echo '<p class="prosper_descb">' . __( "<strong>Checking this will delete options on Uninstall. On reinstallation, some options will be added automatically.</strong>", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'URL Masking', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'URL_Masking', __( ' Affiliate URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the  affiliate urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause redirection issue with some active plugins.</span></a>' );
+echo $prosperAdmin->checkbox( 'URL_Masking', __( 'Affiliate URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the  affiliate urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause redirection issue with some active plugins.</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the image urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause images to load slowly.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo '<h2 class="prosper_h2">' . __( 'ProsperShop', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'relThresh', __( 'Relevancy Threshold', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Any decimal value between 0 and 1.<br>Lower values will return more results, but not as relevant, while higher values will return less results, but more relevant.</span></a>' );
+echo '<p class="prosper_desc">' . __( "Controls the relevancy for queries passed to the ProsperShop.", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->checkbox( 'titleMercLink', __( 'Link Product Titles to Merchant', 'prosperent-suite' ), false);
+echo '<p class="prosper_desc">' . __( "Bypasses the Product Page.", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->checkbox( 'imageMercLink', __( 'Link Product Images to Merchant', 'prosperent-suite' ), false);
+echo '<p class="prosper_descb">' . __( "Bypasses the Product Page.", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Title Structure', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->select( 'Title_Structure', __( 'Page Title Structure', 'prosperent-suite' ), array( 0 => __( 'WordPress Default', 'prosperent-suite' ), 1 => __( 'Page Title | Query', 'prosperent-suite' ), 2 => __( 'Query | Page Title', 'prosperent-suite' ), 3 => __( 'Query', 'prosperent-suite' ), 4 => __( 'Page Title', 'prosperent-suite' ) ), '', '<a href="#" class="prosper_tooltip"><span>You can choose which seperator to use for option 2 and 3 in the next option. <br>These titles will only change the title on the Store Page.</span></a>' );

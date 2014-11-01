@@ -101,8 +101,7 @@ class Model_Ad extends Model_Base
 			}
 		}		
 		
-		return '<p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_sid="' . $sid . '" pa_topics="' . $fallback . '"></div></p>';
-		
+		return '<div style="clear:both;"></div><p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_sid="' . $sid . '" pa_topics="' . $fallback . '"></div></p><div style="clear:both;"></div>';
 	}
 	
 	public function getTags()

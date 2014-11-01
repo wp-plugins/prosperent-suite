@@ -211,9 +211,10 @@ class Model_Inserter extends Model_Base
 			return;
 		}
 		
-		$allData = $this->apiCall($settings, $fetch);
+		$url = $this->apiCall($settings, $fetch);
+		$allData = $this->singleCurlCall($url);
 
-		if (!$allData['results'])
+		if (!$allData['data'])
 		{
 			$count = count($settings);
 			for ($i = 0; $i <= $count; $i++)
@@ -225,9 +226,10 @@ class Model_Inserter extends Model_Base
 					return;
 				}
 			
-				$allData = $this->apiCall($settings, $fetch);
+				$url = $this->apiCall($settings, $fetch);
+				$allData = $this->singleCurlCall($url);
 				
-				if ($allData['results'])
+				if ($allData['data'])
 				{
 					break;
 				}	 
@@ -248,7 +250,7 @@ class Model_Inserter extends Model_Base
 			}
 		}
 		
-		$results = $allData['results'];
+		$results = $allData['data'];
 		
 		$insertProd = PROSPER_VIEW . '/prosperinsert/insertProd.php';
 		

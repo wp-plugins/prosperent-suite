@@ -15,7 +15,7 @@ class Model_Admin extends Model_Base
 	/**
 	 * @var array $adminPages Array of admin pages that the plugin uses.
 	 */
-	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced');
+	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
 		
 	public function init()
 	{

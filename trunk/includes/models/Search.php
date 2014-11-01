@@ -124,8 +124,36 @@ class Model_Search extends Model_Base
 	public function getPostVars($postArray, $data)
 	{
 		$postArray = array_filter($postArray);		
-		$newUrl = str_replace(array('/' . key($postArray) . '/' . $data['params'][key($postArray)], '/page/' . $data['params']['page']), '', $data['url']);		
-		header('Location: ' . $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(reset($postArray))));
+		$newUrl = $data['url'];
+
+		while (current($postArray)) 
+		{
+			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
+			{
+				if (current($postArray) == 'prod')
+				{
+					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
+				}
+				elseif (current($postArray) == 'coup')
+				{
+					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/brand/' . $data['params']['brand'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
+				}
+				elseif (current($postArray) == 'local')
+				{
+					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/brand/' . $data['params']['brand'], '/query/' . $data['params']['query'], '/sort/' . $data['params']['sort'], '/merchant/' . $data['params']['merchant'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
+				}
+				elseif (current($postArray) == 'cele')
+				{
+					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/sort/' . $data['params']['sort'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query']), '', $newUrl);
+				}
+			}		
+		
+			$newUrl = str_replace(array('/' . key($postArray) . '/' . $data['params'][key($postArray)], '/page/' . $data['params']['page']), '', $newUrl);
+			$newUrl = $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(current($postArray)));
+			next($postArray);
+		}
+
+		header('Location: ' . $newUrl);
 		exit;
 	}
 	
@@ -135,7 +163,9 @@ class Model_Search extends Model_Base
 
 		if ($brand)
 		{
-			array_push($filterBrands, str_replace(',SL,', '/', $brand));
+			$brands = explode('&', str_replace(',SL,', '/', $brand));
+			$filterBrands = array_merge($filterBrands, $brands);
+			$filterBrands = array_combine($filterBrands,$filterBrands);
 		}
 		else
 		{
@@ -168,7 +198,9 @@ class Model_Search extends Model_Base
 
 		if ($merchant)		
 		{
-			array_push($filterMerchants, str_replace(',SL,', '/', $merchant));
+			$merchants = explode('&', str_replace(',SL,', '/', $merchant));
+			$filterMerchants = array_merge($filterMerchants, $merchants);
+			$filterMerchants = array_combine($filterMerchants, $filterMerchants);
 		}
 		else
 		{
@@ -195,9 +227,51 @@ class Model_Search extends Model_Base
 		return $filterMerchants;
 	}	
 	
-	public function buildFacets($facets, $params, $url)
+	public function getCategories($category = null)
 	{
-		$facetsNew = array();	
+		$filterCategory = array();
+
+		if ($category)		
+		{
+			array_push($filterCategory, str_replace(',SL,', '/', $category));
+			$filterCategory = array_combine($filterCategory, $filterCategory);
+		}
+
+		return $filterCategory;
+	}	
+	
+	public function getCities($city = null)
+	{
+		$filterCity = array();
+
+		if ($city)		
+		{
+			$city = explode('&', str_replace(',SL,', '/', $city));
+			$filterCity = array_merge($filterCity, $city);
+			$filterCity = array_combine($filterCity, $filterCity);
+		}
+
+		return $filterCity;
+	}
+	
+	public function getZips($zip = null)
+	{
+		$filterZip = array();
+
+		if ($zip)		
+		{
+			$zip = explode('&', str_replace(',SL,', '/', $zip));
+			$filterZip = array_merge($filterZip, $zip);
+			$filterZip = array_combine($filterZip, $filterZip);
+		}
+
+		return $filterZip;
+	}
+	
+	public function buildFacets($facets, $params, $filters, $url)
+	{
+		$facetsNew = array();
+		$facetsPicked = array();
 		foreach ($facets as $i => $facetArray)
 		{		
 			if ($i === 'zipCode')
@@ -206,15 +280,33 @@ class Model_Search extends Model_Base
 			}
 			
 			foreach ($facetArray as $facet)
-			{							
-				if ($facet['value'])
+			{			
+				if ($filters[$i][$facet['value']])
 				{
-					$facetsNew[$i][] = '<a href=' . str_replace('/page/' . $params['page'], '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value'])) . '>' . $facet['value'] . '</a>';
+					if (count($filters[$i]) > 1)
+					{
+						$newFilters = $filters[$i];
+						unset($newFilters[$facet['value']]);
+						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('&', $newFilters))) . '" rel="nolink">' . $facet['value'] . '</a>';
+						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('&', $newFilters))) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+					}
+					else
+					{
+						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '" rel="nolink">' . $facet['value'] . '</a>';
+						$facetsPicked[] = '<a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+					}
+				}
+				elseif ($facet['value'])
+				{
+					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '&' . $params[$i] : '') . '" rel="nolink">' . $facet['value'] . '</a>';
 				}
 			}
+			
+			
 		}
-
-		return $facetsNew;
+		$facetFull = array('picked' => $facetsPicked, 'all' => $facetsNew);
+		
+		return $facetFull;
 	}
 	
 	public function getSearchPhtml()
@@ -245,28 +337,28 @@ class Model_Search extends Model_Base
 		return $phtml;
 	}
 	
-	public function getEndpoints($params, $url)
+	public function getEndpoints()
 	{
 		$sepEnds = array();
 		if ($this->_options['Product_Endpoint'])
 		{
 			$title = $this->_options['prodLabel'] ? $title = $this->_options['prodLabel'] : 'Products'; 
 		
-			$sepEnds['prod'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '">' . $title . '</a>';
+			$sepEnds['prod'] = $title;
 		}
 		
 		if ($this->_options['Coupon_Endpoint'])
 		{
 			$title = $this->_options['coupLabel'] ? $title = $this->_options['coupLabel'] : 'Coupons'; 
 		
-			$sepEnds['coup'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/sort/' . $params['sort'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/coup">' . $title . '</a>';
+			$sepEnds['coup'] = $title;
 		}
 				
 		if ($this->_options['Local_Endpoint'])
 		{
 			$title = $this->_options['localLabel'] ? $title = $this->_options['localLabel'] : 'Local Deals'; 
 		
-			$sepEnds['local'] = '<a href="' . str_replace(array('/page/' . $params['page'], '/celebrity/' . $params['celebrity'], '/type/' . $params['type'], '/brand/' . $params['brand'], '/query/' . $params['query'], '/sort/' . $params['sort'], '/merchant/' . $params['merchant'], '/celebQuery/' . $params['celebQuery']), '', $url) . '/type/local">' . $title . '</a>';
+			$sepEnds['local'] = $title;
 		}
 		
 		if ($this->_options['Celebrity_Endpoint'])
@@ -280,13 +372,13 @@ class Model_Search extends Model_Base
 				$title = count($sepEnds) < 3 ? 'Celebrity Products' : 'Celebrity'; 
 			}
 			
-			$sepEnds['cele'] = '<a href="' . str_replace(array('/city/' . $params['city'], '/state/' . $params['state'], '/zip/' . $params['zip'], '/page/' . $params['page'], '/type/' . $params['type'], '/query/' . $params['query'], '/sort/' . $params['sort'], '/merchant/' . $params['merchant']), '', $url) . '/type/cele">' . $title . '</a>';
+			$sepEnds['cele'] = $title;
 		}
 		
 		return $sepEnds;
 	}
 	
-	public function getTypeSelector($sepEnds, $existingType = null)
+	/*public function getTypeSelector($sepEnds, $existingType = null)
 	{
 		if (count($sepEnds) > 1)
 		{
@@ -305,7 +397,7 @@ class Model_Search extends Model_Base
 		}
 		
 		return $typeSelector;
-	}	
+	}	*/
 	
 	public function prosperPagination($totalAvailable = '', $paged, $range = 8)
 	{
@@ -389,11 +481,16 @@ class Model_Search extends Model_Base
 		$base = $options['Base_URL'] ? $options['Base_URL'] : 'products';
 		$url = home_url('/') . $base;
 
+		if (!is_page($base))
+		{
+			$action = $base;
+		}
+		
 		if (is_page($base) && $_POST['q'])
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$prodSubmit = preg_replace('/\/$/', '', $url);
-			$newQuery = str_replace(array('/query/' . $query, '/query/' . rawurlencode($query)), array('', ''), $prodSubmit);
+			$newQuery = str_replace(array('/query/' . $query, '/query/' . rawurlencode($query)), '', $prodSubmit);
 			header('Location: ' . $newQuery . '/query/' . rawurlencode(trim($_POST['q'])));
 			exit;
 		}
@@ -403,7 +500,10 @@ class Model_Search extends Model_Base
 			exit;
 		}		
 
+		ob_start();
 		require_once(PROSPER_VIEW . '/prospersearch/searchShort.php');
+		$search = ob_get_clean();
+		return $search;
 	}
 	
 	public function ogMeta()
@@ -461,8 +561,9 @@ class Model_Search extends Model_Base
 			$filter => get_query_var('cid')
 		);
 				
-		$allData = $this->apiCall($settings, $fetch);
-		$record = $allData['results'];
+		$curlUrl = $this->apiCall($settings, $fetch);
+		$allData = $this->singleCurlCall($curlUrl);
+		$record = $allData['data'];
 
 		$page = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		if (is_page($page) && get_query_var('cid'))
@@ -637,33 +738,25 @@ class Model_Search extends Model_Base
 			$url = home_url('/') . $base;
 		}
 
-		$sepEnds 	  = $this->getEndpoints($params, $url);
-		$typeSelector = $this->getTypeSelector($sepEnds, $params['type']);
+		$sepEnds 	  = $this->getEndpoints();
+		//$typeSelector = $this->getTypeSelector($sepEnds, $params['type']);
 		$newEnds 	  = array_keys($sepEnds);
 		$brand    	  = isset($params['brand']) ? rawurldecode(stripslashes($params['brand'])) : '';
 		$merchant 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
 		$category 	  = isset($params['category']) ? rawurldecode(stripslashes($params['category'])) : '';	
+		$city 	  	  = isset($params['city']) ? rawurldecode(stripslashes($params['city'])) : '';
+		$zipCode 	  = isset($params['zip']) ? rawurldecode(stripslashes($params['zip'])) : '';
 
-		if ($merchant)
-		{		
-			$allData = $this->apiCall(array(
-				'filterMerchant' => str_replace(',SL,', '/', $merchant)
-			), 'fetchMerchant', PROSPER_CACHE_PRODS);			
-
-			if ($allData['results'][0]['deepLinking'] == 1)
-			{
-				$merchantUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $this->_options['Api_Key'] . '&url=' . rawurlencode($allData['results'][0]['domain']);
-			}	
-		}
-		
 		return array(
 			'startingType' => $newEnds[0],
 			'filters'	   => array(
-				'brands' 	=> $this->getBrands($brand),
-				'merchants' => $this->getMerchants($merchant),
-				'category'	=> $category
+				'brand' 	=> $this->getBrands($brand),
+				'merchant'  => $this->getMerchants($merchant),
+				'category'	=> $this->getCategories($category),
+				'city'		=> $this->getCities($city),
+				'zip'   => $this->getZips($zipCode)
 			),
-			'typeSelector' => $typeSelector,
+			'typeSelector' => $sepEnds,
 			'params'	   => $params,
 			'url'		   => $url,
 			'merchantUrl'  => $merchantUrl

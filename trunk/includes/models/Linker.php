@@ -154,9 +154,10 @@ class Model_Linker extends Model_Base
 				return $content;
 			}
 
-			$allData = $this->apiCall($settings, $fetch);
+			$url = $this->apiCall($settings, $fetch);
+			$allData = $this->singleCurlCall($url);
 
-			if (!$allData['results'])
+			if (!$allData['data'])
 			{
 				$count = count($settings);
 				for ($i = 0; $i <= $count; $i++)
@@ -168,9 +169,10 @@ class Model_Linker extends Model_Base
 						return $content;
 					}
 				
-					$allData = $this->apiCall($settings, $fetch);
+					$url = $this->apiCall($settings, $fetch);
+					$allData = $this->singleCurlCall($url);
 					
-					if ($allData['results'])
+					if ($allData['data'])
 					{
 						break;
 					}	 
@@ -179,11 +181,10 @@ class Model_Linker extends Model_Base
 
 			if ($pieces['ft'] == 'fetchMerchant')
 			{
-				if ($allData['results'][0]['deepLinking'] == 1)
+				if ($allData['data'][0]['deepLinking'] == 1)
 				{
-					if ($options['prosperSid'] || $options['prosperSidText'])
+					if ($options['prosperSid'] && !$sid)
 					{
-						$sidArray = array();
 						foreach ($options['prosperSid'] as $sidPiece)
 						{
 							switch ($sidPiece)
@@ -192,16 +193,19 @@ class Model_Linker extends Model_Base
 									$sidArray[] = get_bloginfo('name');
 									break;
 								case 'interface':
-									$sidArray[] = 'linker';
+									$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
 									break;
 								case 'query':
-									$sidArray[] = $allData['results'][0]['merchant'];
+									$sidArray[] = $settings['query'];
 									break;
 								case 'page':
 									$sidArray[] = get_the_title();
-									break;	
+									break;						
 							}
 						}
+					}
+					if ($options['prosperSidText'] && !$sid)
+					{
 						if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 						{
 							if ($regs[1] == '$_SERVER')
@@ -215,18 +219,21 @@ class Model_Linker extends Model_Base
 							elseif ($regs[1] == '$_COOKIE')
 							{
 								$sidArray[] = $_COOKIE[$regs[4]];
-							}				
-						}			
+							}					
+						}
 						elseif (!preg_match('/\$/', $options['prosperSidText']))
 						{
 							$sidArray[] = $options['prosperSidText'];
 						}
-						
+					}
+					
+					if (!empty($sidArray))
+					{
 						$sidArray = array_filter($sidArray);
 						$sid = implode('_', $sidArray);
 					}
 				
-					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode($allData['results'][0]['domain']);
+					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode($allData['data'][0]['domain']);
 					$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $partAffUrl)) : $partAffUrl;
 					$rel = 'nofollow,nolink';
 				}
@@ -237,12 +244,12 @@ class Model_Linker extends Model_Base
 			}	
 			elseif ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
 			{			
-				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
+				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
 			}
 			else if ($pieces['gtm'] === 'prodPage')
 			{				
-				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['results'][0]['keyword'])) . '/cid/' . $allData['results'][0]['catalogId'];
+				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['data'][0]['keyword'])) . '/cid/' . $allData['data'][0]['catalogId'];
 				$rel = 'nolink';
 			}
 			
@@ -353,9 +360,10 @@ class Model_Linker extends Model_Base
 
 				$settings = array_filter($settings);
 				
-				$allData = $this->apiCall($settings, $fetch);
+				$url = $this->apiCall($settings, $fetch);
+				$allData = $this->singleCurlCall($url);
 
-				$affUrl = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['results'][0]['affiliate_url'])) : $allData['results'][0]['affiliate_url'];
+				$affUrl = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
 				
 				$text = str_ireplace($qText[0], $base = base64_encode($qText[0]), $text);
 				

@@ -33,12 +33,6 @@ class ProsperIndexController
 				add_action( 'init', array($prosperActivate, 'prosperReroutes' ));
 			}
 		}		
-		
-		if (home_url() == 'http://shophounds.com' && !isset($_COOKIE['PROS_SID']))
-		{
-			wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), '3.2.2');
-			wp_enqueue_script( 'loginCheck' );	
-		}
 	}
 	
 	public function checkToFix()

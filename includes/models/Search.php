@@ -214,25 +214,24 @@ class Model_Search extends Model_Base
 			$filterMerchants = array_merge($filterMerchants, $merchants);
 			$filterMerchants = array_combine($filterMerchants, $filterMerchants);
 		}
-		else
+
+		if ($this->_options['Positive_Merchant'])
 		{
-			if ($this->_options['Positive_Merchant'])
-			{
-				$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
+			$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
 
-				foreach ($plusMerchants as $positive)
-				{
-					array_push($filterMerchants, trim($positive));
-				}
+			foreach ($plusMerchants as $positive)
+			{
+				array_push($filterMerchants, trim($positive));
 			}
-			if ($this->_options['Negative_Merchant'])
-			{
-				$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
+		}
+		
+		if ($this->_options['Negative_Merchant'])
+		{
+			$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
 
-				foreach ($minusMerchants as $negative)
-				{
-					array_push($filterMerchants, '!' . trim($negative));
-				}
+			foreach ($minusMerchants as $negative)
+			{
+				array_push($filterMerchants, '!' . trim($negative));
 			}
 		}
 
@@ -245,8 +244,7 @@ class Model_Search extends Model_Base
 
 		if ($category)		
 		{
-			array_push($filterCategory, str_replace(',SL,', '/', $category));
-			$filterCategory = array_combine($filterCategory, $filterCategory);
+			array_push($filterCategory, '*' . str_replace(',SL,', '/', $category) . '*');
 		}
 
 		return $filterCategory;

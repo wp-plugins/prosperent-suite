@@ -1,23 +1,23 @@
 <?php if (!$options['noSearchBar']): ?>
-<div class="prosper_searchform" style="width:70%;">
-	<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
-		<input id="s" style="width:60%;" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
-		<?php if ($typeSelector): ?>
-			<select style="padding:5px;display:inline;width:26%;" name="type">
-				<?php 				
-				foreach ($typeSelector as $i => $ends)
-				{
+	<div class="prosper_searchform" style="padding:0 15px 0 0">
+		<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
+			<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
+			<?php if ($typeSelector): ?>
+				<select style="padding:5px;display:inline;overflow:hidden;margin:0" name="type">
+					<?php 				
+					foreach ($typeSelector as $i => $ends)
+					{
+						?>
+						<option <?php echo ($params['type'] == $i ? 'selected="selected"' : ''); ?> value="<?php echo $i; ?>">In: <strong><?php echo $ends; ?></strong></option>
+						<?php 
+					}
 					?>
-					<option <?php echo ($params['type'] == $i ? 'selected="selected"' : ''); ?> value="<?php echo $i; ?>">In: <strong><?php echo $ends; ?></strong></option>
-					<?php 
-				}
-				?>
-			</select>
-		<?php endif; ?>
-		<input id="submit" class="prosper_submit" type="submit" name="submit" value="Search">
-	</form>
-</div>
-<div class="clear"></div>
+				</select>
+			<?php endif; ?>
+			<input class="prosper_submit" type="submit" name="submit" value="Search">
+		</form>
+	</div>
+	<div class="clear"></div>
 <?php 
 endif;
 if ($filterArray)
@@ -65,8 +65,8 @@ if ($filterArray)
 				?>
 				<div style="display:block;">				
 				
-					<div id="more<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>List'); toggle_hidden('more<?php echo ucfirst($i); ?>s'); toggle_visibility('hide<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:14px; font-weight:bold;"><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
-					<div id="hide<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>List'); toggle_hidden('hide<?php echo ucfirst($i); ?>s'); toggle_visibility('more<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:14px;font-weight:bold;""><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
+					<div id="more<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>List'); toggle_hidden('more<?php echo ucfirst($i); ?>s'); toggle_visibility('hide<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:14px; font-weight:bold;"><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+					<div id="hide<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>List'); toggle_hidden('hide<?php echo ucfirst($i); ?>s'); toggle_visibility('more<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:14px;font-weight:bold;""><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
 
 					<?php		
 
@@ -94,32 +94,38 @@ if ($filterArray)
 				$z++;
 			}		
 			?>
+			<div class="clear"></div>
 			<div id="morePriceRange" onclick="toggle_visibility('priceRangeSlider');  toggle_hidden('morePriceRange'); toggle_visibility('hidePriceRange'); return false;" style="display:none;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
 			<div id="hidePriceRange" onclick="toggle_hidden('priceRangeSlider'); toggle_hidden('hidePriceRange'); toggle_visibility('morePriceRange'); return false;" style="display:block;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>		
 			<div id="priceRangeSlider" style="display:block;">
+				</br>
 				<div id="sliderRange"></div>
 				<form name="priceRange" method="POST" action="">
-					<input type="text" onChange="priceRange.submit();" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
-					<input type="text" onChange="priceRange.submit();" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>">
+					<input type="text" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
+					<input type="text" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>"> 
+					<input type="submit" value="Submit" style="display: none;" >
 				</form>
 			</div>
-			
+			<div class="clear"></div>
 			<div id="morePercentRange" onclick="toggle_visibility('percentRangeSlider'); toggle_hidden('morePercentRange'); toggle_visibility('hidePercentRange'); return false;" style="display:none;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
 			<div id="hidePercentRange" onclick="toggle_hidden('percentRangeSlider'); toggle_hidden('hidePercentRange'); toggle_visibility('morePercentRange'); return false;" style="display:block;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
 			<div id="percentRangeSlider" style="display:block;">
+				</br>
 				<div id="sliderPercent"></div>
 				<form name="percentOffRange" method="POST" action="">
-					<input type="text" onChange="percentOffRange.submit();" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
-					<input type="text" onChange="percentOffRange.submit();" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
+					<input type="text" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
+					<input type="text" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
 					<?php if ($type == 'product') : ?>
+					<div class="clear"></div>
 					<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
 					<label style="display:inline-block;" for="onSale">On Sale Only</label>
 					<?php endif; ?>
+					<input type="submit" value="Submit" style="display: none;" >
 				</form>
 			</div>
-		
 		</div>	
 	</div>
+
 	<?php
 }
 

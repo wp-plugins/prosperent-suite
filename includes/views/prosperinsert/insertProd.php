@@ -22,7 +22,7 @@ if ($pieces['v'] === 'grid')
 			}		
 			else
 			{
-				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
+				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
 			}
 			?>
 				<li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
@@ -68,8 +68,8 @@ if ($pieces['v'] === 'grid')
 						</div>
 
 						<div class="prosperVisit">
-							<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" id="submit" value="Visit Store"/>
+							<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+								<input type="submit" value="Visit Store"/>
 							</form>
 						</div>	
 					</div>			
@@ -99,7 +99,7 @@ else
 			}		
 			else
 			{
-				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" target="' . $target . '"';
+				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
 			}
 			?>
 			<div class="productBlock">
@@ -196,7 +196,7 @@ else
 					}
 					?>
 					<div class="prosperVisit">
-						<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+						<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
 							<input type="submit" value="Visit Store"/>
 						</form>
 					</div>	

@@ -1,5 +1,4 @@
-<?php //echo $typeSelector; ?>
-
+<?php if (!$options['noSearchBar']): ?>
 <div class="prosper_searchform" style="width:70%;">
 	<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
 		<input id="s" style="width:60%;" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
@@ -20,7 +19,7 @@
 </div>
 <div class="clear"></div>
 <?php 
-
+endif;
 if ($filterArray)
 {
 	?>
@@ -112,7 +111,7 @@ if ($filterArray)
 				<form name="percentOffRange" method="POST" action="">
 					<input type="text" onChange="percentOffRange.submit();" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
 					<input type="text" onChange="percentOffRange.submit();" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
-					<?php if ($type == 'prod') : ?>
+					<?php if ($type == 'product') : ?>
 					<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
 					<label style="display:inline-block;" for="onSale">On Sale Only</label>
 					<?php endif; ?>
@@ -182,7 +181,7 @@ if (!$params['view'] || $params['view'] === 'list')
 				?>
 				<div class="productBlock">
 					<div class="productImage">
-						<a href="<?php echo ($options['imageMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+						<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?>  rel="nolink"><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 					</div>
 					<div class="productContent">
 						<?php
@@ -212,7 +211,7 @@ if (!$params['view'] || $params['view'] === 'list')
 							}
 						}	
 						?>
-						<div class="productTitle"><a href="<?php echo ($options['titleMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>
+						<div class="productTitle"><a href=<?php echo ($options['titleMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>
 						<?php
 						if ($type != 'coupon' && $type != 'local')
 						{ 
@@ -282,8 +281,8 @@ if (!$params['view'] || $params['view'] === 'list')
 						}
 						?>
 						<div class="prosperVisit">					
-							<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" id="submit" value="Visit Store" onClick="shopCheck();"/>
+							<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+								<input type="submit" value="Visit Store"/>
 							</form>
 						</div>	
 					</div>
@@ -310,7 +309,7 @@ elseif ($params['view'] === 'grid')
 				<li <?php echo 'style="width:' . $gridImage . '!important;"'; ?>>
 					<div class="listBlock">
 						<div class="prodImage">
-							<a href="<?php echo ($options['imageMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
 							<?php
 							if ($record['promo'])
@@ -345,7 +344,7 @@ elseif ($params['view'] === 'grid')
 							?>
 						<div class="prodContent">
 							<div class="prodTitle">
-								<a href="<?php echo ($options['titleMercLink'] ? $record['affiliate_url'] : $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid); ?>" rel="nolink">
+								<a href=<?php echo ($options['titleMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
 									<?php echo $keyword; ?>
 								</a>
 							</div>     
@@ -355,8 +354,8 @@ elseif ($params['view'] === 'grid')
 						</div>
 						
 						<div class="prosperVisit">					
-							<form action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" id="submit" value="Visit Store"/>
+							<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+								<input type="submit" value="Visit Store"/>
 							</form>
 						</div>	
 					</div>			

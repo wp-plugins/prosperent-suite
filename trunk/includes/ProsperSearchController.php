@@ -241,11 +241,11 @@ class ProsperSearchController
 		}
 		elseif ($params['brand'])
 		{
-			$title = ucwords(rawurldecode($params['brand']));
+			$title =  '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['brand']))) . '</strong>';
 		}
 		elseif ($params['merchant'])
 		{
-			$title = ucwords(rawurldecode($params['merchant']));
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['merchant']))) . '</strong>';
 		}
 
 		$sortArray = array(
@@ -262,7 +262,7 @@ class ProsperSearchController
 				'page'			   => $params['page'],
 				'query'            => $query,
 				'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
-				'groupBy'	       => 'productId',
+				//'groupBy'	       => 'productId',
 				'filterBrand'      => $filters['brand'],
 				'filterMerchant'   => $filters['merchant'],
 				'filterCategory'   => $filters['category'] ? "'*" . $filters['category'] . "*'" : '',
@@ -282,11 +282,11 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && $query)
 		{
 			$merchantFacetSettings = array(
-				'page'			   => $params['page'],
 				'query'            => $query,
-				'groupBy'	       => 'productId',
+				//'groupBy'	       => 'productId',
 				'enableFacets'     => array('merchant'),
-				'limit'			   => $options['Pagination_Limit'],
+				'limit'			   => 1,
+				'filterBrand'	   => $filters['brand'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
 			);	
@@ -298,11 +298,10 @@ class ProsperSearchController
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, $fetch);	
 		
 			$brandFacetSettings = array(
-				'page'			   => $params['page'],
 				'query'            => $query,
-				'groupBy'	       => 'productId',
+				//'groupBy'	       => 'productId',
 				'enableFacets'     => array('brand'),
-				'limit'			   => $options['Pagination_Limit'],
+				'limit'			   => 1,
 				'filterMerchant'   => $filters['merchant'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
@@ -419,7 +418,7 @@ class ProsperSearchController
 		}
 		elseif ($params['merchant'])
 		{
-			$title = ucwords(rawurldecode($params['merchant'])) . '</strong>';
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['merchant']))) . '</strong>';
 		}
 
 		$sortArray = array(
@@ -437,8 +436,11 @@ class ProsperSearchController
 			'Rank: Low to High' 	  	  => 'rank asc'
 		);
 		
+		
 		if ($query || $filters['merchant'] || $filters['category'])
 		{
+			$filters['merchant'] = array_merge($filters['merchant'], array('!6pm.com', '!Zappos.com'));
+		
 			$settings = array(
 				'page'			   => $params['page'],
 				'query'            => $query,
@@ -460,10 +462,10 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && $query)
 		{
 			$merchantFacetSettings = array(
-				'page'			   => $params['page'],
 				'query'            => $query,
 				'enableFacets'     => array('merchant'),
-				'limit'			   => $options['Pagination_Limit'],
+				'limit'			   => 1,
+				'filterMerchant'   => array('!6pm.com', '!Zappos.com'),
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
 			);	
@@ -608,11 +610,11 @@ class ProsperSearchController
 		 */ 
 		if ($params['city'] || $filterCity)
 		{
-			$title = '<strong>' . ucwords(rawurldecode(($params['city'] ? $params['city'] : $filterCity))) . '</strong>';
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode(($params['city'] ? $params['city'] : $filterCity)))) . '</strong>';
 		}
 		elseif ($params['zip'] || $filterZip)
 		{
-			$title = '<strong>' . ucwords(rawurldecode(($params['zip'] ? $params['zip'] : $filterZip))) . '</strong>';
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode(($params['zip'] ? $params['zip'] : $filterZip)))) . '</strong>';
 		}
 		elseif ($params['state'] || $filterState)
 		{
@@ -670,10 +672,10 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($filterZip || $filterCity || $filterState))
 		{
 			$zipCodeFacetSettings = array(
-				'page'			   => $params['page'],
 				'filterCity'       => $filters['city'],
+				'filterState'      => $filterState,
 				'enableFacets'     => array('zipCode'),
-				'limit'			   => $options['Pagination_Limit'],
+				'limit'			   => 1,
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
 			);	
@@ -685,10 +687,10 @@ class ProsperSearchController
 			$curlUrls['zip'] = $this->searchModel->apiCall($zipCodeFacetSettings, $fetch);	
 			
 			$cityFacetSettings = array(
-				'page'			   => $params['page'],
 				'filterState'      => $filterState,
 				'enableFacets'     => array('city'),
-				'limit'			   => $options['Pagination_Limit'],
+				'limit'			   => 1,
+				'filterZipCode'    => $filters['zip'],
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
 			);	
@@ -801,8 +803,8 @@ class ProsperSearchController
 			
 		if ($params['celebrity'])
 		{			
-			$title = '<strong>' .ucwords(rawurldecode($params['celebrity'])) . '</strong>';
-			$title .= $params['query'] ? ' &raquo; ' . $params['query'] : '';
+			$title = '<strong>' .ucwords(rawurldecode($params['celebrity']));
+			$title .= $params['query'] ? ' &raquo; ' . $params['query'] . '</strong>' : '</strong>';
 			if ($params['query'])
 			{
 				$demolishUrl = str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url);
@@ -814,11 +816,11 @@ class ProsperSearchController
 		}
 		elseif ($params['brand'])
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['brand'])) . '</strong>';
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['brand']))) . '</strong>';
 		}
 		elseif ($params['merchant'])
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['merchant'])) . '</strong>';
+			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['merchant']))) . '</strong>';
 		}
 			
 		$sortArray = array(
@@ -860,11 +862,10 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($params['celebrity'] || $query))
 		{
 			$merchantFacetSettings = array(
-				'page'			   => $params['page'],
-				'groupBy'	       => 'productId',
 				'enableFacets'     => array('merchant'),
-				'limit'			   => $options['Pagination_Limit'],
-				'filterCelebrity' => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
+				'filterBrand'	   => $filters['brand'],
+				'limit'			   => 1,
+				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
 			);	
@@ -876,11 +877,9 @@ class ProsperSearchController
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, 'fetchProducts');	
 		
 			$brandFacetSettings = array(
-				'page'			   => $params['page'],
-				'groupBy'	       => 'productId',
 				'enableFacets'     => array('brand'),
-				'limit'			   => $options['Pagination_Limit'],
-				'filterCelebrity' => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
+				'limit'			   => 1,
+				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'filterMerchant'   => $filters['merchant'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''

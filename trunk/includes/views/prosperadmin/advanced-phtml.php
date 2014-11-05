@@ -23,6 +23,9 @@ echo '<h2 class="prosper_h2">' . __( 'ProsperShop', 'prosperent-suite' ) . '</h2
 echo $prosperAdmin->textinput( 'relThresh', __( 'Relevancy Threshold', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Any decimal value between 0 and 1.<br>Lower values will return more results, but not as relevant, while higher values will return less results, but more relevant.</span></a>' );
 echo '<p class="prosper_desc">' . __( "Controls the relevancy for queries passed to the ProsperShop.", 'prosperent-suite' ) . '</p>';
 
+echo $prosperAdmin->checkbox( 'noSearchBar', __( 'Turn off the main search bar on the product page', 'prosperent-suite' ), false);
+echo '<p class="prosper_desc">' . __( "Only use this if you have a means of passing searches to the results. Otherwise no one will be able to search on your site.", 'prosperent-suite' ) . '</p>';
+
 echo $prosperAdmin->checkbox( 'titleMercLink', __( 'Link Product Titles to Merchant', 'prosperent-suite' ), false);
 echo '<p class="prosper_desc">' . __( "Bypasses the Product Page.", 'prosperent-suite' ) . '</p>';
 

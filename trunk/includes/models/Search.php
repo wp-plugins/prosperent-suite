@@ -127,7 +127,7 @@ class Model_Search extends Model_Base
 		$newUrl = $data['url'];
 
 		while (current($postArray)) 
-		{
+		{ 
 			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
 			{
 				if (current($postArray) == 'prod')
@@ -146,9 +146,21 @@ class Model_Search extends Model_Base
 				{
 					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/sort/' . $data['params']['sort'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query']), '', $newUrl);
 				}
-			}		
+			}	
+			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['query'] != current($postArray) && key($postArray) == 'query')
+			{
+				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $newUrl);
+			}
+			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['state'] != current($postArray) && key($postArray) == 'state')
+			{
+				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $newUrl);
+			}
+			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['celebrity'] != current($postArray) && key($postArray) == 'celebrity')
+			{
+				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query']), '', $newUrl);
+			}
 		
-			$newUrl = str_replace(array('/' . key($postArray) . '/' . $data['params'][key($postArray)], '/page/' . $data['params']['page']), '', $newUrl);
+			$newUrl = str_replace('/' . key($postArray) . '/' . $data['params'][key($postArray)], '', $newUrl);
 			$newUrl = $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(current($postArray)));
 			next($postArray);
 		}
@@ -718,7 +730,7 @@ class Model_Search extends Model_Base
 				}
 			}
 		}
-
+		
 		return $title;
 	}	
 	

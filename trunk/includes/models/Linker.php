@@ -246,6 +246,7 @@ class Model_Linker extends Model_Base
 			{			
 				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
+				$checkClass =  'shopCheck';
 			}
 			else if ($pieces['gtm'] === 'prodPage')
 			{				
@@ -253,7 +254,7 @@ class Model_Linker extends Model_Base
 				$rel = 'nolink';
 			}
 			
-			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" rel="' . $rel . '">' . $content . '</a>';
+			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
 		}
 
 		$fB = '';
@@ -438,7 +439,7 @@ class Model_Linker extends Model_Base
 				{
 					if (!isset($options['Enable_PPS']) || isset($options['LTM'][$i]) == 1)
 					{				
-						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw">$0</a>', $text, $limit);
+						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
 					}
 					else
 					{

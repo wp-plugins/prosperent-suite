@@ -16,7 +16,7 @@
 			if (count($results) <= 1 )
 			{
 				?>
-				<div class="prosperVisit">		
+				<div class="shopCheck prosperVisit">		
 					<a itemprop="offerURL" href="<?php echo $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $mainRecord[0]['affiliate_url'])) : $mainRecord[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" id="submit" value="Visit Store"/></a>				
 				</div>	
 			<?php
@@ -133,7 +133,7 @@
 								echo '<td itemprop="seller">' . $product['merchant'] . '</td>';
 								echo '<td itemprop="price">' . ($currency == 'GBP' ? '&pound;' : '$') . ($priceSale ? $priceSale : $product['price']) . '</td>';
 								echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
-								echo '<td><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" id="submit" type="submit" class="prosperVisitSubmit" value="Visit Store"/></a></div></td>';
+								echo '<td><div class="shopCheck prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="Visit Store"/></a></div></td>';
 								echo '</tr>';
 							}
 							?>
@@ -218,8 +218,8 @@ if (count($similar) > 1)
 					</div>
 				</div>
 				<div class="prosperVisit">					
-					<form action="<?php echo $prod['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-						<input type="submit" id="submit" value="Visit Store"/>
+					<form class="shopCheck" action="<?php echo $prod['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+						<input type="submit" value="Visit Store"/>
 					</form>
 				</div>	
 
@@ -258,8 +258,8 @@ if (count($sameBrand) > 1)
 					</div>			
 				</div>
 				<div class="prosperVisit">					
-					<form action="<?php echo $brandProd['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-						<input type="submit" id="submit" value="Visit Store"/>
+					<form class="shopCheck" action="<?php echo $brandProd['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+						<input type="submit" value="Visit Store"/>
 					</form>
 				</div>	
             </li>
@@ -326,8 +326,8 @@ if (count($sameMerchant) > 1)
 				</div>
 				
 				<div class="prosperVisit">					
-					<form action="<?php echo $merchantProd['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-						<input type="submit" id="submit" value="Visit Store"/>
+					<form class="shopCheck" action="<?php echo $merchantProd['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
+						<input type="submit" value="Visit Store"/>
 					</form>
 				</div>	
             </li>

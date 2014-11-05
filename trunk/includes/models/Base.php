@@ -32,6 +32,26 @@ abstract class Model_Base
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
 			
+			if (home_url() == 'https://shophounds.com' && isset($this->_options['prosperSidText']))
+			{
+				if (preg_match('/(^\$_(SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
+				{
+					if ($regs[1] == '$_SESSION')
+					{
+						$cookie = $_SESSION[$regs[4]];
+					}
+					elseif ($regs[1] == '$_COOKIE')
+					{
+						$cookie = $_COOKIE[$regs[4]];
+					}					
+				}
+				if (!isset($cookie))
+				{
+					wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), '3.2.2');
+					wp_enqueue_script( 'loginCheck' );	
+				}
+			}
+			
 			require_once(PROSPER_PATH . 'ProsperentApi.php');
 
 			if (isset($this->_options['Enable_PA']))

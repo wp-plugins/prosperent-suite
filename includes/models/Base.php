@@ -32,7 +32,7 @@ abstract class Model_Base
 		{ 		
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
 			
-			if (home_url() == 'https://shophounds.com' && isset($this->_options['prosperSidText']))
+			if ((home_url() == 'https://shophounds.com' || home_url() == 'http://shophounds.com') && isset($this->_options['prosperSidText']))
 			{
 				if (preg_match('/(^\$_(SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
 				{
@@ -176,6 +176,11 @@ abstract class Model_Base
 	{
 		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
 		wp_enqueue_script( 'productStoreJS' );
+		
+		wp_register_style('jqueryUIcss', PROSPER_CSS . '/jquery-ui.min.css', array(), $this->_version);
+		wp_enqueue_style('jqueryUIcss');
+		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-core', 'jquery-ui-slider'), '3.2.8');
+		wp_enqueue_script( 'rangeSlider' );	
 	}	
 	
 	public function prosperBadSettings()

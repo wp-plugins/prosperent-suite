@@ -175,7 +175,7 @@ class Model_Search extends Model_Base
 
 		if ($brand)
 		{
-			$brands = explode('&', str_replace(',SL,', '/', $brand));
+			$brands = explode('|', str_replace(',SL,', '/', $brand));
 			$filterBrands = array_merge($filterBrands, $brands);
 			$filterBrands = array_combine($filterBrands,$filterBrands);
 		}
@@ -210,9 +210,9 @@ class Model_Search extends Model_Base
 
 		if ($merchant)		
 		{
-			$merchants = explode('&', str_replace(',SL,', '/', $merchant));
+			$merchants = explode('|', str_replace(',SL,', '/', $merchant));
 			$filterMerchants = array_merge($filterMerchants, $merchants);
-			$filterMerchants = array_combine($filterMerchants, $filterMerchants);
+			$filterMerchants = array_combine($filterMerchants,$filterMerchants);
 		}
 
 		if ($this->_options['Positive_Merchant'])
@@ -256,7 +256,7 @@ class Model_Search extends Model_Base
 
 		if ($city)		
 		{
-			$city = explode('&', str_replace(',SL,', '/', $city));
+			$city = explode('|', str_replace(',SL,', '/', $city));
 			$filterCity = array_merge($filterCity, $city);
 			$filterCity = array_combine($filterCity, $filterCity);
 		}
@@ -270,7 +270,7 @@ class Model_Search extends Model_Base
 
 		if ($zip)		
 		{
-			$zip = explode('&', str_replace(',SL,', '/', $zip));
+			$zip = explode('|', str_replace(',SL,', '/', $zip));
 			$filterZip = array_merge($filterZip, $zip);
 			$filterZip = array_combine($filterZip, $filterZip);
 		}
@@ -297,8 +297,8 @@ class Model_Search extends Model_Base
 					{
 						$newFilters = $filters[$i];
 						unset($newFilters[$facet['value']]);
-						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('&', $newFilters))) . '" rel="nolink">' . $facet['value'] . '</a>';
-						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('&', $newFilters))) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '" rel="nolink">' . $facet['value'] . '</a>';
+						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
 					}
 					else
 					{
@@ -308,11 +308,9 @@ class Model_Search extends Model_Base
 				}
 				elseif ($facet['value'])
 				{
-					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '&' . $params[$i] : '') . '" rel="nolink">' . $facet['value'] . '</a>';
+					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '|' . $params[$i] : '') . '" rel="nolink">' . $facet['value'] . '</a>';
 				}
 			}
-			
-			
 		}
 		$facetFull = array('picked' => $facetsPicked, 'all' => $facetsNew);
 		
@@ -426,7 +424,8 @@ class Model_Search extends Model_Base
 
 		if (is_front_page())
 		{
-			$newPage = home_url('/') . 'products/page/'; 
+			$baseUrl = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
+			$newPage = home_url('/') . $baseUrl . '/page/'; 
 		}
 
 		if(1 != $pages)

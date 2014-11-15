@@ -10,9 +10,11 @@ abstract class Model_Base
 	
 	protected $_version;
 	
+	protected $_endPoints;
+	
 	public $widget;
 	
-	private $_endPoints = array(
+	private $_allEndPoints = array(
 		'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
 		'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
 		'fetchUkProducts'  => 'http://api.prosperent.com/api/uk/search?',
@@ -23,16 +25,28 @@ abstract class Model_Base
 		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'
 	);
 	
+	private $_privateNetEndPoints = array(
+		'fetchMerchant'    => 'http://10.0.0.2/api/merchant?',
+		'fetchProducts'    => 'http://10.0.0.2/api/search?',
+		'fetchUkProducts'  => 'http://10.0.0.2/api/uk/search?',
+		'fetchCaProducts'  => 'http://10.0.0.2/api/ca/search?',
+		'fetchCoupons'     => 'http://10.0.0.2/api/coupon/search?',
+		'fetchLocal'       => 'http://10.0.0.2/api/local/search?',
+		'fetchCelebrities' => 'http://10.0.0.2/api/celebrity?',
+		'fetchTrends'      => 'http://10.0.0.2/api/trends?'
+	);	
+	
 	public function init()
 	{
 		$this->_options = $this->getOptions();
 		$this->_version = $this->getVersion();	
-	
+
 		if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
-		{ 		
+		{ 				
+			$this->_endPoints = $this->getFetchEndpoints();
 			add_action('wp_head', array($this, 'prosperHeaderScript'));
 			
-			if ((home_url() == 'https://shophounds.com' || home_url() == 'http://shophounds.com') && isset($this->_options['prosperSidText']))
+			if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
 			{
 				if (preg_match('/(^\$_(SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
 				{
@@ -72,10 +86,6 @@ abstract class Model_Base
 			if (isset($this->_options['Enable_PPS']))
 			{					
 				require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
-				if ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products')
-				{
-					add_action('wp_enqueue_scripts', array($this, 'productStoreJs'));	
-				}
 			}
 			else
 			{				
@@ -102,6 +112,16 @@ abstract class Model_Base
 		return $pluginFolder[PROSPER_FILE]['Version'];
 	}
 
+	public function getFetchEndpoints()
+	{
+		$this->_endPoints = $this->_allEndPoints;
+		if (file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php'))
+		{
+			$this->_endPoints = $this->_privateNetEndPoints;
+		}
+		return $this->_endPoints;
+	}
+	
 	/**
 	 * Retrieve all the options
 	 *
@@ -170,17 +190,9 @@ abstract class Model_Base
 
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
-	}	
-	
-	public function productStoreJs()
-	{
-		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
-		wp_enqueue_script( 'productStoreJS' );
 		
 		wp_register_style('jqueryUIcss', PROSPER_CSS . '/jquery-ui.min.css', array(), $this->_version);
 		wp_enqueue_style('jqueryUIcss');
-		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-core', 'jquery-ui-slider'), '3.2.8');
-		wp_enqueue_script( 'rangeSlider' );	
 	}	
 	
 	public function prosperBadSettings()
@@ -286,7 +298,7 @@ abstract class Model_Base
 	
 	public function prosperHeaderScript()
 	{				
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":1, "pa_active":' . ($this->_options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="http://prosperent.com/js/prosperent.js"></script>';
+		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":1, "pa_active":' . ($this->_options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()
@@ -308,7 +320,12 @@ abstract class Model_Base
 	
 	
 	public function apiCall ($settings, $fetch, $sid = '')
-	{	
+	{				
+		if (empty($this->_endPoints))
+		{
+			$this->_endPoints = $this->getFetchEndpoints();
+		}
+	
 		if (empty($this->_options))
 		{
 			$options = $this->getOptions();
@@ -317,7 +334,7 @@ abstract class Model_Base
 		{
 			$options = $this->_options;
 		}		
-
+		
 		$sidArray = array();
 		if ($options['prosperSid'] && !$sid)
 		{
@@ -380,12 +397,12 @@ abstract class Model_Base
 		}
 
 		$settings = array_merge($settings, array(
-			'api_key' 	   		 => $options['Api_Key']
+			'api_key' => $options['Api_Key']
 		));	
-		
+
 		// Set the URL
 		$url = $this->_endPoints[$fetch] . http_build_query ($settings);
-		
+
 		return $url;
 	}
 	
@@ -543,7 +560,7 @@ abstract class Model_Base
 		{				
 			// set productId as key in array
 			$keys = array();
-			foreach ($response['facets']['catalogId'] as $i=> $data)
+			foreach ($response['facets']['catalogId'] as $i => $data)
 			{
 				if ($i < 50)
 				{
@@ -553,7 +570,6 @@ abstract class Model_Base
 				{
 					break;
 				}
-				
 			}
 
 			if ($fetch === 'fetchCoupons')

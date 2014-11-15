@@ -125,11 +125,17 @@ class ProsperSearchController
 		
 		if (get_query_var('cid'))
 		{ 
+			$this->searchModel->productPageJs();
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
 
 		$type = isset($params['type']) ? $params['type'] : $data['startingType'];
+		
+		if ($options['Enable_Facets'])
+		{
+			$this->searchModel->productStoreJs();
+		}
 		
 		switch ($type)
 		{
@@ -198,7 +204,7 @@ class ProsperSearchController
 			$currency = 'GBP';
 		}
 
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['brand'] && !$params['category'] && !$params['merchant'] && $options['Starting_Query'])
 		{			
 			if (is_front_page())
@@ -394,8 +400,7 @@ class ProsperSearchController
 		else
 		{
 			$settings = array(
-				'imageSize'	=> $imageSize,
-				'page'		=> $params['page']
+				'imageSize'	=> $imageSize
 			);
 			
 			$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
@@ -437,7 +442,7 @@ class ProsperSearchController
 			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
 		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['merchant'] && $options['Coupon_Query'])
 		{			
 			if (is_front_page())
@@ -624,7 +629,7 @@ class ProsperSearchController
 			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
 		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
+		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
 		if (!$filterState && $options['Local_Query'])
 		{
 			if (is_front_page())
@@ -828,8 +833,6 @@ class ProsperSearchController
 
 	public function celebrityAction($data, $homeUrl, $type, $searchPage, $options)
 	{
-		wp_register_style('jqueryUIcss', 'http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css');
-		wp_enqueue_style('jqueryUIcss');
 		// Register AutoComplete Script
 		wp_register_script( 'celebrityAutoComplete', PROSPER_JS . '/autosuggest.js', array('jquery', 'jquery-ui-autocomplete'), '3.1.7');
 		wp_enqueue_script( 'celebrityAutoComplete' );
@@ -853,7 +856,7 @@ class ProsperSearchController
 			$imageSize = '125x125';
 		}
 		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['celebrity'] && $options['Celebrity_Query'])
 		{
 			if (is_front_page())

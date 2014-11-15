@@ -118,7 +118,7 @@
 						<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer">
 							<thead>
 								<tr>
-									<th><strong>Store</strong></th>
+									<th><strong>Merchant</strong></th>
 									<th><strong>Price</strong></th>
 									<th></th>
 								</tr>
@@ -130,8 +130,8 @@
 								$priceSale = $product['priceSale'] ? $product['priceSale'] : $product['price_sale'];
 								
 								echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-								echo '<td itemprop="seller">' . $product['merchant'] . '</td>';
-								echo '<td itemprop="price">' . ($currency == 'GBP' ? '&pound;' : '$') . ($priceSale ? $priceSale : $product['price']) . '</td>';
+								echo '<td itemprop="seller"><a href="' . $matchingUrl . '/merchant/' . rawurlencode($product['merchant']) . '" rel="nolink"><span>' . $product['merchant'] . '</span></a></td>';
+								echo '<td itemprop="price">' . ($priceSale ? '<span style="color:#bb0628">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</span>' :  ($currency == 'GBP' ? '&pound;' : '$') . $product['price']) . '</td>';
 								echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
 								echo '<td><div class="shopCheck prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="Visit Store"/></a></div></td>';
 								echo '</tr>';
@@ -160,7 +160,7 @@
 </div>
 
 <?php
-$gridImage = ($options['Grid_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Grid_Img_Size']) : 200) . 'px';
+$gridImage = ($options['Same_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Same_Img_Size']) : 200) . 'px';
 $classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
 if (count($similar) > 1)
 {

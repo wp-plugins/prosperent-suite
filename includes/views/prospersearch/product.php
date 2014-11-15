@@ -300,6 +300,10 @@ if (!$params['view'] || $params['view'] === 'list')
 elseif ($params['view'] === 'grid')
 {
 	$gridImage = ($options['Grid_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Grid_Img_Size']) : 200) . 'px';
+	if ($trend)
+	{
+		$gridImage = ($options['Same_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Same_Img_Size']) : 200) . 'px';
+	}
 	$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
 	echo '<div id="simProd" style="' . ($filterArray ? 'width:80%' : 'width:100%') . ';float:right;border-top: 2px solid #ddd;">';
     echo '<ul>';	
@@ -308,7 +312,7 @@ elseif ($params['view'] === 'grid')
 		foreach ($results as $record)
 		{
 			$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-			$price 	   = $priceSale ? $priceSale : $record['price'];
+			$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . $record['price'] . '</div>';
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 			$cid 	   = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
 			?>
@@ -344,7 +348,6 @@ elseif ($params['view'] === 'grid')
 							}
 							elseif ($type == 'coupon' || $type == 'local')
 							{
-
 								echo '<div class="promo">&nbsp;</div>';
 							}
 							?>
@@ -354,9 +357,7 @@ elseif ($params['view'] === 'grid')
 									<?php echo $keyword; ?>
 								</a>
 							</div>     
-							<?php if ($price && $type != 'coupon' && $type != 'local'): ?>
-							<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
-							<?php endif; ?>					
+							<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
 						</div>
 						
 						<div class="prosperVisit">					

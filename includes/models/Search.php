@@ -430,7 +430,7 @@ class Model_Search extends Model_Base
 
 		if(1 != $pages)
 		{
-			echo '<div class="pagination"><span>Page ' . $paged . ' of ' . $pages . '</span>';
+			echo '<div class="prosperPagination"><span>Page ' . $paged . ' of ' . $pages . '</span>';
 			if($paged > 2 && $paged <= $pages) echo '<a href="' . (!$newPage ? get_pagenum_link(1) : $newPage . 1) . '">&laquo; First</a>';
 			if($paged > 1) echo '<a href="' . (!$newPage ? get_pagenum_link($paged - 1) : $newPage . ($paged - 1)) . '">&lsaquo; Previous</a>';
 
@@ -474,6 +474,21 @@ class Model_Search extends Model_Base
 		
 		return $results;
 	}
+	
+	public function productStoreJs()
+	{
+		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
+		wp_enqueue_script( 'productStoreJS' );
+		
+		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-core', 'jquery-ui-slider'), '3.2.8');
+		wp_enqueue_script( 'rangeSlider' );	
+	}		
+	
+	public function productPageJs()
+	{
+		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
+		wp_enqueue_script( 'productStoreJS' );
+	}	
 	
 	public function searchShortcode($atts, $content = null)
 	{

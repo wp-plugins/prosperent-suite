@@ -32,7 +32,7 @@ echo $prosperAdmin->textinput( 'coupLabel', __( 'Coupons Label', 'prosperent-sui
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Celebrity_Endpoint', __( 'Celebrity Products', 'prosperent-suite' ) );
-echo $prosperAdmin->textinput( 'celeLabel', __( 'Celebrity Products Label', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Changes the headline above the store when active. Default is "Coupons".</span></a>', 'prosper_textinputsmallindent');
+echo $prosperAdmin->textinput( 'celeLabel', __( 'Celebrity Products Label', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Changes the headline above the store when active. Default is "Celebrity Products".</span></a>', 'prosper_textinputsmallindent');
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Local_Endpoint', __( 'Local Deals', 'prosperent-suite' ) );
@@ -47,14 +47,14 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 echo $prosperAdmin->radio( 'Coupon_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), 'Coupon/Local Results' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Grid Image Size', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->textinput( 'Grid_Img_Size', __( 'Enter image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Only changes the size for <strong>grid</strong> product images. (does not change local/coupon images)<br><br>Will change the image size on the product pages as well for the same/similar product sections.<br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
+echo '<h2 class="prosper_h2">' . __( 'Image Sizes', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'Grid_Img_Size', __( 'Enter <strong>Grid</strong> image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Only changes the size for <strong>grid</strong> product images. (does not change local/coupon images)<br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
+echo '<p class="prosper_desc">' . __( "Minimum is <strong>70</strong>", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'Same_Img_Size', __( 'Enter Same/Similar Products image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Will change the image size on the product pages as well for the same/similar product sections.<br><br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
 echo '<p class="prosper_descb">' . __( "Minimum is <strong>70</strong>", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->textinput( 'Api_Limit', __( 'Number of results', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>API Limit (Max = 1000)</span></a>', 'prosper_textinputsmall' );
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-
 echo $prosperAdmin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Amount of products shown per page.</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 

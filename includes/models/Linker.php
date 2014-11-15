@@ -232,8 +232,13 @@ class Model_Linker extends Model_Base
 						$sidArray = array_filter($sidArray);
 						$sid = implode('_', $sidArray);
 					}
+					
+					if ($allData['data'][0]['domain'] == 'sportsauthority.com')
+					{
+						$allData['data'][0]['domain'] = $allData['data'][0]['domain'] . '%2Fhome%2Findex.jsp';
+					}
 				
-					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode($allData['data'][0]['domain']);
+					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $allData['data'][0]['domain']);
 					$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $partAffUrl)) : $partAffUrl;
 					$rel = 'nofollow,nolink';
 				}

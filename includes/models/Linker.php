@@ -259,7 +259,7 @@ class Model_Linker extends Model_Base
 				$rel = 'nolink';
 			}
 			
-			return '<a href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
+			return '<a class="shopCheck" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
 		}
 
 		$fB = '';
@@ -444,7 +444,7 @@ class Model_Linker extends Model_Base
 				{
 					if (!isset($options['Enable_PPS']) || isset($options['LTM'][$i]) == 1)
 					{				
-						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
+						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a class="shopCheck" href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
 					}
 					else
 					{

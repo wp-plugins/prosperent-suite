@@ -61,7 +61,7 @@ abstract class Model_Base
 				}
 				if (!isset($cookie))
 				{
-					wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), '3.2.2');
+					wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), $this->_version);
 					wp_enqueue_script( 'loginCheck' );	
 				}
 			}
@@ -190,9 +190,6 @@ abstract class Model_Base
 
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
-		
-		wp_register_style('jqueryUIcss', PROSPER_CSS . '/jquery-ui.min.css', array(), $this->_version);
-		wp_enqueue_style('jqueryUIcss');
 	}	
 	
 	public function prosperBadSettings()

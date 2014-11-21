@@ -126,6 +126,11 @@ class Model_Search extends Model_Base
 		$postArray = array_filter($postArray);		
 		$newUrl = $data['url'];
 
+		if (preg_match('/\/\?gclid=.+/i', $newUrl))
+		{
+			$newUrl = preg_replace('/\/\?gclid=.+/i', '', $newUrl);
+		}
+
 		while (current($postArray)) 
 		{ 
 			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
@@ -280,6 +285,11 @@ class Model_Search extends Model_Base
 	
 	public function buildFacets($facets, $params, $filters, $url)
 	{
+		if (preg_match('/\/\?gclid=.+/i', $url))
+		{
+			$url = preg_replace('/\/\?gclid=.+/i', '', $url);
+		}
+	
 		$facetsNew = array();
 		$facetsPicked = array();
 		foreach ($facets as $i => $facetArray)
@@ -475,16 +485,16 @@ class Model_Search extends Model_Base
 		return $results;
 	}
 	
-	public function productStoreJs()
+	public function sliderJs()
 	{
-		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
-		wp_enqueue_script( 'productStoreJS' );
-		
-		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-core', 'jquery-ui-slider'), '3.2.8');
+		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version);
 		wp_enqueue_script( 'rangeSlider' );	
+		
+		wp_register_style('jqueryUIcss', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.min.css');
+		wp_enqueue_style('jqueryUIcss');		
 	}		
 	
-	public function productPageJs()
+	public function productStoreJs()
 	{
 		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
 		wp_enqueue_script( 'productStoreJS' );

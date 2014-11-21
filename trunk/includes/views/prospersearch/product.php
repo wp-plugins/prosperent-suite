@@ -23,7 +23,7 @@ endif;
 if ($filterArray)
 {
 	?>
-	<div id="filterSidebar" style="width:19%; padding-left:2px;float:left;margin-top:6px; border:1px solid #ddd; background:#f2f0ee;">
+	<div id="filterSidebar" style="width:19%;overflow:hidden;padding-left:2px;float:left;margin-top:6px; border:1px solid #ddd; background:#f2f0ee;">
 		<div>	
 			<?php 
 			if ($celebrityInfo)
@@ -95,34 +95,36 @@ if ($filterArray)
 			}		
 			?>
 			<div class="clear"></div>
-			<div id="morePriceRange" onclick="toggle_visibility('priceRangeSlider');  toggle_hidden('morePriceRange'); toggle_visibility('hidePriceRange'); return false;" style="display:none;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
-			<div id="hidePriceRange" onclick="toggle_hidden('priceRangeSlider'); toggle_hidden('hidePriceRange'); toggle_visibility('morePriceRange'); return false;" style="display:block;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>		
-			<div id="priceRangeSlider" style="display:block;">
-				</br>
-				<div id="sliderRange"></div>
-				<form name="priceRange" method="POST" action="">
-					<input type="text" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
-					<input type="text" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>"> 
-					<input type="submit" value="Submit" style="display: none;" >
-				</form>
-			</div>
-			<div class="clear"></div>
-			<div id="morePercentRange" onclick="toggle_visibility('percentRangeSlider'); toggle_hidden('morePercentRange'); toggle_visibility('hidePercentRange'); return false;" style="display:none;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
-			<div id="hidePercentRange" onclick="toggle_hidden('percentRangeSlider'); toggle_hidden('hidePercentRange'); toggle_visibility('morePercentRange'); return false;" style="display:block;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
-			<div id="percentRangeSlider" style="display:block;">
-				</br>
-				<div id="sliderPercent"></div>
-				<form name="percentOffRange" method="POST" action="">
-					<input type="text" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
-					<input type="text" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
-					<?php if ($type == 'product') : ?>
-					<div class="clear"></div>
-					<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
-					<label style="display:inline-block;" for="onSale">On Sale Only</label>
-					<?php endif; ?>
-					<input type="submit" value="Submit" style="display: none;" >
-				</form>
-			</div>
+			<?php if ($options['Enable_Sliders']): ?>
+				<div id="morePriceRange" onclick="toggle_visibility('priceRangeSlider');  toggle_hidden('morePriceRange'); toggle_visibility('hidePriceRange'); return false;" style="display:none;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+				<div id="hidePriceRange" onclick="toggle_hidden('priceRangeSlider'); toggle_hidden('hidePriceRange'); toggle_visibility('morePriceRange'); return false;" style="display:block;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>		
+				<div id="priceRangeSlider" style="display:block;">
+					</br>
+					<div id="sliderRange"></div>
+					<form name="priceRange" method="POST" action="">
+						<input type="text" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
+						<input type="text" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>"> 
+						<input type="submit" value="Submit" style="display: none;" >
+					</form>
+				</div>
+				<div class="clear"></div>
+				<div id="morePercentRange" onclick="toggle_visibility('percentRangeSlider'); toggle_hidden('morePercentRange'); toggle_visibility('hidePercentRange'); return false;" style="display:none;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
+				<div id="hidePercentRange" onclick="toggle_hidden('percentRangeSlider'); toggle_hidden('hidePercentRange'); toggle_visibility('morePercentRange'); return false;" style="display:block;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
+				<div id="percentRangeSlider" style="display:block;">
+					</br>
+					<div id="sliderPercent"></div>
+					<form name="percentOffRange" method="POST" action="">
+						<input type="text" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
+						<input type="text" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
+						<?php if ($type == 'product') : ?>
+						<div class="clear"></div>
+						<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
+						<label style="display:inline-block;" for="onSale">On Sale Only</label>
+						<?php endif; ?>
+						<input type="submit" value="Submit" style="display: none;" >
+					</form>
+				</div>
+			<?php endif; ?>
 		</div>	
 	</div>
 

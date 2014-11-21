@@ -125,7 +125,7 @@ class ProsperSearchController
 		
 		if (get_query_var('cid'))
 		{ 
-			$this->searchModel->productPageJs();
+			$this->searchModel->productStoreJs();
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
@@ -135,6 +135,11 @@ class ProsperSearchController
 		if ($options['Enable_Facets'])
 		{
 			$this->searchModel->productStoreJs();
+			
+			if ($options['Enable_Sliders'])
+			{
+				$this->searchModel->sliderJs();
+			}
 		}
 		
 		switch ($type)
@@ -204,7 +209,7 @@ class ProsperSearchController
 			$currency = 'GBP';
 		}
 
-		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['brand'] && !$params['category'] && !$params['merchant'] && $options['Starting_Query'])
 		{			
 			if (is_front_page())
@@ -442,7 +447,7 @@ class ProsperSearchController
 			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
 		
-		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['merchant'] && $options['Coupon_Query'])
 		{			
 			if (is_front_page())
@@ -629,7 +634,7 @@ class ProsperSearchController
 			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
 		
-		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
 		if (!$filterState && $options['Local_Query'])
 		{
 			if (is_front_page())
@@ -856,7 +861,7 @@ class ProsperSearchController
 			$imageSize = '125x125';
 		}
 		
-		$url = '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['celebrity'] && $options['Celebrity_Query'])
 		{
 			if (is_front_page())

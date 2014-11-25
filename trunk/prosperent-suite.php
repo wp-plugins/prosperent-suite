@@ -70,4 +70,3 @@ if(is_admin())
 {
 	require_once(PROSPER_INCLUDE . '/ProsperAdminController.php');
 }
-

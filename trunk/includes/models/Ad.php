@@ -63,45 +63,58 @@ class Model_Ad extends Model_Base
 		$height = $h ? ($h == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $h) . 'px') : 90 . 'px';
 		$width = $w ? ($w == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $w) . 'px') : '100%';
 
-		if ($options['prosperSid'] || $options['prosperSidText'])
+		$sidArray = array();
+		if ($this->_options['prosperSid'])
 		{
-			$sid = '';
-			foreach ($options['prosperSid'] as $sidPiece)
+			foreach ($this->_options['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
 				{
 					case 'blogname':
-						$sid .= get_bloginfo('name');
+						$sidArray[] = get_bloginfo('name');
 						break;
 					case 'interface':
-						$sid .= 'pa';
+						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
 						break;
 					case 'query':
-						$sid .= $fallback;
+						$sidArray[] = $settings['query'];
 						break;
 					case 'page':
-						$sid .= get_the_title();
-						break;	
+						$sidArray[] = get_the_title();
+						break;						
 				}
 			}
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+		}
+		if ($this->_options['prosperSidText'])
+		{
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
-					$sid .= $_SERVER[$regs[4]];
+					$sidArray[] = $_SERVER[$regs[4]];
 				}
 				elseif ($regs[1] == '$_SESSION')
 				{
-					$sid .= $_SESSION[$regs[4]];
+					$sidArray[] = $_SESSION[$regs[4]];
 				}
 				elseif ($regs[1] == '$_COOKIE')
 				{
-					$sid .= $_COOKIE[$regs[4]];
-				}				
+					$sidArray[] = $_COOKIE[$regs[4]];
+				}					
 			}
-		}		
+			elseif (!preg_match('/\$/', $this->_options['prosperSidText']))
+			{
+				$sidArray[] = $this->_options['prosperSidText'];
+			}
+		}
 		
-		return '<div style="clear:both;"></div><p><div class="prosperent-pa" style="height:' . $height . '; width:' . $width . ';" pa_sid="' . $sid . '" pa_topics="' . $fallback . '"></div></p><div style="clear:both;"></div>';
+		if (!empty($sidArray))
+		{
+			$sidArray = array_filter($sidArray);
+			$sid = implode('_', $sidArray);
+		}	
+		
+		return '<div style="clear:both;"></div><p><div class="prosperent-pa" style="position:relative;height:' . $height . '; width:' . $width . ';" ' . ($sid ? 'pa_sid="' . $sid . '"' : '') . ($fallback ? 'pa_topics="' . $fallback . '"' : '') . '>' . (wp_script_is('loginCheck') ? '<div class="shopCheck" style="cursor:pointer;position:absolute;top:0;left:0;height:' . $height . '; width:' . $width . ';z-index:10;"></div>' : '') . '</div></p><div style="clear:both;"></div>';
 	}
 	
 	public function getTags()

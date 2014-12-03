@@ -55,6 +55,10 @@ if ($pieces['v'] === 'grid')
 								echo '<div class="couponExpire"><span><a href=' . $goToUrl . '>Expires Soon!</a></span></div>';
 							}
 						}
+						elseif ($type == 'coupon' || $type == 'local')
+						{
+							echo '<div class="promo">&nbsp;</div>';
+						}
 						?>
 						<div class="prodContent">
 							<div class="prodTitle">

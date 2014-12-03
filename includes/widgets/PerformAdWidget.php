@@ -70,9 +70,9 @@ class PerformAdWidget extends WP_Widget
 		$height = $instance['height'] ? ($instance['height'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['height']) . 'px') : 150 . 'px';
 		$width = $instance['width'] ? ($instance['width'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['width']) . 'px') : '100%';
 
-		if ($extOptions['prosperSid'] || $extOptions['prosperSidText'])
+		$sidArray = array();
+		if ($extOptions['prosperSid'])
 		{
-			$sidArray = array();
 			foreach ($extOptions['prosperSid'] as $sidPiece)
 			{
 				switch ($sidPiece)
@@ -81,24 +81,20 @@ class PerformAdWidget extends WP_Widget
 						$sidArray[] = get_bloginfo('name');
 						break;
 					case 'interface':
-						$sidArray[] = 'pa';
+						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
 						break;
 					case 'query':
-						$sidArray[] = $fallback;
+						$sidArray[] = $settings['query'];
 						break;
 					case 'page':
 						$sidArray[] = get_the_title();
-						break;	
-					case 'widgetName':
-						$sidArray[] = 'prosperAds';
-						break;
-					case 'widgetTitle':
-						$sidArray[] = $title;
 						break;						
 				}
 			}
-			
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+		}
+		if ($extOptions['prosperSidText'])
+		{
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $extOptions['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
@@ -113,17 +109,20 @@ class PerformAdWidget extends WP_Widget
 					$sidArray[] = $_COOKIE[$regs[4]];
 				}					
 			}
-			elseif (!preg_match('/\$/', $options['prosperSidText']))
+			elseif (!preg_match('/\$/', $extOptions['prosperSidText']))
 			{
-				$sidArray[] = $options['prosperSidText'];
+				$sidArray[] = $extOptions['prosperSidText'];
 			}
-			
-			$sidArray = array_filter($sidArray);			
+		}
+		
+		if (!empty($sidArray))
+		{
+			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
 		}
 		
         ?>
-		<div class="prosperent-pa" style="height: <?php echo $height; ?>; width: <?php echo $width; ?>;" pa_sid="<?php echo $sid?>" pa_topics="<?php echo $fallback; ?>" ></div>
+		<div class="prosperent-pa" style="position:relative;height: <?php echo $height; ?>; width: <?php echo $width; ?>;" <?php echo ($sid ? 'pa_sid="' . $sid . '"' : ''); ?> <?php echo ($fallback ? 'pa_topics="' . $fallback . '"' : ''); ?>><?php echo (wp_script_is('loginCheck') ? '<div class="shopCheck" style="cursor:pointer;position:absolute;top:0;left:0;height:' . $height . '; width:' . $width . ';z-index:10;"></div>' : '')?></div>
         <?php
 		echo $after_widget;
     }

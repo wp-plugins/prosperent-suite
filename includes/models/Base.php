@@ -294,8 +294,59 @@ abstract class Model_Base
 	}
 	
 	public function prosperHeaderScript()
-	{				
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":1, "pa_active":' . ($this->_options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
+	{		
+		$sidArray = array();
+		if ($this->_options['prosperSid'])
+		{
+			foreach ($this->_options['prosperSid'] as $sidPiece)
+			{
+				switch ($sidPiece)
+				{
+					case 'blogname':
+						$sidArray[] = get_bloginfo('name');
+						break;
+					case 'interface':
+						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+						break;
+					case 'query':
+						$sidArray[] = $settings['query'];
+						break;
+					case 'page':
+						$sidArray[] = get_the_title();
+						break;						
+				}
+			}
+		}
+		if ($this->_options['prosperSidText'])
+		{
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
+			{
+				if ($regs[1] == '$_SERVER')
+				{
+					$sidArray[] = $_SERVER[$regs[4]];
+				}
+				elseif ($regs[1] == '$_SESSION')
+				{
+					$sidArray[] = $_SESSION[$regs[4]];
+				}
+				elseif ($regs[1] == '$_COOKIE')
+				{
+					$sidArray[] = $_COOKIE[$regs[4]];
+				}					
+			}
+			elseif (!preg_match('/\$/', $this->_options['prosperSidText']))
+			{
+				$sidArray[] = $this->_options['prosperSidText'];
+			}
+		}
+		
+		if (!empty($sidArray))
+		{
+			$sidArray = array_filter($sidArray);
+			$sid = implode('_', $sidArray);
+		}
+	
+		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":1, "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()

@@ -71,6 +71,9 @@ echo '<h2 class="prosper_h2">' . __( 'Do you want to allow filtering of the resu
 echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
+echo $prosperAdmin->checkbox( 'Enable_Sliders', __( 'Enable Price Range and Percent Off Sliders', 'prosperent-suite' ) );
+echo '<p class="prosper_desc">' . __( "May conflict with some themes.", 'prosperent-suite' ) . '</p>';
+
 echo $prosperAdmin->textinput( 'Merchant_Facets', __( 'Number of facets to show for each category.', 'prosperent-suite' ), '', '', 'prosper_textinputsmall'  );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 

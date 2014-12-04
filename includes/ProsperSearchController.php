@@ -49,6 +49,8 @@ class ProsperSearchController
 		$searchPage  = $phtml[0];
 		$productPage = $phtml[1];
 
+		define('DONOTCACHEPAGE', true);
+		
 		if (get_query_var('storeUrl'))
 		{    
 			$this->searchModel->getStoreUrl(get_query_var('storeUrl'));	

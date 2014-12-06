@@ -10,6 +10,11 @@ if ($pieces['v'] === 'grid')
 		<?php
 		foreach ($results as $record)
 		{
+			if (is_ssl())
+			{
+				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
+			}		
+		
 			$record['affiliate_url'] = $this->_options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 			$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 			$price 	   = $priceSale ? $priceSale : $record['price'];
@@ -28,7 +33,7 @@ if ($pieces['v'] === 'grid')
 				<li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
 					<div class="listBlock">
 						<div class="prodImage">
-							<a href=<?php echo $goToUrl; ?>><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href=<?php echo $goToUrl; ?>><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('https://img1.prosperent.com/images/', 'http://img1.prosperent.com/images/', '/'), array('', '', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
 						<?php
 						if ($record['promo'])
@@ -92,7 +97,12 @@ else
 		<?php
 		// Loop to return Products and corresponding information
 		foreach ($results as $record)
-		{						
+		{			
+			if (is_ssl())
+			{
+				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
+			}
+		
 			$record['affiliate_url'] = $this->_options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 			$cid = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
 			$baseUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
@@ -108,7 +118,7 @@ else
 			?>
 			<div class="productBlock">
 				<div class="productImage">
-					<a href=<?php echo $goToUrl; ?>><span <?php echo ($imageLoader ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('http://img1.prosperent.com/images/', '/'), array('', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					<a href=<?php echo $goToUrl; ?>><span <?php echo ($imageLoader ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('https://img1.prosperent.com/images/', 'http://img1.prosperent.com/images/', '/'), array('', '', ',SL,'), $record['image_url'])) : $record['image_url'];; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 				</div>
 				<div class="productContent">
 					<?php

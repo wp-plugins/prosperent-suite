@@ -60,7 +60,7 @@ class Model_Linker extends Model_Base
 		$content = $content ? (preg_match('/<img/i', $content) ? $content : strip_tags($content)) : $query;
 
 		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
-		{	
+		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
 				$type = '';
@@ -80,12 +80,12 @@ class Model_Linker extends Model_Base
 				}	
 				
 				$settings = array(
+					'interface'		  => 'linker',
 					'limit'           => 1,
 					'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 					'filterMerchant'  => $merchants,
 					'filterBrand'	  => $brands,
-					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
-					'interface'		  => 'linker'
+					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''
 				);
 			}
 			elseif ($pieces['ft'] == 'fetchMerchant')
@@ -95,9 +95,10 @@ class Model_Linker extends Model_Base
 				$page = 'product';
 				
 				$settings = array(
-					'limit' => 1,
+					'interface'		   => 'linker',		
+					'limit' 		   => 1,
 					'filterMerchantId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
-					'filterMerchant' => $merchants
+					'filterMerchant'   => $merchants
 				);				
 			}	
 			else
@@ -110,11 +111,11 @@ class Model_Linker extends Model_Base
 					$page = 'coupon';
 				
 					$settings = array(
+						'interface'		 => 'linker',
 						'limit'          => 1,
 						'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 						'filterMerchant' => $merchants,
-						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',		
-						'interface'		 => 'linker'
+						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''
 					);				
 				}
 				elseif ($fetch === 'fetchLocal')
@@ -134,14 +135,14 @@ class Model_Linker extends Model_Base
 					}
 
 					$settings = array(
+						'interface'		  => 'linker',
 						'limit'           => 1,
 						'filterState'	  => $state ? $state : '',
 						'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
 						'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 						'filterMerchant'  => $merchants,
-						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
-						'interface'		  => 'linker'						
+						'filterLocalId'   => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''				
 					);
 				}
 			}
@@ -182,7 +183,7 @@ class Model_Linker extends Model_Base
 			if ($pieces['ft'] == 'fetchMerchant')
 			{
 				if ($allData['data'][0]['deepLinking'] == 1)
-				{
+				{	
 					if ($options['prosperSid'] && !$sid)
 					{
 						foreach ($options['prosperSid'] as $sidPiece)
@@ -232,7 +233,7 @@ class Model_Linker extends Model_Base
 						$sidArray = array_filter($sidArray);
 						$sid = implode('_', $sidArray);
 					}
-					
+				
 					if ($allData['data'][0]['domain'] == 'sportsauthority.com')
 					{
 						$allData['data'][0]['domain'] = $allData['data'][0]['domain'] . '%2Fhome%2Findex.jsp';

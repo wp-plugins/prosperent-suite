@@ -445,7 +445,9 @@ abstract class Model_Base
 		}
 
 		$settings = array_merge($settings, array(
-			'api_key' => $options['Api_Key']
+			'api_key' => $options['Api_Key'],
+			'location' => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+			'referrer' => $_SERVER['HTTP_REFERER']
 		));	
 
 		// Set the URL

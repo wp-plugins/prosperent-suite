@@ -244,7 +244,7 @@ if (count($similar) > 1)
 if (count($sameBrand) > 1)
 {
 	echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Other Products from ' . $mainRecord[0]['brand'] . '</div>';
+    echo '<div class="simTitle">Other Products from <a href="' . $matchingUrl . '/brand/' . rawurlencode($mainRecord[0]['brand']) . '" rel="nolink"><span>' . $mainRecord[0]['brand'] . '</span></a></div>';
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($sameBrand as $brandProd)
@@ -288,7 +288,7 @@ if (count($sameBrand) > 1)
 if (count($sameMerchant) > 1)
 {
 	echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Other ' . ($type === 'coupon' || $type === 'local' ? 'Deals' : 'Products') . ' from ' . $mainRecord[0]['merchant'] . ($type === 'local' ? ' for ' . ucwords($fullState) : '') . '</div>';
+    echo '<div class="simTitle">Other ' . ($type === 'coupon' || $type === 'local' ? 'Deals' : 'Products') . ' from <a href="' . $matchingUrl . '/merchant/' . rawurlencode($mainRecord[0]['merchant']) . '" rel="nolink"><span>' . $mainRecord[0]['merchant'] . '</span></a>' . ($type === 'local' ? ' for <a href="' . $matchingUrl . '/state/' . rawurlencode($mainRecord[0]['state']) . '" rel="nolink"><span>' . ucwords($fullState) . '</span></a>' : '') . '</div>';
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($sameMerchant as $merchantProd)

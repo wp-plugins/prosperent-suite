@@ -708,6 +708,10 @@ class ProsperSearchController
 		{
 			$title = '<strong>' . ucwords(rawurldecode($backStates[($params['state'] ? $params['state'] : $filterState)])) . '</strong>';			
 		}	
+		elseif ($params['merchant'] || $filterMerchant)
+		{
+			$title = '<strong>' . ucwords(rawurldecode($params['merchant'] ? $params['merchant'] : $filterMerchant)) . '</strong>';			
+		}	
 	
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
 		{
@@ -733,7 +737,7 @@ class ProsperSearchController
 			'ZipCode: Low to High' 		  => 'zipCode asc',
 		);	
 
-		if ($filterZip || $filterCity || $filterState || $filters['category'])
+		if ($filterZip || $filterCity || $filterState || $filters['category'] || $params['merchant'])
 		{			
 			$settings = array(
 				'sortBy'	     => rawurldecode($params['sort']),
@@ -757,11 +761,12 @@ class ProsperSearchController
 			//$fullData = $this->searchModel->singleCurlCall($fullDataUrl);
 		}
 
-		if ($options['Enable_Facets'] && ($filterZip || $filterCity || $filterState))
+		if ($options['Enable_Facets'] && ($filterZip || $filterCity || $filterState || $params['merchant']))
 		{
 			$zipCodeFacetSettings = array(
 				'filterCity'       => $filters['city'],
 				'filterState'      => $filterState,
+				'filterMerchant' => rawurldecode($params['merchant']),
 				'enableFacets'     => array('zipCode'),
 				'limit'			   => 1,
 				'filterCategory'   => $filters['category'],

@@ -289,7 +289,7 @@ class Model_Search extends Model_Base
 		{
 			$url = preg_replace('/\/\?gclid=.+/i', '', $url);
 		}
-	
+
 		$facetsNew = array();
 		$facetsPicked = array();
 		foreach ($facets as $i => $facetArray)
@@ -298,7 +298,7 @@ class Model_Search extends Model_Base
 			{
 				$i = 'zip';
 			}
-			
+
 			foreach ($facetArray as $facet)
 			{			
 				if ($filters[$i][$facet['value']])
@@ -307,18 +307,18 @@ class Model_Search extends Model_Base
 					{
 						$newFilters = $filters[$i];
 						unset($newFilters[$facet['value']]);
-						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '" rel="nolink">' . $facet['value'] . '</a>';
-						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
+						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('|', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
 					}
 					else
 					{
-						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '" rel="nolink">' . $facet['value'] . '</a>';
-						$facetsPicked[] = '<a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '" rel="nolink">' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
+						$facetsPicked[] = '<a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') .'>' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
 					}
 				}
 				elseif ($facet['value'])
 				{
-					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '|' . $params[$i] : '') . '" rel="nolink">' . $facet['value'] . '</a>';
+					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '|' . $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
 				}
 			}
 		}

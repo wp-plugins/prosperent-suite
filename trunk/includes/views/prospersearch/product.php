@@ -1,9 +1,10 @@
+<div class="clear"></div>
 <?php if (!$options['noSearchBar']): ?>
 	<div class="prosper_searchform" style="padding:0 15px 0 0">
 		<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
 			<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
 			<?php if ($typeSelector): ?>
-				<select style="padding:5px;display:inline;overflow:hidden;margin:0" name="type">
+				<select style="display:inline;overflow:hidden;margin:0" name="type">
 					<?php 				
 					foreach ($typeSelector as $i => $ends)
 					{
@@ -17,9 +18,9 @@
 			<input class="prosper_submit" type="submit" name="submit" value="Search">
 		</form>
 	</div>
-	<div class="clear"></div>
-<?php 
-endif;
+<?php endif;?>
+<div class="clear"></div>
+<?php
 if ($filterArray)
 {
 	?>

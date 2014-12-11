@@ -106,7 +106,7 @@ echo $prosperAdmin->textinput( 'Local_Query', __( 'Local- City, State or State',
 
 $options = get_option('prosper_productSearch');
 
-if ($options['numRecentSearch'] && $options['recentSearches'])
+if ($options['numRecentSearch'])
 {
 	echo '<p class="prosper_descb">' . __( ".", 'prosperent-suite' ) . '</p>';
 

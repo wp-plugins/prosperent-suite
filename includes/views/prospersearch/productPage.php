@@ -180,7 +180,7 @@ if (count($similar) > 1)
 		{
 			$prod['image_url'] = str_replace('http', 'https', $prod['image_url']);
 		}	
-	
+
 		$priceSale = $prod['priceSale'] ? $prod['priceSale'] : $prod['price_sale'];
         $price 	   = $priceSale ? $priceSale : $prod['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $prod['keyword']);

@@ -43,8 +43,7 @@ abstract class Model_Base
 
 		if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
 		{ 				
-			$this->_endPoints = $this->getFetchEndpoints();
-			add_action('wp_head', array($this, 'prosperHeaderScript'));
+			$this->_endPoints = $this->getFetchEndpoints();			
 			
 			if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
 			{
@@ -90,6 +89,11 @@ abstract class Model_Base
 			else
 			{				
 				add_action('admin_init', array($this, 'prosperStoreRemove'));
+			}
+			
+			if (isset($this->_options['Enable_PA']) || isset($this->_options['PL_LinkOpt']) || isset($this->_options['PL_LinkAff']))
+			{
+				add_action('wp_head', array($this, 'prosperHeaderScript'));
 			}
 			
 			if (isset($this->_options['Enable_PPS']) || isset($this->_options['Enable_AC']))

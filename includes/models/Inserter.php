@@ -208,6 +208,7 @@ class Model_Inserter extends Model_Base
 		{
 			$recordId = 'merchantId';
 			$type = 'merchant';
+			$pieces['v'] = 'grid';
 			
 			$settings = array(
 				'imageSize'		  => '120x60',

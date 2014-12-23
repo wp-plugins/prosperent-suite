@@ -525,12 +525,12 @@ class Model_Search extends Model_Base
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$prodSubmit = preg_replace('/\/$/', '', $url);
 			$newQuery = str_replace(array('/query/' . $query, '/query/' . rawurlencode($query)), '', $prodSubmit);
-			header('Location: ' . $newQuery . '/query/' . rawurlencode(trim($_POST['q'])));
+			header('Location: ' . $newQuery . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . '/query/' . rawurlencode(trim($_POST['q'])));
 			exit;
 		}
 		elseif ($_POST['q'])
 		{
-			header('Location: ' . $url . '/query/' . rawurlencode(trim($_POST['q'])));
+			header('Location: ' . $url . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . '/query/' . rawurlencode(trim($_POST['q'])));
 			exit;
 		}		
 

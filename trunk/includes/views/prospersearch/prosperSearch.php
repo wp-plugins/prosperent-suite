@@ -19,6 +19,17 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 			<fieldset style="font-size:14px;">
 				<legend>Search Bar</legend>	
 				<p>
+					<p><label style="width:135px">Send Searches to:</label><a href="#" class="tooltip"><span></span></a></p>
+					<span style="font-size:12px;">
+						<input tabindex="2" type="radio" id="searchFor" name="searchFor" value="prod" checked="checked" /> <strong>Products</strong>
+						<input style="margin-left:4px;" type="radio" id="searchFor" name="searchFor" value="coup" /> <strong>Coupons</strong>
+						<input style="margin-left:4px;" type="radio" id="searchFor" name="searchFor" value="local" /> <strong>Local</strong>
+						<input style="margin-left:4px;" type="radio" id="searchFor" name="searchFor" value="cele" /> <strong>Celebrity</strong>
+					</span>
+				</p>
+				<p><label class="longLabel">Search Bar Text:</label><input class="prosperTextSC" tabindex="3" type="text" id="sBarText" name="sBarText" "/><a href="#" class="tooltip"><span><strong>Enter the text bar place holder text</strong></span></a></p>                    
+				<p><label class="longLabel">Button Text:</label><input class="prosperTextSC" tabindex="3" type="text" id="sButtonText" name="sButtonText" "/><a href="#" class="tooltip"><span><strong>Enter the search button text</strong></span></a></p>                    
+				<p>
 					<label class="shortLabel">Width:</label><input class="prosperShortTextSC" tabindex="1" type="text" name="w" id="width" />
 					<span style="font-size:12px;">
 						<input tabindex="2" type="radio" id="widthStyle" name="widthStyle" value="%" /><strong>%</strong>

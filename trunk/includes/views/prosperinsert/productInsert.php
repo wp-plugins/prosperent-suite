@@ -10,8 +10,9 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.5'; ?>">		
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.1.5'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.3.2'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
+
 		<script type="text/javascript">
 			var t;function showValues(){var b=getNewCurrent();clearTimeout(t);var c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div.preview").html(xmlhttp.responseText).show()};var d=window.location.pathname,b=d.substring(0,d.lastIndexOf("prosperinsert/"))+"preview.php?type="+b+"&";xmlhttp.open("GET",b+c,!0);t=setTimeout(function(){try{xmlhttp.send(),c=""}catch(a){}},500);c||clearTimeout(t)}
 			function showAddedValues(){var b=getNewCurrent(),c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div.added").html(xmlhttp.responseText).show()};var d=window.location.pathname,b=d.substring(0,d.lastIndexOf("prosperinsert/"))+"added.php?type="+b+"&";xmlhttp.open("GET",b+c,!0);xmlhttp.send()}
@@ -28,8 +29,9 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 			<div class="tabs">
 				<ul>
 					<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:mcTabs.displayTab('products_tab','products_panel');" onmousedown="return false;">Products</a></span></li>
-					<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:;" onclick="mcTabs.displayTab('coupons_tab','coupons_panel');" onmousedown="return false;">Coupons</a></span></li>
-					<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:;" onclick="javascript:mcTabs.displayTab('local_tab','local_panel');" onmousedown="return false;">Local Deals</a></span></li>
+					<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:mcTabs.displayTab('coupons_tab','coupons_panel');" onmousedown="return false;">Coupons</a></span></li>
+					<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:mcTabs.displayTab('local_tab','local_panel');" onmousedown="return false;">Local Deals</a></span></li>
+					<li id="merchant_tab" aria-controls="merchant_panel"><span><a href="javascript:mcTabs.displayTab('merchant_tab','merchant_panel');" onmousedown="return false;">Merchants</a></span></li>
 				</ul>
 			</div>
 
@@ -40,13 +42,15 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>
 						<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="prodq" id="prodquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="prodmerchant" name="prodm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
-						<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
-						<p><label>Country:</label><select tabindex="4" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
-						<p><label class="longLabel">Sale Items Only:</label><input tabindex="5" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
-						<p><label>Limit:</label><input class="prosperTextSC" tabindex="6" type="text" id="prodlimit" style="width:50px"/><a href="#" class="tooltip"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>                    
-						<p><label>View:</label>Grid <input tabindex="7" class="viewRadioSC" type="radio" value="grid" name="prodview" id="prodview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="8" type="radio" value="list" name="prodview" id="prodview"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>									
-						<p><label>Grid Img Size:</label><input tabindex="9" class="prosperTextSC" type="text" id="gridimgsz"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
-						<p><label class="longLabel">Go To Merchant:</label><input  tabindex="10" type="checkbox" id="prodgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>									
+						<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
+						<p><label>Celebrity Name:</label><input class="prosperTextSC" tabindex="4" type="text" id="prodcelebname" name="prodcelebname"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Celebrity Name to get products of a celebrity.</span></a></p>														
+						<p><label>Country:</label><select tabindex="5" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
+						<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
+						<p><label>Limit:</label><input class="prosperTextSC" tabindex="7" type="text" id="prodlimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
+						<p><label>Button Text:</label><input class="prosperTextSC" tabindex="8" type="text" id="prodvisit" name="prodvisit" /><a href="#" class="tooltip"><span>Change the Visit Store button text to anything you'd like. <strong>Defaults to Visit Store</strong></span></a></p>
+						<p><label>View:</label>Grid <input tabindex="9" class="viewRadioSC" type="radio" value="grid" name="prodview" id="prodview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="10" type="radio" value="list" name="prodview" id="prodview"/><a href="#" class="tooltip"><span>Choose the view you would like to display products in.</span></a></p>									
+						<p><label>Grid Img Size:</label><input tabindex="11" class="prosperTextSC" type="text" id="gridimgsz"/><a href="#" class="tooltip"><span>Image size of grid view products.</span></a></p>                    
+						<p><label class="longLabel">Go To Merchant:</label><input  tabindex="12" type="checkbox" id="prodgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>									
 						<input type="hidden" id="prodid" name="prodid"/>
 					</fieldset>					
 				</div>
@@ -57,9 +61,10 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<input type="hidden" name="coupfetch" id="coupfetch" value="fetchCoupons"/>						
 						<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="coupq" id="coupquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="coupmerchant" name="coupm" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>																											
-						<p><label>Limit:</label><input class="prosperTextSC" tabindex="3" type="text" id="couplimit" style="width:50px"/><a href="#" class="tooltip"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>                    
-						<p><label>View:</label>Grid <input tabindex="4" class="viewRadioSC" type="radio" value="grid" name="coupview" id="coupview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="5" type="radio" value="list" name="coupview" id="coupview"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>									
-						<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="6" type="checkbox" id="coupgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>									
+						<p><label>Limit:</label><input class="prosperTextSC" tabindex="3" type="text" id="couplimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
+						<p><label>Button Text:</label><input class="prosperTextSC" tabindex="4" type="text" id="coupvisit" name="coupvisit"/><a href="#" class="tooltip"><span>Change the Visit Store button text to anything you'd like. <strong>Defaults to Visit Store</strong></span></a></p>
+						<p><label>View:</label>Grid <input tabindex="5" class="viewRadioSC" type="radio" value="grid" name="coupview" id="coupview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="6" type="radio" value="list" name="coupview" id="coupview"/><a href="#" class="tooltip"><span>Choose the view you would like to display products in.</span></a></p>									
+						<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="7" type="checkbox" id="coupgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>									
 						<input type="hidden" id="coupid" name="coupid"/>
 					</fieldset>
 				</div>
@@ -68,15 +73,26 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 					<fieldset style="font-size:14px;">
 						<legend>Local Deals Insert</legend>					
 						<input type="hidden" name="localfetch" id="localfetch" value="fetchLocal"/>								
-						<p><label>State:</label><input class="prosperTextSC" tabindex="1" type="text" id="state" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
-						<p><label>City:</label><input class="prosperTextSC" tabindex="2" type="text" id="city" name="city"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
-						<p><label>ZipCode:</label><input class="prosperTextSC" tabindex="3" type="text" id="zipcode" name="zip"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
+						<p><label>State:</label><input class="prosperTextSC" tabindex="1" type="text" id="state" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by state.</span></a></p>                    
+						<p><label>City:</label><input class="prosperTextSC" tabindex="2" type="text" id="city" name="city"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by city.</span></a></p>                    
+						<p><label>ZipCode:</label><input class="prosperTextSC" tabindex="3" type="text" id="zipcode" name="zip"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by zip code.</span></a></p>                    
 						<p><label>Query:</label><input class="prosperTextSC" tabindex="4" type="text" name="localq" id="localquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>									
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="5" type="text" id="localmerchant" name="localm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>								
-						<p><label>Limit:</label><input class="prosperTextSC" tabindex="6" type="text" id="locallimit" style="width:50px"/><a href="#" class="tooltip"><span>This limit will be used for coupons and non-comparison products, defaults to 1</span></a></p>                    
-						<p><label>View:</label>Grid <input tabindex="7" class="viewRadioSC" type="radio" value="grid" name="localview" id="localview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="8" type="radio" value="list" name="localview" id="localview"/><a href="#" class="tooltip"><span>Checking this will use coupons instead of products</span></a></p>									
-						<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="9" type="checkbox" id="localgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>						
+						<p><label>Limit:</label><input class="prosperTextSC" tabindex="6" type="text" id="locallimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
+						<p><label>Button Text:</label><input class="prosperTextSC" tabindex="7" type="text" id="localvisit" name="localvisit"/><a href="#" class="tooltip"><span>Change the Visit Store button text to anything you'd like. <strong>Defaults to Visit Store</strong></span></a></p>
+						<p><label>View:</label>Grid <input tabindex="8" class="viewRadioSC" type="radio" value="grid" name="localview" id="localview" checked="checked"/>&nbsp;&nbsp;&nbsp;List <input tabindex="9" type="radio" value="list" name="localview" id="localview"/><a href="#" class="tooltip"><span>Choose the view you would like to display products in.</span></a></p>									
+						<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="10" type="checkbox" id="localgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>						
 						<input type="hidden" id="localid" name="localid"/>							
+					</fieldset>
+				</div>
+				
+				<div id="merchant_panel" class="panel">		
+					<fieldset style="font-size:14px;">
+						<legend>Merchant Insert</legend>					
+						<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>																
+						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="5" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name.</span></a></p>														
+						<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="9" type="checkbox" id="merchantgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>						
+						<input type="hidden" id="merchantid" name="merchantid"/>							
 					</fieldset>
 				</div>
 			</div>

@@ -45,6 +45,11 @@ abstract class Model_Base
 		{ 				
 			$this->_endPoints = $this->getFetchEndpoints();			
 			
+			if (isset($this->_options['Enable_PA']) || isset($this->_options['PL_LinkOpt']) || isset($this->_options['PL_LinkAff']))
+			{
+				add_action('wp_head', array($this, 'prosperHeaderScript'));
+			}
+			
 			if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
 			{
 				if (preg_match('/(^\$_(SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
@@ -91,15 +96,7 @@ abstract class Model_Base
 				add_action('admin_init', array($this, 'prosperStoreRemove'));
 			}
 			
-			if (isset($this->_options['Enable_PA']) || isset($this->_options['PL_LinkOpt']) || isset($this->_options['PL_LinkAff']))
-			{
-				add_action('wp_head', array($this, 'prosperHeaderScript'));
-			}
-			
-			if (isset($this->_options['Enable_PPS']) || isset($this->_options['Enable_AC']))
-			{
-				add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));	
-			}	
+			add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));	
 		}
 		else
 		{
@@ -160,6 +157,7 @@ abstract class Model_Base
 	{
 		$pa = get_option('prosper_performAds');
 		$ps = get_option('prosper_productSearch');
+		$pi = get_option('prosper_autoComparer');
 		
 		$widgets = array();
 		if (isset($pa['Enable_PA']))
@@ -170,7 +168,11 @@ abstract class Model_Base
 		{
 			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget', 'RecentSearchesWidget'));		
 		}
-		
+		if (isset($pi['Enable_AC']))
+		{
+			$widgets[] = 'ProductInsertWidget';		
+		}
+
 		foreach ($widgets as $widget)
 		{
 			require_once(PROSPER_WIDGET . '/' . $widget . '.php');
@@ -242,7 +244,12 @@ abstract class Model_Base
 			'z'	 	 => '', // zipCode
 			'ft'  	 => 'fetchProducts', // fetch method
 			'sale'   => 0, // on sale products only
-			'gimgsz' => 200	 // grid image size		
+			'gimgsz' => 200,	 // grid image size
+			'sf'     => 'prod', // Search For, changes the endpoint
+			'sbar'   => 'Search Products', // Search Bar Text
+			'sbu'    => 'Search', // Search Button Text
+			'vst'    => 'Visit Store', // Product Insert Visit Store text
+			'celeb'  => '' // Celebrity Name
 		), $atts, $shortcode);
 	}
 	

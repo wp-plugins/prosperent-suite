@@ -57,8 +57,14 @@ class Model_Linker extends Model_Base
 		$merchants = $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '';
 		
 		// Remove links within links
-		$content = $content ? (preg_match('/<img/i', $content) ? $content : strip_tags($content)) : $query;
-
+		$content = $content ? (preg_match('/<a/i', $content) ? strip_tags($content) : $content) : $query;
+		
+		$query = trim(strip_tags($pieces['q']));
+		if ((!$brands || !$merchants) && !$query)
+		{
+			$query = $content;
+		}
+		
 		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
@@ -82,7 +88,7 @@ class Model_Linker extends Model_Base
 				$settings = array(
 					'interface'		  => 'linker',
 					'limit'           => 1,
-					'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+					'query'           => $query,
 					'filterMerchant'  => $merchants,
 					'filterBrand'	  => $brands,
 					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''
@@ -113,7 +119,7 @@ class Model_Linker extends Model_Base
 					$settings = array(
 						'interface'		 => 'linker',
 						'limit'          => 1,
-						'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+						'query'          => $query,
 						'filterMerchant' => $merchants,
 						'filterCouponId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''
 					);				
@@ -445,7 +451,7 @@ class Model_Linker extends Model_Base
 				{
 					if (!isset($options['Enable_PPS']) || isset($options['LTM'][$i]) == 1)
 					{				
-						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a class="shopCheck" href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
+						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $affUrl . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
 					}
 					else
 					{

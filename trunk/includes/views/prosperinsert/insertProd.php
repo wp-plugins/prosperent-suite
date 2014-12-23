@@ -2,7 +2,7 @@
 if ($pieces['v'] === 'grid')
 {
 	$gridImage = ($pieces['gimgsz'] ? preg_replace('/\s?(px|em|%)/i', '', $pieces['gimgsz']) : 200) . 'px';
-	$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
+	$classLoad = ($type === 'coupon' || $type === 'merchant' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
 	?>
 	<div style="clear:both;"></div>
 	<div id="simProd">
@@ -10,11 +10,12 @@ if ($pieces['v'] === 'grid')
 		<?php
 		foreach ($results as $record)
 		{
+			$record['image_url'] = ($record['image_url'] ? $record['image_url'] : $record['logoUrl']);
 			if (is_ssl())
 			{
 				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
 			}		
-		
+
 			$record['affiliate_url'] = $this->_options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $record['affiliate_url'])) : $record['affiliate_url'];
 			$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 			$price 	   = $priceSale ? $priceSale : $record['price'];
@@ -24,16 +25,37 @@ if ($pieces['v'] === 'grid')
 			if ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
 				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
+				if ($type === 'merchant')
+				{
+					$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode($record['merchant']) . '" rel="nolink"';
+				}				
 			}		
 			else
 			{
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
+				
+				if ($type === 'merchant')
+				{
+					if ($record['deepLinking'] == 1)
+					{
+						if ($record['domain'] == 'sportsauthority.com')
+						{
+							$record['domain'] = $record['domain'] . '%2Fhome%2Findex.jsp';
+						}
+					
+						$goToUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $this->_options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $record['domain']);							
+					}
+					else					
+					{
+						$goToUrl = '"' . $homeUrl . '/' . $base . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"';				
+					}
+				}
 			}
 			?>
 				<li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
 					<div class="listBlock">
 						<div class="prodImage">
-							<a href=<?php echo $goToUrl; ?>><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('https://img1.prosperent.com/images/', 'http://img1.prosperent.com/images/', '/'), array('', '', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href=<?php echo $goToUrl; ?>><span <?php echo $classLoad . (($type != 'coupon' && $type != 'merchant') ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo (($type != 'coupon' && $type != 'merchant') ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $this->_options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('https://img1.prosperent.com/images/', 'http://img1.prosperent.com/images/', '/'), array('', '', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
 						<?php
 						if ($record['promo'])
@@ -76,11 +98,13 @@ if ($pieces['v'] === 'grid')
 							<?php endif; ?>
 						</div>
 
+						<?php if ($type != 'merchant') : ?>
 						<div class="prosperVisit">
 							<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" value="Visit Store"/>
+								<input type="submit" value="<?php echo $pieces['vst']; ?>"/>
 							</form>
 						</div>	
+						<?php endif; ?>
 					</div>			
 				</li>
 			<?php
@@ -208,10 +232,11 @@ else
 							<?php
 						}
 					}
+					echo 'here';
 					?>
 					<div class="prosperVisit">
 						<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-							<input type="submit" value="Visit Store"/>
+							<input type="submit" value="<?php echo $pieces['vst']; ?>"/>
 						</form>
 					</div>	
 				</div>

@@ -261,7 +261,7 @@ class ProsperSearchController
 		}
 
 		$sortArray = array(
-			'Relevancy'			 => 'rel',
+			'Default'			 => 'rel',
 			'Price: High to Low' => 'price desc',
 			'Price: Low to High' => 'price asc',
 			'Merchant: A-Z' 	 => 'merchant asc',

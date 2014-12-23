@@ -100,7 +100,8 @@ elseif ($type == 'merchant')
 	$merchants = array_map('trim', explode(',', $params['merchantm']));
 
 	$settings = array(
-		'filterMerchant' =>  '*' . $merchants[0] . '*'
+		'filterMerchant' =>  '*' . $merchants[0] . '*',
+		'imageSize'		 => '120x60'
 	);
 
 }
@@ -128,7 +129,7 @@ elseif ($type == 'local')
 		'imageSize'		 => '125x125'
 	);
 }
-else 
+else
 {
 	if ($params['country'] === 'UK')
 	{
@@ -147,11 +148,12 @@ else
 	$brands = array_map('trim', explode(',', $params['prodb']));
 
 	$settings = array(
-		'query'          => trim($params['prodq']),
-		'filterMerchant' => $merchants,
-		'filterBrand'    => $brands,
-		'imageSize'		 => '125x125',
-		'groupBy'	     => 'productId',
+		'query'           => trim($params['prodq']),
+		'filterMerchant'  => $merchants,
+		'filterCelebrity' => $params['prodcelebname'],
+		'filterBrand'     => $brands,
+		'imageSize'		  => '125x125',
+		'groupBy'	      => 'productId',
 		'filterPriceSale' => $params['onSale'] ? '0.01,' : ''		
 	);
 }
@@ -212,7 +214,8 @@ if ($results = $response['data'])
 			else
 			{
 				$prosperId = $record['productId'];
-			}		
+			}	
+
 			?>
 			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull">
 				<div class="productBlock">

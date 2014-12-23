@@ -198,11 +198,26 @@ class Model_Inserter extends Model_Base
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
 				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
+				'filterCelebrity' => $pieces['celeb'],	
 				'filterProductId' => $id,
 				'filterPriceSale' => $pieces['sale'] ? '0.01,' : '',
 				'interface'		 => 'insert'
 			);
 		}
+		elseif ($fetch === 'fetchMerchant')
+		{
+			$recordId = 'merchantId';
+			$type = 'merchant';
+			
+			$settings = array(
+				'imageSize'		  => '120x60',
+				'limit'           => $limit,
+				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',		
+				'filterMerchantId' => $recordId,
+				'filterPriceSale' => $pieces['sale'] ? '0.01,' : '',
+				'interface'		  => 'insert'
+			);
+		}		
 		
 		$settings = array_filter($settings);
 

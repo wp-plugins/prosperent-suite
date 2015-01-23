@@ -232,7 +232,6 @@ else
 							<?php
 						}
 					}
-					echo 'here';
 					?>
 					<div class="prosperVisit">
 						<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">

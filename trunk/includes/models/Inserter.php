@@ -35,7 +35,7 @@ class Model_Inserter extends Model_Base
 			$newTitle = $regs[1];
 			$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
 		}
-		
+
 		if ($this->_options['prosper_inserter_negTitles'])
 		{
 			if(function_exists('prosper_negatives') === false)
@@ -53,7 +53,7 @@ class Model_Inserter extends Model_Base
 
 			$newTitle = preg_replace($exclude, '', $newTitle);
 		}
-		
+
 		if (!$newTitle)
 		{
 			return trim($text);
@@ -133,8 +133,9 @@ class Model_Inserter extends Model_Base
 
 		if ($fetch === 'fetchLocal')
 		{
-			$recordId = 'localId';
-			$type = 'local';
+			$expiration = PROSPER_CACHE_COUPS;
+			$recordId   = 'localId';
+			$type       = 'local';
 		
 			if (strlen($pieces['state']) > 2)
 			{
@@ -160,7 +161,8 @@ class Model_Inserter extends Model_Base
 		}
 		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
 		{		
-			$recordId = 'couponId';
+			$expiration = PROSPER_CACHE_COUPS;
+			$recordId 	= 'couponId';
 			
 			$settings = array(
 				'imageSize'		 => '120x60',
@@ -176,7 +178,8 @@ class Model_Inserter extends Model_Base
 		}
 		elseif ($fetch === 'fetchProducts')
 		{
-			$recordId = 'catalogId';
+			$expiration = PROSPER_CACHE_PRODS;
+			$recordId 	= 'catalogId';
 			if ($pieces['ct'] === 'UK')
 			{
 				$fetch = 'fetchUkProducts';
@@ -200,22 +203,24 @@ class Model_Inserter extends Model_Base
 				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
 				'filterCelebrity' => $pieces['celeb'],	
 				'filterProductId' => $id,
-				'filterPriceSale' => $pieces['sale'] ? '0.01,' : '',
-				'interface'		 => 'insert'
+				'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+				'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
+				'interface'		  => 'insert'
 			);
 		}
 		elseif ($fetch === 'fetchMerchant')
 		{
-			$recordId = 'merchantId';
-			$type = 'merchant';
+			$expiration  = PROSPER_CACHE_PRODS;
+			$recordId 	 = 'merchantId';
+			$type 		 = 'merchant';
+			$pieces['v'] = 'grid';
 			
 			$settings = array(
-				'imageSize'		  => '120x60',
-				'limit'           => $limit,
-				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',		
+				'imageSize'		   => '120x60',
+				'limit'            => $limit,
+				'filterMerchant'   => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',		
 				'filterMerchantId' => $recordId,
-				'filterPriceSale' => $pieces['sale'] ? '0.01,' : '',
-				'interface'		  => 'insert'
+				'interface'		   => 'insert'
 			);
 		}		
 		
@@ -227,7 +232,8 @@ class Model_Inserter extends Model_Base
 		}
 		
 		$url = $this->apiCall($settings, $fetch);
-		$allData = $this->singleCurlCall($url);
+
+		$allData = $this->singleCurlCall($url, $expiration);
 
 		if (!$allData['data'])
 		{
@@ -242,7 +248,7 @@ class Model_Inserter extends Model_Base
 				}
 			
 				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url);
+				$allData = $this->singleCurlCall($url, $expiration);
 				
 				if ($allData['data'])
 				{

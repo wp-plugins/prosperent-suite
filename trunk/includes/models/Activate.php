@@ -10,7 +10,7 @@ class Model_Activate extends Model_Base
 	protected $_options;
 	
 	protected $_pages = array(
-		'products' => '[prosper_store][/prosper_store]'
+		'Products' => '[prosper_store][/prosper_store]'
 	);
 	
 	public function prosperActivate()

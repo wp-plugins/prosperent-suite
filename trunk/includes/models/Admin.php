@@ -37,11 +37,11 @@ class Model_Admin extends Model_Base
 			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch' ) );
 		}
 		
-		if ( isset( $_GET['clearCache'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_clear_cache' ) && current_user_can( 'manage_options' ) ) 
+		/*if ( isset( $_GET['clearCache'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_clear_cache' ) && current_user_can( 'manage_options' ) ) 
 		{
 			$cacheDir = glob(PROSPER_CACHE . '/*'); 
 
-			shell_exec('rm -rf ' . PROSPER_CACHE . '/*');			
+						//do a shell exec here to clear cache rm rf
 			
 			wp_redirect( admin_url( 'admin.php?page=prosper_general&cacheCleared' ) );
 		}
@@ -49,7 +49,7 @@ class Model_Admin extends Model_Base
 		if ( isset( $_GET['cacheCleared'] ))
 		{
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
-		}
+		}*/
     }	
 	
 	public function addLinks()
@@ -556,10 +556,41 @@ class Model_Admin extends Model_Base
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
 		}
 		?>
-		<img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/><?php echo '<h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1>';?>
+		
+		<?php 
+		$options = get_option('prosperSuite');
+		if ($options['Api_Key'] && !$options['ProsperFirstTimeOperator'])
+		{
+			echo '<div id="message" style="width:800px;" class="message updated">	
+					<p>
+						<strong style="font-size:14px;">What\'s Next?</strong></br>
+						Now that you have signed up and entered your API Key, the shop has been created for you at <a target="BLANK" href="' . home_url('/') . 'products' . '">Products</a> with a default query of "shoes". You can change that setting and more <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_productSearch') . '">here</a>.</br></br>
+						After that, feel free to have a look at our other tools/features: 
+						<ul style="list-style-type:disc;margin-left:25px;">
+							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_performAds') . '">ProsperAds</a></li>
+							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoComparer') . '">ProsperInsert</a></li>
+							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoLinker') . '">Auto-Linker</a></li>
+							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">ProsperLinks</a></li>
+						</ul
+					</p>			
+				</div>';
 
-		<h1 id="prosper-title"><?php echo $title; ?></h1>
-		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:800px; padding: 0 20px 0 0;">
+			$options['ProsperFirstTimeOperator'] = true;
+			update_option('prosperSuite', $options);
+		}
+		?>
+		<?php 
+		if ('General Settings' == $title) : ?>
+			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1></td></tr></table><div style="clear:both"></div>';?>
+			<h1 id="prosper-title"><?php echo $title; ?></h1>
+		<?php elseif ('Advanced Settings' == $title || 'Themes' == $title || 'MultiSite Settings' == $title ): ?>
+			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
+		 else :?>
+			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
+		endif; ?>
+		
+		
+		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:auto;padding: 0 20px 0 0;">
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">
 		<?php

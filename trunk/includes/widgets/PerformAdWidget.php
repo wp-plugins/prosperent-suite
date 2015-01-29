@@ -16,7 +16,7 @@ class PerformAdWidget extends WP_Widget
 		$extOptions = get_option('prosperSuite');
 
 		extract($args);
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Related Products' : $instance['title'], $instance, $this->id_base );
 		
 		echo $before_widget;
 		if ( $title )
@@ -49,21 +49,23 @@ class PerformAdWidget extends WP_Widget
 		{
 			array_push($fallback, strtolower(get_the_title()));
 		}
-		
+
 		if ($options['Remove_Tags'])
 		{
-			$removeTags = explode(',', $options['Remove_Tags']);			
-			$fbacks = array_flip($fallback);
-
-			foreach ($removeTags as $remove)
-			{ 
-				$remove = strtolower(trim($remove));
-				if(isset($fbacks[$remove]))
+			if(function_exists('prosper_negatives') === false)
+			{
+				function prosper_negatives($negative)
 				{
-					unset($fbacks[$remove]);
+					return '/\b' . trim($negative) . '\b/i';
 				}
 			}	
-			$fallback = array_flip($fbacks);					
+
+			$exclude = array_map(
+				"prosper_negatives",
+				explode(',', $options['Remove_Tags'])
+			);
+
+			$fallback = preg_replace($exclude, '', $fallback);
 		}
 
         $fallback = implode(",", $fallback);

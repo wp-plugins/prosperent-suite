@@ -4,14 +4,14 @@ $prosperAdmin = new Model_Admin();
 
 $prosperAdmin->adminHeader( __( 'ProsperInsert Settings', 'prosperent-suite' ), true, 'prosperent_compare_options', 'prosper_autoComparer' );
 
-echo '<p class="prosper_settingDesc">' . __( 'ProsperInsert is a great tool for anyone looking to promote a product, and makes it very easy to do so. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodinsert/">WordPress Prosperent Demo: ProsperInsert</a> for more information and to see how it looks and works.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperInsert is a great tool for anyone looking to promote a product, and it makes it very easy to do so. To use the ProsperInsert you can either:<br><br>&bull; Use the Content Inserter below to automatically add products to any page or post or...<br>&bull; Add a ProsperInsert to any page/post while editing it using the shortcode within the <strong>Gear dropdown</strong><br>&bull; Add ProsperInsert as a <strong>widget</strong>.<br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodinsert/">WordPress Prosperent Demo: ProsperInsert</a> for more information and to see how it looks and works.', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperInsert...', 'prosperent-suite' ) . '</h2>';
+echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperInsert and ContentInserter...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_AC', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Insert Products into All Posts/Pages', 'prosperent-suite' ) . '</h2>';
-echo '<p class="prosper_settingDesc" style="border:none;">' . __( 'This uses the Page/Post titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br>For example, if you use review in the titles you can exclude it from the ProsperInsert query by inserting that below.', 'prosperent-suite' ) . '</p>';								
+echo '<table><tr><td><img src="' . PROSPER_IMG . '/adminImg/Content Inserter.png"/></td><td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">ContentInsert</h1></td></tr></table><div style="clear:both"></div>';
+echo '<p class="prosper_settingDesc" style="border:none;">' . __( 'Insert Products into All Posts/Pages.<br>This uses the Page/Post titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br>For example, if you use review in the titles you can exclude it from the ProsperInsert query by inserting that below.', 'prosperent-suite' ) . '</p>';								
 
 echo $prosperAdmin->checkbox( 'prosper_inserter_posts', __( 'Add ProsperInsert to <strong>All</strong> Posts?', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';

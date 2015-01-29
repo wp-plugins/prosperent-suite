@@ -1,33 +1,30 @@
 === Prosperent Suite ===
-Contributors: Prosperent Brandon
+Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 4.1
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Prosperent's Tools in one plugin help monetize your blog with ease.
+Make Money on Your Blog with a Full Shop, Ads, and Direct-to-Merchant Links from Prosperent.
 
 == Description ==
 
-This plugin contains the following Prosperent tools:
+This plugin contains the following tools from Prosperent:
 
-* **ProsperShop-** Create a store within your blog.
-* **ProsperAds-** Display ads easily inside widgets or in content.
-* **Auto-Linker-** Easily link products to the store or a merchant.
-* **ProsperInsert-** Display a product within your post or page to easily show visitors products.
-* **ProsperLinks-** Contains a link-optimizer and link-affiliator to easily monetize links already in your blog.
+* **ProsperShop-** Create a shop on your blog filled with products relevant to your site content.
+* **ProsperAds-** Scans your content and creates relevant, dynamic, and responsive ad units to place wherever you want on your site.
+* **Auto-Linker-** Convert any keyword or phrase into an affiliated link to the highest converting, most relevant product.
+* **ProsperInsert-** Insert relevant products and deals within your pages and posts..
+* **ContentInsert-** Automatically places products within all posts and pages on your blog.
+* **ProsperLinks-** Any link on your site that leads to a product or merchant will automatically convert to an affiliate link.
 
 This suite will give you everything you need to easily start making money with your blog.
 
 To view a tutorials and a demo of the Prosperent Suite, visit [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 
-**Look at the screenshots to get a brief overview of the tools and what you can do with them.**
-
 = Why choose Prosperent? =
-
-Well these reasons should help you with that question:
 
 * **We are here for you-** We are always around to answer questions, office guidance and make sure you have everything you need to make a living online.
 * **Traffic optimization-** Our algorithm's are always making sure every click you send us goes to the HIGHEST PAYING and HIGHEST CONVERTING merchant at that moment.
@@ -39,6 +36,13 @@ Well these reasons should help you with that question:
 * **Join for free-** All of our competitors charge you a monthly fee to access their data and tools. We don't! Plain and simple, if you don't make money, we don't make money.
 
 == Screenshots ==
+
+1. The ProsperShop
+2. The product page for a product that was clicked on in the ProsperShop
+3. The ProsperInsert in a sidebar widget
+4. The Auto-Linker showing an image and phrase linked to the merchant
+5. ProsperLinks has turned the merchant links on the logos into affiliate URLs
+6. ProsperAds running
 
 == Installation ==
 
@@ -55,14 +59,17 @@ Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 6.  Go to *Appearance* and then *Widgets* in your admin menu.
     * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
-7.  When making a page/post all the short code on in the Prosperent Button. (the one with the gear on it, in the visual editor, else each one has their own button in the Text editor)
+7.  When making a page/post all the short code on in the Prosperent Gear Icon.
 
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize each.
-Log in to **Prosperent.com** every so often to check your stats.
+Log in to **[Prosperent](http://prosperent.com)** every so often to check your stats.
 
-= Available ShortCodes =
-
-All short codes now have a button in the editors for easy input.
+**ProsperShop** is a full fledged shop with millions of products from over 4500 merchants. This is created automatically when you activate the plugin. 
+**ProsperInsert** allows you to place products on pages and posts using the Gear icon dropdown when editing a page or post. It can also be placed in widgets.
+**Auto-Linker** is done either in the settings or on a page or post using the shortcode generator in the Gear icon dropdown. You can turn words or phrases into affiliate links.
+**ProsperLinks** is completely automated, once turned on (it is on by default), the plugin will begin affiliating links or re-affiliating links to better converting, high commission merchants.
+**ContentInserter** automatically places products within all posts and pages on your blog.
+**ProsperAds** are ads that you can either place on individual pages using the shortcode which is created from the Gear icon dropdown.
 
 = Additional Notes for Installation =
 
@@ -70,24 +77,45 @@ All short codes now have a button in the editors for easy input.
 
 == Frequently Asked Questions ==
 
-1. **What is Prosperent?**
+1. **How do I make the ProsperShop my front page?**
+    * After you have set a page with the ProsperShop short code as a Static Front Page, there are a few things you'll have to do to make everything work correctly. First, create another page, name it anything you want. This will be the secondary shop page. Add the ProsperShop short code to this page as well from the Gear icon dropdown. Save this new page. Remember the Permalink for this new page, //YOURBLOG.com/**NewShop**. Copy the portion in your URL that is bolded here (NewShop), you'll need that in a second. Now go to Prosperent -> Advanced and check the box for *Change Base URL Manually*. Save the settings. A new Text Box has appeared under that check box. Enter the part you copied earlier (NewShop). Save the Settings again. Now deactivate and reactivate the Prosperent Suite plugin. 
+2. **Why isn't the Content Inserter showing up on some pages?**
+	* This is usually due to the title being used as the query is not producing results. Try using [prosperNewQuery="YOUR_NEW_QUERY_HERE"]  to use a new query for that page.
+3. **What is Prosperent?**
     * Prosperent is a company that is serious about getting you the tools that simplify your life as an affiliate marketer. We manage relationships with merchants, clean datafeeds, and provide a variety of publisher tools to get products on your site quickly and easily.
-2. **How many merchants does Prosperent work with?**
+4. **How many merchants does Prosperent work with?**
     * Currently over 4,500 and growing.
-3. **How many products does Prosperent have?**
+5. **How many products does Prosperent have?**
     * We currently index and search against almost 50 million products.
-4. **Where can publishers go to get help?**
+6. **Where can publishers go to get help?**
     * Our Community Forums are a fantastic resource. Our entire team is active on a daily basis, and we are always here to lend a helping hand no matter what the question may be.
-5. **How do I get paid?**
+7. **How do I get paid?**
     * Prosperent pays publishers net30 which means we pay you 30 days after commission event takes place. This gives merchants time to see if a product is returned, or otherwise needs to be delayed for whatever reason.
-6. **How can we track our earnings?**
+8. **How can we track our earnings?**
     * We have a comprehensive reporting system in place that allows you to see which pages are generating earnings, which city/state/country the sales are coming from, and which individual products and retailers are providing those sales.
-7. **What is the revenue split?**
+9. **What is the revenue split?**
     * We take a 30% commission and pay you the other 70%. If you are a larger publisher this split changes to 80/20.
-8. **What are the commissions paid and terms?**
+10. **What are the commissions paid and terms?**
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.3.3 =
+* Bug Fixes
+* Options have been redone to help make everything more seamless
+* New themes have been added to choose from
+* Price and Percent off Sliders both work again
+* Price Range for AutoLinker and ProsperInsert shortcodes
+* Price range added for ProsperInsert widget
+* Caching redone, lower expiration
+* Removed prosperentApi.php, wasn't being used
+* Optimized HTML
+
+= 3.3.2 =
+* Bug Fixes
+* Options have been redone to help make everything more seamless
+* New themes have been added to choose from
+* Price and Percent off Sliders both work again
 
 = 3.3.2 =
 * Product Insert widget
@@ -462,4 +490,4 @@ Deactivate any other Prosperent Plugins before use.
 
 == Notes ==
 
-If you have any questions or suggestions, please feel free to ask me here, on the [Prosperent Community](http://community.prosperent.com/forum.php) or email me Prosperent Brandon at brandon@prosperent.com.
+If you have any questions or suggestions, please feel free ask in the [Prosperent Community](http://community.prosperent.com/forum.php) or email me at brandon@prosperent.com.

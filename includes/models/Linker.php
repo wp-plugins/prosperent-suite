@@ -69,6 +69,7 @@ class Model_Linker extends Model_Base
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
+				$expiration = PROSPER_CACHE_PRODS;
 				$type = '';
 				$page = 'product';
 				
@@ -91,11 +92,14 @@ class Model_Linker extends Model_Base
 					'query'           => $query,
 					'filterMerchant'  => $merchants,
 					'filterBrand'	  => $brands,
-					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : ''
+					'filterProductId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',
+					'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+					'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
 				);
 			}
 			elseif ($pieces['ft'] == 'fetchMerchant')
 			{			
+				$expiration = PROSPER_CACHE_PRODS;
 				$fetch = 'fetchMerchant';
 				$type = '';
 				$page = 'product';
@@ -109,6 +113,7 @@ class Model_Linker extends Model_Base
 			}	
 			else
 			{
+				$expiration = PROSPER_CACHE_COUPS;
 				$fetch = $pieces['ft'];
 				
 				if ($fetch === 'fetchCoupons')
@@ -126,6 +131,7 @@ class Model_Linker extends Model_Base
 				}
 				elseif ($fetch === 'fetchLocal')
 				{
+					$expiration = PROSPER_CACHE_COUPS;
 					$type = '/type/local/';
 					$page = 'local';
 				
@@ -162,7 +168,7 @@ class Model_Linker extends Model_Base
 			}
 
 			$url = $this->apiCall($settings, $fetch);
-			$allData = $this->singleCurlCall($url);
+			$allData = $this->singleCurlCall($url, $expiration);
 
 			if (!$allData['data'])
 			{
@@ -177,7 +183,7 @@ class Model_Linker extends Model_Base
 					}
 				
 					$url = $this->apiCall($settings, $fetch);
-					$allData = $this->singleCurlCall($url);
+					$allData = $this->singleCurlCall($url, $expiration);
 					
 					if ($allData['data'])
 					{
@@ -374,7 +380,7 @@ class Model_Linker extends Model_Base
 				$settings = array_filter($settings);
 				
 				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url);
+				$allData = $this->singleCurlCall($url, PROSPER_CACHE_PRODS);
 
 				$affUrl = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
 				

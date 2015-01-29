@@ -329,29 +329,40 @@ class Model_Search extends Model_Base
 	
 	public function getSearchPhtml()
 	{		
-		$phtml[0] = PROSPER_VIEW . '/prospersearch/product.php';
+		$phtml[0] = PROSPER_VIEW . '/prospersearch/themes/Default/product.php';
 		$phtml[1] = PROSPER_VIEW . '/prospersearch/productPage.php';
 				
 		// Product Search CSS for results and search
 		if ($this->_options['Set_Theme'] != 'Default')
 		{
 			$dir = PROSPER_THEME . '/' . $this->_options['Set_Theme'];
-			if($newTheme = glob($dir . "/*.php"))
+			if (file_exists($dir))
 			{			
-				foreach ($newTheme as $theme)
+				$newTheme = glob($dir . "/*.php");
+			}
+			else
+			{
+				$newTheme = glob(PROSPER_VIEW . '/prospersearch/themes/' . $this->_options['Set_Theme'] . "/*.php");
+			}
+
+			foreach ($newTheme as $theme)
+			{
+				if (preg_match('/product.php/i', $theme))
 				{
-					if (preg_match('/product.php/i', $theme))
-					{
-						$phtml[0] = $theme;
-					}
-					elseif (preg_match('/productPage.php/i', $theme))
-					{
-						$phtml[1] = $theme;
-					}				
+					$phtml[0] = $theme;
 				}
+				elseif (preg_match('/productPage.php/i', $theme))
+				{
+					$phtml[1] = $theme;
+				}				
+			}
+			
+			if ($this->_options['Set_Theme'] == 'SingleFile')
+			{
+				wp_enqueue_script( 'Beta', '', array('jquery', 'jquery-ui-dialog', 'json2', 'jquery-ui-core') );	
 			}
 		}
-
+		
 		return $phtml;
 	}
 	
@@ -487,7 +498,7 @@ class Model_Search extends Model_Base
 	
 	public function sliderJs()
 	{
-		wp_register_script( 'rangeSlider', PROSPER_JS . '/slider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version);
+		wp_register_script( 'rangeSlider', PROSPER_JS . '/prosperSlider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version,1);
 		wp_enqueue_script( 'rangeSlider' );	
 		
 		wp_register_style('jqueryUIcss', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.min.css');
@@ -496,7 +507,7 @@ class Model_Search extends Model_Base
 	
 	public function productStoreJs()
 	{
-		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version );
+		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version,1 );
 		wp_enqueue_script( 'productStoreJS' );
 	}	
 	
@@ -555,22 +566,26 @@ class Model_Search extends Model_Base
 		
 		if ('coupon' === $prosperPage)
 		{
+			$expiration = PROSPER_CACHE_COUPS;
 			$fetch  = 'fetchCoupons';
 			$filter = 'filterCouponId';
 		}
 		elseif ('local' === $prosperPage)
 		{
+			$expiration = PROSPER_CACHE_COUPS;
 			$fetch  = 'fetchLocal';
 			$filter = 'filterLocalId';
 			$image  = '125x125';
 		}
 		elseif ('celebrity' === $prosperPage)
 		{
+			$expiration = PROSPER_CACHE_PRODS;
 			$fetch  = 'fetchProducts';
 			$filter = 'filterCatalogId';
 		}
 		else
 		{
+			$expiration = PROSPER_CACHE_PRODS;
 			$fetch = 'fetchProducts';
 			$currency = 'USD';
 
@@ -586,7 +601,7 @@ class Model_Search extends Model_Base
 			}
 			$filter = 'filterCatalogId';
 		}
-		
+
 		/*
 		/  Prosperent API Query
 		*/
@@ -596,11 +611,11 @@ class Model_Search extends Model_Base
 		);
 				
 		$curlUrl = $this->apiCall($settings, $fetch);
-		$allData = $this->singleCurlCall($curlUrl);
+		$allData = $this->singleCurlCall($curlUrl, $expiration);
 		$record = $allData['data'];
 
 		$page = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-		if (is_page($page) && get_query_var('cid'))
+		if (is_page($page) && get_query_var('cid') && $record['data'])
 		{
 			$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
 			// Open Graph: FaceBook

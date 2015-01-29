@@ -133,6 +133,7 @@ else
 {
 	if ($params['country'] === 'UK')
 	{
+		$currency = 'GBP';
 		$fetch = 'fetchUkProducts';
 	}
 	elseif ($params['country'] === 'CA')
@@ -140,7 +141,7 @@ else
 		$fetch = 'fetchCaProducts';
 	}
 	else 
-	{
+	{		
 		$fetch = 'fetchProducts';
 	}
 
@@ -148,13 +149,14 @@ else
 	$brands = array_map('trim', explode(',', $params['prodb']));
 
 	$settings = array(
-		'query'           => trim($params['prodq']),
-		'filterMerchant'  => $merchants,
-		'filterCelebrity' => $params['prodcelebname'],
-		'filterBrand'     => $brands,
-		'imageSize'		  => '125x125',
-		'groupBy'	      => 'productId',
-		'filterPriceSale' => $params['onSale'] ? '0.01,' : ''		
+		'query'            => trim($params['prodq']),
+		'filterMerchant'   => $merchants,
+		'filterCelebrity'  => $params['prodcelebname'],
+		'filterBrand'      => $brands,
+		'imageSize'		   => '125x125',
+		'groupBy'	       => 'productId',
+		'filterPriceSale'  => $params['onSale'] ? ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '0.01,') : '',
+		'filterPrice' 	   => $params['onSale'] ? '' : ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '')
 	);
 }
 
@@ -247,13 +249,25 @@ if ($results = $response['data'])
 						
 						if ($type != 'coup' && $type != 'local'): ?>
 						<div class='productDescription'><?php
-							if (strlen($record['description']) > 200)
+							if ($record['price_sale'] || $record['price'] || $record['priceSale'])
 							{
-								echo substr($record['description'], 0, 175) . '...';
-							}
-							else
-							{
-								echo $record['description'];
+								$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
+								
+								if(empty($priceSale) || $record['price'] <= $priceSale)
+								{
+									//we don't do anything
+									?>
+									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
+									<?php
+								}
+								//otherwise strike-through Price and list the Price_Sale
+								else
+								{
+									?>
+									<span><del><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></del></span>
+									<span style="color:red;"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $priceSale?></span>
+									<?php
+								}
 							}
 							?>
 							<div class="productBrandMerchant">

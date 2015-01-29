@@ -7,10 +7,10 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>ProsperInsert</title>
-		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.1.5'; ?>">		
+		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.3.3'; ?>">		
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.3.2'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.3.3'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
 
 		<script type="text/javascript">
@@ -45,6 +45,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
 						<p><label>Celebrity Name:</label><input class="prosperTextSC" tabindex="4" type="text" id="prodcelebname" name="prodcelebname"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Celebrity Name to get products of a celebrity.</span></a></p>														
 						<p><label>Country:</label><select tabindex="5" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
+						<p><label>Price Range:</label><input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();"/>&nbsp;&nbsp;&nbsp;<input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter a price range.</span></a></p>														
 						<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
 						<p><label>Limit:</label><input class="prosperTextSC" tabindex="7" type="text" id="prodlimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
 						<p><label>Button Text:</label><input class="prosperTextSC" tabindex="8" type="text" id="prodvisit" name="prodvisit" /><a href="#" class="tooltip"><span>Change the Visit Store button text to anything you'd like. <strong>Defaults to Visit Store</strong></span></a></p>

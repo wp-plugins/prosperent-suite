@@ -15,7 +15,7 @@ $prosperAdmin = new Model_Admin();
 
 $prosperAdmin->adminHeader( __( 'ProsperShop Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
 
-echo '<p class="prosper_settingDesc">' . __( 'ProsperShop will allow you to run a store on your WordPress blog. Play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.<br><br><b style="font-size:14px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc"  style="font-size:14px;">' . __( 'ProsperShop is a store that gives visitors to your site access to products from over 4500 merchants.<br><br>The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.<br><br><b style="font-size:16px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperShop...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_PPS', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
@@ -48,10 +48,10 @@ echo $prosperAdmin->radio( 'Coupon_View', array( 'grid' => __( 'Grid', 'prospere
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Image Sizes', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->textinput( 'Grid_Img_Size', __( 'Enter <strong>Grid</strong> image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Only changes the size for <strong>grid</strong> product images. (does not change local/coupon images)<br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
+echo $prosperAdmin->textinput( 'Grid_Img_Size', __( 'Enter <strong>Grid</strong> image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Only changes the size for <strong>grid</strong> product images. (does not change local/coupon images)<br><br>The image will be a square, so entering the width will be the same as the height. </span></a>', 'prosper_textinputsmall');
 echo '<p class="prosper_desc">' . __( "Minimum is <strong>70</strong>", 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->textinput( 'Same_Img_Size', __( 'Enter Same/Similar Products image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Will change the image size on the product pages as well for the same/similar product sections.<br><br><br>The image will be a square, so entering the width will be the same as the height; </span></a>', 'prosper_textinputsmall');
+echo $prosperAdmin->textinput( 'Same_Img_Size', __( 'Enter Same/Similar Products image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Will change the image size on the product pages as well for the same/similar product sections.<br><br><br>The image will be a square, so entering the width will be the same as the height.</span></a>', 'prosper_textinputsmall');
 echo '<p class="prosper_descb">' . __( "Minimum is <strong>70</strong>", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</h2>';
@@ -68,7 +68,7 @@ echo $prosperAdmin->textinput( 'Similar_Limit', __( 'Limit for Similar Products'
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Do you want to allow filtering of the results?', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
+echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong> Show the merchants and brands.', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Enable_Sliders', __( 'Enable Price Range and Percent Off Sliders', 'prosperent-suite' ) );

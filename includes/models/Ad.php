@@ -133,18 +133,21 @@ class Model_Ad extends Model_Base
 	
 	public function removeTags($fallback)
 	{
-		$removeTags = explode(',', $this->_options['Remove_Tags']);			
-		$fbacks = array_flip($fallback);
-
-		foreach ($removeTags as $remove)
-		{ 
-			$remove = trim($remove);
-			if(isset($fbacks[$remove]))
+		if(function_exists('prosper_negatives') === false)
+		{
+			function prosper_negatives($negative)
 			{
-				unset($fbacks[$remove]);
+				return '/\b' . trim($negative) . '\b/i';
 			}
 		}	
+
+		$exclude = array_map(
+			"prosper_negatives",
+			explode(',', $this->_options['Remove_Tags'])
+		);
+
+		$fallback = preg_replace($exclude, '', $fallback);
 		
-		return array_flip($fbacks);			
+		return $fallback;	
 	}
 }

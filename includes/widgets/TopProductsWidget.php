@@ -20,7 +20,7 @@ class TopProductsWidget extends WP_Widget
 		}
 
         extract($args);	
-        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );	
+        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Top Products' : $instance['title'], $instance, $this->id_base );	
 
 		if($instance['useTitle'])
 		{ 
@@ -181,7 +181,7 @@ class TopProductsWidget extends WP_Widget
 										<?php echo $keyword; ?>
 									</a>
 								</div>     
-								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
+								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo number_format($price); } ?>												
 							</div>
 							
 							<div class="prosperVisit">					
@@ -277,7 +277,6 @@ class TopProductsWidget extends WP_Widget
         <input class="widefat" id="<?php echo $this->get_field_id('numProd'); ?>" name="<?php echo $this->get_field_name('numProd'); ?>" type="text" value="<?php echo esc_attr($numProd); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id('goToMerch'); ?>"><?php _e('Go To Merchant:'); ?></label><a href="#" class="prosper_tooltip"><span>When clicked, the link will go to the merchant page instead of the product page.</span></a>
         <input id="<?php echo $this->get_field_id('goToMerch'); ?>" name="<?php echo $this->get_field_name('goToMerch'); ?>" type="checkbox" value="1" <?php echo checked( esc_attr($goToMerch), 1, false ); ?> /></p>
-		
 		<p><label for="<?php echo $this->get_field_id('useTitle'); ?>"><?php _e('Use Page/Post Title as:'); ?></label><a href="#" class="prosper_tooltip"><span>Make sure the page/post titles are compatible. Some titles may result in little or no results. If checked this will be true for all pages/posts with the Top Products widget.</span></a>
 		<div style="text-align:center;">
 			<input type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="categories" <?php echo checked( esc_attr($useTitle), 'categories', false ); ?> /> <strong>Category</strong>

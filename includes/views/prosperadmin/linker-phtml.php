@@ -18,7 +18,7 @@ $options = get_option('prosper_autoLinker');
 
 $prosperAdmin->adminHeader( __( 'Auto-Linker Settings', 'prosperent-suite' ), true, 'prosperent_linker_options', 'prosper_autoLinker' );
 
-echo '<p class="prosper_settingDesc">' . __( 'The AutoLinker is a useful tool for to link words, brands, or products to either the search page or straight to the merchant. <br><br>The Auto-Linker has two different ways to link.. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/auto-linker/">WordPress Prosperent Demo: Auto-linker</a> for more information and to see how it looks.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc" style="font-size:15px;">' . __( 'The AutoLinker is a useful tool to link words, brands, or products to either the ProsperShop or to the merchant page. To link using the Auto-Linker either<br><br>&bull; Use the Content Auto-Linker below to link specific words/phrases on all pages/posts or...<br>&bull; Add a link around a word or phrase while editing a page/post using the shortcode from the <strong>Gear dropdown</strong></span><br><br>Go to <a href="http://wordpress.prosperentdemo.com/auto-linker/">WordPress Prosperent Demo: Auto-linker</a> for more information and to see how it looks.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on the Auto-Linker...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_AL', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );

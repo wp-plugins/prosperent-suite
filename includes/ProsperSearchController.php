@@ -65,7 +65,11 @@ class ProsperSearchController
 		$data = $this->searchModel->storeSearch();
 				
 		$params = $data['params'];
-		$homeUrl = home_url();
+		$homeUrl = home_url('', 'http');
+		if (is_ssl())
+		{
+			$homeUrl = home_url('', 'https');
+		}
 
 		if (!empty($_POST))
 		{
@@ -101,6 +105,7 @@ class ProsperSearchController
 			}
 
 			$postArray = array(
+				'merchant'  => stripslashes($_POST['merchant']),
 				'type'   	=> $_POST['type'],
 				'query' 	=> $_POST['q'],
 				'sort' 	 	=> $_POST['sort'],
@@ -127,21 +132,21 @@ class ProsperSearchController
 		
 		if (get_query_var('cid'))
 		{ 
-			$this->searchModel->productStoreJs();
+			//$this->searchModel->productStoreJs();
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
 
 		$type = isset($params['type']) ? $params['type'] : $data['startingType'];
 		
-		if ($options['Enable_Facets'])
+		if ($options['Enable_Facets'] && $options['Enable_Sliders'])
 		{
-			$this->searchModel->productStoreJs();
+			//$this->searchModel->productStoreJs();
 			
-			if ($options['Enable_Sliders'])
-			{
+			//if ($options['Enable_Sliders'])
+			//{
 				$this->searchModel->sliderJs();
-			}
+			//}
 		}
 		
 		switch ($type)
@@ -378,7 +383,7 @@ class ProsperSearchController
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, $fetch);
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS);
 		
 		if ($everything['brands']['facets'] || $everything['merchants']['facets'])
 		{			
@@ -565,7 +570,7 @@ class ProsperSearchController
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, $fetch);	
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS);
 		
 		if ($everything['merchants']['facets'])
 		{			
@@ -797,7 +802,7 @@ class ProsperSearchController
 			$curlUrls['city'] = $this->searchModel->apiCall($cityFacetSettings, $fetch);	
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS);
 
 		if ($everything['zip']['facets'] || $everything['city']['facets'])
 		{			
@@ -1034,7 +1039,7 @@ class ProsperSearchController
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, 'fetchProducts');
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS);
 		
 		if ($everything['merchants']['facets'])
 		{			
@@ -1098,27 +1103,30 @@ class ProsperSearchController
 		
 		if ('coupon' === $prosperPage)
 		{
-			$fetch   = 'fetchCoupons';
-			$filter  = 'filterCouponId';
-			$type    = 'coupon';
-			$urltype = 'coup';
+			$fetch   	= 'fetchCoupons';
+			$filter  	= 'filterCouponId';
+			$type   	= 'coupon';
+			$urltype 	= 'coup';
+			$expiration = PROSPER_CACHE_COUPS;
 		}
 		elseif ('local' === $prosperPage)
 		{
-			$fetch   = 'fetchLocal';
-			$filter  = 'filterLocalId';
-			$urltype = $type = 'local';
+			$fetch   	= 'fetchLocal';
+			$filter  	= 'filterLocalId';
+			$urltype 	= $type = 'local';
+			$expiration = PROSPER_CACHE_COUPS;
 		}
 		elseif ('celebrity' === $prosperPage)
 		{
-			$fetch   = 'fetchProducts';
-			$filter  = 'filterCatalogId';
-			$group   = 'productId';
-			$brand   = true;
-			$urltype = 'cele';
+			$fetch   	= 'fetchProducts';
+			$filter  	= 'filterCatalogId';
+			$group   	= 'productId';
+			$brand   	= true;
+			$urltype 	= 'cele';
+			$expiration = PROSPER_CACHE_PRODS;
 		}
 		else
-		{		
+		{	
 			if ($options['Country'] === 'US')
 			{
 				$fetch = 'fetchProducts';
@@ -1135,10 +1143,11 @@ class ProsperSearchController
 				$currency = 'GBP';
 			}
 			
-			$brand   = true;
-			$filter  = 'filterCatalogId';
-			$group   = 'productId';			
-			$urltype = 'prod';
+			$brand   	= true;
+			$filter  	= 'filterCatalogId';
+			$group   	= 'productId';			
+			$urltype 	= 'prod';				
+			$expiration = PROSPER_CACHE_PRODS;
 		}		
 				
 		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/' . $urltype;
@@ -1150,7 +1159,7 @@ class ProsperSearchController
 		}
 		else
 		{
-			$returnUrl = $matchingUrl . '/query/' . get_query_var('keyword');
+			$returnUrl = $matchingUrl . '/query/' . rawurlencode(get_query_var('keyword'));
 		}
 
 		/*
@@ -1166,7 +1175,7 @@ class ProsperSearchController
 		$settings = array_filter($settings);
 
 		$maincUrl = $this->searchModel->apiCall($settings, $fetch);	
-		$allData = $this->searchModel->singleCurlCall($maincUrl);
+		$allData = $this->searchModel->singleCurlCall($maincUrl, $expiration);
 		$mainRecord = $allData['data'];
 		
 		if (empty($mainRecord))
@@ -1272,7 +1281,7 @@ class ProsperSearchController
 			//$sameMerchant = $allData6['data'];		
 		}
 
-		$allData = $this->searchModel->multiCurlCall($curlUrls);
+		$allData = $this->searchModel->multiCurlCall($curlUrls, $expiration);
 
 		$groupedResult = $allData['groupedResult']['data'];
 		$results 	   = $allData['results']['data'];

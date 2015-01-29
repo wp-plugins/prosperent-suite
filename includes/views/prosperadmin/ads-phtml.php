@@ -4,22 +4,11 @@ $prosperAdmin = new Model_Admin();
 
 $prosperAdmin->adminHeader( __( 'ProsperAd Settings', 'prosperent-suite' ), true, 'prosperent_perform_options', 'prosper_performAds' );
 
-echo '<p class="prosper_settingDesc">' . __( 'ProsperAds are content based ads. We build out a list of phrases that relates to your content. We then split test those phrases on a page by page basis to determine the best performing phrase. So over time you end up showing the most relevant phrase on each page that displays our ads.
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperAds are content based ads. We build out a list of phrases that relates to your content. We then split test those phrases on a page by page basis to determine the best performing phrase. So over time you end up showing the most relevant phrase on each page that displays our ads.									  
 											  <br><br>
-											  If you provide a topic for the ad, we will use that to display the best fitting products according to the given topic.  
+											  To use ProsperAds you can either:<br><br>&bull; Add a ProsperAd to any page/post while editing it using the shortcode within the <strong>Gear dropdown</strong> or...<br>&bull; Add ProsperAds as a <strong>widget</strong>.
 											  
-											  <br><br>
-											  You can change the widget sizes and topic inside the widget settings when you move it to your sidebar or footer. Each ProsperAd unit will accept up to 5 comma seperated topics, 
-											  including any tags or the page title if you choose to use those.
-											  
-											  <br><br>
-											  If you use tags as a topic, and want to make sure some more common tags aren\'t being used as a topic you can remove those below by putting the tag into the <strong>Common Tags</strong>
-											  box.
-											  
-											  <br><br>
-											  Also, there is a button in the page/post editior that will place shortcode for ProsperAds. This allows you to easily place ProsperAds in your content.
-											  
-											  <br><br>To read more about ProsperAds or see them in action, head to 
+											  <br><br>To read more about ProsperAds and see them in action, head to 
 											  <a href="http://wordpress.prosperentdemo.com/performance-ads/">WordPress Prosperent Demo: ProsperAds</a>', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperAds...', 'prosperent-suite' ) . '</h2>';

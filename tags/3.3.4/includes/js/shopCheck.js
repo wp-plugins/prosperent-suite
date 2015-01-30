@@ -1,0 +1,1 @@
+jQuery(function(){jQuery(".shopCheck").submit(function(){window.location.href="http://shophounds.com/please-login/";return!1});jQuery(".shopCheck").click(function(){window.location.href="http://shophounds.com/please-login/";return!1})});

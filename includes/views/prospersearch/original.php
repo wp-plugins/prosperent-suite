@@ -1,3 +1,4 @@
+<script type="text/javascript">/*<![CDATA[*/function d(g){var f=document.getElementById(g);"none"==f.style.display&&(f.style.display="")}function b(g){var f=document.getElementById(g);"inline-block"==f.style.display&&(f.style.display="none")}/*]]>*/</script>
 <div class="prosper_searchform" >
     <form class="searchform" method="POST" action="" rel="nolink">
         <input class="prosper_field" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" id="s" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : 'Search Products'; ?>">
@@ -57,7 +58,7 @@ if (is_ssl())
                 {
                     echo trim(substr($mainRecord[0]['description'], 0, 200));					
 					?>
-					<span id="moreDesc" style="display:inline-block;">... <a style="cursor:pointer;" onclick="showFullDesc('fullDesc'); hideMoreDesc('moreDesc');">more</a></span><span id="fullDesc" style="display:none;-moz-hyphens:manual;font-style:normal;"><?php echo trim(substr($mainRecord[0]['description'], 200)); ?></span>
+					<span id="moreDesc" style="display:inline-block;">... <a style="cursor:pointer;" onclick="d('fullDesc'); b('moreDesc');">more</a></span><span id="fullDesc" style="display:none;-moz-hyphens:manual;font-style:normal;"><?php echo trim(substr($mainRecord[0]['description'], 200)); ?></span>
 					<?php
                 }
                 else

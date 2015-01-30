@@ -1,14 +1,4 @@
-<script type="text/javascript">
-function deleteMyParent(el)
-{
-	var linkCarrier = document.getElementById("linkCarrier");
-    window.setTimeout(function() {
-        linkCarrier.removeChild(el);
-    }, 50);
-
-    return false;
-}
-</script>
+<script type="text/javascript">function deleteMyParent(a){var b=document.getElementById("linkCarrier");window.setTimeout(function(){b.removeChild(a)},50);return!1};</script>
 
 <?php
 require_once(PROSPER_MODEL . '/Admin.php');

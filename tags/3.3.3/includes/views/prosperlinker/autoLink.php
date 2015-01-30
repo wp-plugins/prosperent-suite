@@ -41,11 +41,11 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="prodmerchant" name="prodm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
 						<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
 						<p><label>Country:</label><select tabindex="4" id="country" name="country" onChange="showValues();"><option value="US" selected="selected">US</option><option value="UK">UK</option><option value="CA">Canada</option></select><a href="#" class="tooltip"><span>Choose a country to choose the catalog to pull products from.</span></a></p>
-						<p><label>Price Range:</label><input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();"/>&nbsp;&nbsp;&nbsp;<input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter a price range.</span></a></p>														
-						<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
+						<p><label>Price Range:</label><input class="prosper_textinputsmall" style="width:40px;" tabindex="5" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();"/>&nbsp;-&nbsp;<input class="prosper_textinputsmall" style="width:40px;" tabindex="6" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter a price range.</span></a></p>														
+						<p><label class="longLabel">Sale Items Only:</label><input tabindex="7" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
 						<table style="font-size:13px;">
 							<tr>
-								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" name="prodgoTo" id="prodGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="8" type="radio" name="prodgoTo" id="prodGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="prodGoTo" name="prodgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
@@ -66,7 +66,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="coupmerchant" name="coupm" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>																											
 						<table style="font-size:13px;">
 							<tr>
-								<td><label>Go To:</label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="coupGoTo" name="coupgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label>Go To:</label></td><td>Merchant Page</td><td><input tabindex="3" type="radio" id="coupGoTo" name="coupgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="coupGoTo" name="coupgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
@@ -83,14 +83,14 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 					<fieldset style="font-size:14px;">
 						<legend>Local Deals Linker</legend>					
 						<input type="hidden" name="localfetch" id="localfetch" value="fetchLocal"/>								
-						<p><label>State:</label><input class="prosperTextSC" tabindex="3" type="text" id="state" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
-						<p><label>City:</label><input class="prosperTextSC" tabindex="3" type="text" id="city" name="city"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
+						<p><label>State:</label><input class="prosperTextSC" tabindex="1" type="text" id="state" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
+						<p><label>City:</label><input class="prosperTextSC" tabindex="2" type="text" id="city" name="city"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
 						<p><label>ZipCode:</label><input class="prosperTextSC" tabindex="3" type="text" id="zipcode" name="zip"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>                    
-						<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="localq" id="localquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>									
-						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="localmerchant" name="localm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>								
+						<p><label>Query:</label><input class="prosperTextSC" tabindex="4" type="text" name="localq" id="localquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>									
+						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="5" type="text" id="localmerchant" name="localm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>								
 						<table style="font-size:13px;">
 							<tr>
-								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="localGoTo" name="localgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="6" type="radio" id="localGoTo" name="localgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
 								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="localGoTo" name="prosperGoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
@@ -107,13 +107,13 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 					<fieldset style="font-size:14px;">
 						<legend>Merchant Linker</legend>					
 						<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>												
-						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name or merchantId you want to use, if they allow deepLinking (Linking straight to their main site)<strong>Use only one name or ID</strong>.</span></a></p>								
+						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="1" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name or merchantId you want to use, if they allow deepLinking (Linking straight to their main site)<strong>Use only one name or ID</strong>.</span></a></p>								
 						<table style="font-size:13px;">
 							<tr>
 								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="merchantGoTo" name="merchantGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>					
-								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="merchantGoTo" name="merchantGoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input tabindex="3" type="radio" id="merchantGoTo" name="merchantGoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
 							</tr>
 						</table>						
 						<input type="hidden" id="merchantid" name="merchantid"/>							

@@ -42,7 +42,7 @@ class ProsperAdminController
 		add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
 		add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
-		add_submenu_page('prosper_general', __( 'Themes', 'prosperent-suite' ), __( 'Themes', 'prosperent-suite' ), 'manage_options', 'prosper_themes', array( $this, 'themesCssPage' ) );
+		add_submenu_page('prosper_general', __( 'ProsperThemes', 'prosperent-suite' ), __( 'ProsperThemes', 'prosperent-suite' ), 'manage_options', 'prosper_themes', array( $this, 'themesCssPage' ) );
 		
 		global $submenu;
 		if (isset($submenu['prosper_general']))

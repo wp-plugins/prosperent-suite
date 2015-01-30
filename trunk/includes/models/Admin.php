@@ -583,7 +583,7 @@ class Model_Admin extends Model_Base
 		if ('General Settings' == $title) : ?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1></td></tr></table><div style="clear:both"></div>';?>
 			<h1 id="prosper-title"><?php echo $title; ?></h1>
-		<?php elseif ('Advanced Settings' == $title || 'Themes' == $title || 'MultiSite Settings' == $title ): ?>
+		<?php elseif ('Advanced Settings' == $title || 'ProsperThemes' == $title || 'MultiSite Settings' == $title ): ?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
 		 else :?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';

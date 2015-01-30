@@ -1,4 +1,4 @@
-<script type="text/javascript">window.onload=jQuery(function(){function toggle_visibility(e){var l=document.getElementById(e);l&&"none"==l.style.display&&(l.style.display="block")}function toggle_hidden(e){var l=document.getElementById(e);l&&"block"==l.style.display&&(l.style.display="none")}function showFullDesc(e){var l=document.getElementById(e);"none"==l.style.display&&(l.style.display="")}function hideMoreDesc(e){var l=document.getElementById(e);"inline-block"==l.style.display&&(l.style.display="none")}});</script>
+<script type="text/javascript">function toggle_visibility(e){var l=document.getElementById(e);l&&"none"==l.style.display&&(l.style.display="block")}function toggle_hidden(e){var l=document.getElementById(e);l&&"block"==l.style.display&&(l.style.display="none")}</script>
 <div class="clear"></div>
 <div id="prosperShopMain">
 	<?php if (!$options['noSearchBar']): ?>

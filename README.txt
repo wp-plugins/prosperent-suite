@@ -64,12 +64,13 @@ Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 *Congratulations*, you now have access to Prosperent tools on your WordPress blog, available with many options to customize each.
 Log in to **[Prosperent](http://prosperent.com)** every so often to check your stats.
 
-**ProsperShop** is a full fledged shop with millions of products from over 4500 merchants. This is created automatically when you activate the plugin. 
-**ProsperInsert** allows you to place products on pages and posts using the Gear icon dropdown when editing a page or post. It can also be placed in widgets.
-**Auto-Linker** is done either in the settings or on a page or post using the shortcode generator in the Gear icon dropdown. You can turn words or phrases into affiliate links.
-**ProsperLinks** is completely automated, once turned on (it is on by default), the plugin will begin affiliating links or re-affiliating links to better converting, high commission merchants.
-**ContentInserter** automatically places products within all posts and pages on your blog.
-**ProsperAds** are ads that you can either place on individual pages using the shortcode which is created from the Gear icon dropdown.
+= Features: About and How to Use =
+* **ProsperShop** is a full fledged shop with millions of products from over 4500 merchants. This is created automatically when you activate the plugin. 
+* **ProsperInsert** allows you to place products on pages and posts using the Gear icon dropdown when editing a page or post. It can also be placed in widgets.
+* **Auto-Linker** is done either in the settings or on a page or post using the shortcode generator in the Gear icon dropdown. You can turn words or phrases into affiliate links.
+* **ProsperLinks** is completely automated, once turned on (it is on by default), the plugin will begin affiliating links or re-affiliating links to better converting, high commission merchants.
+* **ContentInserter** automatically places products within all posts and pages on your blog.
+* **ProsperAds** are ads that you can either place on individual pages using the shortcode which is created from the Gear icon dropdown.
 
 = Additional Notes for Installation =
 

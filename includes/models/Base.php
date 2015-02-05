@@ -604,7 +604,7 @@ abstract class Model_Base
 
 			// Check for errors
 			if (count($response['errors']))
-			{
+			{return;
 				throw new Exception(implode('; ', $response['errors']));
 			}
 

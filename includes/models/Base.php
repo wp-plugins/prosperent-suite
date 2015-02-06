@@ -71,11 +71,12 @@ abstract class Model_Base
 					{
 						wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), $this->_version);
 						wp_enqueue_script( 'loginCheck' );	
-					}
-					wp_enqueue_script( 'ShopHoundsTheme', '', array('jquery', 'jquery-ui-dialog', 'json2', 'jquery-ui-core'), $this->_version, 1 );
-				}
+					}					
 				
-				//require_once(PROSPER_PATH . 'ProsperentApi.php');
+					wp_register_script('Beta', '', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
+					wp_enqueue_script( 'Beta' );	
+					wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
+				}
 
 				if (isset($this->_options['Enable_PA']))
 				{								
@@ -604,7 +605,8 @@ abstract class Model_Base
 
 			// Check for errors
 			if (count($response['errors']))
-			{return;
+			{
+				return array();
 				throw new Exception(implode('; ', $response['errors']));
 			}
 

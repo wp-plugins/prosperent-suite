@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 3.3.4
+Version: 3.3.5
 Author: Prosperent Brandon
 Author URI: http://prosperent.com
 Plugin URI: http://community.prosperent.com/forumdisplay.php?35-Wordpress-Plugin-Suite
@@ -62,7 +62,7 @@ if (!defined('PROSPER_CSS'))
 if (!defined('PROSPER_THEME'))
 	define('PROSPER_THEME', WP_CONTENT_DIR . '/prosperent-themes');
 
-//error_reporting(0);   
+error_reporting(0);   
 
 require_once(PROSPER_INCLUDE . '/ProsperIndexController.php');
 

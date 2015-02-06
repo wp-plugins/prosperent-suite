@@ -24,10 +24,7 @@ class ProsperSearchController
 
 		add_shortcode('prosper_store', array($this, 'storecode'));
 		add_shortcode('prosper_search', array($this->searchModel, 'searchShortcode'));
-		if (get_query_var('cid'))
-		{		
-			add_action('wp_head', array($this->searchModel, 'ogMeta'));
-		}
+		add_action('wp_head', array($this->searchModel, 'ogMeta'));
 		add_filter('wp_title', array($this->searchModel, 'prosperTitle'), 20, 3);
 		
 		if (is_admin())
@@ -1154,6 +1151,7 @@ class ProsperSearchController
 		}		
 				
 		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/' . $urltype;
+		
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
 		if (preg_match($match, $_SERVER['HTTP_REFERER']))
 		{

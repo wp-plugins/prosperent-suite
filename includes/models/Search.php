@@ -358,10 +358,8 @@ class Model_Search extends Model_Base
 			}
 			
 			if ($this->_options['Set_Theme'] == 'SingleFile')
-			{				
-				wp_register_script('Beta', '', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
-				wp_enqueue_script( 'Beta' );	
-				wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
+			{
+				wp_enqueue_script( 'Beta', '', array('jquery', 'jquery-ui-dialog', 'json2', 'jquery-ui-core') );	
 			}
 		}
 		
@@ -500,7 +498,7 @@ class Model_Search extends Model_Base
 	
 	public function sliderJs()
 	{
-		wp_register_script( 'rangeSlider', PROSPER_JS . '/prosperSlider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version, 1);
+		wp_register_script( 'rangeSlider', PROSPER_JS . '/prosperSlider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version,1);
 		wp_enqueue_script( 'rangeSlider' );	
 		
 		wp_register_style('jqueryUIcss', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.min.css');
@@ -611,13 +609,13 @@ class Model_Search extends Model_Base
 			'limit' => 1,
 			$filter => get_query_var('cid')
 		);
-								
+				
 		$curlUrl = $this->apiCall($settings, $fetch);
 		$allData = $this->singleCurlCall($curlUrl, $expiration);
 		$record = $allData['data'];
 
 		$page = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-		if (is_page($page) && $record['data'])
+		if (is_page($page) && get_query_var('cid') && $record['data'])
 		{
 			$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
 			// Open Graph: FaceBook

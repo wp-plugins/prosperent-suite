@@ -108,14 +108,14 @@ class ProsperSearchController
 			}
 
 			$postArray = array(
-				'merchant'  => stripslashes($_POST['merchant']),
 				'type'   	=> $_POST['type'],
 				'query' 	=> $_POST['q'],
 				'sort' 	 	=> $_POST['sort'],
 				'celebrity' => $_POST['celebrity'],
 				'state'  	=> $state,
 				'dR' 	 	=> ($_POST['priceSliderMin'] || $_POST['priceSliderMax'] ? str_replace('$', '' , $_POST['priceSliderMin'] . ',' . $_POST['priceSliderMax']) : ''),
-				'pR' 	 	=> ($_POST['percentSliderMin'] || $_POST['percentSliderMax'] ? str_replace('%', '' , $_POST['percentSliderMin'] . ',' . $_POST['percentSliderMax']) :'')
+				'pR' 	 	=> ($_POST['percentSliderMin'] || $_POST['percentSliderMax'] ? str_replace('%', '' , $_POST['percentSliderMin'] . ',' . $_POST['percentSliderMax']) :''),
+				'merchant'  => stripslashes($_POST['merchant'])
 			);
 
 			if ($postArray['query'])

@@ -4,14 +4,14 @@ class ProductInsertWidget extends WP_Widget
     public function __construct()
     {
 	    parent::__construct(
-			'prosperProductInsert', 
-			'Product Insert', 
+			'prosperproductinsert', 
+			'ProsperInsert', 
 			array('classname' => 'productInsert_widget', 'description' => __( "Display products using a query, merchant or brand."))
 		);
-    }
+    }	
 
     public function widget( $args, $instance )
-    {
+    {	
 		$allOptions = array('prosperSuite', 'prosper_productSearch', 'prosper_advanced');
 		$options = array();
 		foreach ($allOptions as $opt)
@@ -171,6 +171,14 @@ class ProductInsertWidget extends WP_Widget
 
     public function update( $new_instance, $old_instance )
     {
+		if (is_active_widget(false, false, $this->id_base, true) )
+		{
+			require_once(PROSPER_MODEL . '/Admin.php');
+			$this->adminModel = new Model_Admin();
+		
+			$this->adminModel->_settingsHistory();					
+		}
+	
         $new_instance = (array) $new_instance;
         $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'query' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'priceRangea' => '', 'priceRangeb' => '', 'onSale' => '', 'imageSize' => 125, 'numProd' => 5, 'goToMerch' => '', 'useTitle' => '', 'coupons' => ''));
         $instance['title'] = strip_tags($new_instance['title']);

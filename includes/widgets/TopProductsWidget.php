@@ -11,7 +11,7 @@ class TopProductsWidget extends WP_Widget
     }
 
     public function widget( $args, $instance )
-    {
+    {		
 		$allOptions = array('prosperSuite', 'prosper_productSearch', 'prosper_advanced');
 		$options = array();
 		foreach ($allOptions as $opt)
@@ -136,7 +136,7 @@ class TopProductsWidget extends WP_Widget
 				}
 				
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . $record['price'] . '</div>';
+				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2) . '</div>';
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 				$cid 	   = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
 				?>
@@ -181,7 +181,7 @@ class TopProductsWidget extends WP_Widget
 										<?php echo $keyword; ?>
 									</a>
 								</div>     
-								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo number_format($price); } ?>												
+								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
 							</div>
 							
 							<div class="prosperVisit">					
@@ -238,6 +238,14 @@ class TopProductsWidget extends WP_Widget
 
     public function update( $new_instance, $old_instance )
     {
+		if (is_active_widget(false, false, $this->id_base, true) )
+		{
+			require_once(PROSPER_MODEL . '/Admin.php');
+			$this->adminModel = new Model_Admin();
+		
+			$this->adminModel->_settingsHistory('activated', array('trendsWidget' => 1));					
+		}	
+		
         $new_instance = (array) $new_instance;
         $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => '', 'goToMerch' => '', 'useTitle' => '', 'showImages' => '', 'imageSize' => 125));
         $instance['title'] = strip_tags($new_instance['title']);

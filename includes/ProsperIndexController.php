@@ -8,7 +8,7 @@
 class ProsperIndexController
 {	
     public function __construct()
-    {		
+    {			
 		require_once(PROSPER_MODEL . '/Activate.php');
 		$prosperActivate = new Model_Activate();
 		
@@ -32,7 +32,7 @@ class ProsperIndexController
 			{
 				add_action( 'init', array($prosperActivate, 'prosperReroutes' ));
 			}
-		}		
+		}	
 	}
 	
 	public function checkToFix()

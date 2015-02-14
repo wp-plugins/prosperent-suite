@@ -16,7 +16,9 @@ class Model_Admin extends Model_Base
 	 * @var array $adminPages Array of admin pages that the plugin uses.
 	 */
 	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
-		
+	
+	public $_options;
+			
 	public function init()
 	{
 		if ( isset( $_GET['add'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_add_setting' ) && current_user_can( 'manage_options' ) ) 
@@ -49,7 +51,7 @@ class Model_Admin extends Model_Base
 		if ( isset( $_GET['cacheCleared'] ))
 		{
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
-		}*/
+		}*/			
     }	
 	
 	public function addLinks()
@@ -155,7 +157,88 @@ class Model_Admin extends Model_Base
 			register_setting( 'prosperent_multisite_options', 'prosper_multisite' );
 		}
 	}
+	
+	public function _settingsHistory($status = 'activated', $extraVars = array())
+	{				
+		if (empty($this->_options))
+		{
+			$options = $this->getOptions();
+		}
+		else
+		{
+			$options = $this->_options;
+		}	
+	
+		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);
+		$loadedExt = array_flip(get_loaded_extensions());			
+		
+		$allVars = array_merge($extraVars, array(
+			'apiKey' 			  => $options['Api_Key'],
+			'httpHost' 			  => $_SERVER['HTTP_HOST'],
+			'phpVersion' 		  => phpversion(),
+			'curlLoaded' 		  => $loadedExt['curl'] ? 1 : 0,
+			'wordpressVersion' 	  => get_bloginfo('version'),
+			'status' 			  => $status,
+			'pluginName' 		  => $pluginInfo['Name'],
+			'pluginVersion' 	  => $pluginInfo['Version'],
+			'privateNetwork'	  => file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') ? 1 : 0,
+			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
+			'prosperShop'		  => $options['Enable_PPS'] ? 1 : 0,
+			'productEndpoint' 	  => $options['Product_Endpoint'] ? 1 : 0,
+			'productCountry' 	  => $options['Country'],
+			'couponEndpoint' 	  => $options['Coupon_Endpoint'] ? 1 : 0,
+			'celebrityEndpoint'   => $options['Celebrity_Endpoint'] ? 1 : 0,
+			'localEndpoint' 	  => $options['Local_Endpoint'] ? 1 : 0,
+			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
+			'sliders' 			  => $options['Enable_Sliders'] ? 1 : 0,
+			'prosperAds' 		  => $options['Enable_PA'] ? 1 : 0,
+			'prosperInsert' 	  => $options['Enable_AC'] ? 1 : 0,
+			'contentInsert' 	  => ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages']) ? 1 : 0,
+			'autoLinker' 		  => $options['Enable_AL'] ? 1 : 0,
+			'linkerAmount'		  => $options['LinkAmount'],
+			'linkAffiliator' 	  => $options['PL_LinkAff'] ? 1 : 0,
+			'linkOptimizer' 	  => $options['PL_LinkOpt'] ? 1 : 0,
+			'relevancyThreshold'  => $options['relThresh'],
+			'baseUrl' 			  => $options['Manual_Base'] ? 1 : 0,
+			'baseUrlText' 		  => $options['Base_URL'],
+			'theme' 			  => $options['Set_Theme'],
+			'shortCodes'  		  => $options['shortCodesAccessed'] ? 1 : 0,
+			'trendsWidget'		  => is_active_widget(false, false, 'prosper_top_products', true) ? 1 : 0,
+			'prosperAdsWidget'    => is_active_widget(false, false, 'performance_ad_sb', true) ? 1 : 0,
+			'prosperInsertWidget' => is_active_widget(false, false, 'prosperproductinsert', true) ? 1 : 0,
+			'searchWidget'		  => is_active_widget(false, false, 'prosperent_store', true) ? 1 : 0,
+			'recentWidget'		  => is_active_widget(false, false, 'prosper_recent_searches', true) ? 1 : 0
+		));
+		
+		$allVars['settingsHash'] = md5(implode(',', $allVars));
 
+		$url = 'http://prosperent.com/morse/wpsettings';
+		$vars = http_build_query($allVars);	
+
+		$curl = curl_init();
+		// Set options
+		curl_setopt_array($curl, array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => $url,
+			CURLOPT_CONNECTTIMEOUT => 30,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_POST => 1,
+			CURLOPT_POSTFIELDS => $vars,
+			CURLOPT_HEADER => 0
+		));
+
+		$response = curl_exec( $curl );
+
+		// Close request
+		curl_close($curl);
+
+		// Check for errors
+		if (count($response['errors']))
+		{
+			return array();
+		}
+	}	
+	
 	function multisiteDefaults() 
 	{
 		$option = get_option( 'prosperSuite' );
@@ -550,13 +633,19 @@ class Model_Admin extends Model_Base
 		?>
 		<div class="wrap">
 		<?php
+		$options = get_option('prosperSuite');
+		
 		if ( ( isset( $_GET['updated'] ) && $_GET['updated'] == 'true' ) || ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == 'true' ) ) {
 			$msg = __( 'Settings updated', 'prosperent-suite' );
 
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
+			
+			if ($options['anonymousData'])
+			{
+				$this->_settingsHistory('activated');
+			}
 		}
-
-		$options = get_option('prosperSuite');
+		
 		if ($options['Api_Key'] && !$options['ProsperFirstTimeOperator'])
 		{
 			echo '<div id="message" style="width:800px;" class="message updated">	

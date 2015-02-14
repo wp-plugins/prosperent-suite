@@ -283,15 +283,15 @@
 								{
 									//we don't do anything
 									?>
-									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
+									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2); ?></span></div>
 									<?php
 								}
 								//otherwise strike-through Price and list the Price_Sale
 								else
 								{
 									?>
-									<div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></span></div>
-									<div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $priceSale?></span></div>
+									<div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2)?></span></div>
+									<div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2)?></span></div>
 									<?php
 								}
 							}
@@ -327,7 +327,7 @@
 				}
 				
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . $record['price'] . '</div>';
+				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2) . '</div>';
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 				$cid 	   = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
 				?>

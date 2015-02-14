@@ -7,6 +7,25 @@ class Prosper_JG_Cache
     {
         $this->dir = $dir;
 		$this->_options = get_option('prosperSuite');
+		
+		// Open the directory  
+		if ($handle = opendir($this->dir))  
+		{ 
+			// Loop through the directory  
+			while (false !== ($file = readdir($handle)))  
+			{   
+				// Check the file we're doing is actually a file  
+				if (is_file($this->dir . '/' . $file))  
+				{ 
+					// Check if the file is older than X days old  
+					if (filemtime($this->dir . '/' . $file) < ( time() - (PROSPER_CACHE_PRODS) ))  
+					{  
+						// Do the deletion  
+						unlink($this->dir . '/' . $file);  
+					}  
+				}  
+			}  
+		}  
     }
 	
     private function _name($key)
@@ -15,7 +34,7 @@ class Prosper_JG_Cache
     }
 	
     public function get($key, $expiration = 3600)
-    {        
+    {       
         if ( !is_dir($this->dir) || !is_writable($this->dir) || !$this->_options['Enable_Caching'])
         {
             return FALSE;
@@ -60,7 +79,7 @@ class Prosper_JG_Cache
     
     public function set($key, $data)
     {                
-        if ( !is_dir($this->dir) || !is_writable($this->dir) || !$this->_options['Enable_Caching'])
+        if ( !is_dir($this->dir) || !is_writable($this->dir) || (!$this->_options['Enable_Caching']))
         {
             return FALSE;
         }
@@ -86,11 +105,10 @@ class Prosper_JG_Cache
         return TRUE;
     }
     
-    
     public function clear($key)
     {
         $cache_path = $this->_name($key);
-        
+        echo $cache_path;
         if (file_exists($cache_path))
         {
             unlink($cache_path);

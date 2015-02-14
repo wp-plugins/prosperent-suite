@@ -35,7 +35,14 @@ if ($options['Enable_Caching'])
 	}
 }
 
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo '<h2 class="prosper_h2">' . __( 'Help Us, Help You', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->checkbox( 'anonymousData', __( 'Send data back to Prosperent', 'prosperent-suite' ));
+echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and understanding how to make the plugin better for everyone and helping with support when needed.", 'prosperent-suite' ) . '</p>';
+
 echo $prosperAdmin->hidden( 'ProsperFirstTimeOperator' );
+echo $prosperAdmin->hidden( 'prosperNewVersion' );
+echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 
 $prosperAdmin->adminFooter();

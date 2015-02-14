@@ -11,7 +11,7 @@ class PerformAdWidget extends WP_Widget
     }
 	
     public function widget( $args, $instance )
-    {
+    {		
 		$options = get_option('prosper_performAds');
 		$extOptions = get_option('prosperSuite');
 
@@ -131,6 +131,14 @@ class PerformAdWidget extends WP_Widget
 
     public function update( $new_instance, $old_instance )
     {
+		if (is_active_widget(false, false, $this->id_base, true) )
+		{
+			require_once(PROSPER_MODEL . '/Admin.php');
+			$this->adminModel = new Model_Admin();
+		
+			$this->adminModel->_settingsHistory();					
+		}		
+		
         $new_instance = (array) $new_instance;
         $new_instance = wp_parse_args((array) $new_instance, array( 'width' => '', 'height' => '', 'topic' => '', 'usetags' => '', 'usetitle' => ''));
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';

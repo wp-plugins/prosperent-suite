@@ -56,6 +56,13 @@ class Model_Linker extends Model_Base
 		$brands    = $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '';
 		$merchants = $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '';
 		
+		if (!$options['shortCodesAccessed'])
+		{
+			$mainOpts = get_option('prosperSuite');
+			$mainOpts['shortCodesAccessed'] = 1;
+			update_option('prosperSuite', $mainOpts);
+		}	
+		
 		// Remove links within links
 		$content = $content ? (preg_match('/<a/i', $content) ? strip_tags($content) : $content) : $query;
 		

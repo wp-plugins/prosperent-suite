@@ -23,7 +23,7 @@ abstract class Model_Base
 		'fetchCoupons'	   => 'http://api.prosperent.com/api/coupon/search?',
 		'fetchLocal'	   => 'http://api.prosperent.com/api/local/search?',
 		'fetchCelebrities' => 'http://api.prosperent.com/api/celebrity?',
-		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'
+		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'		
 	);
 	
 	private $_privateNetEndPoints = array(
@@ -132,12 +132,12 @@ abstract class Model_Base
 	}
 	
 	public function getVersion()
-	{
-		if ( ! function_exists( 'get_plugins' ) )
+	{			
+		if ( ! function_exists( 'get_plugin_data' ) )
 			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-			
-		$pluginFolder = get_plugins('/' . PROSPER_FOLDER);				
-		return $pluginFolder[PROSPER_FILE]['Version'];
+	
+		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);				
+		return $pluginInfo['Version'];
 	}
 
 	public function getFetchEndpoints()
@@ -185,7 +185,7 @@ abstract class Model_Base
 		$pa = get_option('prosper_performAds');
 		$ps = get_option('prosper_productSearch');
 		$pi = get_option('prosper_autoComparer');
-		
+
 		$widgets = array();
 		if (isset($pa['Enable_PA']))
 		{
@@ -420,7 +420,6 @@ abstract class Model_Base
 		delete_option("prosperent_store_page_name");
 		delete_option("prosperent_store_page_id");
 	}
-	
 	
 	public function apiCall ($settings, $fetch, $sid = '')
 	{				

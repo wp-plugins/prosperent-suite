@@ -14,7 +14,7 @@ class ProsperSearchController
      * @package 
      * @subpackage 
      *
-     */
+     */	 
     public function __construct()
     {		
 		require_once(PROSPER_MODEL . '/Search.php');
@@ -417,10 +417,10 @@ class ProsperSearchController
 			$settings = array(
 				'imageSize'	=> $imageSize
 			);
-			
+
 			$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
 			$results   = $allData['data'];	
-			
+
 			$noResults = true;
 			$trend     = 'Trending Products';
 			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
@@ -1153,9 +1153,9 @@ class ProsperSearchController
 			$expiration = PROSPER_CACHE_PRODS;
 		}		
 				
-		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/' . $urltype;
+		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
-		if (preg_match($match, $_SERVER['HTTP_REFERER']))
+		if (preg_match($match, $_SERVER['HTTP_REFERER']) || preg_match('/type\/' . $urltype . '/i', $_SERVER['HTTP_REFERER']))
 		{
 			$returnUrl = $_SERVER['HTTP_REFERER'];
 		}

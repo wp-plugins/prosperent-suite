@@ -23,13 +23,28 @@ class Model_Activate extends Model_Base
 			$this->prosperStoreInstall();
 			$this->prosperReroutes();
 		}
-		$this->prosperOptionActivateAdd();
+		$this->prosperOptionActivateAdd();	
+		
+		$this->settingsPrompt('activated');
 	}
 	
 	public function prosperDeactivate()
 	{		
 		$this->prosperStoreRemove();
-		$this->prosperFlushRules();
+		$this->prosperFlushRules();			
+		$this->settingsPrompt('deactivated');
+	}
+	
+	public function settingsPrompt($status)
+	{
+		$this->_options = $this->getOptions();
+		if ($this->_options['anonymousData'])
+		{
+			require_once(PROSPER_MODEL . '/Admin.php');
+			$this->adminModel = new Model_Admin();
+			
+			$this->adminModel->_settingsHistory($status);
+		}
 	}
 	
 	public function prosperOptionActivateAdd() 
@@ -51,16 +66,26 @@ class Model_Activate extends Model_Base
 	
 	public function prosperDefaultOptions()
 	{
-		if (!is_array(get_option('prosperSuite')))
+		if (!is_array($prosperSuiteOpts = get_option('prosperSuite')))
 		{
 			$opt = array(
-				'Target' => 1
+				'Target' => 1,
+				'anonymousData' => 1,
+				'prosperNewVersion' => 1
 			);	
 			update_option('prosperSuite', $opt);
 		}
+		elseif(!$prosperSuiteOpts['prosperNewVersion'])
+		{
+			$opt = array_merge($prosperSuiteOpts, array(
+				'anonymousData' => 1,
+				'prosperNewVersion' => 1
+			));
+			update_option('prosperSuite', $opt);
+		}
 
-		$productOptions = get_option('prosper_productSearch' );
-		if (!is_array(get_option('prosper_productSearch' )))
+
+		if (!is_array($productOptions = get_option('prosper_productSearch' )))
 		{			
 			$opt = array(
 				'Enable_PPS'       	 => 1,

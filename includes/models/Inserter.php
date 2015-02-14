@@ -112,6 +112,13 @@ class Model_Inserter extends Model_Base
 		
 		$fetch = $pieces['ft'];
 
+		if (!$this->_options['shortCodesAccessed'])
+		{
+			$mainOpts = get_option('prosperSuite');
+			$mainOpts['shortCodesAccessed'] = 1;
+			update_option('prosperSuite', $mainOpts);
+		}	
+		
 		// Remove links within links
 		$content = strip_tags($content);
 

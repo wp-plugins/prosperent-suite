@@ -11,7 +11,7 @@ class ProsperStoreWidget extends WP_Widget
     }
 
     public function widget( $args, $instance )
-    {
+    {	
         $options = get_option('prosper_advanced');
 
         extract($args);
@@ -76,6 +76,14 @@ class ProsperStoreWidget extends WP_Widget
 
     public function update( $new_instance, $old_instance )
     {
+		if (is_active_widget(false, false, $this->id_base, true) )
+		{
+			require_once(PROSPER_MODEL . '/Admin.php');
+			$this->adminModel = new Model_Admin();
+		
+			$this->adminModel->_settingsHistory();					
+		}
+		
         $instance = array();
         $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 		$instance['searchFor'] = ( ! empty( $new_instance['searchFor'] ) ) ? strip_tags( $new_instance['searchFor'] ) : 'prod';

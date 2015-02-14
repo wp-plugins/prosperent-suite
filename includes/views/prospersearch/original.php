@@ -138,7 +138,7 @@ if (is_ssl())
 								
 								echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
 								echo '<td itemprop="seller"><a href="' . $matchingUrl . '/merchant/' . rawurlencode($product['merchant']) . '" rel="nolink"><span>' . $product['merchant'] . '</span></a></td>';
-								echo '<td itemprop="price">' . ($priceSale ? '<span style="color:#bb0628">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</span>' :  ($currency == 'GBP' ? '&pound;' : '$') . $product['price']) . '</td>';
+								echo '<td itemprop="price">' . ($priceSale ? '<span style="color:#bb0628">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</span>' :  ($currency == 'GBP' ? '&pound;' : '$') . number_format($product['price'], 2, '.', ',')) . '</td>';
 								echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
 								echo '<td><div class="shopCheck prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="Visit Store"/></a></div></td>';
 								echo '</tr>';
@@ -152,12 +152,12 @@ if (is_ssl())
 					$priceSale = $mainRecord[0]['priceSale'] ? $mainRecord[0]['priceSale'] : $mainRecord[0]['price_sale'];
 					if(empty($priceSale) || $mainRecord[0]['price'] <= $priceSale)
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . $mainRecord[0]['price'] . '</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($mainRecord[0]['price'], 2) . '</strong></div>';
 					}
 					else
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</strong></div>';
-						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>' . ($currency == 'GBP' ? '&pound;' : '$') . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2, '.', '')) . '!</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</strong></div>';
+						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>' . ($currency == 'GBP' ? '&pound;' : '$') . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2)) . '!</strong></div>';
 					}
 				}
 				?>
@@ -225,7 +225,7 @@ if (count($similar) > 1)
 							</a>
 						</div>
 						<?php if ($price && $type != 'coupon' && $type != 'local'): ?>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
+						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -271,7 +271,7 @@ if (count($sameBrand) > 1)
 								<?php echo $keyword; ?>
 							</a>
 						</div>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>                   
+						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>                   
 					</div>			
 				</div>
 				<div class="prosperVisit">					
@@ -342,10 +342,10 @@ if (count($sameMerchant) > 1)
 							</a>
 						</div>       
 						<?php if ($price && $type != 'coupon' && $type != 'local'): ?>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $price; ?></div>
+						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>
 						<?php endif; ?>					
 					</div>			
-				</div>
+				</div>			
 				
 				<div class="prosperVisit">					
 					<form class="shopCheck" action="<?php echo $merchantProd['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">

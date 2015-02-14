@@ -32,6 +32,13 @@ class Model_Ad extends Model_Base
 		$this->_options = $this->getOptions();
 		extract($this->shortCodeExtract($atts, $this->_shortcode));
 		
+		if (!$this->_options['shortCodesAccessed'])
+		{
+			$mainOpts = get_option('prosperSuite');
+			$mainOpts['shortCodesAccessed'] = 1;
+			update_option('prosperSuite', $mainOpts);
+		}	
+		
 		$fallback = array();
 		if ($utg)
 		{
@@ -112,7 +119,7 @@ class Model_Ad extends Model_Base
 		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
-		}	
+		}		
 		
 		return '<div style="clear:both;"></div><p><div class="prosperent-pa" style="position:relative;height:' . $height . '; width:' . $width . ';" ' . ($sid ? 'pa_sid="' . $sid . '"' : '') . ($fallback ? 'pa_topics="' . $fallback . '"' : '') . '>' . (wp_script_is('loginCheck') ? '<div class="shopCheck" style="cursor:pointer;position:absolute;top:0;left:0;height:' . $height . '; width:' . $width . ';z-index:10;"></div>' : '') . '</div></p><div style="clear:both;"></div>';
 	}

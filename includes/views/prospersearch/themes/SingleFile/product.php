@@ -73,14 +73,14 @@
 		echo '<div class="noResults-padding"></div>';
 	}
 endif;if(!$params['view']||$params['view']==='list'){?>
-<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$record['affiliate_url']=$options['URL_Masking']?$homeUrl.'/store/go/'.rawurlencode(str_replace(array('http://prosperent.com/','/'),array('',',SL,'),$record['affiliate_url'])):$record['affiliate_url'];$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
+<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
 		class="productBlock">
 		<div class="productImage">
 			<a
 				href=<?php echo($options['imageMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 				rel="nolink"><span
 				<?php echo($type==='coupon'?'class="loadCoup"':'class="load"');?>><img
-					src="<?php echo $options['Image_Masking']?$homeUrl.'/img/'.rawurlencode(str_replace(array('https://img1.prosperent.com/images/','http://img1.prosperent.com/images/','/'),array('','',',SL,'),$record['image_url'])):$record['image_url'];?>"
+					src="<?php echo $record['image_url'];?>"
 					title="<?php echo $record['keyword'];?>"
 					alt="<?php echo $record['keyword'];?>" /></span></a>
 		</div>
@@ -118,7 +118,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 					rel="nolink"><span
 					<?php echo $classLoad.($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;margin:0 15px"');?>><img
 						<?php echo($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;"');?>
-						src="<?php echo $options['Image_Masking']?$homeUrl.'/img/'.rawurlencode(str_replace(array('https://img1.prosperent.com/images/','http://img1.prosperent.com/images/','/'),array('','',',SL,'),$record['image_url'])):$record['image_url'];?>"
+						src="<?php echo $record['image_url'];?>"
 						title="<?php echo $record['keyword'];?>"
 						alt="<?php echo $record['keyword'];?>" /></span></a>
 			</div> <?php if($record['promo']){echo '<div class="promo"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">'.$record['promo'].'!</a></span></div>';}elseif($record['expiration_date']||$record['expirationDate']){$expirationDate=$record['expirationDate']?$record['expirationDate']:$record['expiration_date'];$expires=strtotime($expirationDate);$today=strtotime(date("Y-m-d"));$interval=($expires - $today)/(60*60*24);if($interval<=20&&$interval>0){echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">'.$interval.' Day'.($interval>1?'s':'').' Left!</a></span></div>';}elseif($interval<=0){echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">Ends Today!</a></span></div>';}else{echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">Expires Soon!</a></span></div>';}}elseif($type=='coupon'||$type=='local'){echo '<div class="promo">&nbsp;</div>';}?> <div

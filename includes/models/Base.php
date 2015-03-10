@@ -1,5 +1,5 @@
 <?php
-require_once(PROSPER_PATH . 'prosperCache.php');
+require_once(PROSPER_PATH . 'prosperMemcache.php');
 /**
  * Base Abstract Model
  *
@@ -42,8 +42,7 @@ abstract class Model_Base
 		$this->_options = $this->getOptions();
 		$this->_version = $this->getVersion();	
 
-		$loadedExt = array_flip(get_loaded_extensions());
-		if ($loadedExt['curl'])
+		if (extension_loaded('curl'))
 		{
 			if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
 			{ 				
@@ -129,6 +128,9 @@ abstract class Model_Base
 		{
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
 		}
+
+
+		
 	}
 	
 	public function getVersion()
@@ -293,8 +295,33 @@ abstract class Model_Base
 			'sbar'   => 'Search Products', // Search Bar Text
 			'sbu'    => 'Search', // Search Button Text
 			'vst'    => 'Visit Store', // Product Insert Visit Store text
-			'celeb'  => '' // Celebrity Name
+			'celeb'  => '', // Celebrity Name,
+			'noShow' => '' // Don't show the Product Insert on this page/post		
 		), $atts, $shortcode);
+	}
+	
+	public function prosperReroutes()
+	{
+		$this->prosperRewrite();
+		$this->prosperFlushRules();
+	}
+	
+	public function prosperRewrite()
+	{
+		if (empty($this->_options))
+		{
+			$options = $this->getOptions();
+		}
+		else
+		{
+			$options = $this->_options;
+		}	
+		
+		$page     = $options['Base_URL'] ? $options['Base_URL'] . '/' : 'products/';
+		$pageName = $options['Base_URL'] ? 'pagename=' . $options['Base_URL'] : 'pagename=products';
+		
+		add_rewrite_rule('^([^/]+)/([^/]+).cid.([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
+		add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
 	}
 	
 	/**
@@ -319,11 +346,11 @@ abstract class Model_Base
 	{		
 		if (get_bloginfo('version') >= 3.9)
 		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version;
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version .'11';
 		}
 		else
 		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version;
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version .'11';
 		}
 		return $plugin_array;
 	}	
@@ -436,7 +463,7 @@ abstract class Model_Base
 		{
 			$options = $this->_options;
 		}		
-		
+				
 		$sidArray = array();
 		if ($options['prosperSid'] && !$sid)
 		{
@@ -499,9 +526,11 @@ abstract class Model_Base
 		}
 
 		$settings = array_merge($settings, array(
-			'api_key' => $options['Api_Key'],
-			'location' => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-			'referrer' => $_SERVER['HTTP_REFERER']
+			'api_key' 		  => $options['Api_Key'],
+			'location'  	  => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+			'referrer' 		  => $_SERVER['HTTP_REFERER'],
+			'imageMaskDomain' => $options['ImageCname'],
+			'clickMaskDomain' => $options['ClickCname']
 		));	
 
 		// Set the URL
@@ -510,11 +539,11 @@ abstract class Model_Base
 		return $url;
 	}
 	
-	public function multiCurlCall ($urls = array(), $expiration = 3600)
+	public function multiCurlCall ($urls = array(), $expiration = 3600, $settings = array())
 	{	
-		$cache = new Prosper_JG_Cache(PROSPER_CACHE); //Make sure it exists and is writeable
+		$cache = new Prosper_Cache(); 
 
-		$result = $cache->get(md5(implode(',',$urls)), $expiration);
+		$result = $cache->get(md5(implode(',',$settings)));
 
 		if ($result === FALSE)
 		{
@@ -568,18 +597,18 @@ abstract class Model_Base
 			curl_multi_close($mh);
 		
 		
-			$cache->set(md5(implode(',',$urls)), $result);
+			$cache->set(md5(implode(',',$settings)), $result, $expiration);
 		}
 		
 		return $result;
 	}
 	
 	
-	public function singleCurlCall ($url = '', $expiration = 3600)
+	public function singleCurlCall ($url = '', $expiration = 3600, $settings)
 	{	
-		$cache = new Prosper_JG_Cache(PROSPER_CACHE); //Make sure it exists and is writeable
+		$cache = new Prosper_Cache();
 
-		$response = $cache->get($url, $expiration);
+		$response = $cache->get(md5(implode(',',$settings)));
 
 		if ($response === FALSE)
 		{
@@ -614,7 +643,7 @@ abstract class Model_Base
 				$settings = array_merge($settings, $this->apiCaching($lifetime));	
 			}*/		
 			
-			$cache->set($url, $response);
+			$cache->set(md5(implode(',',$settings)), $response, $expiration);
 		}
 		return $response;
 		//return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
@@ -726,9 +755,9 @@ abstract class Model_Base
 	{
 		$url = $this->_endPoints['fetchTrends'] . http_build_query ($settings);
 
-		$cache = new Prosper_JG_Cache(PROSPER_CACHE); //Make sure it exists and is writeable
+		$cache = new Prosper_Cache(); 
 
-		$response = $cache->get($url);
+		$response = $cache->get(md5(implode(',',$settings)));
 
 		if ($response === FALSE)
 		{
@@ -772,7 +801,7 @@ abstract class Model_Base
 				}	 
 			}
 		}					
-			$cache->set($url, $response);
+			$cache->set(md5(implode(',',$settings)), $response, 3600);
 		}
 		
 		return $response;

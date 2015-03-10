@@ -12,13 +12,27 @@ echo '<h2 class="prosper_h2">' . __( 'Delete Options on Uninstall', 'prosperent-
 echo $prosperAdmin->checkbox( 'Option_Delete', __( 'Delete Options on Plugin Uninstall', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "<strong>Checking this will delete options on Uninstall. On reinstallation, some options will be added automatically.</strong>", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'URL Masking', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'URL_Masking', __( 'Affiliate URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the  affiliate urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause redirection issue with some active plugins.</span></a>' );
+echo '<h2 class="prosper_h2">' . __( 'Memcache', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'MemcacheIP', __( 'Memcache IP', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Enter your Memcache IP if it differs from the default of 127.0.0.1</span></a>');
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'MemcachePort', __( 'Memcache Port', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Enter your Memcache Port if it differs from the default of 11211</span></a>');
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo '<h2 class="prosper_h2">' . __( 'CNAME Masking', 'prosperent-suite' ) . '</h2>';
+echo '<p class="prosper_settingDescb" style="font-size:15px;">' . __( 'CNAMES will need to be added to your Server\'s DNS Settings first. This <a href="http://community.prosperent.com/showthread.php?2442-Image-url-s-and-CNAME-masking">post</a> shoes how to set up a CNAME.<br><br>DO NOT forget the http:// or https://', 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->textinput( 'ImageCname', __( 'Image CNAME', 'prosperent-suite' ), '');
+echo '<p class="prosper_desc">' . __( "Adding an Image CNAME will make all the images point to that domain.", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'ClickCname', __( 'Click CNAME', 'prosperent-suite' ), '');
+echo '<p class="prosper_descb">' . __( "Adding a click CNAME will make all the click URLs point to that domain.", 'prosperent-suite' ) . '</p>';
+
+/*echo $prosperAdmin->checkbox( 'URL_Masking', __( 'Affiliate URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the  affiliate urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause redirection issue with some active plugins.</span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Masks the image urls, they will now match your website\'s URL. Test before you fully commit to this. It may cause images to load slowly.</span></a>' );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
-
+*/
 echo '<h2 class="prosper_h2">' . __( 'SID Tracking', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->multiCheckbox( 'prosperSid',  array( 'blogname' => 'Blog Name', 'interface' => 'Interface', 'query' => 'Query/Topic', 'page' => 'Page', 'pageNumber' => 'Page Number', 'widgetTitle' => 'Widget Title', 'widgetName' => 'Widget Name' ), 'Select what you\'d like to be included in the SID ', '', '<a href="#" class="prosper_tooltip"><span>Choose a SID Tracking for your blog.<br><strong>Blog Name:</strong> Your Blog\'s Name<br><strong>Interface:</strong> Interface that the click/commission came from (api, pa, pl, pi, al).<br><strong>Query/Topic:</strong> Query or Topic (pa) that the click originated from<br><strong>Page:</strong> What page the click came from<br><strong>Page Number:</strong> If click came from Shop, which page the user was on<br><br>Defaults to <strong>blogname_interface</strong>.</span></a>' );
 echo '<p>';

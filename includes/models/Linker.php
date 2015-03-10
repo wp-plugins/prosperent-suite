@@ -175,7 +175,7 @@ class Model_Linker extends Model_Base
 			}
 
 			$url = $this->apiCall($settings, $fetch);
-			$allData = $this->singleCurlCall($url, $expiration);
+			$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 			if (!$allData['data'])
 			{
@@ -190,7 +190,7 @@ class Model_Linker extends Model_Base
 					}
 				
 					$url = $this->apiCall($settings, $fetch);
-					$allData = $this->singleCurlCall($url, $expiration);
+					$allData = $this->singleCurlCall($url, $expiration, $settings);
 					
 					if ($allData['data'])
 					{
@@ -387,7 +387,7 @@ class Model_Linker extends Model_Base
 				$settings = array_filter($settings);
 				
 				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url, PROSPER_CACHE_PRODS);
+				$allData = $this->singleCurlCall($url, PROSPER_CACHE_PRODS, $settings);
 
 				$affUrl = $options['URL_Masking'] ? $homeUrl . '/store/go/' . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
 				

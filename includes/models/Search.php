@@ -105,22 +105,6 @@ class Model_Search extends Model_Base
 		return $sendParams;
 	}
 	
-	public function getStoreUrl($storeUrl)
-	{
-		$storeUrl = rawurldecode($storeUrl);
-		$storeUrl = str_replace(',SL,', '/', $storeUrl);
-		header('Location:http://prosperent.com/' . $storeUrl);
-		exit;
-	}
-	
-	public function getImageUrl($prosperImgUrl)
-	{
-		$prosperImgUrl = rawurldecode($prosperImgUrl);
-		$prosperImgUrl = str_replace(',SL,', '/', $prosperImgUrl);
-		header('Location:http://img1.prosperent.com/images/' . $prosperImgUrl);
-		exit;
-	}
-	
 	public function getPostVars($postArray, $data)
 	{
 		$postArray = array_filter($postArray);		
@@ -663,16 +647,7 @@ class Model_Search extends Model_Base
 				
 			update_option('prosper_advanced', $opts);
 
-			$newOptions = get_option('prosper_advanced');
-			$page       = isset($newOptions['Base_URL']) ? $newOptions['Base_URL'] . '/' : 'products/';
-			$pageName   = isset($newOptions['Base_URL']) ? 'pagename=' . $newOptions['Base_URL'] : 'pagename=products';
-			
-			add_rewrite_rule('^([^/]+)/([^/]+)/cid/([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
-			add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
-			add_rewrite_rule('img/([^/]+)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-			add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
-			
-			$this->prosperFlushRules();			
+			$this->prosperReroutes();	
 		}
 	}
 	

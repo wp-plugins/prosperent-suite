@@ -26,6 +26,7 @@ class ProsperAdminController
 		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperAdminCss' ));	
 		add_action( 'init', array( $prosperAdmin, 'init' ), 20 );
 		add_filter( 'plugin_action_links', array( $prosperAdmin, 'addActionLink' ), 10, 2 );
+
 	}
 		
 	/**
@@ -35,9 +36,14 @@ class ProsperAdminController
 	 */
 	public function registerSettingsPage() 
 	{
+		$opts = get_option('prosper_performAds');
+		
 		add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_IMG . '/prosperentWhite.png' );
 		add_submenu_page('prosper_general', __('ProsperShop', 'prosperent-suite' ), __( 'ProsperShop', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
-		add_submenu_page('prosper_general', __( 'ProsperAds', 'prosperent-suite' ), __( 'ProsperAds', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
+		if ($opts['Enable_PA'])
+		{
+			add_submenu_page('prosper_general', __( 'ProsperAds', 'prosperent-suite' ), __( 'ProsperAds', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
+		}
 		add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
 		add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
 		add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
@@ -46,8 +52,7 @@ class ProsperAdminController
 		
 		global $submenu;
 		if (isset($submenu['prosper_general']))
-			$submenu['prosper_general'][0][0] = __('General Settings', 'prosperent-suite' );
-		
+			$submenu['prosper_general'][0][0] = __('General Settings', 'prosperent-suite' );		
 	}	
 		
 	/**

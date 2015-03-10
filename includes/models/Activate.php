@@ -8,21 +8,12 @@ require_once(PROSPER_MODEL . '/Base.php');
 class Model_Activate extends Model_Base
 {
 	protected $_options;
-	
-	protected $_pages = array(
-		'Products' => '[prosper_store][/prosper_store]'
-	);
-	
+		
 	public function prosperActivate()
 	{
 		$this->_options = $this->getOptions();
 		
 		$this->prosperDefaultOptions();		
-		if ($this->_options['Enable_PPS'])
-		{
-			$this->prosperStoreInstall();
-			$this->prosperReroutes();
-		}
 		$this->prosperOptionActivateAdd();	
 		
 		$this->settingsPrompt('activated');
@@ -90,7 +81,7 @@ class Model_Activate extends Model_Base
 			$opt = array(
 				'Enable_PPS'       	 => 1,
 				'Product_Endpoint' 	 => 1,
-				'Country_Code'  	 => 'US',
+				'Country'		  	 => 'US',
 				'Coupon_Endpoint'    => 1,
 				'Celebrity_Endpoint' => 0,
 				'Local_Endpoint'     => 1,
@@ -123,15 +114,6 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_productSearch', $opt );
 		}
 
-		if (!is_array(get_option('prosper_performAds')))
-		{
-			$opt = array(
-				'Enable_PA'   => 1,
-				'Remove_Tags' => ''
-			);		
-			update_option( 'prosper_performAds', $opt );
-		}
-
 		if (!is_array(get_option('prosper_autoComparer')))
 		{
 			$opt = array(
@@ -160,14 +142,22 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_prosperLinks', $opt );
 		}
 		
-		if (!is_array(get_option('prosper_advanced')))
+		if (!is_array($advOpts = get_option('prosper_advanced')))
 		{
 			$opt = array(
 				'Title_Structure' => 0,
-				'Image_Masking'	  => 0,
-				'URL_Masking'	  => 0,
 				'Base_URL'		  => 'products'
 			);			
+			update_option( 'prosper_advanced', $opt );
+		}
+		elseif (!$advOpts['MemcacheIP'] || !$advOpts['MemcachePort'])
+		{
+			$opt = array_merge($advOpts, array(
+				'Image_Masking'	=> 0,
+				'URL_Masking'	=> 0,
+				'MemcacheIP'	=> '127.0.0.1',
+				'MemcachePort'	=> '11211'
+			));
 			update_option( 'prosper_advanced', $opt );
 		}
 		
@@ -180,61 +170,6 @@ class Model_Activate extends Model_Base
 		}
 	}
 	
-	public function prosperReroutes()
-	{
-		$this->prosperRewrite();
-		$this->prosperFlushRules();
-	}
-	
-	public function prosperStoreInstall()
-	{
-		foreach ($this->_pages as $i => $pages)
-		{
-			$pageTitle = $i;
-			$pageName = 'Prosperent Search';
-
-			// the menu entry...
-			delete_option("prosperentStore" . ucfirst($pageTitle) . "Title");
-			add_option("prosperentStore" . ucfirst($pageTitle) . "Title", $pageTitle, '', 'yes');
-			// the slug...
-			delete_option("prosperentStore" . ucfirst($pageName) . "Name");
-			add_option("prosperentStore" . ucfirst($pageName) . "Name", $pageName, '', 'yes');
-			// the id...
-			delete_option("prosperent_store_pageId");
-			add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
-
-			$page = get_page_by_title($pageTitle);
-
-			if (!$page)
-			{
-				// Create post object
-				$proserStore = array(
-					'post_title'     => $pageTitle,
-					'post_content'   => $pages,
-					'post_status'    => 'publish',
-					'post_type'      => 'page',
-					'comment_status' => 'closed',
-					'ping_status'    => 'closed'
-				);
-
-				// Insert the post into the database
-				$pageId = wp_insert_post($proserStore);
-			}
-			else
-			{
-				// the plugin may have been previously active and the page may just be trashed...
-				$pageId = $page->ID;
-
-				//make sure the page is not trashed...
-				$page->post_status = 'publish';
-				$pageId = wp_update_post($page);
-			}
-
-			delete_option('prosperent_store_pageId');
-			add_option('prosperent_store_pageId', $pageId);
-		}
-	}	
-	
 	public function prosperQueryTag()
 	{
 		$GLOBALS['wp']->add_query_var( 'prosperPage' );
@@ -243,22 +178,5 @@ class Model_Activate extends Model_Base
 		$GLOBALS['wp']->add_query_var( 'storeUrl' );
 		$GLOBALS['wp']->add_query_var( 'queryParams' );
 		$GLOBALS['wp']->add_query_var( 'prosperImg' );
-	}
-
-	public function prosperRewrite()
-	{
-		$page     = $this->_options['Base_URL'] ? $this->_options['Base_URL'] . '/' : 'products/';
-		$pageName = $this->_options['Base_URL'] ? 'pagename=' . $this->_options['Base_URL'] : 'pagename=products';
-		
-		add_rewrite_rule('^([^/]+)/([^/]+).cid.([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
-		add_rewrite_rule('store/go/([^/]+)/?', 'index.php?' . $pageName . '&store&go&storeUrl=$matches[1]', 'top');
-		add_rewrite_rule('img/([^/]+)/?', 'index.php?' . $pageName . '&prosperImg=$matches[1]', 'top');
-		add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
-		
-		
-		/*add_rewrite_rule('travel/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-		add_rewrite_rule('coupon/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-		add_rewrite_rule('product/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');
-		add_rewrite_rule('celebrity/([^/]+)/cid/([^/]+)/?', 'index.php?' . $pageName . '&keyword=$matches[1]&cid&cid=$matches[2]', 'top');*/
 	}
 }

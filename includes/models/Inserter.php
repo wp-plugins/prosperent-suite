@@ -13,7 +13,7 @@ class Model_Inserter extends Model_Base
 
 	public function __construct()
 	{
-		$this->_options = $this->getOptions();
+		$this->_options = $this->getOptions();		
 	}
 	
 	public function qTagsInsert()
@@ -26,16 +26,32 @@ class Model_Inserter extends Model_Base
 		$this->qTagsProsper($id, $display, $arg1, $arg2);
 	}
 	
+	public function newQueries($atts, $content = null)
+	{		
+		return;
+	}
+	
 	public function contentInserter($text)
 	{		
 		$newTitle = get_the_title();
 
+		if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs))
+		{
+			preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
+			$allParams = array_combine($results[1], $results[2]);
+	
+			if ($allParams['noShow'])
+			{
+				return trim($text);
+			}
+		}
+		
 		if (preg_match('/\[prosperNewQuery="(.+)"\]/i', $text, $regs))
 		{
 			$newTitle = $regs[1];
 			$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
 		}
-
+		
 		if ($this->_options['prosper_inserter_negTitles'])
 		{
 			if(function_exists('prosper_negatives') === false)
@@ -59,8 +75,8 @@ class Model_Inserter extends Model_Base
 			return trim($text);
 		}
 		
-		$insert = '<p>[compare q="' . $newTitle . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/compare]</p>';
-		
+		$insert = '<p>[compare q="' . ($allParams['q'] ? $allParams['q'] : $newTitle) . '" b="' . $allParams['b'] . '" m="' . $allParams['m'] . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/compare]</p>';
+
 		if ('top' == $this->_options['prosper_inserter'])
 		{
 			$content = $insert . $text;
@@ -227,7 +243,8 @@ class Model_Inserter extends Model_Base
 				'limit'            => $limit,
 				'filterMerchant'   => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',		
 				'filterMerchantId' => $recordId,
-				'interface'		   => 'insert'
+				'interface'		   => 'insert',
+				'imageType'		   => 'original'
 			);
 		}		
 		
@@ -240,7 +257,7 @@ class Model_Inserter extends Model_Base
 		
 		$url = $this->apiCall($settings, $fetch);
 
-		$allData = $this->singleCurlCall($url, $expiration);
+		$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 		if (!$allData['data'])
 		{
@@ -255,7 +272,7 @@ class Model_Inserter extends Model_Base
 				}
 			
 				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url, $expiration);
+				$allData = $this->singleCurlCall($url, $expiration, $settings);
 				
 				if ($allData['data'])
 				{
@@ -265,18 +282,6 @@ class Model_Inserter extends Model_Base
 		}
 		
 		$prodSubmit = home_url('/') . $base;	
-		
-		// CHECK INTO THIS AFTER STORE IS COMPLETE
-		if (!$this->_options['Enable_PPS'])
-		{
-			if ($storeUrl = get_query_var('storeUrl'))
-			{    
-				$storeUrl = rawurldecode($storeUrl);
-				$storeUrl = str_replace(',SL,', '/', $storeUrl);
-				header('Location:http://prosperent.com/' . $storeUrl);
-				exit;
-			}
-		}
 		
 		$results = $allData['data'];
 		

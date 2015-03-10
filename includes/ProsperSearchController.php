@@ -53,16 +53,6 @@ class ProsperSearchController
 		$productPage = $phtml[1];
 
 		define('DONOTCACHEPAGE', true);
-		
-		if (get_query_var('storeUrl'))
-		{    
-			$this->searchModel->getStoreUrl(get_query_var('storeUrl'));	
-		}
-
-		if (get_query_var('prosperImg'))
-		{    
-			$this->searchModel->getImageUrl(get_query_var('prosperImg'));	
-		}
 	
 		$this->searchModel->storeChecker();		
 		$data = $this->searchModel->storeSearch();
@@ -182,7 +172,7 @@ class ProsperSearchController
 		$pickedFacets = array();
 		$curlUrls	  = array();
 		$dollarSlider = 'Price Range';
-		
+
 		if ($params['dR'])
 		{
 			$priceSlider = explode(',', rawurldecode($params['dR']));
@@ -293,8 +283,8 @@ class ProsperSearchController
 			);	
 
 			$settings = array_filter($settings);
-			$settings = array_merge($settings, array('enableFacets' => FALSE));			
-			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);
+			$settings = array_merge($settings, array('enableFacets' => 0));			
+			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);			
 			//$fullDataUrl = $this->searchModel->apiCall($settings, $fetch);
 			//$fullData = $this->searchModel->singleCurlCall($fullDataUrl);
 		}
@@ -386,7 +376,7 @@ class ProsperSearchController
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, $fetch);
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
 		
 		if ($everything['brands']['facets'] || $everything['merchants']['facets'])
 		{			
@@ -573,7 +563,7 @@ class ProsperSearchController
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, $fetch);	
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS, $settings);
 		
 		if ($everything['merchants']['facets'])
 		{			
@@ -805,7 +795,7 @@ class ProsperSearchController
 			$curlUrls['city'] = $this->searchModel->apiCall($cityFacetSettings, $fetch);	
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_COUPS, $settings);
 
 		if ($everything['zip']['facets'] || $everything['city']['facets'])
 		{			
@@ -1042,7 +1032,7 @@ class ProsperSearchController
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, 'fetchProducts');
 		}
 
-		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS);
+		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
 		
 		if ($everything['merchants']['facets'])
 		{			
@@ -1177,7 +1167,7 @@ class ProsperSearchController
 		$settings = array_filter($settings);
 
 		$maincUrl = $this->searchModel->apiCall($settings, $fetch);	
-		$allData = $this->searchModel->singleCurlCall($maincUrl, $expiration);
+		$allData = $this->searchModel->singleCurlCall($maincUrl, $expiration, $settings);
 		$mainRecord = $allData['data'];
 		
 		if (empty($mainRecord))
@@ -1283,7 +1273,7 @@ class ProsperSearchController
 			//$sameMerchant = $allData6['data'];		
 		}
 
-		$allData = $this->searchModel->multiCurlCall($curlUrls, $expiration);
+		$allData = $this->searchModel->multiCurlCall($curlUrls, $expiration, $settings);
 
 		$groupedResult = $allData['groupedResult']['data'];
 		$results 	   = $allData['results']['data'];

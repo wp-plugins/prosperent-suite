@@ -2,7 +2,7 @@
 error_reporting(0);   
 $params = array_filter($_GET); 
 $type = $params['type'];
-
+print_r($params);
 $endPoints = array(
 	'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
 	'fetchProducts'	   => 'http://api.prosperent.com/api/search?',

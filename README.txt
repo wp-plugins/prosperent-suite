@@ -1,20 +1,19 @@
 === Prosperent Suite ===
 Contributors: Prosperent
-Tags: Prosperent, products, search, money, SEO, affiliate, links, ads, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
+Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 4.1
-Stable tag: 3.3.9
+Tested up to: 4.1.1
+Stable tag: 3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Make Money on Your Blog with a Full Shop, Ads, and Direct-to-Merchant Links from Prosperent.
+Make Money on Your Blog with a Full Shop, Product Inserts, and Direct-to-Merchant Links from Prosperent.
 
 == Description ==
 
 This plugin contains the following tools from Prosperent:
 
 * **ProsperShop-** Create a shop on your blog filled with products relevant to your site content.
-* **ProsperAds-** Scans your content and creates relevant, dynamic, and responsive ad units to place wherever you want on your site.
 * **Auto-Linker-** Convert any keyword or phrase into an affiliated link to the highest converting, most relevant product.
 * **ProsperInsert-** Insert relevant products and deals within your pages and posts..
 * **ContentInsert-** Automatically places products within all posts and pages on your blog.
@@ -42,7 +41,6 @@ To view a tutorials and a demo of the Prosperent Suite, visit [Prosperent Demo](
 3. The ProsperInsert in a sidebar widget
 4. The Auto-Linker showing an image and phrase linked to the merchant
 5. ProsperLinks has turned the merchant links on the logos into affiliate URLs
-6. ProsperAds running
 
 == Installation ==
 
@@ -57,7 +55,7 @@ Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 4.	Go to the **Prosperent Settings** under Settings and edit those that you'd like. 
 5.  Go to General Settings to input your API Key.
 6.  Go to *Appearance* and then *Widgets* in your admin menu.
-    * There are widgets available for the Search Bar for the Product Search, Top Product widget and also two that allow you to place Performance Ads in your sidebar and/or footer.
+    * There are widgets available for the Search Bar for the Product Search, Top Product widget and Recent Searches.
     * *If you have Accessibility Mode activated it will show 'Add' next to the widget, click 'Add' instead of trying to drag it.*
 7.  When making a page/post all the short code on in the Prosperent Gear Icon.
 
@@ -70,7 +68,6 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 * **Auto-Linker** is done either in the settings or on a page or post using the shortcode generator in the Gear icon dropdown. You can turn words or phrases into affiliate links.
 * **ProsperLinks** is completely automated, once turned on (it is on by default), the plugin will begin affiliating links or re-affiliating links to better converting, high commission merchants.
 * **ContentInserter** automatically places products within all posts and pages on your blog.
-* **ProsperAds** are ads that you can either place on individual pages using the shortcode which is created from the Gear icon dropdown.
 
 = Additional Notes for Installation =
 
@@ -100,6 +97,12 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.4 = 
+* Changed File Caching to Memcache
+* Add ProsperNewQuery shortcode for ContentInsert
+* ProsperAds has been deprecated
+* ProsperShop Page should be created again on installation
 
 = 3.3.9 = 
 * Help Us Help You, send us anonymous usage data so we can make the plugin better

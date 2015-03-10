@@ -12,6 +12,10 @@ class Model_Admin extends Model_Base
 	 */
 	public $currentOption = 'prosperSuite';
 
+	protected $_pages = array(
+		'Products' => '[prosper_store][/prosper_store]'
+	);	
+	
 	/**
 	 * @var array $adminPages Array of admin pages that the plugin uses.
 	 */
@@ -39,19 +43,11 @@ class Model_Admin extends Model_Base
 			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch' ) );
 		}
 		
-		/*if ( isset( $_GET['clearCache'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_clear_cache' ) && current_user_can( 'manage_options' ) ) 
+		$adOpts = get_option('prosper_performAds');
+		if ($_GET['page'] == 'prosper_performAds' && ($adOpts['Enable_PA'] == FALSE || !$adOpts['Enable_PA']) && current_user_can( 'manage_options' ) )
 		{
-			$cacheDir = glob(PROSPER_CACHE . '/*'); 
-
-						//do a shell exec here to clear cache rm rf
-			
-			wp_redirect( admin_url( 'admin.php?page=prosper_general&cacheCleared' ) );
+			$_GET['page'] = 'prosper_general';
 		}
-		
-		if ( isset( $_GET['cacheCleared'] ))
-		{
-			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
-		}*/			
     }	
 	
 	public function addLinks()
@@ -647,14 +643,16 @@ class Model_Admin extends Model_Base
 		}
 		
 		if ($options['Api_Key'] && !$options['ProsperFirstTimeOperator'])
-		{
+		{		
+			$this->prosperStoreInstall();
+			$this->prosperReroutes();
+			
 			echo '<div id="message" style="width:800px;" class="message updated">	
 					<p>
 						<strong style="font-size:14px;">What\'s Next?</strong></br>
 						Now that you have signed up and entered your API Key, the shop has been created for you at <a target="BLANK" href="' . home_url('/') . 'products' . '">Products</a> with a default query of "shoes". You can change that setting and more <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_productSearch') . '">here</a>.</br></br>
 						After that, feel free to have a look at our other tools/features: 
 						<ul style="list-style-type:disc;margin-left:25px;">
-							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_performAds') . '">ProsperAds</a></li>
 							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoComparer') . '">ProsperInsert</a></li>
 							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoLinker') . '">Auto-Linker</a></li>
 							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">ProsperLinks</a></li>
@@ -675,6 +673,7 @@ class Model_Admin extends Model_Base
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
 		endif; ?>
 		
+		<h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>
 		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:auto;padding: 0 20px 0 0;">
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">
@@ -708,4 +707,53 @@ class Model_Admin extends Model_Base
 		</div>
 	<?php
 	}
+	
+	public function prosperStoreInstall()
+	{
+		foreach ($this->_pages as $i => $pages)
+		{
+			$pageTitle = $i;
+			$pageName = 'Prosperent Search';
+
+			// the menu entry...
+			delete_option("prosperentStore" . ucfirst($pageTitle) . "Title");
+			add_option("prosperentStore" . ucfirst($pageTitle) . "Title", $pageTitle, '', 'yes');
+			// the slug...
+			delete_option("prosperentStore" . ucfirst($pageName) . "Name");
+			add_option("prosperentStore" . ucfirst($pageName) . "Name", $pageName, '', 'yes');
+			// the id...
+			delete_option("prosperent_store_pageId");
+			add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
+
+			$page = get_page_by_title($pageTitle);
+
+			if (!$page)
+			{
+				// Create post object
+				$proserStore = array(
+					'post_title'     => $pageTitle,
+					'post_content'   => $pages,
+					'post_status'    => 'publish',
+					'post_type'      => 'page',
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed'
+				);
+
+				// Insert the post into the database
+				$pageId = wp_insert_post($proserStore);
+			}
+			else
+			{
+				// the plugin may have been previously active and the page may just be trashed...
+				$pageId = $page->ID;
+
+				//make sure the page is not trashed...
+				$page->post_status = 'publish';
+				$pageId = wp_update_post($page);
+			}
+
+			delete_option('prosperent_store_pageId');
+			add_option('prosperent_store_pageId', $pageId);
+		}
+	}	
 }

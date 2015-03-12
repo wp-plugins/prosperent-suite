@@ -664,6 +664,14 @@ class Model_Admin extends Model_Base
 			update_option('prosperSuite', $options);
 		}
 
+		if ($options['Enable_Caching'] && !extension_loaded('memcache'))
+		{
+			echo '<div style="width:800px;" class="update-nag">';
+			echo '<span style="font-size:14px; padding-left:10px;">You have caching enabled but <strong>Memcache</strong> is not installed on your server.</span></br>';
+			echo '<span style="font-size:14px; padding-left:10px;">Caching will be skipped.</span></br>'; 
+			echo '</div>';
+		}
+		
 		if ('General Settings' == $title) : ?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1></td></tr></table><div style="clear:both"></div>';?>
 			<h1 id="prosper-title"><?php echo $title; ?></h1>
@@ -707,53 +715,4 @@ class Model_Admin extends Model_Base
 		</div>
 	<?php
 	}
-	
-	public function prosperStoreInstall()
-	{
-		foreach ($this->_pages as $i => $pages)
-		{
-			$pageTitle = $i;
-			$pageName = 'Prosperent Search';
-
-			// the menu entry...
-			delete_option("prosperentStore" . ucfirst($pageTitle) . "Title");
-			add_option("prosperentStore" . ucfirst($pageTitle) . "Title", $pageTitle, '', 'yes');
-			// the slug...
-			delete_option("prosperentStore" . ucfirst($pageName) . "Name");
-			add_option("prosperentStore" . ucfirst($pageName) . "Name", $pageName, '', 'yes');
-			// the id...
-			delete_option("prosperent_store_pageId");
-			add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
-
-			$page = get_page_by_title($pageTitle);
-
-			if (!$page)
-			{
-				// Create post object
-				$proserStore = array(
-					'post_title'     => $pageTitle,
-					'post_content'   => $pages,
-					'post_status'    => 'publish',
-					'post_type'      => 'page',
-					'comment_status' => 'closed',
-					'ping_status'    => 'closed'
-				);
-
-				// Insert the post into the database
-				$pageId = wp_insert_post($proserStore);
-			}
-			else
-			{
-				// the plugin may have been previously active and the page may just be trashed...
-				$pageId = $page->ID;
-
-				//make sure the page is not trashed...
-				$page->post_status = 'publish';
-				$pageId = wp_update_post($page);
-			}
-
-			delete_option('prosperent_store_pageId');
-			add_option('prosperent_store_pageId', $pageId);
-		}
-	}	
 }

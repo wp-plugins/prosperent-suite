@@ -71,35 +71,4 @@ class Prosper_Cache
         $result = @$this->_memcache->set($cache_path,  $data,  $flag, $lifetime);
         return $result;
     }
-
-
-    public function clear($key)
-    {
-        $cache_path = $this->_name($key);
-
-        return $this->_memcache->delete($cache_path, 0);
-    }
-	
-		
-	public function removeAll($dir)
-	{
-		// Open the directory  
-		if ($handle = opendir($dir))  
-		{ 
-			// Loop through the directory  
-			while (false !== ($file = readdir($handle)))  
-			{   
-				// Check the file we're doing is actually a file  
-				if (is_file($dir . '/' . $file))  
-				{ 
-					// Check if the file is older than X days old  
-					if (filemtime($dir . '/' . $file) < ( time() ))  
-					{  
-						// Do the deletion  
-						unlink($dir . '/' . $file);  
-					}  
-				}  
-			}  
-		}  
-	}
 }

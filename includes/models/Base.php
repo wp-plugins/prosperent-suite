@@ -127,10 +127,7 @@ abstract class Model_Base
 		else
 		{
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
-		}
-
-
-		
+		}		
 	}
 	
 	public function getVersion()
@@ -237,7 +234,7 @@ abstract class Model_Base
 	
 	public function prosperNoCurlLoaded()
 	{			
-		echo '<div class="update-nag" style="padding:6px 0;">';
+		echo '<div class="error" style="padding:6px 0;">';
 		echo _e('<span style="font-size:14px; padding-left:10px;"><strong>cURL</strong> is not installed on your server.</span></br>', 'my-text-domain' );
 		echo _e('<span style="font-size:14px; padding-left:10px;">You need cURL to run the Prosperent Suite.</span></br>', 'my-text-domain' ); 
 		echo '</div>';		
@@ -330,6 +327,55 @@ abstract class Model_Base
 	public function prosperFlushRules()
 	{
 		flush_rewrite_rules();
+	}	
+	
+	public function prosperStoreInstall()
+	{
+		foreach ($this->_pages as $i => $pages)
+		{
+			$pageTitle = $i;
+			$pageName = 'Prosperent Search';
+
+			// the menu entry...
+			delete_option("prosperentStore" . ucfirst($pageTitle) . "Title");
+			add_option("prosperentStore" . ucfirst($pageTitle) . "Title", $pageTitle, '', 'yes');
+			// the slug...
+			delete_option("prosperentStore" . ucfirst($pageName) . "Name");
+			add_option("prosperentStore" . ucfirst($pageName) . "Name", $pageName, '', 'yes');
+			// the id...
+			delete_option("prosperent_store_pageId");
+			add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
+
+			$page = get_page_by_title($pageTitle);
+
+			if (!$page)
+			{
+				// Create post object
+				$proserStore = array(
+					'post_title'     => $pageTitle,
+					'post_content'   => $pages,
+					'post_status'    => 'publish',
+					'post_type'      => 'page',
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed'
+				);
+
+				// Insert the post into the database
+				$pageId = wp_insert_post($proserStore);
+			}
+			else
+			{
+				// the plugin may have been previously active and the page may just be trashed...
+				$pageId = $page->ID;
+
+				//make sure the page is not trashed...
+				$page->post_status = 'publish';
+				$pageId = wp_update_post($page);
+			}
+
+			delete_option('prosperent_store_pageId');
+			add_option('prosperent_store_pageId', $pageId);
+		}
 	}	
 	
 	public function prosperCustomAdd()
@@ -462,27 +508,28 @@ abstract class Model_Base
 		else
 		{
 			$options = $this->_options;
-		}		
-				
-		$sidArray = array();
+		}						
+		
 		if ($options['prosperSid'] && !$sid)
 		{
+			$sidArray = array();
 			foreach ($options['prosperSid'] as $sidPiece)
 			{
-				switch ($sidPiece)
+				if ('blogname' === $sidPiece)
 				{
-					case 'blogname':
-						$sidArray[] = get_bloginfo('name');
-						break;
-					case 'interface':
-						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						break;
-					case 'query':
-						$sidArray[] = $settings['query'];
-						break;
-					case 'page':
-						$sidArray[] = get_the_title();
-						break;						
+					$sidArray[] = get_bloginfo('name');
+				}
+				elseif ('interface' === $sidPiece)
+				{
+					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+				}
+				elseif ('query' === $sidPiece)
+				{
+					$sidArray[] = $settings['query'];
+				}
+				elseif ('page' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
 				}
 			}
 		}
@@ -509,29 +556,23 @@ abstract class Model_Base
 			}
 		}
 		
-		if (!empty($sidArray))
+		if ($sidArray)
 		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
 		}
-		
-		if ($sid)
-		{
-			$settings['sid'] = $sid;
-		}
-		
-		if ($options['relThresh'])
-		{
-			$settings['relevancyThreshold'] =  $options['relThresh'];
-		}
 
 		$settings = array_merge($settings, array(
-			'api_key' 		  => $options['Api_Key'],
-			'location'  	  => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-			'referrer' 		  => $_SERVER['HTTP_REFERER'],
-			'imageMaskDomain' => $options['ImageCname'],
-			'clickMaskDomain' => $options['ClickCname']
+			'api_key' 		  	 => $options['Api_Key'],
+			'location'  	  	 => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+			'referrer' 		  	 => $_SERVER['HTTP_REFERER'],
+			'imageMaskDomain' 	 => $options['ImageCname'],
+			'clickMaskDomain' 	 => $options['ClickCname'],
+			'sid'			  	 => $sid,
+			'relevancyThreshold' => $options['relThresh']
 		));	
+
+		$settings = array_filter( $settings);
 
 		// Set the URL
 		$url = $this->_endPoints[$fetch] . http_build_query ($settings);
@@ -539,8 +580,8 @@ abstract class Model_Base
 		return $url;
 	}
 	
-	public function multiCurlCall ($urls = array(), $expiration = 3600, $settings = array())
-	{	
+	public function multiCurlCall ($urls = array(), $expiration = 86400, $settings = array())
+	{		
 		$cache = new Prosper_Cache(); 
 
 		$result = $cache->get(md5(implode(',',$settings)));
@@ -595,20 +636,19 @@ abstract class Model_Base
 
 			// all done
 			curl_multi_close($mh);
-		
-		
+				
 			$cache->set(md5(implode(',',$settings)), $result, $expiration);
 		}
-		
+
 		return $result;
 	}
 	
 	
-	public function singleCurlCall ($url = '', $expiration = 3600, $settings)
+	public function singleCurlCall ($url = '', $expiration = 86400, $settings)
 	{	
 		$cache = new Prosper_Cache();
 
-		$response = $cache->get(md5(implode(',',$settings)));
+		$response = $cache->get(md5(implode(',', $settings)));
 
 		if ($response === FALSE)
 		{
@@ -637,16 +677,11 @@ abstract class Model_Base
 				return array();
 				throw new Exception(implode('; ', $response['errors']));
 			}
-
-			/*if ($options['Enable_Caching'] && file_exists(PROSPER_CACHE) && substr(decoct( fileperms(PROSPER_CACHE) ), 1) >= 0755)
-			{
-				$settings = array_merge($settings, $this->apiCaching($lifetime));	
-			}*/		
 			
-			$cache->set(md5(implode(',',$settings)), $response, $expiration);
+			$cache->set(md5(implode(',', $settings)), $response, $expiration);
 		}
+		
 		return $response;
-		//return array('results' => $response['data'], 'totalAvailable' => $response['totalRecordsAvailable'], 'total' => $response['totalRecordsFound'], 'facets' => $response['facets']);
 	}	
 	
 	public function trendsApiCall ($settings, $fetch, $categories = '', $merchants = '', $brands = '', $sid = '')
@@ -744,7 +779,7 @@ abstract class Model_Base
 				'sid'		   => $sid
 			), $settings);
 
-			$trendsUrl = $this->apiCall($settings, $fetch, $lifetime, $sid);
+			$trendsUrl = $this->apiCall($settings, $fetch, $sid);
 			$results = $this->singleCurlCall($trendsUrl);
 		}
 		
@@ -761,47 +796,47 @@ abstract class Model_Base
 
 		if ($response === FALSE)
 		{
-		$curl = curl_init();
+			$curl = curl_init();
 
-		// Set options
-		curl_setopt_array($curl, array(
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => $url,
-			CURLOPT_CONNECTTIMEOUT => 30,
-			CURLOPT_TIMEOUT => 30
-		));
+			// Set options
+			curl_setopt_array($curl, array(
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => $url,
+				CURLOPT_CONNECTTIMEOUT => 30,
+				CURLOPT_TIMEOUT => 30
+			));
 
-		// Send the request
-		$response = curl_exec($curl);
+			// Send the request
+			$response = curl_exec($curl);
 
-		// Close request
-		curl_close($curl);
+			// Close request
+			curl_close($curl);
 
-		// Convert the json response to an array
-		$response = json_decode($response, true);
+			// Convert the json response to an array
+			$response = json_decode($response, true);
 
-		// Check for errors
-		if (count($response['errors']) || empty($response['facets']['catalogId']))
-		{
-			$count = count($settings);
-			for ($i = 0; $i <= $count; $i++)
+			// Check for errors
+			if (count($response['errors']) || empty($response['facets']['catalogId']))
 			{
-				array_pop($settings);
-
-				if(count($settings) < 5)
+				$count = count($settings);
+				for ($i = 0; $i <= $count; $i++)
 				{
-					return ;
+					array_pop($settings);
+
+					if(count($settings) < 5)
+					{
+						return ;
+					}
+				
+					$response = $this->trendsCurlCall($settings);
+
+					if ($response['facets']['catalogId'])
+					{
+						break;
+					}	 
 				}
-			
-				$response = $this->trendsCurlCall($settings);
-
-				if ($response['facets']['catalogId'])
-				{
-					break;
-				}	 
-			}
-		}					
-			$cache->set(md5(implode(',',$settings)), $response, 3600);
+			}					
+			$cache->set(md5(implode(',',$settings)), $response);
 		}
 		
 		return $response;

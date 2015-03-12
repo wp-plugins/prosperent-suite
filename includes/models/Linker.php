@@ -48,7 +48,6 @@ class Model_Linker extends Model_Base
 		$target    = $options['Target'] ? '_blank' : '_self';
 		$base      = $options['Base_URL'] ? $options['Base_URL'] : 'products';
 		$homeUrl   = home_url('/');	
-		$maskedUrl = home_url('/') . 'store/go/';
 		$storeUrl  = $homeUrl . $base;	
 			
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
@@ -72,7 +71,7 @@ class Model_Linker extends Model_Base
 			$query = $content;
 		}
 		
-		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
+		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage' || $pieces['ft'] == 'fetchMerchant')
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
@@ -95,6 +94,7 @@ class Model_Linker extends Model_Base
 				
 				$settings = array(
 					'interface'		  => 'linker',
+					'enableFullData'  => 'FALSE',
 					'limit'           => 1,
 					'query'           => $query,
 					'filterMerchant'  => $merchants,
@@ -112,11 +112,12 @@ class Model_Linker extends Model_Base
 				$page = 'product';
 				
 				$settings = array(
-					'interface'		   => 'linker',		
+					'interface'		   => 'linker',
+					'enableFullData'   => 'FALSE',		
 					'limit' 		   => 1,
 					'filterMerchantId' => $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '',	
-					'filterMerchant'   => $merchants
-				);				
+					'filterMerchant'   => $pieces['id'] ? '' : $merchants
+				);			
 			}	
 			else
 			{
@@ -130,6 +131,7 @@ class Model_Linker extends Model_Base
 				
 					$settings = array(
 						'interface'		 => 'linker',
+						'enableFullData' => 'FALSE',
 						'limit'          => 1,
 						'query'          => $query,
 						'filterMerchant' => $merchants,
@@ -156,6 +158,7 @@ class Model_Linker extends Model_Base
 					$settings = array(
 						'interface'		  => 'linker',
 						'limit'           => 1,
+						'enableFullData'  => 'FALSE',
 						'filterState'	  => $state ? $state : '',
 						'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
 						'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
@@ -166,10 +169,7 @@ class Model_Linker extends Model_Base
 				}
 			}
 
-			$settings = array_filter($settings);			
-			$settings = array_merge(array('enableFullData' => 0), $settings);
-
-			if (count($settings) < 3)
+			if (count($settings) < 4)
 			{
 				return $content;
 			}
@@ -184,7 +184,7 @@ class Model_Linker extends Model_Base
 				{
 					array_pop($settings);
 
-					if(count($settings) < 3)
+					if(count($settings) < 4)
 					{
 						return $content;
 					}
@@ -207,20 +207,21 @@ class Model_Linker extends Model_Base
 					{
 						foreach ($options['prosperSid'] as $sidPiece)
 						{
-							switch ($sidPiece)
+							if ('blogname' === $sidPiece)
 							{
-								case 'blogname':
-									$sidArray[] = get_bloginfo('name');
-									break;
-								case 'interface':
-									$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-									break;
-								case 'query':
-									$sidArray[] = $settings['query'];
-									break;
-								case 'page':
-									$sidArray[] = get_the_title();
-									break;						
+								$sidArray[] = get_bloginfo('name');
+							}
+							elseif ('interface' === $sidPiece)
+							{
+								$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+							}
+							elseif ('query' === $sidPiece)
+							{
+								$sidArray[] = $settings['query'];
+							}
+							elseif ('page' === $sidPiece)
+							{
+								$sidArray[] = get_the_title();
 							}
 						}
 					}
@@ -247,7 +248,7 @@ class Model_Linker extends Model_Base
 						}
 					}
 					
-					if (!empty($sidArray))
+					if ($sidArray)
 					{
 						$sidArray = array_filter($sidArray);
 						$sid = implode('_', $sidArray);
@@ -258,8 +259,7 @@ class Model_Linker extends Model_Base
 						$allData['data'][0]['domain'] = $allData['data'][0]['domain'] . '%2Fhome%2Findex.jsp';
 					}
 				
-					$partAffUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $allData['data'][0]['domain']);
-					$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $partAffUrl)) : $partAffUrl;
+					$affUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $allData['data'][0]['domain']);
 					$rel = 'nofollow,nolink';
 				}
 				else
@@ -269,7 +269,7 @@ class Model_Linker extends Model_Base
 			}	
 			elseif ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
 			{			
-				$affUrl = $options['URL_Masking'] ? $maskedUrl . rawurlencode(str_replace(array('http://prosperent.com/', '/'), array('', ',SL,'), $allData['data'][0]['affiliate_url'])) : $allData['data'][0]['affiliate_url'];
+				$affUrl = $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
 				$checkClass =  'shopCheck';
 			}
@@ -278,7 +278,7 @@ class Model_Linker extends Model_Base
 				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['data'][0]['keyword'])) . '/cid/' . $allData['data'][0]['catalogId'];
 				$rel = 'nolink';
 			}
-			
+
 			return '<a class="shopCheck" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
 		}
 

@@ -1,31 +1,4 @@
-<?php header('Access-Control-Allow-Origin: *');?>
-<style>
-.custom-combobox {
-	display: inline
-}
-
-.custom-combobox-toggle {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	margin-left: -1px;
-	padding: 0
-}
-
-.custom-combobox-input {
-	margin: 0;
-	padding: 5px 10px
-}
-
-.ui-state-default, .ui-widget-content .ui-state-default,
-	.ui-widget-header .ui-state-default {
-	background: #fafafa !important
-}
-
-.ui-helper-hidden-accessible {
-	display: none
-}
-</style>
+<style>.custom-combobox{display:inline}.custom-combobox-toggle{position:absolute;top:0;bottom:0;margin-left:-1px;padding:0}.custom-combobox-input{margin:0;padding:5px 10px}.ui-state-default,.ui-widget-content .ui-state-default,.ui-widget-header .ui-state-default{background:#fafafa!important}.ui-helper-hidden-accessible{display:none}</style>
 <script>/*<![CDATA[*/jQuery(function(){jQuery.widget("custom.combobox",{_create:function(){this.wrapper=jQuery("<span>").addClass("custom-combobox").attr("style","margin-top:-4px;").insertAfter(this.element);this.element.hide();this._createAutocomplete();this._createShowAllButton()},_createAutocomplete:function(){var a=this.element.children(":selected"),a=a.val()?a.text():"";this.label=jQuery("<label>").appendTo(this.wrapper).attr("style","display:inline;font-weight: bold").text("By Merchant ");this.input=jQuery("<input>").appendTo(this.wrapper).val(a).attr("name","merchant").attr("title","").attr("style","width:15%;padding:5px;background-color:#fafafa").addClass("").autocomplete({delay:0,minLength:0,source:jQuery.proxy(this,"_source"),messages:{noResults:"",results:function(){}}});this._on(this.input,{autocompleteselect:function(c,b){b.item.option.selected=!0;this._trigger("select",c,{item:b.item.option})},autocompletechange:"_removeIfInvalid"})},_createShowAllButton:function(){var a=this.input,b=!1;jQuery("<a>").attr("tabIndex",-1).attr("style","padding:7.5px 4px;margin-top:-1px;background-color:#fafafa").tooltip().appendTo(this.wrapper).button({icons:{primary:"ui-icon-triangle-1-s"},text:!1}).removeClass("ui-corner-all").mousedown(function(){b=a.autocomplete("widget").is(":visible")}).click(function(){a.focus();b||a.autocomplete("search","")})},_source:function(b,c){var a=new RegExp(jQuery.ui.autocomplete.escapeRegex(b.term),"i");c(this.element.children("option").map(function(){var d=jQuery(this).text();if(this.value&&(!b.term||a.test(d))){return{label:d,value:d,option:this}}}))},_removeIfInvalid:function(d,e){if(!e.item){var a=this.input.val(),c=a.toLowerCase(),b=!1;this.element.children("option").each(function(){if(jQuery(this).text().toLowerCase()===c){return this.selected=b=!0,!1}});b||(this.input.val("").attr("title",a+" didn't match any item").tooltip("open"),this.element.val(""),this._delay(function(){this.input.tooltip("close").attr("title","")},2500),this.input.autocomplete("instance").term="")}},_destroy:function(){this.wrapper.remove();this.element.show()}})});jQuery(function(){jQuery("#combobox").combobox();jQuery("#toggle").click(function(){jQuery("#combobox").toggle()})});jQuery(function(){jQuery("#s.prosper_field").blur(function(){jQuery.ajax({type:"POST",url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#s.prosper_field").val(),enableFacets:"merchant",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(a){jQuery("#combobox").get(0).options.length=0;jQuery.each(a.facets.merchant,function(c,b){jQuery("#combobox").get(0).options[jQuery("#combobox").get(0).options.length]=new Option(b.value,b.value)})},error:function(){alert("Failed to load merchants")}})})});/*]]>*/</script>
 <?php if(!$options['noSearchBar']):?>
 <div class="prosper_searchform"
@@ -73,14 +46,14 @@
 		echo '<div class="noResults-padding"></div>';
 	}
 endif;if(!$params['view']||$params['view']==='list'){?>
-<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
+<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$record['affiliate_url']=$options['URL_Masking']?$homeUrl.'/store/go/'.rawurlencode(str_replace(array('http://prosperent.com/','/'),array('',',SL,'),$record['affiliate_url'])):$record['affiliate_url'];$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
 		class="productBlock">
 		<div class="productImage">
 			<a
 				href=<?php echo($options['imageMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 				rel="nolink"><span
 				<?php echo($type==='coupon'?'class="loadCoup"':'class="load"');?>><img
-					src="<?php echo $record['image_url'];?>"
+					src="<?php echo $options['Image_Masking']?$homeUrl.'/img/'.rawurlencode(str_replace(array('https://img1.prosperent.com/images/','http://img1.prosperent.com/images/','/'),array('','',',SL,'),$record['image_url'])):$record['image_url'];?>"
 					title="<?php echo $record['keyword'];?>"
 					alt="<?php echo $record['keyword'];?>" /></span></a>
 		</div>
@@ -118,7 +91,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 					rel="nolink"><span
 					<?php echo $classLoad.($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;margin:0 15px"');?>><img
 						<?php echo($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;"');?>
-						src="<?php echo $record['image_url'];?>"
+						src="<?php echo $options['Image_Masking']?$homeUrl.'/img/'.rawurlencode(str_replace(array('https://img1.prosperent.com/images/','http://img1.prosperent.com/images/','/'),array('','',',SL,'),$record['image_url'])):$record['image_url'];?>"
 						title="<?php echo $record['keyword'];?>"
 						alt="<?php echo $record['keyword'];?>" /></span></a>
 			</div> <?php if($record['promo']){echo '<div class="promo"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">'.$record['promo'].'!</a></span></div>';}elseif($record['expiration_date']||$record['expirationDate']){$expirationDate=$record['expirationDate']?$record['expirationDate']:$record['expiration_date'];$expires=strtotime($expirationDate);$today=strtotime(date("Y-m-d"));$interval=($expires - $today)/(60*60*24);if($interval<=20&&$interval>0){echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">'.$interval.' Day'.($interval>1?'s':'').' Left!</a></span></div>';}elseif($interval<=0){echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">Ends Today!</a></span></div>';}else{echo '<div class="couponExpire"><span><a href="'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'" rel="nolink">Expires Soon!</a></span></div>';}}elseif($type=='coupon'||$type=='local'){echo '<div class="promo">&nbsp;</div>';}?> <div

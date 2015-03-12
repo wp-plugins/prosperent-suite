@@ -15,7 +15,11 @@ class Model_Activate extends Model_Base
 		
 		$this->prosperDefaultOptions();		
 		$this->prosperOptionActivateAdd();	
-		
+		if ($this->_options['Enable_PPS'])
+		{
+			$this->prosperStoreInstall();
+			$this->prosperReroutes();
+		}
 		$this->settingsPrompt('activated');
 	}
 	

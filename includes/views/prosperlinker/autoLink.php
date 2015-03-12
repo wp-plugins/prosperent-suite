@@ -45,13 +45,13 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
 						<table style="font-size:13px;">
 							<tr>
-								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" name="prodgoTo" id="prodGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" name="prodgoTo" id="prodgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
-								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="prodGoTo" name="prodgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="prodgoTo" name="prodgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
 							<tr>					
-								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="prodGoTo" name="prodgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="prodgoTo" name="prodgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
 							</tr>
 						</table>
 						<input type="hidden" id="prodid" name="prodid"/>
@@ -66,13 +66,13 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="coupmerchant" name="coupm" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>																											
 						<table style="font-size:13px;">
 							<tr>
-								<td><label>Go To:</label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="coupGoTo" name="coupgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label>Go To:</label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="coupgoTo" name="coupgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
-								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="coupGoTo" name="coupgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="coupgoTo" name="coupgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
 							<tr>					
-								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="coupGoTo" name="coupgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="coupgoTo" name="coupgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
 							</tr>
 						</table>
 						<input type="hidden" id="coupid" name="coupid"/>
@@ -90,13 +90,13 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="localmerchant" name="localm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>								
 						<table style="font-size:13px;">
 							<tr>
-								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="localGoTo" name="localgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="localgoTo" name="localgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>	
-								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="localGoTo" name="prosperGoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Page</td><td><input type="radio" id="localgoTo" name="localgoTo" value="prodPage"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the product page of the most relevant product.</span></a></td>
 							</tr>
 							<tr>					
-								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="localGoTo" name="localgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="localgoTo" name="localgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
 							</tr>
 						</table>						
 						<input type="hidden" id="localid" name="localid"/>							
@@ -110,10 +110,10 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name or merchantId you want to use, if they allow deepLinking (Linking straight to their main site)<strong>Use only one name or ID</strong>.</span></a></p>								
 						<table style="font-size:13px;">
 							<tr>
-								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="merchantGoTo" name="merchantGoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" id="merchantgoTo" name="merchantgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
 							</tr>
 							<tr>					
-								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="merchantGoTo" name="merchantGoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="merchantgoTo" name="merchantgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
 							</tr>
 						</table>						
 						<input type="hidden" id="merchantid" name="merchantid"/>							

@@ -241,20 +241,18 @@ class Model_Inserter extends Model_Base
 			$settings = array(
 				'imageSize'		   => '120x60',
 				'limit'            => $limit,
-				'filterMerchant'   => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',		
-				'filterMerchantId' => $recordId,
+				'filterMerchant'   => ($id ? '' : $pieces['m'] ? array_map('trim', explode('*,',  $pieces['m'])) : ''),		
+				'filterMerchantId' => $id,
 				'interface'		   => 'insert',
 				'imageType'		   => 'original'
 			);
 		}		
 		
-		$settings = array_filter($settings);
-
 		if (count($settings) < 3)
 		{
 			return;
 		}
-		
+
 		$url = $this->apiCall($settings, $fetch);
 
 		$allData = $this->singleCurlCall($url, $expiration, $settings);
@@ -284,7 +282,7 @@ class Model_Inserter extends Model_Base
 		$prodSubmit = home_url('/') . $base;	
 		
 		$results = $allData['data'];
-		
+
 		$insertProd = PROSPER_VIEW . '/prosperinsert/insertProd.php';
 		
 		// Inserter PHTML file

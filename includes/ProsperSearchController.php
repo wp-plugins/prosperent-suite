@@ -217,7 +217,7 @@ class ProsperSearchController
 				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
 			}
 			
-			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities(rawurlencode($options['Starting_Query']));
+			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities($options['Starting_Query']);
 			$q = $options['Starting_Query'];
 		}
 		else
@@ -1135,7 +1135,7 @@ class ProsperSearchController
 		}
 		else
 		{
-			$returnUrl = $matchingUrl . '/query/' . rawurlencode(get_query_var('keyword'));
+			$returnUrl = $matchingUrl . '/query/' . get_query_var('keyword');
 		}
 
 		/*

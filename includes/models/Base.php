@@ -305,18 +305,11 @@ abstract class Model_Base
 	
 	public function prosperRewrite()
 	{
-		if (empty($this->_options))
-		{
-			$options = $this->getOptions();
-		}
-		else
-		{
-			$options = $this->_options;
-		}	
-		
+		$options = get_option('prosper_advanced');
+
 		$page     = $options['Base_URL'] ? $options['Base_URL'] . '/' : 'products/';
 		$pageName = $options['Base_URL'] ? 'pagename=' . $options['Base_URL'] : 'pagename=products';
-		
+
 		add_rewrite_rule('^([^/]+)/([^/]+).cid.([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 		add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
 	}

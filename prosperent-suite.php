@@ -2,7 +2,7 @@
 /*
 Plugin Name: Prosperent Suite
 Description: Contains all of the Prosperent tools in one plugin to easily monetize your blog.
-Version: 3.5.1
+Version: 3.6
 Author: Prosperent Brandon
 Author URI: http://prosperent.com
 Plugin URI: http://community.prosperent.com/forumdisplay.php?35-Wordpress-Plugin-Suite

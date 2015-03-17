@@ -22,7 +22,17 @@ class ProsperIndexController
 		add_action('init', array($prosperActivate, 'doOutputBuffer'));	
 		add_action('init', array($prosperActivate, 'prosperQueryTag'), 1);
 		add_action('init', array($prosperActivate, 'init'));
-		add_action('template_redirect', array($this, 'checkToFix'), 1);	
+		add_action('template_redirect', array($this, 'checkToFix'), 1);
+
+		$rules = get_option('rewrite_rules');
+		if (!$rules['^([^/]+)/([^/]+).cid.([a-z0-9A-Z]{32})/?$'])
+		{
+			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			if (!is_plugin_active('simple-urls/plugin.php'))
+			{
+				add_action( 'init', array($prosperActivate, 'prosperReroutes' ));
+			}
+		}		
 	}
 	
 	public function checkToFix()

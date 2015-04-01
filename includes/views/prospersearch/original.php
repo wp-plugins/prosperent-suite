@@ -6,13 +6,6 @@
     </form>
 </div>
 <div class="backTo" style="display:inline-block;padding-top:4px; color:#00AFF0;font-weight:bold;"><a href="<?php echo $returnUrl; ?>" rel="nolink">&#8592;&nbsp;Return to Search Results</a></div>
-
-<?php
-if (is_ssl())
-{
-	$mainRecord[0]['image_url'] = str_replace('http', 'https', $mainRecord[0]['image_url']);
-}
-?>
 <div id="product" itemscope itemtype="http://data-vocabulary.org/Product">
     <div class="shopCheck productTitle"><a href="<?php echo $mainRecord[0]['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><span itemprop="name"><?php echo preg_replace('/\(.+\)/i', '', $mainRecord[0]['keyword']); ?></span></a></div>
     <div class="productBlock">
@@ -116,7 +109,7 @@ if (is_ssl())
                 }
 				if($mainRecord[0]['coupon_code'])
 				{
-					echo '<div class="prodBrand"><u>Coupon Code</u>: <strong style="font-size:16px;">' . $mainRecord[0]['coupon_code'] . '</strong></div>';
+					echo '<div class="prodBrand"><u>Coupon Code</u>: <strong style="font-size:16px;"><a href="' . $record['affiliate_url'] . '">'.$mainRecord[0]['coupon_code'].'</a></strong></div>';
 				}	
 
 				if (count($results) > 1)
@@ -176,11 +169,6 @@ if (count($similar) > 1)
     echo '<ul>';
     foreach ($similar as $prod)
     {
-		if (is_ssl())
-		{
-			$prod['image_url'] = str_replace('http', 'https', $prod['image_url']);
-		}	
-
 		$priceSale = $prod['priceSale'] ? $prod['priceSale'] : $prod['price_sale'];
         $price 	   = $priceSale ? $priceSale : $prod['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $prod['keyword']);
@@ -248,12 +236,7 @@ if (count($sameBrand) > 1)
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($sameBrand as $brandProd)
-    {
-		if (is_ssl())
-		{
-			$brandProd['image_url'] = str_replace('http', 'https', $brandProd['image_url']);
-		}	
-		
+    {	
 		$priceSale = $brandProd['priceSale'] ? $brandProd['priceSale'] : $brandProd['price_sale'];
         $price 	   = $priceSale ? $priceSale : $brandProd['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $brandProd['keyword']);
@@ -293,11 +276,6 @@ if (count($sameMerchant) > 1)
     echo '<ul>';
     foreach ($sameMerchant as $merchantProd)
     {
-		if (is_ssl())
-		{
-			$merchantProd['image_url'] = str_replace('http', 'https', $merchantProd['image_url']);
-		}	
-	
 		$priceSale = $merchantProd['priceSale'] ? $merchantProd['priceSale'] : $merchantProd['price_sale'];
         $price 	   = $priceSale ? $priceSale : $merchantProd['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $merchantProd['keyword']);

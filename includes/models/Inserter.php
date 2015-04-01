@@ -138,7 +138,7 @@ class Model_Inserter extends Model_Base
 		// Remove links within links
 		$content = strip_tags($content);
 
-		$id = $pieces['id'] ? array_map('trim', explode(',',  rtrim($pieces['id'], ","))) : '';
+		$id = $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '';
 		
 		$limit = 1;		
 		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
@@ -171,15 +171,15 @@ class Model_Inserter extends Model_Base
 			}
 
 			$settings = array(
+				'interface'		  => 'insert',
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
 				'filterState'	  => $state ? $state : '',
 				'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
 				'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
-				'filterLocalId'   => $id,	
-				'interface'		  => 'insert'					
+				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
+				'filterLocalId'   => $id				
 			);
 		}
 		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
@@ -188,12 +188,12 @@ class Model_Inserter extends Model_Base
 			$recordId 	= 'couponId';
 			
 			$settings = array(
+				'interface'		 => 'insert',
 				'imageSize'		 => '120x60',
 				'limit'          => $limit,
 				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant' => $pieces['m'] ? explode(',', trim($pieces['m'])) : '',		
-				'filterCouponId' => $id,
-				'interface'		 => 'insert'					
+				'filterMerchant' => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',		
+				'filterCouponId' => $id									
 			);			
 
 			$imageLoader = 'small';
@@ -203,6 +203,8 @@ class Model_Inserter extends Model_Base
 		{
 			$expiration = PROSPER_CACHE_PRODS;
 			$recordId 	= 'catalogId';
+			$type = 'product';
+			
 			if ($pieces['ct'] === 'UK')
 			{
 				$fetch = 'fetchUkProducts';
@@ -219,16 +221,16 @@ class Model_Inserter extends Model_Base
 			}	
 
 			$settings = array(
+				'interface'		  => 'insert',
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant'  => $pieces['m'] ? array_map('trim', explode(',',  $pieces['m'])) : '',
-				'filterBrand'	  => $pieces['b'] ? array_map('trim', explode(',',  $pieces['b'])) : '',			
+				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
+				'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
 				'filterCelebrity' => $pieces['celeb'],	
 				'filterProductId' => $id,
 				'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
-				'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
-				'interface'		  => 'insert'
+				'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''))				
 			);
 		}
 		elseif ($fetch === 'fetchMerchant')
@@ -240,21 +242,21 @@ class Model_Inserter extends Model_Base
 			
 			$settings = array(
 				'imageSize'		   => '120x60',
-				'limit'            => $limit,
-				'filterMerchant'   => ($id ? '' : $pieces['m'] ? array_map('trim', explode('*,',  $pieces['m'])) : ''),		
-				'filterMerchantId' => $id,
 				'interface'		   => 'insert',
-				'imageType'		   => 'original'
+				'limit'            => $limit,
+				'filterMerchant'   => ($id ? '' : $pieces['m'] ? str_replace(',', '|', $pieces['m']) : ''),		
+				'filterMerchantId' => $id,
+				'imageType'		   => 'original'			
 			);
 		}		
 		
-		if (count($settings) < 3)
+		if (count($settings) < 4)
 		{
 			return;
 		}
 
 		$url = $this->apiCall($settings, $fetch);
-
+		$settings['curlCall'] = 'single-' . $type;
 		$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 		if (!$allData['data'])
@@ -264,12 +266,13 @@ class Model_Inserter extends Model_Base
 			{
 				array_pop($settings);
 
-				if(count($settings) < 3)
+				if(count($settings) < 4)
 				{
 					return;
 				}
 			
 				$url = $this->apiCall($settings, $fetch);
+				$settings['curlCall'] = 'single-' . $type;
 				$allData = $this->singleCurlCall($url, $expiration, $settings);
 				
 				if ($allData['data'])

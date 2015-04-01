@@ -248,7 +248,7 @@
 							
 							if ($record['coupon_code'])
 							{
-								echo '<div class="couponCode">Coupon Code: <span class="code_cc">' . $record['coupon_code'] . '</span></div>';
+								echo '<div class="couponCode">Coupon Code: <span class="code_cc"><a href="' . $record['affiliate_url'] . '">'.$record['coupon_code'].'</a></span></div>';
 							}	
 				
 							?>				

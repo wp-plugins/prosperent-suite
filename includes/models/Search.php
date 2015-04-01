@@ -65,7 +65,7 @@ class Model_Search extends Model_Base
 			
 	public function init()
 	{
-		$this->_options = $this->getOptions();
+		$this->_options = $this->getOptions();		
 	}
 			
 	public function qTagsStore()
@@ -189,7 +189,7 @@ class Model_Search extends Model_Base
 				}
 			}
 		}
-			
+
 		return $filterBrands;
 	}
 	
@@ -393,27 +393,6 @@ class Model_Search extends Model_Base
 		return $sepEnds;
 	}
 	
-	/*public function getTypeSelector($sepEnds, $existingType = null)
-	{
-		if (count($sepEnds) > 1)
-		{
-			$newEnds = array_keys($sepEnds);
-			$startingType = $newEnds[0];
-			
-			$type = $existingType ? $existingType : $startingType;
-			
-			$sepEnds[$type] = strip_tags($sepEnds[$type]);
-		
-			$typeSelector = '<div class="typeselector" style="display:inline-block; margin-top:9px;">' . implode(' | ', $sepEnds) . '</div>';
-		}
-		else
-		{
-			$typeSelector = '';
-		}
-		
-		return $typeSelector;
-	}	*/
-	
 	public function prosperPagination($totalAvailable = '', $paged, $range = 8)
 	{
 		$limit = $this->_options['Pagination_Limit'] ? $this->_options['Pagination_Limit'] : 10;
@@ -539,70 +518,69 @@ class Model_Search extends Model_Base
 	
 	public function ogMeta()
 	{
-		if(!preg_match('/^@/', $this->_options['Twitter_Site']))
+		if ($cId = get_query_var('cid'))
 		{
-			$this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
-		}
-		if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
-		{
-			$this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
-		}
-
-		$prosperPage = get_query_var('prosperPage');
-		
-		if ('coupon' === $prosperPage)
-		{
-			$expiration = PROSPER_CACHE_COUPS;
-			$fetch  = 'fetchCoupons';
-			$filter = 'filterCouponId';
-		}
-		elseif ('local' === $prosperPage)
-		{
-			$expiration = PROSPER_CACHE_COUPS;
-			$fetch  = 'fetchLocal';
-			$filter = 'filterLocalId';
-			$image  = '125x125';
-		}
-		elseif ('celebrity' === $prosperPage)
-		{
-			$expiration = PROSPER_CACHE_PRODS;
-			$fetch  = 'fetchProducts';
-			$filter = 'filterCatalogId';
-		}
-		else
-		{
-			$expiration = PROSPER_CACHE_PRODS;
-			$fetch = 'fetchProducts';
-			$currency = 'USD';
-
-			if ($this->_options['Country'] === 'CA')
+			if(!preg_match('/^@/', $this->_options['Twitter_Site']))
 			{
-				$fetch = 'fetchCaProducts';
-				$currency = 'CAD';
+				$this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
 			}
-			elseif ($this->_options['Country'] === 'UK')
+			if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
 			{
-				$fetch = 'fetchUkProducts';
-				$currency = 'GBP';
+				$this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
 			}
-			$filter = 'filterCatalogId';
-		}
 
-		/*
-		/  Prosperent API Query
-		*/
-		$settings = array(
-			'limit' => 1,
-			$filter => get_query_var('cid')
-		);
-								
-		$curlUrl = $this->apiCall($settings, $fetch);
-		$allData = $this->singleCurlCall($curlUrl, $expiration);
-		$record = $allData['data'];
+			$prosperPage = get_query_var('prosperPage');
 
-		$page = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-		if (is_page($page) && $record['data'])
-		{
+			if ('coupon' === $prosperPage)
+			{
+				$expiration = PROSPER_CACHE_COUPS;
+				$fetch  = 'fetchCoupons';
+				$filter = 'filterCouponId';
+			}
+			elseif ('local' === $prosperPage)
+			{
+				$expiration = PROSPER_CACHE_COUPS;
+				$fetch  = 'fetchLocal';
+				$filter = 'filterLocalId';
+				$image  = '125x125';
+			}
+			elseif ('celebrity' === $prosperPage)
+			{
+				$expiration = PROSPER_CACHE_PRODS;
+				$fetch  = 'fetchProducts';
+				$filter = 'filterCatalogId';
+			}
+			else
+			{
+				$expiration = PROSPER_CACHE_PRODS;
+				$fetch = 'fetchProducts';
+				$currency = 'USD';
+
+				if ($this->_options['Country'] === 'CA')
+				{
+					$fetch = 'fetchCaProducts';
+					$currency = 'CAD';
+				}
+				elseif ($this->_options['Country'] === 'UK')
+				{
+					$fetch = 'fetchUkProducts';
+					$currency = 'GBP';
+				}
+				$filter = 'filterCatalogId';
+			}
+
+			/*
+			/  Prosperent API Query
+			*/
+			$settings = array(
+				'limit' => 1,
+				$filter => $cId				
+			);
+
+			$curlUrl = $this->apiCall($settings, $fetch);
+			$allData = $this->singleCurlCall($curlUrl, $expiration);
+			$record = $allData['data'];
+
 			$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
 			// Open Graph: FaceBook
 			echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';

@@ -199,6 +199,7 @@ if ($results = $response['data'])
 	?>
 	<div id="productList">
 	<?php
+
 		foreach ($results as $record)
 		{			
 			if ($type == 'coup')

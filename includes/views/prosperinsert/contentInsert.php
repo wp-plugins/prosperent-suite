@@ -26,18 +26,28 @@ $mainURL = preg_replace('/views.+/', '' , $url);
     <body id="inserter" style="display: none" role="application" aria-labelledby="app_label" onload="setFocus();">
 		<form action="/" method="get" id="prosperSCForm">
 			<input type="hidden" id="prosperSC" value="prosperNewQuery"/>
-			<fieldset style="font-size:14px;">
-				<p>Change the query for the ContentInsert or disable it by checking 'Don't Show'.</p>
-				<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>
-				<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="prodq" id="query"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
-				<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchant" name="prodm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
-				<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="brand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
-				<p><label>Price Range:</label><input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();"/>&nbsp;&nbsp;&nbsp;<input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter a price range.</span></a></p>														
-				<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
-				<p><label>Limit:</label><input class="prosperTextSC" tabindex="7" type="text" id="limit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
-				<p><label>Don't Show:</label><input tabindex="8" type="checkbox" id="noShow" name="noShow"/><a href="#" class="tooltip"><span>Checking this will disable the ContentInserter on this page/post.</span></a></p>                    
-				<input type="hidden" id="prodid" name="prodid"/>
-			</fieldset>					
+			<div class="tabs">
+				<ul>
+					<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:mcTabs.displayTab('products_tab','products_panel');" onmousedown="return false;">Products</a></span></li>
+				</ul>
+			</div>
+			
+			<div class="panel_wrapper">
+				<div id="products_panel" class="panel current">
+					<fieldset style="font-size:14px;">
+						<p>Change the query for the ContentInsert or disable it by checking 'Don't Show'.</p>
+						<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>
+						<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="prodq" id="prodquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
+						<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="prodmerchant" name="prodm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
+						<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
+						<p><label>Price Range:</label><input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();"/>&nbsp;&nbsp;&nbsp;<input class="prosper_textinputsmall" style="width:40px;" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter a price range.</span></a></p>														
+						<p><label class="longLabel">Sale Items Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();"/><a href="#" class="tooltip"><span>Checking this will only use On Sale Items</span></a></p>                    
+						<p><label>Limit:</label><input class="prosperTextSC" tabindex="7" type="text" id="prodlimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
+						<p><label>Don't Show:</label><input tabindex="8" type="checkbox" id="noShow" name="noShow"/><a href="#" class="tooltip"><span>Checking this will disable the ContentInserter on this page/post.</span></a></p>                    
+						<input type="hidden" id="prodid" name="prodid"/>
+					</fieldset>			
+				</div>
+			</div>			
 
 			<div class="mceActionPanel">	
 				<input type="hidden" id="images" name="images"/>

@@ -16,7 +16,7 @@ class Prosper_Cache
           return false;
         }
 
-        $this->_memcache = new Memcache;
+        $this->_memcache = new Memcache;	
 		
 		$advOptions = get_option('prosper_advanced');
         $this->_memcache->pconnect(($advOptions['MemcahceIP'] ? $advOptions['MemcahceIP'] : '127.0.0.1'), ($advOptions['MemcachePort'] ? $advOptions['MemcachePort'] : 11211));
@@ -24,7 +24,15 @@ class Prosper_Cache
 
     private function _name($key)
     {
-        return sprintf("%s", sha1($key));
+		$settings = array_filter($key);
+		$cacheKey = '';
+
+		foreach($settings as $i => $value)
+		{
+			$cacheKey .= $i . ':' . (string) $value; 
+		}
+
+        return md5($cacheKey);
     }
 
     public function get($key)
@@ -68,7 +76,12 @@ class Prosper_Cache
 
         $flag = 0;
 
-        $result = @$this->_memcache->set($cache_path,  $data,  $flag, $lifetime);
+        $result = @$this->_memcache->set($cache_path,  serialize($data),  $flag, $lifetime);
         return $result;
     }
+	
+	public function clearMemcache()
+	{
+		$this->_memcache->flush();
+	}
 }

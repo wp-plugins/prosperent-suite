@@ -50,7 +50,7 @@ class ProsperSearchController
 		$searchPage  = $phtml[0];
 		$productPage = $phtml[1];
 
-		//define('DONOTCACHEPAGE', true);
+		define('DONOTCACHEPAGE', true);
 	
 		$this->searchModel->storeChecker();		
 		$data = $this->searchModel->storeSearch();
@@ -1113,7 +1113,7 @@ class ProsperSearchController
 			'limit'        => 1,
 			$filter		   => get_query_var('cid'),
 			'imageSize'	   => $image ? $image : '',
-			'curlCall'	   => 'single-prodPage'
+			'curlCall'	   => 'single-prodPage-' . $prosperPage
 		);
 
 		$maincUrl = $this->searchModel->apiCall($settings, $fetch);	

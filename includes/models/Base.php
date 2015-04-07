@@ -505,17 +505,13 @@ abstract class Model_Base
 	
 		if (empty($this->_options))
 		{
-			$options = $this->getOptions();
-		}
-		else
-		{
-			$options = $this->_options;
-		}						
+			$this->_options = $this->getOptions();
+		}		
 		
-		if ($options['prosperSid'] && !$sid)
+		if ($this->_options['prosperSid'] && !$sid)
 		{
 			$sidArray = array();
-			foreach ($options['prosperSid'] as $sidPiece)
+			foreach ($this->_options['prosperSid'] as $sidPiece)
 			{
 				if ('blogname' === $sidPiece)
 				{
@@ -535,9 +531,9 @@ abstract class Model_Base
 				}
 			}
 		}
-		if ($options['prosperSidText'] && !$sid)
+		if ($this->_options['prosperSidText'] && !$sid)
 		{
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
@@ -552,9 +548,9 @@ abstract class Model_Base
 					$sidArray[] = $_COOKIE[$regs[4]];
 				}					
 			}
-			elseif (!preg_match('/\$/', $options['prosperSidText']))
+			elseif (!preg_match('/\$/', $this->_options['prosperSidText']))
 			{
-				$sidArray[] = $options['prosperSidText'];
+				$sidArray[] = $this->_options['prosperSidText'];
 			}
 		}
 		
@@ -565,13 +561,13 @@ abstract class Model_Base
 		}
 
 		$settings = array_merge($settings, array(
-			'api_key' 		  	 => $options['Api_Key'],
+			'api_key' 		  	 => $this->_options['Api_Key'],
 			'location'  	  	 => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
 			'referrer' 		  	 => $_SERVER['HTTP_REFERER'],
-			'imageMaskDomain' 	 => $options['ImageCname'],
-			'clickMaskDomain' 	 => $options['ClickCname'],
+			'imageMaskDomain' 	 => $this->_options['ImageCname'],
+			'clickMaskDomain' 	 => $this->_options['ClickCname'],
 			'sid'			  	 => $sid,
-			'relevancyThreshold' => $options['relThresh']
+			'relevancyThreshold' => $this->_options['relThresh']
 		));	
 
 		$settings = array_filter( $settings);
@@ -681,13 +677,14 @@ abstract class Model_Base
 				return array();
 				throw new Exception(implode('; ', $response['errors']));
 			}
-			
+
 			if ($response['data'])
 			{
 				$cache->set($settings, $response, $expiration);
 			}
+			
 		}
-		
+
 		return $response;
 	}	
 	

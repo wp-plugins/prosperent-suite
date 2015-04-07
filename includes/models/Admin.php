@@ -43,6 +43,20 @@ class Model_Admin extends Model_Base
 			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch' ) );
 		}
 		
+		if ( isset( $_GET['clearCache'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_clear_cache' ) && current_user_can( 'manage_options' ) ) 
+		{
+			require_once(PROSPER_PATH . 'prosperMemcache.php');
+			$cache = new Prosper_Cache();
+			$cache->clearMemcache();
+			
+			wp_redirect( admin_url( 'admin.php?page=prosper_general&cacheCleared' ) );
+		}
+		
+		if ( isset( $_GET['cacheCleared'] ))
+		{
+			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
+		}
+		
 		$adOpts = get_option('prosper_performAds');
 		if ($_GET['page'] == 'prosper_performAds' && ($adOpts['Enable_PA'] == FALSE || !$adOpts['Enable_PA']) && current_user_can( 'manage_options' ) )
 		{

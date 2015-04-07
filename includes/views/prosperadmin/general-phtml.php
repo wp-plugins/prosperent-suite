@@ -19,19 +19,10 @@ echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in
 
 echo '<h2 class="prosper_h2">' . __( 'Caching', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_Caching', __( 'Turn on Caching', 'prosperent-suite' ));
-
-/*if ($options['Enable_Caching'])
+if ($options['Enable_Caching'] &&  extension_loaded('memcache'))
 {
-	shell_exec('mkdir ' . PROSPER_CACHE);
-	if (!file_exists(PROSPER_CACHE))
-	{
-		echo '<div class="update-nag" style="padding:6px 0;">';
-		echo _e( '<span style="font-size:14px; padding-left:10px;">The plugin was <strong>unable</strong> to create the <strong>prosperent-cache</strong> directory inside <strong>wp-content</strong>.</span><br><br>', 'my-text-domain' );
-		echo _e( '<span style="font-size:14px; padding-left:10px;">Please create a <strong>prosperent-cache</strong> directory inside <strong>wp-content</strong> for caching to work properly.</span><br>', 'my-text-domain' );	
-		echo '</div>';		
-	}
-}*/
-
+	echo '<a style="margin:10px 0 6px 35px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&clearCache&nonce='. wp_create_nonce( 'prosper_clear_cache' )) . '">' . __( 'Clear Memcache', 'prosperent-suite' ) . '</a>';
+}
 echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Help Us, Help You', 'prosperent-suite' ) . '</h2>';

@@ -573,12 +573,14 @@ class Model_Search extends Model_Base
 			/  Prosperent API Query
 			*/
 			$settings = array(
-				'limit' => 1,
-				$filter => $cId				
+				'limit' 	=> 1,
+				$filter 	=> $cId,
+				'imageSize' => '500x500',
+				'curlCall'	=> 'single-productPage-' . $prosperPage
 			);
 
 			$curlUrl = $this->apiCall($settings, $fetch);
-			$allData = $this->singleCurlCall($curlUrl, $expiration);
+			$allData = $this->singleCurlCall($curlUrl, 0);
 			$record = $allData['data'];
 
 			$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
@@ -587,6 +589,8 @@ class Model_Search extends Model_Base
 			echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
 			echo '<meta property="og:type" content="website" />';
 			echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
+			echo '<meta property="og:image:width" content="300" />';
+			echo '<meta property="og:image:height" content="300" />';
 			echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
 			echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
 

@@ -19,6 +19,8 @@ class TopProductsWidget extends WP_Widget
 			$options = array_merge($options, (array) get_option($opt));
 		}
 
+		$target  = isset($options['Target']) ? '_blank' : '_self';
+		
         extract($args);	
         $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Top Products' : $instance['title'], $instance, $this->id_base );	
 
@@ -129,12 +131,7 @@ class TopProductsWidget extends WP_Widget
 			echo '<ul>';	
 
 			foreach ($allData['data'] as $record)
-			{			
-				if (is_ssl())
-				{
-					$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-				}
-				
+			{						
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2) . '</div>';
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -219,9 +216,10 @@ class TopProductsWidget extends WP_Widget
 					else
 					{
 						$goToUrl = home_url() . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'];
+						$target = '_self';
 					}
 					
-					echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . $goToUrl . '" rel="nolink">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
+					echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . $goToUrl . '" rel="nolink" target="' . $target . '">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
 
 				}
 				?>

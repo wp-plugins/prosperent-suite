@@ -22,6 +22,8 @@ class ProductInsertWidget extends WP_Widget
         extract($args);			
         $title = apply_filters( 'widget_title', (empty( $instance['title'] ) ? 'Related Products' : $instance['title']), $instance, $this->id_base );
 
+		$target  = isset($options['Target']) ? '_blank' : '_self';
+		
 		if($instance['useTitle'])
 		{ 
 			$instance[$instance['useTitle']] = strtolower(get_the_title());
@@ -30,6 +32,12 @@ class ProductInsertWidget extends WP_Widget
 		require_once(PROSPER_MODEL . '/Search.php');
 		$modelSearch = new Model_Search();
 		$modelSearch->getFetchEndpoints();
+					
+		$homeUrl = home_url('', 'http');
+		if (is_ssl())
+		{
+			$homeUrl = home_url('', 'https');
+		}					
 					
 		if ($instace['coupons'])
 		{
@@ -51,6 +59,7 @@ class ProductInsertWidget extends WP_Widget
 			{
 				$fetch = 'fetchCaProducts';
 			}
+			
 		}
 	
 		if (($instance['imageSize'] > 125 || !$instance['imageSize']))
@@ -96,12 +105,7 @@ class ProductInsertWidget extends WP_Widget
 			echo '<ul>';	
 
 			foreach ($allData['data'] as $record)
-			{
-				if (is_ssl())
-				{
-					$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-				}
-				
+			{			
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . $priceSale . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . $record['price'] . '</div>';
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -110,7 +114,7 @@ class ProductInsertWidget extends WP_Widget
 					<li style="float:none;">
 						<div class="listBlock">
 							<div class="prodImage">
-								<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $options['Image_Masking'] ? $homeUrl  . '/img/'. rawurlencode(str_replace(array('https://img1.prosperent.com/images/', 'http://img1.prosperent.com/images/', '/'), array('', '', ',SL,'), $record['image_url'])) : $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+								<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 							</div>
 								<?php
 								if ($record['promo'])
@@ -144,7 +148,7 @@ class ProductInsertWidget extends WP_Widget
 								?>
 							<div class="prodContent">
 								<div class="prodTitle">
-									<a href=<?php echo ($options['titleMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
+									<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
 										<?php echo $keyword; ?>
 									</a>
 								</div>     

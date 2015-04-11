@@ -93,6 +93,7 @@ class Model_Linker extends Model_Base
 				}	
 				
 				$settings = array(
+					'curlCall'		  => 'single-' . $curlType,
 					'interface'		  => 'linker',
 					'enableFullData'  => 'FALSE',
 					'limit'           => 1,
@@ -113,13 +114,13 @@ class Model_Linker extends Model_Base
 				$curlType = 'merchant';
 				
 				$settings = array(
+					'curlCall'		   => 'single-' . $curlType,
 					'interface'		   => 'linker',
 					'enableFullData'   => 'FALSE',		
-					'limit' 		   => 1,
-					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',	
-					'filterMerchant'   => $pieces['id'] ? '' : $merchants
-				);		
-			
+					'limit' 		   => 1,						
+					'filterMerchant'   => $merchants,
+					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
+				);				
 			}	
 			else
 			{
@@ -132,12 +133,13 @@ class Model_Linker extends Model_Base
 					$page = $curlType = 'coupon';
 				
 					$settings = array(
+						'curlCall'		  => 'single-' . $curlType,
 						'interface'		 => 'linker',
 						'enableFullData' => 'FALSE',
 						'limit'          => 1,
 						'query'          => $query,
 						'filterMerchant' => $merchants,
-						'filterCouponId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : ''
+						'filterCouponId' => str_replace(',', '|', $pieces['id'])
 					);				
 				}
 				elseif ($fetch === 'fetchLocal')
@@ -158,6 +160,7 @@ class Model_Linker extends Model_Base
 					}
 
 					$settings = array(
+						'curlCall'		  => 'single-' . $curlType,
 						'interface'		  => 'linker',
 						'limit'           => 1,
 						'enableFullData'  => 'FALSE',
@@ -166,18 +169,17 @@ class Model_Linker extends Model_Base
 						'filterZipCode'	  => $pieces['z'] ? str_replace(',', '|', $pieces['z']) : '',
 						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
 						'filterMerchant'  => $merchants,
-						'filterLocalId'   => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : ''				
+						'filterLocalId'   => str_replace(',', '|', $pieces['id'])				
 					);
 				}
 			}
-
+			
 			if (count($settings) < 4)
 			{
 				return $content;
 			}
 	
 			$url = $this->apiCall($settings, $fetch);
-			$settings['curlCall'] = 'single-' . $curlType;
 			$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 			if (!$allData['data'])
@@ -187,13 +189,12 @@ class Model_Linker extends Model_Base
 				{
 					array_pop($settings);
 
-					if(count($settings) < 4)
+					if(count($settings) < 5)
 					{
 						return $content;
 					}
 				
 					$url = $this->apiCall($settings, $fetch);
-					$settings['curlCall'] = 'single-' . $curlType;
 					$allData = $this->singleCurlCall($url, $expiration, $settings);
 					
 					if ($allData['data'])

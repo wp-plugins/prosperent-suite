@@ -1,5 +1,5 @@
 <?php
-require_once(PROSPER_MODEL . '/Base.php');
+require_once(plugin_dir_path(__FILE__) . '/Base.php');
 /**
  * Admin Abstract Model
  *

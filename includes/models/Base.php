@@ -1,5 +1,4 @@
 <?php
-require_once(PROSPER_PATH . 'prosperMemcache.php');
 /**
  * Base Abstract Model
  *
@@ -580,6 +579,7 @@ abstract class Model_Base
 	
 	public function multiCurlCall ($urls = array(), $expiration = 86400, $settings = array())
 	{		
+		require_once(PROSPER_PATH . 'prosperMemcache.php');
 		$cache = new Prosper_Cache(); 
 
 		$result = $cache->get($settings);
@@ -646,6 +646,7 @@ abstract class Model_Base
 	
 	public function singleCurlCall ($url = '', $expiration = 86400, $settings)
 	{	
+		require_once(PROSPER_PATH . 'prosperMemcache.php');
 		$cache = new Prosper_Cache();
 
 		$response = $cache->get($settings);
@@ -788,6 +789,7 @@ abstract class Model_Base
 		}
 		$url = $this->_endPoints['fetchTrends'] . http_build_query ($settings);
 
+		require_once(PROSPER_PATH . 'prosperMemcache.php');
 		$cache = new Prosper_Cache(); 
 
 		$response = $cache->get($settings);
@@ -823,7 +825,7 @@ abstract class Model_Base
 
 					if(count($settings) < 5)
 					{
-						return ;
+						return;
 					}
 				
 					$response = $this->trendsCurlCall($settings);

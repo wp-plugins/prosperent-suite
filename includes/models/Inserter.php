@@ -171,6 +171,7 @@ class Model_Inserter extends Model_Base
 			}
 
 			$settings = array(
+				'curlCall'		  => 'single-' . $type,
 				'interface'		  => 'insert',
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
@@ -188,6 +189,7 @@ class Model_Inserter extends Model_Base
 			$recordId 	= 'couponId';
 			
 			$settings = array(
+				'curlCall'		 => 'single-' . $type,
 				'interface'		 => 'insert',
 				'imageSize'		 => '120x60',
 				'limit'          => $limit,
@@ -221,6 +223,7 @@ class Model_Inserter extends Model_Base
 			}	
 
 			$settings = array(
+				'curlCall'		  => 'single-' . $type,
 				'interface'		  => 'insert',
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
@@ -241,22 +244,22 @@ class Model_Inserter extends Model_Base
 			$pieces['v'] = 'grid';
 			
 			$settings = array(
+				'curlCall'		   => 'single-' . $type,
 				'imageSize'		   => '120x60',
 				'interface'		   => 'insert',
 				'limit'            => $limit,
-				'filterMerchant'   => ($id ? '' : $pieces['m'] ? str_replace(',', '|', $pieces['m']) : ''),		
+				'filterMerchant'   => str_replace(',', '|', $pieces['m']),		
 				'filterMerchantId' => $id,
 				'imageType'		   => 'original'			
 			);
 		}		
 		
-		if (count($settings) < 4)
+		if (count($settings) < 5)
 		{
 			return;
 		}
 
 		$url = $this->apiCall($settings, $fetch);
-		$settings['curlCall'] = 'single-' . $type;
 		$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 		if (!$allData['data'])
@@ -266,13 +269,12 @@ class Model_Inserter extends Model_Base
 			{
 				array_pop($settings);
 
-				if(count($settings) < 4)
+				if(count($settings) < 5)
 				{
 					return;
 				}
 			
 				$url = $this->apiCall($settings, $fetch);
-				$settings['curlCall'] = 'single-' . $type;
 				$allData = $this->singleCurlCall($url, $expiration, $settings);
 				
 				if ($allData['data'])

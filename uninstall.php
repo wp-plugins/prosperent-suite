@@ -4,9 +4,9 @@ $options = get_option('prosper_advanced');
 if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
     exit ();
 
-require_once(PROSPER_MODEL . '/Activate.php');
-$this->activateModel = new Model_Activate();
-$this->activateModel->settingsPrompt('uninstalled');
+require_once( plugin_dir_path(__FILE__) . 'includes/models/Admin.php');
+$adminModel = new Model_Admin();
+$adminModel->_settingsHistory('uninstalled');
 
 if ( true == $options['Option_Delete'] || 1 == $options['Option_Delete'] )
 {

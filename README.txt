@@ -98,6 +98,12 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 
 == Changelog ==
 
+= 3.6.3 = 
+* Minor optimizations
+* Fixed uninstall.php (Plugin will delete correctly)
+* Fixed links in Top Products widget and Product Insert Widget
+* Fixed issues with AutoLinker breaking pages
+
 = 3.6.2 = 
 * Minor optimizations
 * Trending Products widget now opens in new window

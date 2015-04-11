@@ -405,22 +405,20 @@ span.code_cc {
     list-style: none;
     margin: 12px;
     font-size: 14px;
-    display: table;
     float: left;
     overflow: hidden;
     border: 0;
     text-align: center;
 }
 
-#simProd li.coupBlock .listBlock {
+#simProd .listBlock {
     width: auto;
+	display:table;
 }
-
 #simProd li.coupBlock {
     list-style: none;
     margin: 14px;
     font-size: 14px;
-    display: table;
     float: left;
     overflow: hidden;
     border: 0;

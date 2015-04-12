@@ -3,7 +3,7 @@ Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 4.1.1
-Stable tag: 3.6.2
+Stable tag: 3.6.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 

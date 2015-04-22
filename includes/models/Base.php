@@ -22,7 +22,8 @@ abstract class Model_Base
 		'fetchCoupons'	   => 'http://api.prosperent.com/api/coupon/search?',
 		'fetchLocal'	   => 'http://api.prosperent.com/api/local/search?',
 		'fetchCelebrities' => 'http://api.prosperent.com/api/celebrity?',
-		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'		
+		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?',
+		'fetchAnalyzer'	   => 'http://api.prosperent.com/api/content/analyzer?'
 	);
 	
 	private $_privateNetEndPoints = array(
@@ -33,7 +34,8 @@ abstract class Model_Base
 		'fetchCoupons'     => 'http://192.168.1.104/api/coupon/search?',
 		'fetchLocal'       => 'http://192.168.1.104/api/local/search?',
 		'fetchCelebrities' => 'http://192.168.1.104/api/celebrity?',
-		'fetchTrends'      => 'http://192.168.1.104/api/trends?'
+		'fetchTrends'      => 'http://192.168.1.104/api/trends?',
+		'fetchAnalyzer'	   => 'http://192.168.1.104/api/content/analyzer?'
 	);	
 	
 	public function init()
@@ -42,12 +44,12 @@ abstract class Model_Base
 		{
 			$this->_options = $this->getOptions();
 			$this->_version = $this->getVersion();	
-			
+
 			if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
 			{ 				
 				$this->_endPoints = $this->getFetchEndpoints();			
-				
-				if (isset($this->_options['Enable_PA']) || isset($this->_options['PL_LinkOpt']) || isset($this->_options['PL_LinkAff']))
+								
+				if (isset($this->_options['PAAct']) || isset($this->_options['PLAct']))
 				{
 					add_action('wp_head', array($this, 'prosperHeaderScript'));
 				}
@@ -57,22 +59,22 @@ abstract class Model_Base
 					$this->shopHounds();
 				}
 
-				if (isset($this->_options['Enable_PA']))
+				if (isset($this->_options['PAAct']))
 				{								
 					require_once(PROSPER_INCLUDE . '/ProsperAdController.php');				
 				}
 				
-				if (isset($this->_options['Enable_AC']))
+				if (isset($this->_options['PICIAct']))
 				{
 					require_once(PROSPER_INCLUDE . '/ProsperInsertController.php');
 				}
 				
-				if (isset($this->_options['Enable_AL']))
+				if (isset($this->_options['ALAct']))
 				{
 					require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');				
 				}
 				
-				if (isset($this->_options['Enable_PPS']))
+				if (isset($this->_options['PSAct']))
 				{					
 					if (get_option('permalink_structure'))
 					{	
@@ -185,20 +187,18 @@ abstract class Model_Base
 	
 	public function createWidget()
 	{
-		$pa = get_option('prosper_performAds');
-		$ps = get_option('prosper_productSearch');
-		$pi = get_option('prosper_autoComparer');
+		$genOpt = get_option('prosperSuite');
 
 		$widgets = array();
-		if (isset($pa['Enable_PA']))
+		if (isset($genOpt['PAAct']))
 		{
 			$widgets[] = 'PerformAdWidget';		
 		}
-		if (isset($ps['Enable_PPS']))
+		if (isset($genOpt['PSAct']))
 		{
 			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget', 'RecentSearchesWidget'));		
 		}
-		if (isset($pi['Enable_AC']))
+		if (isset($genOpt['PICIAct']))
 		{
 			$widgets[] = 'ProductInsertWidget';		
 		}
@@ -277,6 +277,7 @@ abstract class Model_Base
 			'b'      => '', // brand
 			'm'      => '', // merchant
 			'l'      => 1, // limit
+			'k'		 => '', // keyword
 			'cl'     => '', // comparison limit, deprecated
 			'ct'     => 'US', // country
 			'id'     => '',  // product/catalog id	
@@ -347,7 +348,7 @@ abstract class Model_Base
 		delete_option("prosperent_store_pageId");
 		add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
 
-		$page = get_page_by_title($pageTitle);
+		$page = get_page_by_path(($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products'));
 
 		if (!$page)
 		{
@@ -475,7 +476,7 @@ abstract class Model_Base
 			$sid = implode('_', $sidArray);
 		}
 	
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['Enable_PA'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
+		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['PAAct'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()

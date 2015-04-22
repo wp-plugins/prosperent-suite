@@ -2,8 +2,8 @@
 Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
-Tested up to: 4.1.1
-Stable tag: 3.6.4
+Tested up to: 4.1.2
+Stable tag: 3.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -97,6 +97,21 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 3.7 = 
+* Fixed WhiteList issue with POST
+* Made pipes backwards compatible for crawled results, will help with 404 pages
+* Added Coupons to Product Pages
+* Fixed Top Products and Product Insert Widgets*
+* Changed Button Text
+* Changed Options, enable/disable all tools from General Settings
+* Depending on which tools are enabled, only some submenus will appeared
+* Improved List View
+* Improved Products page creation
+* Added option for Facebook Open Graph image sizes
+* Other fixes and improvement for everyone
+* Fixed blank searches
+* Made ProsperShop settings easier to understand
 
 = 3.6.4 = 
 * 3.6.3 wasn't being offered on WordPress

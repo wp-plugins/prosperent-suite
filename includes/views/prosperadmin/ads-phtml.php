@@ -11,9 +11,7 @@ echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperAds
 											  <br><br>To read more about ProsperAds and see them in action, head to 
 											  <a href="http://wordpress.prosperentdemo.com/performance-ads/">WordPress Prosperent Demo: ProsperAds</a>', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperAds...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Enable_PA', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->hidden( 'Enable_PA');
 
 echo '<h2 class="prosper_h2">' . __( 'Remove Common Words from Topics', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->textinput( 'Remove_Tags', __( 'Common Words', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span><strong>Seperate by Commas. </strong>This removes common tags from being used as topics if you select "Use Tags as Topics" in the widget.</span></a>' );

@@ -98,10 +98,8 @@ if ($pieces['v'] === 'grid')
 						</div>
 
 						<?php if ($type != 'merchant') : ?>
-						<div class="prosperVisit">
-							<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-								<input type="submit" value="<?php echo $pieces['vst']; ?>"/>
-							</form>
+						<div class="shopCheck prosperVisit">		
+							<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $pieces['vst']; ?>"/></a>				
 						</div>	
 						<?php endif; ?>
 					</div>			
@@ -231,10 +229,8 @@ else
 						}
 					}
 					?>
-					<div class="prosperVisit">
-						<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-							<input type="submit" value="<?php echo $pieces['vst']; ?>"/>
-						</form>
+					<div class="shopCheck prosperVisit">		
+						<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $pieces['vst']; ?>"/></a>				
 					</div>	
 				</div>
 			</div>

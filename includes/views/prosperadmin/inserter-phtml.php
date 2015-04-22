@@ -6,9 +6,7 @@ $prosperAdmin->adminHeader( __( 'ProsperInsert Settings', 'prosperent-suite' ), 
 
 echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperInsert is a great tool for anyone looking to promote a product, and it makes it very easy to do so. To use the ProsperInsert you can either:<br><br>&bull; Use the Content Inserter below to automatically add products to any page or post or...<br>&bull; Add a ProsperInsert to any page/post while editing it using the shortcode within the <strong>Gear dropdown</strong><br>&bull; Add ProsperInsert as a <strong>widget</strong>.<br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodinsert/">WordPress Prosperent Demo: ProsperInsert</a> for more information and to see how it looks and works.', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperInsert and ContentInserter...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Enable_AC', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->hidden( 'Enable_AC');
 
 echo '<table><tr><td><img src="' . PROSPER_IMG . '/adminImg/Content Inserter.png"/></td><td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">ContentInsert</h1></td></tr></table><div style="clear:both"></div>';
 echo '<p class="prosper_settingDesc" style="border:none;">' . __( 'Insert Products into All Posts/Pages.<br>This uses the Page/Post titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br>For example, if you use review in the titles you can exclude it from the ProsperInsert query by inserting that below.', 'prosperent-suite' ) . '</p>';								
@@ -35,6 +33,9 @@ if($options['prosper_insertView'] == 'grid' || !isset($options['prosper_insertVi
 	
 echo $prosperAdmin->textinput( 'PI_Limit', __( 'Number of Products to Insert', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>ProsperInsert of Page/Post Limit</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+/*echo $prosperAdmin->checkbox( 'contentAnalyzer', __( 'Use Content Analyzer for Query', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span><strong>Use our Content Anaylzer to come up with a query for the Product Inserts. <br>Helpful if the titles are not adding products.</strong></span></a>' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';*/
 
 echo $prosperAdmin->textinput( 'prosper_inserter_negTitles', __( 'Words to exclude from Titles', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span><strong>Seperate by commas.</strong></span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';

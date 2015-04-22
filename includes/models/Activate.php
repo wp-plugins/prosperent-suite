@@ -15,7 +15,7 @@ class Model_Activate extends Model_Base
 		
 		$this->prosperDefaultOptions();		
 		$this->prosperOptionActivateAdd();	
-		if ($this->_options['Enable_PPS'])
+		if ($this->_options['PSAct'])
 		{
 			$this->prosperStoreInstall();
 			$this->prosperReroutes();
@@ -63,26 +63,25 @@ class Model_Activate extends Model_Base
 	{
 		if (!is_array($prosperSuiteOpts = get_option('prosperSuite')))
 		{
-			$opt = array(
+			$prosperSuiteOpts = array(
 				'Target' => 1,
 				'anonymousData' => 1,
 				'prosperNewVersion' => 1
 			);	
-			update_option('prosperSuite', $opt);
+			update_option('prosperSuite', $prosperSuiteOpts);
 		}
 		elseif(!$prosperSuiteOpts['prosperNewVersion'])
 		{
-			$opt = array_merge($prosperSuiteOpts, array(
+			$prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
 				'anonymousData' => 1,
 				'prosperNewVersion' => 1
 			));
-			update_option('prosperSuite', $opt);
+			update_option('prosperSuite', $prosperSuiteOpts);
 		}
 
-
 		if (!is_array($productOptions = get_option('prosper_productSearch' )))
-		{			
-			$opt = array(
+		{		
+			$productOptions = array(
 				'Enable_PPS'       	 => 1,
 				'Product_Endpoint' 	 => 1,
 				'Country'		  	 => 'US',
@@ -104,74 +103,90 @@ class Model_Activate extends Model_Base
 				'localLabel'	     => 'Local Deals',
 				'Product_View'		 => 'list'
 			);
-			update_option( 'prosper_productSearch', $opt );
+			update_option( 'prosper_productSearch', $productOptions );
 		}
 		elseif (!$productOptions['Product_View'])
 		{
-			$opt = array_merge($productOptions, array(
+			$productOptions = array_merge($productOptions, array(
 				'prodLabel'	   => 'Products',
 				'coupLabel'	   => 'Coupons',
 				'celeLabel'	   => 'Celebrity Products',
 				'localLabel'   => 'Local Deals',
 				'Product_View' => 'grid'
 			));
-			update_option( 'prosper_productSearch', $opt );
+			update_option( 'prosper_productSearch', $productOptions );
 		}
 
 		if (!is_array(get_option('prosper_autoComparer')))
 		{
-			$opt = array(
+			$PIopt = array(
 				'Enable_AC'    => 1,
 				'Link_to_Merc' => 1,
 				'PI_Limit'	   => 1
 			);				
-			update_option( 'prosper_autoComparer', $opt );
+			update_option( 'prosper_autoComparer', $PIopt );
 		}
 
 		if (!is_array(get_option('prosper_autoLinker')))
 		{
-			$opt = array(
+			$ALopt = array(
 				'Enable_AL' 		 => 1,
 				'Auto_Link_Comments' => 0
 			);			
-			update_option( 'prosper_autoLinker', $opt );
+			update_option( 'prosper_autoLinker', $ALopt );
 		}
 
 		if (!is_array(get_option('prosper_prosperLinks')))
 		{
-			$opt = array(
+			$PLopt = array(
 				'PL_LinkOpt' => 1,
 				'PL_LinkAff' => 1
 			);			
-			update_option( 'prosper_prosperLinks', $opt );
+			update_option( 'prosper_prosperLinks', $PLopt );
 		}
 		
 		if (!is_array($advOpts = get_option('prosper_advanced')))
 		{
-			$opt = array(
+			$advOpts = array(
 				'Title_Structure' => 0,
-				'Base_URL'		  => 'products'
+				'Base_URL'		  => 'products',
+				'Image_Masking'	  => 0,
+				'URL_Masking'	  => 0,
+				'MemcacheIP'	  => '127.0.0.1',
+				'MemcachePort'    => '11211'
 			);			
-			update_option( 'prosper_advanced', $opt );
+			update_option( 'prosper_advanced', $advOpts );
 		}
 		elseif (!$advOpts['MemcacheIP'] || !$advOpts['MemcachePort'])
 		{
-			$opt = array_merge($advOpts, array(
+			$advOpts = array_merge($advOpts, array(
 				'Image_Masking'	=> 0,
 				'URL_Masking'	=> 0,
 				'MemcacheIP'	=> '127.0.0.1',
 				'MemcachePort'	=> '11211'
 			));
-			update_option( 'prosper_advanced', $opt );
+			update_option( 'prosper_advanced', $advOpts );
 		}
 		
 		if (!is_array(get_option('prosper_themes')))
 		{
-			$opt = array(
+			$PTopt = array(
 				'Set_Theme' => 'Default'
 			);			
-			update_option( 'prosper_themes', $opt );
+			update_option( 'prosper_themes', $PTopt );
 		}
+
+
+			$PAopt = get_option('prosper_performAds');
+			$prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
+				'PSAct'	  => ($productOptions['Enable_PPS'] == 1 ? 1 : 0),
+				'PAAct'	  => ($PAopt['Enable_PA'] == 1 ? 1 : 0),
+				'PICIAct' => ($PIopt['Enable_AC'] == 1 ? 1 : 0),
+				'ALAct'	  => ($ALopt['Enable_AL'] == 1 ? 1 : 0),
+				'PLAct'	  => (($PLopt['PL_LinkOpt'] == 1 || $PLAct['PL_LinkAff'] == 1) ? 1 : 0)
+			));
+			update_option('prosperSuite', $prosperSuiteOpts);
+	
 	}
 	
 	public function prosperQueryTag()

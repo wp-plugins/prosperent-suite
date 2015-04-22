@@ -33,17 +33,29 @@ class TopProductsWidget extends WP_Widget
 		$modelSearch = new Model_Search();
 		$modelSearch->getFetchEndpoints();
 					
+		$homeUrl = home_url('', 'http');
+		if (is_ssl())
+		{
+			$homeUrl = home_url('', 'https');
+		}					
+					
+		$expiration = PROSPER_CACHE_PRODS;
+		$type = 'product';
+		
 		if ($options['Country'] === 'US')
 		{
 			$fetch = 'fetchProducts';
+			$currency = 'USD';
 		}
 		elseif($options['Country'] === 'UK')
 		{
 			$fetch = 'fetchUkProducts';
+			$currency = 'GBP';
 		}
 		else
 		{
 			$fetch = 'fetchCaProducts';
+			$currency = 'CAD';
 		}
 		
 		$sidArray = array();
@@ -141,50 +153,18 @@ class TopProductsWidget extends WP_Widget
 						<div class="listBlock">
 							<div class="prodImage">
 								<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
-							</div>
-								<?php
-								if ($record['promo'])
-								{					
-									echo '<div class="promo"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $record['promo'] . '!</a></span></div>';
-								}
-								elseif($record['expiration_date'] || $record['expirationDate'])
-								{
-									$expirationDate = $record['expirationDate'] ? $record['expirationDate'] : $record['expiration_date'];			
-									$expires = strtotime($expirationDate);
-									$today = strtotime(date("Y-m-d"));
-									$interval = ($expires - $today) / (60*60*24);
-
-									if ($interval <= 20 && $interval > 0)
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
-									}
-									elseif ($interval <= 0)
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">Ends Today!</a></span></div>';
-									}
-									else
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
-									}
-								}
-								elseif ($type == 'coupon' || $type == 'local')
-								{
-									echo '<div class="promo">&nbsp;</div>';
-								}
-								?>
+							</div>								
 							<div class="prodContent">
 								<div class="prodTitle">
 									<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
 										<?php echo $keyword; ?>
 									</a>
 								</div>     
-								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
+								<?php echo $price; ?>												
 							</div>
-							
-							<div class="prosperVisit">					
-								<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-									<input type="submit" value="Visit Store"/>
-								</form>
+														
+							<div class="shopCheck prosperVisit">		
+								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="Visit Store"/></a>				
 							</div>	
 						</div>			
 					</li>

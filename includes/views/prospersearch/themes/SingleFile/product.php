@@ -46,8 +46,8 @@
 		echo '<div class="noResults-padding"></div>';
 	}
 endif;if(!$params['view']||$params['view']==='list'){?>
-<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$record['affiliate_url']=$options['URL_Masking']?$homeUrl.'/store/go/'.rawurlencode(str_replace(array('http://prosperent.com/','/'),array('',',SL,'),$record['affiliate_url'])):$record['affiliate_url'];$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
-		class="productBlock">
+<div id="productList" style="width: 100%; float: right"> <?php if(!empty($results)){$resultsCount = count($results);foreach($results as $i=>$record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$record['affiliate_url']=$options['URL_Masking']?$homeUrl.'/store/go/'.rawurlencode(str_replace(array('http://prosperent.com/','/'),array('',',SL,'),$record['affiliate_url'])):$record['affiliate_url'];$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <div
+		class="productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
 		<div class="productImage">
 			<a
 				href=<?php echo($options['imageMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
@@ -74,12 +74,9 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 			</div>
 			<div class="productPriceSale">
 				<span><?php echo($currency=='GBP'?'&pound;':'$').number_format($priceSale, 2)?></span>
-			</div> <?php }}?> <div class="prosperVisit">
-				<form class="shopCheck"
-					action="<?php echo $record['affiliate_url'];?>"
-					target="<?php echo $target;?>" method="POST" rel="nofollow,nolink">
-					<input type="submit" value="Visit Store" />
-				</form>
+			</div> <?php }}?> 
+			<div class="shopCheck prosperVisit">		
+				<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $visitButton; ?>"/></a>				
 			</div>
 		</div>
 	</div> <?php }}}elseif($params['view']==='grid'){$gridImage=($options['Grid_Img_Size']?preg_replace('/px|em|%/i','',$options['Grid_Img_Size']):200).'px';if($trend){$gridImage=($options['Same_Img_Size']?preg_replace('/px|em|%/i','',$options['Same_Img_Size']):200).'px';}$classLoad=($type==='coupon'||$gridImage<120)?'class="loadCoup"':'class="load"';echo '<div id="simProd" style="width:100%;float:right;border-top: 2px solid #ddd;">';echo '<ul>';if(!empty($results)){foreach($results as $record){if(is_ssl()){$record['image_url']=str_replace('http','https',$record['image_url']);}$priceSale=$record['priceSale']?$record['priceSale']:$record['price_sale'];$price=$priceSale?'<div class="prodPriceSale">'.($currency=='GBP'?'&pound;':'$').number_format($priceSale, 2).'</div>':'<div class="prodPrice">'.($currency=='GBP'?'&pound;':'$').number_format($record['price'], 2).'</div>';$keyword=preg_replace('/\(.+\)/i','',$record['keyword']);$cid=$type==='coupon'?$record['couponId']:($type==='local'?$record['localId']:$record['catalogId']);?> <li
@@ -101,12 +98,8 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 						href=<?php echo($options['titleMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 						rel="nolink"> <?php echo $keyword;?> </a>
 				</div> <?php if($price&&$type!='coupon'&&$type!='local'){echo $price;}?> </div>
-			<div class="prosperVisit">
-				<form class="shopCheck"
-					action="<?php echo $record['affiliate_url'];?>"
-					target="<?php echo $target;?>" method="POST" rel="nofollow,nolink">
-					<input type="submit" value="Visit Store" />
-				</form>
+			<div class="shopCheck prosperVisit">		
+				<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $visitButton; ?>"/></a>				
 			</div>
 		</div>
 	</li> <?php }}echo '</ul>';}$this->searchModel->prosperPagination($totalAvailable,$params['page']);echo '</div>';echo '</br>';

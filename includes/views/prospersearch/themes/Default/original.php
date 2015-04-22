@@ -175,8 +175,6 @@
 	</div>
 
 	<?php
-	//$pagedResults = $this->searchModel->prosperPages($results, $params['page']);
-
 	if (!$params['view'] || $params['view'] === 'list') 
 	{ 
 		?>
@@ -295,11 +293,9 @@
 								}
 							}
 							?>
-							<div class="prosperVisit">					
-								<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-									<input type="submit" value="Visit Store"/>
-								</form>
-							</div>	
+							<div class="shopCheck prosperVisit">		
+								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="Visit Store"/></a>				
+							</div>
 						</div>
 					</div>
 					<?php
@@ -372,13 +368,10 @@
 									</a>
 								</div>     
 								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
-							</div>
-							
-							<div class="prosperVisit">					
-								<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-									<input type="submit" value="Visit Store"/>
-								</form>
-							</div>	
+							</div>								
+							<div class="shopCheck prosperVisit">		
+								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="Visit Store"/></a>				
+							</div>							
 						</div>			
 					</li>
 				<?php

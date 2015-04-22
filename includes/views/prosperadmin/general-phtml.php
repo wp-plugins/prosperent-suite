@@ -13,18 +13,38 @@ echo __( '<ol><li><a href="http://prosperent.com/join?utm_source=' . urlencode(h
 echo $prosperAdmin->textinput( 'Api_Key', __( '<strong>Prosperent API Key</strong>', 'prosperent-suite' ), '');
 echo '<p class="prosper_descb">' . __( '', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Target', __( 'Open Links in New Window/Tab', 'prosperent-suite' ));
-echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in a new window/tab <br><strong>Unchecked</strong> : opens link in the same window<br><strong>Will Not Change the Functionality of Performance Ads or ProsperLinks</strong>", 'prosperent-suite' ) . '</p>';
+echo '<h2 class="prosper_h2">' . __( 'Enable/Disable...', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->checkbox( 'PSAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperShop</span>', 'prosperent-suite' ) );
+echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Caching', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Enable_Caching', __( 'Turn on Caching', 'prosperent-suite' ));
-if ($options['Enable_Caching'] &&  extension_loaded('memcache'))
-{
-	echo '<a style="margin:10px 0 6px 35px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&clearCache&nonce='. wp_create_nonce( 'prosper_clear_cache' )) . '">' . __( 'Clear Memcache', 'prosperent-suite' ) . '</a>';
+if ($options['PAAct'])
+{	
+	echo $prosperAdmin->checkbox( 'PAAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperAds</span>', 'prosperent-suite' ) );
+	echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 }
-echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->checkbox( 'PICIAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperInsert and Content Inserter</span>', 'prosperent-suite' ) );
+echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
+echo $prosperAdmin->checkbox( 'ALAct', __( '<span style="font-size:18px;line-height:1.2em;">AutoLinker</span>', 'prosperent-suite' ) );
+echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->checkbox( 'PLAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperLinks</span>', 'prosperent-suite' ) );
+echo '<p class="prosper_descb" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
+
+if ($options['PSAct'] || $options['PICIAct'] || $options['ALAct'])
+{
+	echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
+	echo $prosperAdmin->checkbox( 'Target', __( 'Open Links in New Window/Tab', 'prosperent-suite' ));
+	echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in a new window/tab <br><strong>Unchecked</strong> : opens link in the same window<br><strong>Will Not Change the Functionality of ProsperAds or ProsperLinks</strong>", 'prosperent-suite' ) . '</p>';
+
+	echo '<h2 class="prosper_h2">' . __( 'Caching', 'prosperent-suite' ) . '</h2>';
+	echo $prosperAdmin->checkbox( 'Enable_Caching', __( 'Turn on Caching', 'prosperent-suite' ));
+	if ($options['Enable_Caching'] &&  extension_loaded('memcache'))
+	{
+		echo '<a style="margin:10px 0 6px 35px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&clearCache&nonce='. wp_create_nonce( 'prosper_clear_cache' )) . '">' . __( 'Clear Memcache', 'prosperent-suite' ) . '</a>';
+	}
+	echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
+}
 echo '<h2 class="prosper_h2">' . __( 'Help Us, Help You', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'anonymousData', __( 'Send data back to Prosperent', 'prosperent-suite' ));
 echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and understanding how to make the plugin better for everyone and helping with support when needed.", 'prosperent-suite' ) . '</p>';

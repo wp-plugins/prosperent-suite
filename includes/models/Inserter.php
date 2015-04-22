@@ -46,12 +46,13 @@ class Model_Inserter extends Model_Base
 			}
 		}
 		
-		if (preg_match('/\[prosperNewQuery="(.+)"\]/i', $text, $regs))
-		{
-			$newTitle = $regs[1];
-			$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
-		}
-		
+	if (preg_match('/\[prosperNewQuery="(.+)"\]/i', $text, $regs))
+	{
+		$newTitle = $regs[1];
+		$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
+	}
+	
+
 		if ($this->_options['prosper_inserter_negTitles'])
 		{
 			if(function_exists('prosper_negatives') === false)
@@ -73,6 +74,21 @@ class Model_Inserter extends Model_Base
 		if (!$newTitle)
 		{
 			return trim($text);
+		}
+		
+		if ($this->_options['contentAnalyzer'])
+		{
+			$settings = array(
+				'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
+			);
+
+			$url = $this->apiCall($settings, 'fetchAnalyzer');
+			$allData = $this->singleCurlCall($url, 86400, $settings);
+
+			foreach ($allData['data'] as $newKeyword)
+			{
+				$newKeywords[] = $newKeyword['phrase']; 
+			}		
 		}
 		
 		$insert = '<p>[compare q="' . ($allParams['q'] ? $allParams['q'] : $newTitle) . '" b="' . $allParams['b'] . '" m="' . $allParams['m'] . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/compare]</p>';
@@ -228,6 +244,7 @@ class Model_Inserter extends Model_Base
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
+				//'filterKeyword'   => $pieces['k'],
 				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
 				'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
 				'filterCelebrity' => $pieces['celeb'],	

@@ -277,7 +277,7 @@ class Model_Search extends Model_Base
 		$facetsNew = array();
 		$facetsPicked = array();
 		foreach ($facets as $i => $facetArray)
-		{		
+		{	
 			if ($i === 'zipCode')
 			{
 				$i = 'zip';
@@ -302,7 +302,7 @@ class Model_Search extends Model_Base
 				}
 				elseif ($facet['value'])
 				{
-					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) . ($params[$i] ? '~' . $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
+					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) .($params[$i] ? '~' .  $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
 				}
 			}
 		}
@@ -472,7 +472,7 @@ class Model_Search extends Model_Base
 	
 	public function productStoreJs()
 	{
-		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version,1 );
+		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version, 1 );
 		wp_enqueue_script( 'productStoreJS' );
 	}	
 	
@@ -496,17 +496,23 @@ class Model_Search extends Model_Base
 			$action = $base;
 		}
 		
-		if (is_page($base) && $_POST['q'])
+		$queryString = '';
+		if ($query = (trim($_POST['q'] ? $_POST['q'] : $options['Starting_Query'])))
+		{
+			$queryString = '/query/' . rawurlencode($query);
+		}
+		
+		if (is_page($base) && isset($_POST['q']))
 		{
 			$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			$prodSubmit = preg_replace('/\/$/', '', $url);
 			$newQuery = str_replace(array('/query/' . $query, '/query/' . rawurlencode($query)), '', $prodSubmit);
-			header('Location: ' . $newQuery . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . '/query/' . rawurlencode(trim($_POST['q'])));
+			header('Location: ' . $newQuery . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . $queryString);
 			exit;
 		}
-		elseif ($_POST['q'])
+		elseif (isset($_POST['q']))
 		{
-			header('Location: ' . $url . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . '/query/' . rawurlencode(trim($_POST['q'])));
+			header('Location: ' . $url . '/type/' . ($pieces['sf'] ? $pieces['sf'] : 'prod') . $queryString);
 			exit;
 		}		
 
@@ -568,14 +574,27 @@ class Model_Search extends Model_Base
 				}
 				$filter = 'filterCatalogId';
 			}
-
+			
+			if ($this->_options['OG_Image'] > '250' || !$this->_options['OG_Image'])
+			{
+				$imageSize = '500x500';				
+			}
+			else
+			{
+				$imageSize = '250x250';
+				if ($this->_options['OG_Image'] < '200')
+				{
+					$this->_options['OG_Image'] = 200;
+				}
+			}
+			
 			/*
 			/  Prosperent API Query
 			*/
 			$settings = array(
 				'limit' 	=> 1,
 				$filter 	=> $cId,
-				'imageSize' => '500x500',
+				'imageSize' => $imageSize,
 				'curlCall'	=> 'single-productPage-' . $prosperPage
 			);
 
@@ -589,8 +608,8 @@ class Model_Search extends Model_Base
 			echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
 			echo '<meta property="og:type" content="website" />';
 			echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
-			echo '<meta property="og:image:width" content="300" />';
-			echo '<meta property="og:image:height" content="300" />';
+			echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
+			echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
 			echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
 			echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
 
@@ -734,12 +753,12 @@ class Model_Search extends Model_Base
 	{		
 		if(get_query_var('queryParams'))
 		{
-			$params = $this->getUrlParams();
+			$params = str_replace('%7C', '~', $this->getUrlParams());	
 		}
 
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$url = 'http://' . $_SERVER['HTTP_HOST'] . str_replace('%7C', '~', $_SERVER['REQUEST_URI']);
 		$url = preg_replace('/\/$/', '', $url);
-		
+
 		if(is_front_page())
 		{
 			$base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
@@ -749,11 +768,11 @@ class Model_Search extends Model_Base
 		$sepEnds 	  = $this->getEndpoints();
 		//$typeSelector = $this->getTypeSelector($sepEnds, $params['type']);
 		$newEnds 	  = array_keys($sepEnds);
-		$brand    	  = isset($params['brand']) ? rawurldecode(stripslashes($params['brand'])) : '';
-		$merchant 	  = isset($params['merchant']) ? rawurldecode(stripslashes($params['merchant'])) : '';		
-		$category 	  = isset($params['category']) ? rawurldecode(stripslashes($params['category'])) : '';	
-		$city 	  	  = isset($params['city']) ? rawurldecode(stripslashes($params['city'])) : '';
-		$zipCode 	  = isset($params['zip']) ? rawurldecode(stripslashes($params['zip'])) : '';
+		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';
+		$merchant 	  = isset($params['merchant']) ? str_replace('|', '~', rawurldecode(stripslashes($params['merchant']))) : '';		
+		$category 	  = isset($params['category']) ? str_replace('|', '~', rawurldecode(stripslashes($params['category']))) : '';	
+		$city 	  	  = isset($params['city']) ? str_replace('|', '~', rawurldecode(stripslashes($params['city']))) : '';
+		$zipCode 	  = isset($params['zip']) ? str_replace('|', '~', rawurldecode(stripslashes($params['zip']))) : '';
 
 		return array(
 			'startingType' => $newEnds[0],
@@ -762,7 +781,7 @@ class Model_Search extends Model_Base
 				'merchant'  => $this->getMerchants($merchant),
 				'category'	=> $this->getCategories($category),
 				'city'		=> $this->getCities($city),
-				'zip'   => $this->getZips($zipCode)
+				'zip'   	=> $this->getZips($zipCode)
 			),
 			'typeSelector' => $sepEnds,
 			'params'	   => $params,

@@ -38,37 +38,45 @@ class ProductInsertWidget extends WP_Widget
 		{
 			$homeUrl = home_url('', 'https');
 		}					
-					
-		if ($instace['coupons'])
+		
+		if ($instance['coupons'])
 		{
 			$expiration = PROSPER_CACHE_COUPS;
 			$fetch = 'fetchCoupons';
+			$type = 'coupon';
+			$visitButton = 'Use Coupon';
+			$imageSize = '120x60';
 		}
 		else
 		{
 			$expiration = PROSPER_CACHE_PRODS;
+			$type = 'product';
+			$visitButton = 'Visit Store';
+			
 			if ($options['Country'] === 'US')
 			{
 				$fetch = 'fetchProducts';
+				$currency = 'USD';
 			}
 			elseif($options['Country'] === 'UK')
 			{
 				$fetch = 'fetchUkProducts';
+				$currency = 'GBP';
 			}
 			else
 			{
 				$fetch = 'fetchCaProducts';
+				$currency = 'CAD';
 			}
 			
-		}
-	
-		if (($instance['imageSize'] > 125 || !$instance['imageSize']))
-		{
-			$imageSize = '250x250';
-		}
-		else
-		{
-			$imageSize = '125x125';
+			if (($instance['imageSize'] > 125 || !$instance['imageSize']))
+			{
+				$imageSize = '250x250';
+			}
+			else
+			{
+				$imageSize = '125x125';
+			}
 		}
 	
 		$settings = array(
@@ -80,7 +88,7 @@ class ProductInsertWidget extends WP_Widget
 			'filterPriceSale' => $instance['onSale'] ? (($instance['priceRangea'] || $instance['priceRangeb']) ? $instance['priceRangea'] . ',' . $instance['priceRangeb'] : '0.01,') : '',
 			'filterPrice' 	  => ($instance['onSale'] ? '' : (($instance['priceRangea'] || $instance['priceRangeb']) ? $instance['priceRangea'] . ',' . $instance['priceRangeb'] : '')),
 		);
-
+		
 		if (!$instance['coupons'])
 		{
 			$settings['filterBrand'] = $instance['brands'] ? array_map('trim', explode(',', $instance['brands'])) : '';
@@ -155,10 +163,8 @@ class ProductInsertWidget extends WP_Widget
 								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
 							</div>
 							
-							<div class="prosperVisit">					
-								<form class="shopCheck" action="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" method="POST" rel="nofollow,nolink">
-									<input type="submit" value="Visit Store"/>
-								</form>
+							<div class="shopCheck prosperVisit">		
+								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $visitButton; ?>"/></a>				
 							</div>	
 						</div>			
 					</li>

@@ -25,6 +25,29 @@ class Model_Admin extends Model_Base
 			
 	public function init()
 	{
+		$genOpts = get_option('prosperSuite');
+
+		$shopOpts = get_option('prosper_productSearch');
+		$shopOpts['Enable_PPS'] = $genOpts['PSAct'];
+		update_option('prosper_productSearch', $shopOpts);
+		
+		$adsOpts = get_option('prosper_performAds');
+		$adsOpts['Enable_PA'] = $genOpts['PAAct'];
+		update_option('prosper_performAds', $adsOpts);
+		
+		$insertOpts = get_option('prosper_autoComparer');
+		$insertOpts['Enable_AC'] = $genOpts['PICIAct'];
+		update_option('prosper_autoComparer', $insertOpts);
+		
+		$linkerOpts = get_option('prosper_autoLinker');
+		$linkerOpts['Enable_AL'] = $genOpts['ALAct'];
+		update_option('prosper_autoLinker', $linkerOpts);
+		
+		$linksOpts = get_option('prosper_prosperLinks');
+		$linksOpts['Enable_PL'] = $genOpts['PLAct'];
+		update_option('prosper_prosperLinks', $linksOpts);
+		
+		
 		if ( isset( $_GET['add'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_add_setting' ) && current_user_can( 'manage_options' ) ) 
 		{ 
 			$this->addLinks();
@@ -58,7 +81,7 @@ class Model_Admin extends Model_Base
 		}
 		
 		$adOpts = get_option('prosper_performAds');
-		if ($_GET['page'] == 'prosper_performAds' && ($adOpts['Enable_PA'] == FALSE || !$adOpts['Enable_PA']) && current_user_can( 'manage_options' ) )
+		if ($_GET['page'] == 'prosper_performAds' && ($genOpts['PAAct'] == FALSE || !$genOpts['PAAct']) && current_user_can( 'manage_options' ) )
 		{
 			$_GET['page'] = 'prosper_general';
 		}
@@ -193,7 +216,7 @@ class Model_Admin extends Model_Base
 			'pluginVersion' 	  => $pluginInfo['Version'],
 			'privateNetwork'	  => file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') ? 1 : 0,
 			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
-			'prosperShop'		  => $options['Enable_PPS'] ? 1 : 0,
+			'prosperShop'		  => $options['PSAct'] ? 1 : 0,
 			'productEndpoint' 	  => $options['Product_Endpoint'] ? 1 : 0,
 			'productCountry' 	  => $options['Country'],
 			'couponEndpoint' 	  => $options['Coupon_Endpoint'] ? 1 : 0,
@@ -201,10 +224,10 @@ class Model_Admin extends Model_Base
 			'localEndpoint' 	  => $options['Local_Endpoint'] ? 1 : 0,
 			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
 			'sliders' 			  => $options['Enable_Sliders'] ? 1 : 0,
-			'prosperAds' 		  => $options['Enable_PA'] ? 1 : 0,
-			'prosperInsert' 	  => $options['Enable_AC'] ? 1 : 0,
+			'prosperAds' 		  => $options['PAAct'] ? 1 : 0,
+			'prosperInsert' 	  => $options['PICIAct'] ? 1 : 0,
 			'contentInsert' 	  => ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages']) ? 1 : 0,
-			'autoLinker' 		  => $options['Enable_AL'] ? 1 : 0,
+			'autoLinker' 		  => $options['ALAct'] ? 1 : 0,
 			'linkerAmount'		  => $options['LinkAmount'],
 			'linkAffiliator' 	  => $options['PL_LinkAff'] ? 1 : 0,
 			'linkOptimizer' 	  => $options['PL_LinkOpt'] ? 1 : 0,

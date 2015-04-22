@@ -7,9 +7,7 @@ $prosperAdmin->adminHeader( __( 'ProsperShop Settings', 'prosperent-suite' ), tr
 
 echo '<p class="prosper_settingDesc"  style="font-size:14px;">' . __( 'ProsperShop is a store that gives visitors to your site access to products from over 4500 merchants.<br><br>The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store. <br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodstore/">WordPress Prosperent Demo: The Shop</a> for more information and to see how it runs.<br><br><b style="font-size:16px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on ProsperShop...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'Enable_PPS', __( '<strong>Yes!</strong>', 'prosperent-suite' ) );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->hidden( 'Enable_PPS');
 
 echo '<h2 class="prosper_h2">' . __( 'Allow My Visitors to Search for... ', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Product_Endpoint', __( 'Products', 'prosperent-suite' ) );
@@ -30,6 +28,10 @@ echo $prosperAdmin->checkbox( 'Geo_Locate', __( 'Turn on Geo-Location', 'prosper
 echo $prosperAdmin->textinput( 'localLabel', __( 'Local Deals Label', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Changes the headline above the store when active. Default is "Local Deals".</span></a>', 'prosper_textinputsmallindent');
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
+echo '<h2 class="prosper_h2">' . __( 'Set Results Limit...', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Amount of products shown per page.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
 echo '<h2 class="prosper_h2">' . __( 'Which view do you want for the results pages...', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->radio( 'Product_View', array( 'grid' => __( 'Grid', 'prosperent-suite' ), 'list' => __( 'List', 'prosperent-suite' )), 'Product/Celebrity Results' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
@@ -43,19 +45,6 @@ echo '<p class="prosper_desc">' . __( "Minimum is <strong>70</strong>", 'prosper
 
 echo $prosperAdmin->textinput( 'Same_Img_Size', __( 'Enter Same/Similar Products image width', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Will change the image size on the product pages as well for the same/similar product sections.<br><br><br>The image will be a square, so entering the width will be the same as the height.</span></a>', 'prosper_textinputsmall');
 echo '<p class="prosper_descb">' . __( "Minimum is <strong>70</strong>", 'prosperent-suite' ) . '</p>';
-
-echo '<h2 class="prosper_h2">' . __( 'Set Limits...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->textinput( 'Pagination_Limit', __( 'Results per page', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Amount of products shown per page.</span></a>', 'prosper_textinputsmall' );
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-
-echo $prosperAdmin->textinput( 'Same_Limit', __( 'Limit for Same Brand Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Other Products from Brand" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-
-echo $prosperAdmin->textinput( 'Same_Limit_Merchant', __( 'Limit for Same Merchant Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Other Products from Merchant" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-
-echo $prosperAdmin->textinput( 'Similar_Limit', __( 'Limit for Similar Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Similar Products" on the individual product pages.</span></a>', 'prosper_textinputsmall' );
-echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Do you want to allow filtering of the results?', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong>Yes!</strong> Show the merchants and brands.', 'prosperent-suite' ) );
@@ -93,8 +82,23 @@ echo $prosperAdmin->textinput( 'Celebrity_Query', __( 'Celebrity- Celeb Name', '
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->textinput( 'Local_Query', __( 'Local- City, State or State', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>Default query for local, either "city, state" or "state". If no starting query is set, the store shows the <b>No Results</b> page which includes Top Products from Trends data</span></a>' );
+echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo '<h2 class="prosper_h2">' . __( 'Product Page Limits...', 'prosperent-suite' ) . '</h2>';
+echo '<p class="prosper_desc">' . __( "Entering 0 or leaving blank will turn each section off.", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->textinput( 'Same_Limit', __( 'Same Brand Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Other Products from Brand" on the product pages.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'Same_Limit_Merchant', __( 'Same Merchant Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Other Products from Merchant" on the product pages.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+
+echo $prosperAdmin->textinput( 'Similar_Limit', __( 'Similar Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Similar Products" on the product pages.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 $options = get_option('prosper_productSearch');
+
+echo $prosperAdmin->textinput( 'MCoupon_Limit', __( 'Coupons from Merchant', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Merchant Coupons" on the product pages.</span></a>', 'prosper_textinputsmall' );
+echo '<p class="' . ($options['numRecentSearch'] ? 'prosper_descb' : 'prosper_desc') . '">' . __( "", 'prosperent-suite' ) . '</p>';
 
 if ($options['numRecentSearch'])
 {

@@ -164,16 +164,18 @@ class ProsperSearchController
 		$pickedFacets = array();
 		$curlUrls	  = array();
 		$dollarSlider = 'Price Range';
+		$url		  = $data['url'];
+		$visitButton  = 'Visit Store';
 
 		if ($params['dR'])
 		{
 			$priceSlider = explode(',', rawurldecode($params['dR']));
-			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $data['url']) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $url) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
 		}
 		if ($params['pR'])
 		{
 			$percentSlider = explode(',', rawurldecode($params['pR']));
-			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}
 
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
@@ -200,21 +202,14 @@ class ProsperSearchController
 			$fetch = 'fetchUkProducts';
 			$currency = 'GBP';
 		}
-
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		
 		if (!$params['query'] && !$params['brand'] && !$params['category'] && !$params['merchant'] && $options['Starting_Query'])
-		{			
-			if (is_front_page())
-			{
-				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
-			}
-			
-			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities($options['Starting_Query']);
+		{						
+			$url .= '/query/' . htmlentities($options['Starting_Query']);
 			$q = $options['Starting_Query'];
 		}
 		else
 		{
-			$url = preg_replace('/\/$/', '', $url);
 			$q = rawurldecode($params['query']);
 		}
 
@@ -280,21 +275,17 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($query || $filters['brand'] || $filters['merchant'] || $filters['category']))
 		{
 			$extraMerchants = array();
+			if($options['Positive_Merchant'])
+			{
+				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
+			}
+			
 			if($options['Negative_Merchant'])
 			{
 				$minusBrands = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
 				foreach ($minusBrands as $negative)
 				{
 					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-
-			if($options['Positive_Merchant'])
-			{
-				$plusMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-				foreach ($plusMerchants as $plus)
-				{
-					$extraMerchants[] = trim($plus);
 				}
 			}
 			
@@ -320,22 +311,19 @@ class ProsperSearchController
 			$extraBrands = array();
 			if($options['Positive_Brand'])
 			{
-				$plusBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
-				foreach ($plusBrands as $positive)
-				{
-					$extraBrands[] = trim($positive);
-				}
+				$extraBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
 			}
 
 			if($options['Negative_Brand'])
 			{
 				$minusBrands = array_map('stripslashes', explode(',', $options['Negative_Brand']));
+				
 				foreach ($minusBrands as $negative)
 				{
 					$extraBrands[] = '!' . trim($negative);
 				}
 			}
-			
+
 			if (!$query && $filters['brand'])
 			{
 				$extraBrands = array_merge($extraBrands, $filters['brand']);
@@ -352,7 +340,7 @@ class ProsperSearchController
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
 			);	
-
+			
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, $fetch);
 		}
 
@@ -415,32 +403,27 @@ class ProsperSearchController
 		$pickedFacets 	 = array();
 		$curlUrls		 = array();
 		$dollarSlider	 = 'Dollars Off';
+		$url		  	 = $data['url'];		
+		$visitButton	 = 'Use Coupon';
 		
 		if ($params['dR'])
 		{
 			$priceSlider = explode(',', rawurldecode($params['dR']));
-			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $data['url']) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $url) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
 		}
 		if ($params['pR'])
 		{
 			$percentSlider = explode(',', rawurldecode($params['pR']));
-			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
 		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['query'] && !$params['merchant'] && $options['Coupon_Query'])
-		{			
-			if (is_front_page())
-			{
-				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
-			}
-			
-			$url = preg_replace('/\/$/', '', $url) . '/query/' . htmlentities(rawurlencode($options['Coupon_Query']));
+		{					
+			$url .= '/query/' . htmlentities(rawurlencode($options['Coupon_Query']));
 			$q = $options['Coupon_Query'];
 		}
 		else
 		{
-			$url = preg_replace('/\/$/', '', $url);
 			$q = rawurldecode($params['query']);
 		}
 
@@ -499,21 +482,17 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($query || $filters['merchant'] || $filters['category']))
 		{
 			$extraMerchants = array();
+			if($options['Positive_Merchant'])
+			{
+				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
+			}
+			
 			if($options['Negative_Merchant'])
 			{
 				$minusMerchants = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
 				foreach ($minusMerchants as $negative)
 				{
 					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-
-			if($options['Positive_Merchant'])
-			{
-				$plusMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-				foreach ($plusMerchants as $plus)
-				{
-					$extraMerchants[] = trim($plus);
 				}
 			}
 			
@@ -595,27 +574,23 @@ class ProsperSearchController
 		$settings 	  = array();
 		$pickedFacets = array();
 		$curlUrls     = array();
-		$dollarSlider = 'Dollars Off';
+		$dollarSlider = 'Dollars Off';		
+		$url		  = $data['url'];
+		$visitButton  = 'View Deal';
 
 		if ($params['dR'])
 		{
 			$priceSlider = explode(',', rawurldecode($params['dR']));
-			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $data['url']) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/dR/' . $params['dR'], '', $url) . '">$' . implode(' - $', $priceSlider) . ' <l style="font-size:12px;">&#215;</l></a>';
 		}
 		if ($params['pR'])
 		{
 			$percentSlider = explode(',', rawurldecode($params['pR']));
-			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $data['url']) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
+			$pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}		
-		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];		
-		if (!$filterState && $options['Local_Query'])
-		{
-			if (is_front_page())
-			{
-				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
-			}
 			
+		if (!$filterState && $options['Local_Query'])
+		{			
 			$localQuery = preg_split('/,/', $options['Local_Query']);
 
 			if(count($localQuery) > 2)
@@ -631,22 +606,18 @@ class ProsperSearchController
 					$filterState = $this->searchModel->states[$localQuery[0]];
 				}
 
-				$url = $url . '/state/' . rawurlencode($filterState) . '/city/' . rawurlencode($filterCity);
+				$url .= '/state/' . rawurlencode($filterState) . '/city/' . rawurlencode($filterCity);
 			}
 			elseif (strlen($localQuery[0]) == 2)
 			{
 				$filterState = $localQuery[0];
-				$url = $url . '/state/' . rawurlencode($filterState);
+				$url .= '/state/' . rawurlencode($filterState);
 			}
 			else
 			{
 				$filterState = $this->searchModel->states[strtolower($localQuery[0])];
-				$url = $url . '/state/' . rawurlencode($filterState);
+				$url .= '/state/' . rawurlencode($filterState);
 			}
-		}
-		else
-		{			
-			$url = preg_replace('/\/$/', '', $url);
 		}
 			
 		$backStates = array_flip($this->searchModel->states);
@@ -819,6 +790,7 @@ class ProsperSearchController
 		$fetch		  = 'fetchCelebrities';
 		$dollarSlider = 'Price Range';
 		$pickedFacets = array();
+		$visitButton  = 'Visit Store';
 		
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
 		{
@@ -829,28 +801,15 @@ class ProsperSearchController
 			$imageSize = '125x125';
 		}
 		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		if (!$params['celebrity'] && $options['Celebrity_Query'])
-		{
-			if (is_front_page())
-			{
-				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
-			}
-			
-			$url = preg_replace('/\/$/', '', $url) . 'celebrity/' . rawurlencode($options['Celebrity_Query']);
+		{			
+			$url .= 'celebrity/' . rawurlencode($options['Celebrity_Query']);
 			$c = $options['Celebrity_Query'];
 		}
 		elseif ($params['celebrity'] || $params['query'])
 		{
 			$c = rawurldecode($params['celebrity']);
 			$q = rawurldecode($params['query']);
-		}
-		else
-		{
-			if (is_front_page())
-			{
-				$url .= (preg_match('/\/$/', $url) ? '' : '/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products'); 
-			}
 		}
 			
 		$query = stripslashes($q);	
@@ -913,21 +872,17 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($params['celebrity'] || $query))
 		{
 			$extraMerchants = array();
+			if($options['Positive_Merchant'])
+			{
+				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
+			}
+			
 			if($options['Negative_Merchant'])
 			{
 				$minusMerchants = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
 				foreach ($minusMerchants as $negative)
 				{
 					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-
-			if($options['Positive_Merchant'])
-			{
-				$plusMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-				foreach ($plusMerchants as $plus)
-				{
-					$extraMerchants[] = trim($plus);
 				}
 			}
 			
@@ -952,11 +907,7 @@ class ProsperSearchController
 			$extraBrands = array();
 			if($options['Positive_Brand'])
 			{
-				$plusBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
-				foreach ($plusBrands as $positive)
-				{
-					$extraBrands[] = trim($positive);
-				}
+				$extraBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
 			}
 			if($options['Negative_Brand'])
 			{
@@ -1047,7 +998,20 @@ class ProsperSearchController
 		$type   	 = 'product';
 		$backStates  = array_flip($this->searchModel->states);
 		$curlUrls    = array();
-		$expiration  = PROSPER_CACHE_COUPS;
+		$expiration  = PROSPER_CACHE_COUPS;		
+		
+		if ($prosperPage == 'coupon')
+		{
+			$visitButton = 'Use Coupon';
+		}
+		elseif ($prosperPage == 'local')
+		{
+			$visitButton = 'View Deal';
+		}
+		else
+		{
+			$visitButton = 'Visit Store';
+		}		
 
 		if ('coupon' === $prosperPage)
 		{
@@ -1095,7 +1059,7 @@ class ProsperSearchController
 			$expiration = PROSPER_CACHE_PRODS;
 		}		
 				
-		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products');
+		$matchingUrl = $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/' . $urltype;
 		$match = '/' . str_replace('/', '\/', $matchingUrl) . '/i';
 		if (preg_match($match, $_SERVER['HTTP_REFERER']) || preg_match('/type\/' . $urltype . '/i', $_SERVER['HTTP_REFERER']))
 		{
@@ -1122,7 +1086,7 @@ class ProsperSearchController
 		
 		if (empty($mainRecord))
 		{
-			header('Location: ' . $url . '/query/' . rawurlencode(get_query_var('keyword')));
+			header('Location: ' . $matchingUrl . '/query/' . rawurlencode(get_query_var('keyword')));
 			exit;
 		}
 
@@ -1150,7 +1114,7 @@ class ProsperSearchController
 		
 			$curlUrls['results'] = $this->searchModel->apiCall($settings3, $fetch);
 		}
-		if ($options['Similar_Limit'] > 0)
+		if ($options['Similar_Limit'] > 0 && $prosperPage !== 'coupon')
 		{
 			/*
 			/  SIMILAR
@@ -1185,7 +1149,7 @@ class ProsperSearchController
 			$curlUrls['sameBrand'] = $this->searchModel->apiCall($settings5, $fetch);	
 		}
 		
-		if ($options['Same_Limit_Merchant'] > 0)
+		if ($options['Same_Limit_Merchant'] > 0 && $prosperPage !== 'coupon')
 		{ 
 			/*
 			/  SAME MERCHANT
@@ -1204,6 +1168,20 @@ class ProsperSearchController
 			
 			$curlUrls['sameMerchant'] = $this->searchModel->apiCall($settings6, $fetch);		
 		}
+		
+		if ($options['MCoupon_Limit'] > 0)
+		{ 
+			/*
+			/  MERCHANT COUPONS
+			*/
+			$settings7 = array(
+				'limit'            => $settings['MCoupon_Limit'] = $options['MCoupon_Limit'],
+				'imageSize'		   => '60x30',
+				'filterMerchantId' => $settings['filterMerchantId'] = $mainRecord[0]['merchantId']
+			);
+			
+			$curlUrls['merchantCoupons'] = $this->searchModel->apiCall($settings7, 'fetchCoupons');		
+		}		
 
 		$settings['curlCall'] = 'multi-prodPage';
 
@@ -1214,6 +1192,7 @@ class ProsperSearchController
 		$similar 	   = $allData['similar']['data'];		
 		$sameBrand     = $allData['sameBrand']['data'];
 		$sameMerchant  = $allData['sameMerchant']['data'];
+		$merchantCoups = $allData['merchantCoupons']['data'];
 
 		require_once($productPage);	
 	}

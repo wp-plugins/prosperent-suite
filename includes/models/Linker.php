@@ -71,7 +71,7 @@ class Model_Linker extends Model_Base
 			$query = $content;
 		}
 		
-		if ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage' || $pieces['ft'] == 'fetchMerchant')
+		if ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage' || $pieces['ft'] == 'fetchMerchant')
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
@@ -272,7 +272,7 @@ class Model_Linker extends Model_Base
 					return $content;
 				}
 			}	
-			elseif ($pieces['gtm'] === 'merchant' || !$options['Enable_PPS'] || $pieces['gtm'] === 'true')
+			elseif ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true')
 			{			
 				$affUrl = $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
@@ -416,7 +416,7 @@ class Model_Linker extends Model_Base
 						{
 							foreach($rand_keys as $key)
 							{
-								if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+								if (!$options['PSAct'] || $options['LTM'][$i] == 1)
 								{
 									$matches[$key] = '<a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw">' . $matches[$key] . '</a>';
 								}							
@@ -428,7 +428,7 @@ class Model_Linker extends Model_Base
 						}	
 						else
 						{
-							if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+							if (!$options['PSAct'] || $options['LTM'][$i] == 1)
 							{
 								$matches[$rand_keys] = '<a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw">' . $matches[$rand_keys] . '</a>';
 							}							
@@ -442,7 +442,7 @@ class Model_Linker extends Model_Base
 					{
 						foreach($matches as $p => $match)
 						{
-							if (!$options['Enable_PPS'] || $options['LTM'][$i] == 1)
+							if (!$options['PSAct'] || $options['LTM'][$i] == 1)
 							{
 								$matches[$p] = '<a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw">' . $match . '</a>';
 							}							
@@ -463,7 +463,7 @@ class Model_Linker extends Model_Base
 				}
 				else
 				{
-					if (!isset($options['Enable_PPS']) || isset($options['LTM'][$i]) == 1)
+					if (!isset($options['PSAct']) || isset($options['LTM'][$i]) == 1)
 					{				
 						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
 					}

@@ -155,7 +155,7 @@ class ProsperSearchController
 		}
 	}
 	
-	public function productAction($data, $homeUrl, $type, $searchPage, $options)
+	public function productAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
 	{	
 		$filters 	  = $data['filters'];
 		$params 	  = $data['params'];
@@ -366,33 +366,45 @@ class ProsperSearchController
 		}
 		
 		if ($results = $everything['results']['data'])
-		{
-			$totalFound = $everything['results']['totalRecordsFound'];
+		{			
+			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);	
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
 		{
-			$settings = array(
-				'imageSize'	=> $imageSize
-			);
+			if ($query && ($filters['brand'] || $filters['merchant'] || $filters['category']))
+			{ 				
+				$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
+				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
 
-			$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
-			$results   = $allData['data'];	
-
-			$noResults = true;
-			$trend     = 'Trending Products';
-			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
-
+				$this->productAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products to ' . ucwords($query));
+				return;		
+			}
+			
 			if (!$results)
 			{
-				$newTrendsTitle = 'No Trending Products at this Time';
+				$settings = array(
+					'imageSize'	=> $imageSize
+				);
+
+				$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
+				$results   = $allData['data'];	
+
+				$noResults = true;
+				$trend     = 'Trending Products';
+				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
+
+				if (!$results)
+				{
+					$newTrendsTitle = 'No Trending Products at this Time';
+				}
 			}
 		}
 
 		require_once($searchPage);
 	}
 
-	public function couponAction($data, $homeUrl, $type, $searchPage, $options)
+	public function couponAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
 	{
 		$filters 	     = $data['filters'];
 		$params 	     = $data['params'];
@@ -534,32 +546,44 @@ class ProsperSearchController
 		
 		if ($results = $everything['results']['data'])
 		{
-			$totalFound = $everything['results']['totalRecordsFound'];
+			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
 		{
-			$settings = array(
-				'page'		=> $params['page']
-			);
-			
-			$allData   = $this->searchModel->trendsApiCall($settings, $fetch);
+			if ($query && ($filters['merchant'] || $filters['category']))
+			{ 				
+				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
+				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
 
-			$results   = $allData['data'];	
-			$noResults = true;
-			$trend     = 'Trending Coupons';
+				$this->couponAction($data, $homeUrl, $type, $searchPage, $options, 'Related Coupons for ' . ucwords($query));
+				return;				
+			}
 			
 			if (!$results)
-			{
-				$newTrendsTitle = 'No Trending Coupons at this Time';
+			{				
+				$settings = array(
+					'page'		=> $params['page']
+				);
+				
+				$allData   = $this->searchModel->trendsApiCall($settings, $fetch);
+
+				$results   = $allData['data'];	
+				$noResults = true;
+				$trend     = 'Trending Coupons';
+				
+				if (!$results)
+				{
+					$newTrendsTitle = 'No Trending Coupons at this Time';
+				}
+				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );				
 			}
-			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );				
 		}
 
 		require_once($searchPage);
 	}
 
-	public function localAction($data, $homeUrl, $type, $searchPage, $options)
+	public function localAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
 	{
 		$filters 	  = $data['filters'];
 		$params 	  = $data['params'];
@@ -649,7 +673,7 @@ class ProsperSearchController
 		}
 		elseif ($params['state'] || $filterState)
 		{
-			$title = '<strong>' . ucwords(rawurldecode($backStates[($params['state'] ? $params['state'] : $filterState)])) . '</strong>';			
+			$title = '<strong>' . ucwords(rawurldecode($backStates[($params['state'] ? $params['state'] : $filterState)])) . '</strong>';				
 		}	
 		elseif ($params['merchant'] || $filterMerchant)
 		{
@@ -749,33 +773,45 @@ class ProsperSearchController
 		
 		if ($results = $everything['results']['data'])
 		{
-			$totalFound = $everything['results']['totalRecordsFound'];
+			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
 		{
-			$settings = array(
-				'filterState' => 'null',
-				'imageSize'   => $imageSize,
-				'page'		  => $params['page']
-			);
-			
-			$allData   = $this->searchModel->trendsApiCall($settings, 'fetchLocal');
-			$results   = $allData['data'];
-			$noResults = true;
-			$trend 	   = 'Trending Local Deals';
-			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );	
+			if ($filterState && ($filters['merchant'] || $filters['category'] || $filters['zip'] || $filters['city']))
+			{ 				
+				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/query/' . $data['params']['query'], '/merchant/' . $data['params']['merchant'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip']), '', $data['url']);
+				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['category'], $data['filters']['category'], $data['params']['zip'], $data['filters']['zip'], $data['params']['city'], $data['filters']['city'], $data['params']['page']);
 
+				$this->localAction($data, $homeUrl, $type, $searchPage, $options, 'Related Deals in ' . ucwords(rawurldecode($backStates[$filterState])));
+				return;				
+			}	
+			
 			if (!$results)
 			{
-				$newTrendsTitle = 'No Trending Local Deals at this Time';
+				$settings = array(
+					'filterState' => 'null',
+					'imageSize'   => $imageSize,
+					'page'		  => $params['page']
+				);
+				
+				$allData   = $this->searchModel->trendsApiCall($settings, 'fetchLocal');
+				$results   = $allData['data'];
+				$noResults = true;
+				$trend 	   = 'Trending Local Deals';
+				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );	
+
+				if (!$results)
+				{
+					$newTrendsTitle = 'No Trending Local Deals at this Time';
+				}
 			}
 		}
 		
 		require_once($searchPage);
 	}
 
-	public function celebrityAction($data, $homeUrl, $type, $searchPage, $options)
+	public function celebrityAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
 	{
 		// Register AutoComplete Script
 		wp_register_script( 'celebrityAutoComplete', PROSPER_JS . '/autosuggest.js', array('jquery', 'jquery-ui-autocomplete'), '3.1.7');
@@ -790,6 +826,8 @@ class ProsperSearchController
 		$fetch		  = 'fetchCelebrities';
 		$dollarSlider = 'Price Range';
 		$pickedFacets = array();
+		$visitButton  = 'Visit Store';
+		$url 		  = $data['url'];
 		$visitButton  = 'Visit Store';
 		
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
@@ -853,7 +891,7 @@ class ProsperSearchController
 			$curlUrls['celebrity'] = $this->searchModel->apiCall($settings, 'fetchCelebrities');
 		}
 
-		if ($params['celebrity'] || $query || $filters['merchant'] || $filters['brand'])
+		if ($params['celebrity'] || $filters['merchant'] || $filters['brand'])
 		{
 			$settings = array(
 				'sortBy'	      => rawurldecode($params['sort']),
@@ -869,7 +907,7 @@ class ProsperSearchController
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, 'fetchProducts');
 		}
 		
-		if ($options['Enable_Facets'] && ($params['celebrity'] || $query))
+		if ($options['Enable_Facets'] && ($filters['brand'] || $filters['merchant'] || $params['celebrity']))
 		{
 			$extraMerchants = array();
 			if($options['Positive_Merchant'])
@@ -886,7 +924,7 @@ class ProsperSearchController
 				}
 			}
 			
-			if (!$query && $filters['merchant'])
+			if (!$params['celebrity'] && $filters['merchant'])
 			{
 				$extraMerchants = array_merge($extraMerchants, $filters['merchant']);
 			}
@@ -918,7 +956,7 @@ class ProsperSearchController
 				}
 			}
 			
-			if (!$query && $filters['brand'])
+			if (!$params['celebrity'] && $filters['brand'])
 			{
 				$extraBrands = array_merge($extraBrands, $filters['brand']);
 			}
@@ -960,28 +998,40 @@ class ProsperSearchController
 		
 		if ($results = $everything['results']['data'])
 		{
-			$totalFound = $everything['results']['totalRecordsFound'];
+			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 			
 			$celebrityInfo = $everything['celebrity']['data'][0];
 		}
 		else
 		{
-			$settings = array(
-				'enableFacets' => 'productId',
-				'imageSize'	   => $imageSize,
-				'page'		   => $params['page']					
-			);
+			if ($params['celebrity'] && ($filters['merchant'] || $filters['brand'] || $filters['category'] || $params['page']))
+			{			
+				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/query/' . $data['params']['query'], '/merchant/' . $data['params']['merchant'], '/brand/' . $data['params']['brand'], '/category/' . $data['params']['category'], '/page/' . $data['params']['page'], '/query/' . $data['params']['query']), '', $data['url']);
+				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page'], $data['params']['query']);
 
-			$allData   = $this->searchModel->trendsApiCall($settings, 'fetchProducts');
-			$results   = $allData['data'];	
-			$noResults = true;
-			$trend 	   = 'Trending Products';
-			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
-
+				$this->celebrityAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products for ' . ucwords(rawurldecode($params['celebrity'])));
+				return;	
+			}
+			
 			if (!$results)
-			{
-				$newTrendsTitle = 'No Trending Products at this Time';
+			{						
+				$settings = array(
+					'enableFacets' => 'productId',
+					'imageSize'	   => $imageSize,
+					'page'		   => $params['page']					
+				);
+
+				$allData   = $this->searchModel->trendsApiCall($settings, 'fetchProducts');
+				$results   = $allData['data'];	
+				$noResults = true;
+				$trend 	   = 'Trending Products';
+				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
+
+				if (!$results)
+				{
+					$newTrendsTitle = 'No Trending Products at this Time';
+				}
 			}
 		}	
 		

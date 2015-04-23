@@ -190,7 +190,7 @@
 					{
 						$record['image_url'] = str_replace('http', 'https', $record['image_url']);
 					}
-									
+					
 					$cid = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);				
 					?>
 					<div class="productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
@@ -201,7 +201,7 @@
 							<?php
 							if ($record['promo'])
 							{					
-								echo '<div class="promo"><span>' . $record['promo'] . '</span></div>' . (($record['expiration_date'] || $record['expirationDate']) ? '&nbsp;&nbsp;&mdash;&nbsp;&nbsp;' : '');
+								echo '<div class="promo" ' . (($record['expiration_date'] || $record['expirationDate']) ? 'style="width:auto"' : '') . '><span>' . $record['promo'] . '</span></div>' . (($record['expiration_date'] || $record['expirationDate']) ? '&nbsp;&nbsp;&mdash;&nbsp;&nbsp;' : '');
 							}
 														
 							if($record['expiration_date'] || $record['expirationDate'])
@@ -255,7 +255,7 @@
 								<?php
 								if($record['brand'])
 								{
-									echo '<span class="brandIn"><u>Brand</u>: ' . (!$params['brand'] ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"><cite>' . $record['brand'] . '</cite></a>' : $record['brand']) . '</span>';
+									echo '<span class="brandIn"><u>Brand</u>: ' . (!(preg_match('/' . $record['brand'] . '/i', rawurldecode($params['brand']))) ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"><cite>' . $record['brand'] . '</cite></a>' : $record['brand']) . '</span>';
 								}
 								if ($record['state'] || $record['city'] || $record['zipCode'] && !$params['zipCode'])
 								{
@@ -266,7 +266,7 @@
 								}
 								if($record['merchant'])
 								{
-									echo '<span class="merchantIn"><u>Merchant</u>: ' . (!$params['merchant'] ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"><cite>' . $record['merchant'] . '</cite></a>' : $record['merchant']) . '</span>';
+									echo '<span class="merchantIn"><u>Merchant</u>: ' . (!(preg_match('/\b' . $record['merchant'] . '\b/i', rawurldecode($params['merchant']))) ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"><cite>' . $record['merchant'] . '</cite></a>' : $record['merchant']) . '</span>';
 								}				
 								?>
 							</div>

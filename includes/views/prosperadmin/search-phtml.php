@@ -85,7 +85,7 @@ echo $prosperAdmin->textinput( 'Local_Query', __( 'Local- City, State or State',
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Product Page Limits...', 'prosperent-suite' ) . '</h2>';
-echo '<p class="prosper_desc">' . __( "Entering 0 or leaving blank will turn each section off.", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc">' . __( "Entering 0 will turn each section off.", 'prosperent-suite' ) . '</p>';
 echo $prosperAdmin->textinput( 'Same_Limit', __( 'Same Brand Products', 'prosperent-suite' ), '', '<a href="#" class="prosper_tooltip"><span>This limit will set the desired amount for the "Other Products from Brand" on the product pages.</span></a>', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 

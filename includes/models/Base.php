@@ -683,8 +683,7 @@ abstract class Model_Base
 			if ($response['data'])
 			{
 				$cache->set($settings, $response, $expiration);
-			}
-			
+			}			
 		}
 
 		return $response;

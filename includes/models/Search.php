@@ -306,8 +306,9 @@ class Model_Search extends Model_Base
 				}
 			}
 		}
+
 		$facetFull = array('picked' => $facetsPicked, 'all' => $facetsNew);
-		
+
 		return $facetFull;
 	}
 	

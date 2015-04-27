@@ -44,7 +44,7 @@ class ProsperSearchController
 	}
 	
 	public function storeShortcode()
-	{			
+	{		
 		$options 	 = $this->searchModel->_options;
 		$phtml 		 = $this->searchModel->getSearchPhtml();
 		$searchPage  = $phtml[0];
@@ -156,7 +156,7 @@ class ProsperSearchController
 	}
 	
 	public function productAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
-	{	
+	{		
 		$filters 	  = $data['filters'];
 		$params 	  = $data['params'];
 		$typeSelector = $data['typeSelector'];
@@ -234,15 +234,27 @@ class ProsperSearchController
 		}
 		elseif ($params['brand'])
 		{
-			$title =  '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['brand']))) . '</strong>';
+			$title =  '<strong>' . ucwords(rawurldecode($params['brand'])) . '</strong>';
+			if (strpos($params['merchant'], '~'))
+			{
+				$title = '<strong>the Chosen Merchants</strong>';
+			}	
 		}
 		elseif ($params['merchant'])
 		{
-			$title = '<strong>' . ucwords(str_replace('&', ' & ', rawurldecode($params['merchant']))) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode($params['merchant'])) . '</strong>';
+			if (strpos($params['merchant'], '~'))
+			{
+				$title = '<strong>the Chosen Brands</strong>';
+			}			
 		}
 		elseif ($params['category'])
 		{
 			$title = '<strong>' . ucwords(rawurldecode($params['category'])) . '</strong>';
+		}
+		else
+		{
+			$title = '<strong>Products</strong>';
 		}
 
 		$sortArray = array(
@@ -274,31 +286,11 @@ class ProsperSearchController
 
 		if ($options['Enable_Facets'] && ($query || $filters['brand'] || $filters['merchant'] || $filters['category']))
 		{
-			$extraMerchants = array();
-			if($options['Positive_Merchant'])
-			{
-				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-			}
-			
-			if($options['Negative_Merchant'])
-			{
-				$minusBrands = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
-				foreach ($minusBrands as $negative)
-				{
-					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-			
-			if (!$query && $filters['merchant'])
-			{
-				$extraMerchants = array_merge($extraMerchants, $filters['merchant']);
-			}
-
 			$merchantFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'merchant',
 				'limit'			   => 1,
-				'filterMerchant'   => $extraMerchants,				
+				'filterMerchant'   => $filters['merchant'],				
 				'filterCategory'   => $filters['category'],
 				'filterBrand'	   => $filters['brand'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
@@ -308,34 +300,13 @@ class ProsperSearchController
 
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, $fetch);	
 
-			$extraBrands = array();
-			if($options['Positive_Brand'])
-			{
-				$extraBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
-			}
-
-			if($options['Negative_Brand'])
-			{
-				$minusBrands = array_map('stripslashes', explode(',', $options['Negative_Brand']));
-				
-				foreach ($minusBrands as $negative)
-				{
-					$extraBrands[] = '!' . trim($negative);
-				}
-			}
-
-			if (!$query && $filters['brand'])
-			{
-				$extraBrands = array_merge($extraBrands, $filters['brand']);
-			}
-
 			$brandFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'brand',
 				'limit'			   => 1,
 				'filterMerchant'   => $filters['merchant'],				
 				'filterCategory'   => $filters['category'],
-				'filterBrand'	   => $extraBrands,
+				'filterBrand'	   => $filters['brand'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
@@ -345,9 +316,10 @@ class ProsperSearchController
 		}
 
 		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
-		
+
 		if ($everything['brands']['facets'] || $everything['merchants']['facets'])
 		{			
+
 			$allFilters = array_merge((array) $everything['brands']['facets'], (array) $everything['merchants']['facets']);
 			$filterArray = $this->searchModel->buildFacets($allFilters, $params, $filters, $url);
 
@@ -364,7 +336,7 @@ class ProsperSearchController
 			$mainFilters = array('brand' => $brands, 'merchant' => $merchants );
 			$secondaryFilters = array('brand' => $filterArray['all']['brand'], 'merchant' => $filterArray['all']['merchant']);
 		}
-		
+
 		if ($results = $everything['results']['data'])
 		{			
 			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);	
@@ -391,12 +363,12 @@ class ProsperSearchController
 				$results   = $allData['data'];	
 
 				$noResults = true;
-				$trend     = 'Trending Products';
+				$trend     = 'Top Products';
 				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
 
 				if (!$results)
 				{
-					$newTrendsTitle = 'No Trending Products at this Time';
+					$newTrendsTitle = 'No Top Products at this Time';
 				}
 			}
 		}
@@ -492,33 +464,13 @@ class ProsperSearchController
 		}
 
 		if ($options['Enable_Facets'] && ($query || $filters['merchant'] || $filters['category']))
-		{
-			$extraMerchants = array();
-			if($options['Positive_Merchant'])
-			{
-				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-			}
-			
-			if($options['Negative_Merchant'])
-			{
-				$minusMerchants = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
-				foreach ($minusMerchants as $negative)
-				{
-					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-			
-			if (!$query && $filters['merchant'])
-			{
-				$extraMerchants = array_merge($extraMerchants, $filters['merchant']);
-			}
-			
+		{		
 			$merchantFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'merchant',						
 				'filterCategory'   => $filters['category'],
 				'limit'			   => 1,
-				'filterMerchant'   => $extraMerchants,
+				'filterMerchant'   => $filters['merchant'],
 				'filterMerchantId' => '!123473|!124147',
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
@@ -570,11 +522,11 @@ class ProsperSearchController
 
 				$results   = $allData['data'];	
 				$noResults = true;
-				$trend     = 'Trending Coupons';
+				$trend     = 'Top Coupons';
 				
 				if (!$results)
 				{
-					$newTrendsTitle = 'No Trending Coupons at this Time';
+					$newTrendsTitle = 'No Top Coupons at this Time';
 				}
 				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );				
 			}
@@ -798,12 +750,12 @@ class ProsperSearchController
 				$allData   = $this->searchModel->trendsApiCall($settings, 'fetchLocal');
 				$results   = $allData['data'];
 				$noResults = true;
-				$trend 	   = 'Trending Local Deals';
+				$trend 	   = 'Top Local Deals';
 				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );	
 
 				if (!$results)
 				{
-					$newTrendsTitle = 'No Trending Local Deals at this Time';
+					$newTrendsTitle = 'No Top Local Deals at this Time';
 				}
 			}
 		}
@@ -908,31 +860,11 @@ class ProsperSearchController
 		}
 		
 		if ($options['Enable_Facets'] && ($filters['brand'] || $filters['merchant'] || $params['celebrity']))
-		{
-			$extraMerchants = array();
-			if($options['Positive_Merchant'])
-			{
-				$extraMerchants = array_map('stripslashes', explode(',', $options['Positive_Merchant']));
-			}
-			
-			if($options['Negative_Merchant'])
-			{
-				$minusMerchants = array_map('stripslashes', explode(',', $options['Negative_Merchant']));
-				foreach ($minusMerchants as $negative)
-				{
-					$extraMerchants[] = '!' . trim($negative);
-				}
-			}
-			
-			if (!$params['celebrity'] && $filters['merchant'])
-			{
-				$extraMerchants = array_merge($extraMerchants, $filters['merchant']);
-			}
-		
+		{	
 			$merchantFacetSettings = array(
 				'enableFacets'     => array('merchant'),
 				'filterBrand'	   => $filters['brand'],
-				'filterMerchant'   => $extraMerchants,
+				'filterMerchant'   => $filters['merchant'],
 				'limit'			   => 1,
 				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
@@ -942,31 +874,12 @@ class ProsperSearchController
 
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, 'fetchProducts');	
 		
-			$extraBrands = array();
-			if($options['Positive_Brand'])
-			{
-				$extraBrands = array_map('stripslashes', explode(',', $options['Positive_Brand']));
-			}
-			if($options['Negative_Brand'])
-			{
-				$minusBrands = array_map('stripslashes', explode(',', $options['Negative_Brand']));
-				foreach ($minusBrands as $negative)
-				{
-					$extraBrands[] = '!' . trim($negative);
-				}
-			}
-			
-			if (!$params['celebrity'] && $filters['brand'])
-			{
-				$extraBrands = array_merge($extraBrands, $filters['brand']);
-			}
-		
 			$brandFacetSettings = array(
 				'enableFacets'     => array('brand'),
 				'limit'			   => 1,
 				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'filterMerchant'   => $filters['merchant'],
-				'filterBrand'	   => $extraBrands,
+				'filterBrand'	   => $filters['brand'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
@@ -1025,12 +938,12 @@ class ProsperSearchController
 				$allData   = $this->searchModel->trendsApiCall($settings, 'fetchProducts');
 				$results   = $allData['data'];	
 				$noResults = true;
-				$trend 	   = 'Trending Products';
+				$trend 	   = 'Top Products';
 				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
 
 				if (!$results)
 				{
-					$newTrendsTitle = 'No Trending Products at this Time';
+					$newTrendsTitle = 'No Top Products at this Time';
 				}
 			}
 		}	

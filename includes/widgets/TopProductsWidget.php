@@ -57,26 +57,39 @@ class TopProductsWidget extends WP_Widget
 			$fetch = 'fetchCaProducts';
 			$currency = 'CAD';
 		}
-		
+
 		$sidArray = array();
 		if ($options['prosperSid'] && !$sid)
 		{
 			foreach ($options['prosperSid'] as $sidPiece)
 			{
-				switch ($sidPiece)
+				if ('blogname' === $sidPiece)
 				{
-					case 'blogname':
-						$sidArray[] = get_bloginfo('name');
-						break;
-					case 'interface':
-						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						break;
-					case 'query':
-						$sidArray[] = $settings['query'];
-						break;
-					case 'page':
-						$sidArray[] = get_the_title();
-						break;						
+					$sidArray[] = get_bloginfo('name');
+				}
+				elseif ('interface' === $sidPiece)
+				{
+					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+				}
+				elseif ('query' === $sidPiece)
+				{
+					$sidArray[] = $settings['query'];
+				}
+				elseif ('page' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetTitle' === $sidPiece)
+				{
+					$sidArray[] = $title;
+				}
+				elseif ('widgetName' === $sidPiece)
+				{
+					$sidArray[] = 'TopProducts';
+				}
+				elseif ('authorId' === $sidPiece)
+				{
+					$sidArray[] = the_author_meta('ID');
 				}
 			}
 		}

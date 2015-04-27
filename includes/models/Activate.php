@@ -114,7 +114,7 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_productSearch', $productOptions );
 		}
 
-		if (!is_array(get_option('prosper_autoComparer')))
+		if (!is_array($PIopt = get_option('prosper_autoComparer')))
 		{
 			$PIopt = array(
 				'Enable_AC'    => 1,
@@ -124,7 +124,7 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_autoComparer', $PIopt );
 		}
 
-		if (!is_array(get_option('prosper_autoLinker')))
+		if (!is_array($ALopt = get_option('prosper_autoLinker')))
 		{
 			$ALopt = array(
 				'Enable_AL' 		 => 1,
@@ -133,7 +133,7 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_autoLinker', $ALopt );
 		}
 
-		if (!is_array(get_option('prosper_prosperLinks')))
+		if (!is_array($PLopt = get_option('prosper_prosperLinks')))
 		{
 			$PLopt = array(
 				'PL_LinkOpt' => 1,
@@ -173,17 +173,21 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_themes', $PTopt );
 		}
 
+		$prospereOpts = get_option('prosperSuite');		
+		if (!$prospereOpts['prosperNoOptions'])
+		{			
+			$PAopt = get_option('prosper_performAds');
+			$newGenOpts = array_merge($prospereOpts, array(
+				'prosperNoOptions' => 1,
+				'PSAct'	  		   => 1,
+				'PAAct'	  		   => 1,
+				'PICIAct' 		   => 1,
+				'ALAct'	  		   => 1,
+				'PLAct'	  		   => 1
+			));
 
-		$PAopt = get_option('prosper_performAds');
-		$prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
-			'PSAct'	  => ($productOptions['Enable_PPS'] == 1 ? 1 : 0),
-			'PAAct'	  => ($PAopt['Enable_PA'] == 1 ? 1 : 0),
-			'PICIAct' => ($PIopt['Enable_AC'] == 1 ? 1 : 0),
-			'ALAct'	  => ($ALopt['Enable_AL'] == 1 ? 1 : 0),
-			'PLAct'	  => (($PLopt['PL_LinkOpt'] == 1 || $PLAct['PL_LinkAff'] == 1) ? 1 : 0)
-		));
-		update_option('prosperSuite', $prosperSuiteOpts);
-	
+			update_option('prosperSuite', $newGenOpts);
+		}
 	}
 	
 	public function prosperQueryTag()

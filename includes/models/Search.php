@@ -168,25 +168,23 @@ class Model_Search extends Model_Base
 			$filterBrands = array_merge($filterBrands, $brands);
 			$filterBrands = array_combine($filterBrands,$filterBrands);
 		}
-		else
+
+		if($this->_options['Positive_Brand'])
 		{
-			if($this->_options['Positive_Brand'])
-			{
-				$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
+			$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
 
-				foreach ($plusBrands as $postive)
-				{
-					array_push($filterBrands, trim($postive));
-				}
+			foreach ($plusBrands as $postive)
+			{
+				array_push($filterBrands, trim($postive));
 			}
-			if($this->_options['Negative_Brand'])
-			{
-				$minusBrands = array_map('stripslashes', explode(',', $this->_options['Negative_Brand']));
+		}
+		if($this->_options['Negative_Brand'])
+		{
+			$minusBrands = array_map('stripslashes', explode(',', $this->_options['Negative_Brand']));
 
-				foreach ($minusBrands as $negative)
-				{
-					array_push($filterBrands, '!' . trim($negative));
-				}
+			foreach ($minusBrands as $negative)
+			{
+				array_push($filterBrands, '!' . trim($negative));
 			}
 		}
 
@@ -207,7 +205,6 @@ class Model_Search extends Model_Base
 		if ($this->_options['Positive_Merchant'])
 		{
 			$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
-
 			foreach ($plusMerchants as $positive)
 			{
 				array_push($filterMerchants, trim($positive));
@@ -223,7 +220,7 @@ class Model_Search extends Model_Base
 				array_push($filterMerchants, '!' . trim($negative));
 			}
 		}
-
+		
 		return $filterMerchants;
 	}	
 	

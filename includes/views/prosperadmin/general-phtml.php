@@ -18,10 +18,11 @@ echo $prosperAdmin->checkbox( 'PSAct', __( '<span style="font-size:18px;line-hei
 echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
 if ($options['PAAct'])
-{	
+{
 	echo $prosperAdmin->checkbox( 'PAAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperAds</span>', 'prosperent-suite' ) );
 	echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 }
+
 echo $prosperAdmin->checkbox( 'PICIAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperInsert and Content Inserter</span>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
@@ -52,5 +53,6 @@ echo '<p class="prosper_desc">' . __( "This will help us better serve you by kno
 echo $prosperAdmin->hidden( 'ProsperFirstTimeOperator' );
 echo $prosperAdmin->hidden( 'prosperNewVersion' );
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
+echo $prosperAdmin->hidden( 'prosperNoOptions' );
 
 $prosperAdmin->adminFooter();

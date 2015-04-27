@@ -100,6 +100,8 @@ abstract class Model_Base
 					$advancedOpts['prosperSidText'] = $generalOpts['prosperSidText'];
 					update_option('prosper_advanced', $advancedOpts);
 				}
+				
+				//add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
 			}
 			else
 			{
@@ -111,6 +113,33 @@ abstract class Model_Base
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
 		}		
 	}
+	
+	/*public function autoUpdateProsperMinor ( $update, $item )
+	{
+		if ( !$this->getIsOption( 'auto_update_minor_releases', 'Y' ) ) 
+		{
+			return $update;
+		}
+
+		// Only supports WordPress 3.8.2+
+		if ( !is_object( $item ) || !isset( $item->new_version ) || !isset( $item->plugin ) )  
+		{ 
+			// WP 3.8.2+
+			return $update;
+		}
+
+		if ( $item->plugin === PROSPER_BASENAME ) 
+		{
+			$currentParts = explode( '-', $this->_version() );
+			$updateParts = explode( '-', $item->new_version );
+			
+			print_r($currentParts);exit;
+			// We only return true (i.e. update if and when the update is a minor version
+			return ( $updateParts[0] === $currentParts[0] );
+		}
+		
+		return $update;
+	}*/
 	
 	public function getVersion()
 	{			
@@ -507,7 +536,7 @@ abstract class Model_Base
 		{
 			$this->_options = $this->getOptions();
 		}		
-		
+
 		if ($this->_options['prosperSid'] && !$sid)
 		{
 			$sidArray = array();
@@ -528,6 +557,18 @@ abstract class Model_Base
 				elseif ('page' === $sidPiece)
 				{
 					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetTitle' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetName' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('authorId' === $sidPiece)
+				{
+					$sidArray[] = the_author_meta('ID');
 				}
 			}
 		}

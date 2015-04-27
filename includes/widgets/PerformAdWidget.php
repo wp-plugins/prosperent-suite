@@ -73,30 +73,43 @@ class PerformAdWidget extends WP_Widget
 		$width = $instance['width'] ? ($instance['width'] == 'auto' ? '100%' : preg_replace('/px|em|%/i', '', $instance['width']) . 'px') : '100%';
 
 		$sidArray = array();
-		if ($extOptions['prosperSid'])
+		if ($options['prosperSid'] && !$sid)
 		{
-			foreach ($extOptions['prosperSid'] as $sidPiece)
+			foreach ($options['prosperSid'] as $sidPiece)
 			{
-				switch ($sidPiece)
+				if ('blogname' === $sidPiece)
 				{
-					case 'blogname':
-						$sidArray[] = get_bloginfo('name');
-						break;
-					case 'interface':
-						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						break;
-					case 'query':
-						$sidArray[] = $settings['query'];
-						break;
-					case 'page':
-						$sidArray[] = get_the_title();
-						break;						
+					$sidArray[] = get_bloginfo('name');
+				}
+				elseif ('interface' === $sidPiece)
+				{
+					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+				}
+				elseif ('query' === $sidPiece)
+				{
+					$sidArray[] = $settings['query'];
+				}
+				elseif ('page' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetTitle' === $sidPiece)
+				{
+					$sidArray[] = $title;
+				}
+				elseif ('widgetName' === $sidPiece)
+				{
+					$sidArray[] = 'ProsperAds';
+				}
+				elseif ('authorId' === $sidPiece)
+				{
+					$sidArray[] = the_author_meta('ID');
 				}
 			}
 		}
-		if ($extOptions['prosperSidText'])
+		if ($options['prosperSidText'] && !$sid)
 		{
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $extOptions['prosperSidText'], $regs))
+			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
 			{
 				if ($regs[1] == '$_SERVER')
 				{
@@ -111,9 +124,9 @@ class PerformAdWidget extends WP_Widget
 					$sidArray[] = $_COOKIE[$regs[4]];
 				}					
 			}
-			elseif (!preg_match('/\$/', $extOptions['prosperSidText']))
+			elseif (!preg_match('/\$/', $options['prosperSidText']))
 			{
-				$sidArray[] = $extOptions['prosperSidText'];
+				$sidArray[] = $options['prosperSidText'];
 			}
 		}
 		
@@ -121,7 +134,7 @@ class PerformAdWidget extends WP_Widget
 		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
-		}
+		}	
 		
         ?>
 		<div class="prosperent-pa" style="position:relative;height: <?php echo $height; ?>; width: <?php echo $width; ?>;" <?php echo ($sid ? 'pa_sid="' . $sid . '"' : ''); ?> <?php echo ($fallback ? 'pa_topics="' . $fallback . '"' : ''); ?>><?php echo (wp_script_is('loginCheck') ? '<div class="shopCheck" style="cursor:pointer;position:absolute;top:0;left:0;height:' . $height . '; width:' . $width . ';z-index:10;"></div>' : '')?></div>

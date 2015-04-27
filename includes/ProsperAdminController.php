@@ -29,7 +29,6 @@ class ProsperAdminController
 		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperAdminCss' ));	
 		add_action( 'init', array( $prosperAdmin, 'init' ), 20 );
 		add_filter( 'plugin_action_links', array( $prosperAdmin, 'addActionLink' ), 10, 2 );
-
 	}
 		
 	/**
@@ -60,10 +59,7 @@ class ProsperAdminController
 		{
 			add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
 		}
-		if ($this->_options['PSAct'] || $this->_options['PAAct'] || $this->_options['PICIAct'] || $this->_options['ALAct'] || $this->_options['PLAct'])
-		{
-			add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
-		}
+		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
 		if ($this->_options['PSAct'] || $this->_options['PICIAct'])
 		{
 			add_submenu_page('prosper_general', __( 'ProsperThemes', 'prosperent-suite' ), __( 'ProsperThemes', 'prosperent-suite' ), 'manage_options', 'prosper_themes', array( $this, 'themesCssPage' ) );

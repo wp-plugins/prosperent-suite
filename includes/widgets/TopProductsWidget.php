@@ -89,7 +89,11 @@ class TopProductsWidget extends WP_Widget
 				}
 				elseif ('authorId' === $sidPiece)
 				{
-					$sidArray[] = the_author_meta('ID');
+					$sidArray[] = get_the_author_meta('ID');
+				}
+				elseif ('authorName' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('user_login');
 				}
 			}
 		}

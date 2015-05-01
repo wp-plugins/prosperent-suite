@@ -197,9 +197,10 @@ if (count($response['errors']))
 if ($results = $response['data'])
 {
 	?>
+	<h2>Results:</h2>
+	<span style="font-size:10px;"><strong>Note</strong>: Click the item(s) that you would like to be displayed else they will be displayed in the order shown.</span><br>
 	<div id="productList">
 	<?php
-
 		foreach ($results as $record)
 		{			
 			if ($type == 'coup')
@@ -220,84 +221,82 @@ if ($results = $response['data'])
 			}	
 
 			?>
-			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull">
-				<div class="productBlock">
-					<div class='productImage'>
-						<span><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
-					</div>
-					<div class='productContent'>
-						<div class='productTitle'><span><?php echo $record['keyword']; ?></span></a></div>
-						<?php
-						if(!empty($record['expiration_date']))
-						{
-							$expires = strtotime($record['expiration_date']);
-							$today = strtotime(date("Y-m-d"));
-							$interval = abs($expires - $today) / (60*60*24);
+			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="display:table;padding:4px 0;border-bottom:1px solid #E6E6E6;">
+				<div class='productImage' style="display:table-cell;padding:0 8px width:130px">
+					<span><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+				</div>
+				<div class='productContent' style="display:table-cell;vertical-align:middle">
+					<div class='productTitle'><span><?php echo $record['keyword']; ?></span></a></div>
+					<?php
+					if(!empty($record['expiration_date']))
+					{
+						$expires = strtotime($record['expiration_date']);
+						$today = strtotime(date("Y-m-d"));
+						$interval = abs($expires - $today) / (60*60*24);
 
-							if ($interval <= 7 && $interval > 0)
+						if ($interval <= 7 && $interval > 0)
+						{
+							echo '<div class="couponExpire" style=""><span style="color:red; font-weight:bold;">Expires in ' . $interval . ' days!</span></div>';
+						}
+						else
+						{
+							echo '<div class="couponExpire"><span style="color:red; font-weight:bold;">Expires Soon!</span></div>';
+						}
+					}
+					if ($record['coupon_code'])
+					{
+						echo '<div class="couponCode" style="font-weight:bold; padding:5px 0 0 0;">Coupon Code: <span class="code_cc" style="border:2px dashed #3079ed; padding: 2px 3px; font-weight:bold; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius:8px;">' . $record['coupon_code'] . '</span></div>';
+					}
+					
+					if ($type != 'coup' && $type != 'local'): ?>
+					<div class='productDescription'><?php
+						if ($record['price_sale'] || $record['price'] || $record['priceSale'])
+						{
+							$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
+							
+							if(empty($priceSale) || $record['price'] <= $priceSale)
 							{
-								echo '<div class="couponExpire" style=""><span style="color:red; font-weight:bold;">Expires in ' . $interval . ' days!</span></div>';
+								//we don't do anything
+								?>
+								<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
+								<?php
 							}
+							//otherwise strike-through Price and list the Price_Sale
 							else
 							{
-								echo '<div class="couponExpire"><span style="color:red; font-weight:bold;">Expires Soon!</span></div>';
+								?>
+								<span><del><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></del></span>
+								<span style="color:red;"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $priceSale?></span>
+								<?php
 							}
 						}
-						if ($record['coupon_code'])
-						{
-							echo '<div class="couponCode" style="font-weight:bold; padding:5px 0 0 0;">Coupon Code: <span class="code_cc" style="border:2px dashed #3079ed; padding: 2px 3px; font-weight:bold; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius:8px;">' . $record['coupon_code'] . '</span></div>';
-						}
-						
-						if ($type != 'coup' && $type != 'local'): ?>
-						<div class='productDescription'><?php
-							if ($record['price_sale'] || $record['price'] || $record['priceSale'])
+						?>
+						<div class="productBrandMerchant">
+							<?php
+							if($record['brand'] && !$filterBrand)
 							{
-								$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-								
-								if(empty($priceSale) || $record['price'] <= $priceSale)
-								{
-									//we don't do anything
-									?>
-									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
-									<?php
-								}
-								//otherwise strike-through Price and list the Price_Sale
-								else
-								{
-									?>
-									<span><del><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></del></span>
-									<span style="color:red;"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $priceSale?></span>
-									<?php
-								}
+								echo '<span class="brandIn">Brand: <cite>' . $record['brand'] . '</cite></span><br>';
+							}
+							if($record['merchant'] && !$filterMerchant)
+							{
+								echo '<span class="merchantIn">Merchant: <cite>' . $record['merchant'] . '</cite></span><br>';
+							}
+							if($record['deepLinking'])
+							{
+								echo '<span class="merchantIn">DeepLinking: <cite>' . ($record['deepLinking'] == 1 ? 'Yes' : 'No') . '</cite></span><br>';
+							}
+							if($record['category'])
+							{
+								echo '<span class="merchantIn">Category: <cite>' . $record['category'] . '</cite></span><br>';
+							}
+							if($record['minPaymentPercentage'] || $record['maxPaymentPercentage'])
+							{
+								echo '<span class="merchantIn">Payment Percentage: <cite>' . $record['minPaymentPercentage'] . '% to ' . $record['maxPaymentPercentage'] . '%</cite></span><br>';
 							}
 							?>
-							<div class="productBrandMerchant">
-								<?php
-								if($record['brand'] && !$filterBrand)
-								{
-									echo '<span class="brandIn">Brand: <cite>' . $record['brand'] . '</cite></span><br>';
-								}
-								if($record['merchant'] && !$filterMerchant)
-								{
-									echo '<span class="merchantIn">Merchant: <cite>' . $record['merchant'] . '</cite></span><br>';
-								}
-								if($record['deepLinking'])
-								{
-									echo '<span class="merchantIn">DeepLinking: <cite>' . ($record['deepLinking'] == 1 ? 'Yes' : 'No') . '</cite></span><br>';
-								}
-								if($record['category'])
-								{
-									echo '<span class="merchantIn">Category: <cite>' . $record['category'] . '</cite></span><br>';
-								}
-								if($record['minPaymentPercentage'] || $record['maxPaymentPercentage'])
-								{
-									echo '<span class="merchantIn">Payment Percentage: <cite>' . $record['minPaymentPercentage'] . '% to ' . $record['maxPaymentPercentage'] . '%</cite></span><br>';
-								}
-								?>
-							</div>
 						</div>
-						<?php endif; ?>
 					</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		<?php
@@ -308,6 +307,6 @@ if ($results = $response['data'])
 }
 else
 {
-	echo '<div class="noResults">No Results</div>';
+	echo '<h2>No Results</h2>';
 	echo '<div class="noResults-secondary">Please try another search.</div>';
 }

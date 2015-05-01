@@ -101,7 +101,10 @@ abstract class Model_Base
 					update_option('prosper_advanced', $advancedOpts);
 				}
 				
-				//add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
+				if ($this->_options['autoMinorUpdates'])
+				{
+					add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
+				}
 			}
 			else
 			{
@@ -114,32 +117,19 @@ abstract class Model_Base
 		}		
 	}
 	
-	/*public function autoUpdateProsperMinor ( $update, $item )
+	public function autoUpdateProsperMinor ( $update, $item )
 	{
-		if ( !$this->getIsOption( 'auto_update_minor_releases', 'Y' ) ) 
-		{
-			return $update;
-		}
-
-		// Only supports WordPress 3.8.2+
 		if ( !is_object( $item ) || !isset( $item->new_version ) || !isset( $item->plugin ) )  
-		{ 
-			// WP 3.8.2+
-			return $update;
-		}
-
-		if ( $item->plugin === PROSPER_BASENAME ) 
 		{
-			$currentParts = explode( '-', $this->_version() );
-			$updateParts = explode( '-', $item->new_version );
-			
-			print_r($currentParts);exit;
-			// We only return true (i.e. update if and when the update is a minor version
-			return ( $updateParts[0] === $currentParts[0] );
-		}
-		
-		return $update;
-	}*/
+			return $update;
+		}		
+
+		$currentParts = explode( '.', $this->_version );
+		$updateParts = explode( '.', $item->new_version );
+
+		// Only return true and update when the update is a minor version
+		return ( ($updateParts[0] === $currentParts[0] && $updateParts[1] === $currentParts[1]) );
+	}
 	
 	public function getVersion()
 	{			
@@ -457,22 +447,40 @@ abstract class Model_Base
 		$sidArray = array();
 		if ($this->_options['prosperSid'])
 		{
+			$sidArray = array();
 			foreach ($this->_options['prosperSid'] as $sidPiece)
 			{
-				switch ($sidPiece)
+				if ('blogname' === $sidPiece)
 				{
-					case 'blogname':
-						$sidArray[] = get_bloginfo('name');
-						break;
-					case 'interface':
-						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						break;
-					case 'query':
-						$sidArray[] = $settings['query'];
-						break;
-					case 'page':
-						$sidArray[] = get_the_title();
-						break;						
+					$sidArray[] = get_bloginfo('name');
+				}
+				elseif ('interface' === $sidPiece)
+				{
+					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+				}
+				elseif ('query' === $sidPiece)
+				{
+					$sidArray[] = $settings['query'];
+				}
+				elseif ('page' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetTitle' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetName' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('authorId' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('ID');
+				}
+				elseif ('authorName' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('user_login');
 				}
 			}
 		}
@@ -499,7 +507,7 @@ abstract class Model_Base
 			}
 		}
 		
-		if (!empty($sidArray))
+		if ($sidArray)
 		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
@@ -568,7 +576,11 @@ abstract class Model_Base
 				}
 				elseif ('authorId' === $sidPiece)
 				{
-					$sidArray[] = the_author_meta('ID');
+					$sidArray[] = get_the_author_meta('ID');
+				}
+				elseif ('authorName' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('user_login');
 				}
 			}
 		}

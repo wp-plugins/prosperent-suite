@@ -46,6 +46,11 @@ if ($options['PSAct'] || $options['PICIAct'] || $options['ALAct'])
 	}
 	echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
 }
+
+echo '<h2 class="prosper_h2">' . __( 'Automatic Updates', 'prosperent-suite' ) . '</h2>';
+echo $prosperAdmin->checkbox( 'autoMinorUpdates', __( 'Turn on Automatic Minor Updates', 'prosperent-suite' ));
+echo '<p class="prosper_descb">' . __( "This will only apply to minor maintenance and bug fixes. You will still have to update for major releases, which are less often.", 'prosperent-suite' ) . '</p>';
+
 echo '<h2 class="prosper_h2">' . __( 'Help Us, Help You', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'anonymousData', __( 'Send data back to Prosperent', 'prosperent-suite' ));
 echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and understanding how to make the plugin better for everyone and helping with support when needed.", 'prosperent-suite' ) . '</p>';

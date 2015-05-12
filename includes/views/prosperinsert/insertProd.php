@@ -2,7 +2,7 @@
 if ($pieces['v'] === 'grid')
 {
 	$gridImage = ($pieces['gimgsz'] ? preg_replace('/\s?(px|em|%)/i', '', $pieces['gimgsz']) : 200) . 'px';
-	$classLoad = ($type === 'coupon' || $type === 'merchant' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
+	$classLoad = ($type === 'merchant' ? '' : (($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"'));
 	?>
 	<div style="clear:both;"></div>
 	<div id="simProd">
@@ -21,7 +21,7 @@ if ($pieces['v'] === 'grid')
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 			$cid 	   = $record[$recordId];
 			
-			if ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
+			if ($this->_options['PSAct'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
 				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 				if ($type === 'merchant')
@@ -127,7 +127,7 @@ else
 			$cid = $record['couponId'] ? $record['couponId'] : $record['catalogId'];
 			$baseUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
 
-			if ($this->_options['Enable_PPS'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
+			if (($this->_options['PSAct'] && $page->post_status == 'publish') && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
 				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 			}		
@@ -197,11 +197,11 @@ else
 						<?php
 						if($record['brand'])
 						{
-							echo '<span class="brandIn"><u>Brand</u>: <a href=' . ($this->_options['Enable_PPS'] ? '"' . $baseUrl  . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"' : $goToUrl) . '><cite>' . $record['brand'] . '</cite></a></span>';
+							echo '<span class="brandIn"><u>Brand</u>: <a href=' . ($this->_options['PSAct'] ? '"' . $baseUrl  . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"' : $goToUrl) . '><cite>' . $record['brand'] . '</cite></a></span>';
 						}
 						if($record['merchant'])
 						{
-							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['Enable_PPS'] ? '"' . $baseUrl . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"' : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['PSAct'] ? '"' . $baseUrl . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"' : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
 						}				
 						?>
 					</div>

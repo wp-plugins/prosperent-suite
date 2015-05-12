@@ -65,7 +65,7 @@ class Model_Search extends Model_Base
 			
 	public function init()
 	{
-		$this->_options = $this->getOptions();		
+		$this->_options = $this->getOptions();			
 	}
 			
 	public function qTagsStore()
@@ -165,10 +165,10 @@ class Model_Search extends Model_Base
 		if ($brand)
 		{
 			$brands = explode('~', str_replace(',SL,', '/', $brand));
-			$filterBrands = array_merge($filterBrands, $brands);
-			$filterBrands = array_combine($filterBrands,$filterBrands);
+			$filterBrands = $brands;
+			$brands = array_combine($filterBrands,$filterBrands);
 		}
-
+		
 		if($this->_options['Positive_Brand'])
 		{
 			$plusBrands = array_map('stripslashes', explode(',', $this->_options['Positive_Brand']));
@@ -188,7 +188,7 @@ class Model_Search extends Model_Base
 			}
 		}
 
-		return $filterBrands;
+		return array('appliedFilters' => $brands, 'allFilters' => $filterBrands);
 	}
 	
 	public function getMerchants($merchant = null)
@@ -198,8 +198,8 @@ class Model_Search extends Model_Base
 		if ($merchant)		
 		{
 			$merchants = explode('~', str_replace(',SL,', '/', $merchant));
-			$filterMerchants = array_merge($filterMerchants, $merchants);
-			$filterMerchants = array_combine($filterMerchants,$filterMerchants);
+			$filterMerchants = $merchants;
+			$merchants = array_combine($filterMerchants, $filterMerchants);
 		}
 
 		if ($this->_options['Positive_Merchant'])
@@ -221,7 +221,7 @@ class Model_Search extends Model_Base
 			}
 		}
 		
-		return $filterMerchants;
+		return array('appliedFilters' => $merchants, 'allFilters' => $filterMerchants);
 	}	
 	
 	public function getCategories($category = null)
@@ -233,7 +233,7 @@ class Model_Search extends Model_Base
 			array_push($filterCategory, '*' . str_replace(',SL,', '/', $category) . '*');
 		}
 
-		return $filterCategory;
+		return array('appliedFilters' => $filterCategory, 'allFilters' => $filterCategory);
 	}	
 	
 	public function getCities($city = null)
@@ -243,11 +243,11 @@ class Model_Search extends Model_Base
 		if ($city)		
 		{
 			$city = explode('~', str_replace(',SL,', '/', $city));
-			$filterCity = array_merge($filterCity, $city);
-			$filterCity = array_combine($filterCity, $filterCity);
+			$filterCity = $city;
+			$city = array_combine($filterCity, $filterCity);
 		}
 
-		return $filterCity;
+		return array('appliedFilters' => $city, 'allFilters' => $filterCity);
 	}
 	
 	public function getZips($zip = null)
@@ -257,11 +257,11 @@ class Model_Search extends Model_Base
 		if ($zip)		
 		{
 			$zip = explode('~', str_replace(',SL,', '/', $zip));
-			$filterZip = array_merge($filterZip, $zip);
-			$filterZip = array_combine($filterZip, $filterZip);
+			$filterZip = $zip;
+			$zip = array_combine($filterZip, $filterZip);
 		}
 
-		return $filterZip;
+		return array('appliedFilters' => $zip, 'allFilters' => $filterZip);
 	}
 	
 	public function buildFacets($facets, $params, $filters, $url)
@@ -282,11 +282,11 @@ class Model_Search extends Model_Base
 
 			foreach ($facetArray as $facet)
 			{			
-				if ($filters[$i][$facet['value']])
+				if ($filters[$i]['appliedFilters'][$facet['value']])
 				{
-					if (count($filters[$i]) > 1)
+					if (count($filters[$i]['appliedFilters']) > 1)
 					{
-						$newFilters = $filters[$i];
+						$newFilters = $filters[$i]['appliedFilters'];
 						unset($newFilters[$facet['value']]);
 						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
 						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
@@ -478,6 +478,11 @@ class Model_Search extends Model_Base
 	{
 		$options = $this->_options;
 		
+		if (!$options['PSAct'])
+		{
+		    return;
+		}
+		
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);		
 
 		if(get_query_var('queryParams'))
@@ -633,18 +638,14 @@ class Model_Search extends Model_Base
 		{
 			if (!is_front_page())
 			{
-				$opts = array_merge($options, array(
-					'Base_URL' => get_post()->post_name	
-				));				
+				$options['Base_URL'] = get_post()->post_name;				
 			}
 			else
 			{
-				$opts = array_merge($options, array(
-					'Base_URL' => 'products'
-				));		
+				$options['Base_URL'] = 'products';		
 			}
 				
-			update_option('prosper_advanced', $opts);
+			update_option('prosper_advanced', $options);
 
 			$this->prosperReroutes();	
 		}
@@ -764,7 +765,6 @@ class Model_Search extends Model_Base
 		}
 
 		$sepEnds 	  = $this->getEndpoints();
-		//$typeSelector = $this->getTypeSelector($sepEnds, $params['type']);
 		$newEnds 	  = array_keys($sepEnds);
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';
 		$merchant 	  = isset($params['merchant']) ? str_replace('|', '~', rawurldecode(stripslashes($params['merchant']))) : '';		

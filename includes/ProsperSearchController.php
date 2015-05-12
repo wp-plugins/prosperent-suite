@@ -21,7 +21,7 @@ class ProsperSearchController
 		$this->searchModel = new Model_Search();
 		
 		$this->searchModel->init();
-
+		
 		add_shortcode('prosper_store', array($this, 'storecode'));
 		add_shortcode('prosper_search', array($this->searchModel, 'searchShortcode'));
 		
@@ -36,7 +36,7 @@ class ProsperSearchController
     }
 	
 	public function storecode()
-	{
+	{	    
 		ob_start();
 		$this->storeShortcode();
 		$store = ob_get_clean();
@@ -50,11 +50,16 @@ class ProsperSearchController
 		$searchPage  = $phtml[0];
 		$productPage = $phtml[1];
 
+		if (!$options['PSAct'])
+		{
+		    return;
+		}
+		
 		define('DONOTCACHEPAGE', true);
 	
 		$this->searchModel->storeChecker();		
 		$data = $this->searchModel->storeSearch();
-				
+
 		$params = $data['params'];
 		$homeUrl = home_url('', 'http');
 		if (is_ssl())
@@ -213,7 +218,7 @@ class ProsperSearchController
 			$q = rawurldecode($params['query']);
 		}
 
-		$query = $q ? stripslashes($q) : null;
+		$query = $q ? stripslashes(str_replace(',SL,', '/', $q)) : null;
 
 		/*
 		 * Get title for results line
@@ -232,17 +237,17 @@ class ProsperSearchController
 				$demolishUrl = str_replace(array('/page/' . $params['page'], '/query/' . $params['query']), '', $url);
 			}
 		}
-		elseif ($params['brand'])
+		elseif ($params['merchant'])
 		{
-			$title =  '<strong>' . ucwords(rawurldecode($params['brand'])) . '</strong>';
+			$title =  '<strong>' . ucwords(rawurldecode(str_replace(',SL,', '/', $params['brand']))) . '</strong>';
 			if (strpos($params['merchant'], '~'))
 			{
 				$title = '<strong>the Chosen Merchants</strong>';
 			}	
 		}
-		elseif ($params['merchant'])
+		elseif ($params['brand'])
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['merchant'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode(str_replace(',SL,', '/', $params['merchant']))) . '</strong>';
 			if (strpos($params['merchant'], '~'))
 			{
 				$title = '<strong>the Chosen Brands</strong>';
@@ -250,7 +255,7 @@ class ProsperSearchController
 		}
 		elseif ($params['category'])
 		{
-			$title = '<strong>' . ucwords(rawurldecode($params['category'])) . '</strong>';
+			$title = '<strong>' . ucwords(rawurldecode(str_replace(',SL,', '/', $params['category']))) . '</strong>';
 		}
 		else
 		{
@@ -265,34 +270,34 @@ class ProsperSearchController
 			'Merchant: Z-A' 	 => 'merchant desc'			
 		);
 
-		if ($query || $filters['brand'] || $filters['merchant'] || $filters['category'])
+		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters'])
 		{			
 			$settings = array(
 				'page'			   => $params['page'],
 				'query'            => $query,
 				'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
-				'filterBrand'      => implode('|', $filters['brand']),
-				'filterMerchant'   => implode('|', $filters['merchant']),
-				'filterCategory'   => implode('|', $filters['category']),
+				'filterBrand'      => implode('|', $filters['brand']['appliedFilters']),
+				'filterMerchant'   => implode('|', $filters['merchant']['appliedFilters']),
+				'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',				
 				'limit'			   => $options['Pagination_Limit'],
 				'imageSize'		   => $imageSize,
 				'curlCall'		   => 'multi-product'
 			);	
-		
+
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);			
 		}
 
-		if ($options['Enable_Facets'] && ($query || $filters['brand'] || $filters['merchant'] || $filters['category']))
+		if ($options['Enable_Facets'] && ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
 		{
 			$merchantFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'merchant',
 				'limit'			   => 1,
-				'filterMerchant'   => $filters['merchant'],				
-				'filterCategory'   => $filters['category'],
-				'filterBrand'	   => $filters['brand'],
+				'filterMerchant'   => $filters['merchant']['allFilters'],				
+				'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterBrand'	   => $filters['brand']['appliedFilters'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
@@ -304,14 +309,14 @@ class ProsperSearchController
 				'query'            => $query,
 				'enableFacets'     => 'brand',
 				'limit'			   => 1,
-				'filterMerchant'   => $filters['merchant'],				
-				'filterCategory'   => $filters['category'],
-				'filterBrand'	   => $filters['brand'],
+				'filterMerchant'   => $filters['merchant']['appliedFilters'],				
+				'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterBrand'	   => $filters['brand']['allFilters'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
 			);	
-			
+
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, $fetch);
 		}
 
@@ -319,7 +324,6 @@ class ProsperSearchController
 
 		if ($everything['brands']['facets'] || $everything['merchants']['facets'])
 		{			
-
 			$allFilters = array_merge((array) $everything['brands']['facets'], (array) $everything['merchants']['facets']);
 			$filterArray = $this->searchModel->buildFacets($allFilters, $params, $filters, $url);
 
@@ -344,11 +348,16 @@ class ProsperSearchController
 		}
 		else
 		{
-			if ($query && ($filters['brand'] || $filters['merchant'] || $filters['category']))
+			if ($query && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
 			{ 				
 				$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
 				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
 
+				if (strlen($query) > 60)
+				{
+				    $query = substr($query, 0, 12) . '...';
+				}
+				
 				$this->productAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products to ' . ucwords($query));
 				return;		
 			}
@@ -445,32 +454,32 @@ class ProsperSearchController
 		);
 		
 		
-		if ($query || $filters['merchant'] || $filters['category'])
+		if ($query || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters'])
 		{		
 			$settings = array(
 				'page'			   => $params['page'],
 				'query'            => $query,
 				'sortBy'	       => rawurldecode($params['sort']),
-				'filterMerchant'   => implode('|', $filters['merchant']),	
-				'filterCategory'   => implode('|', $filters['category']),
+				'filterMerchant'   => implode('|', $filters['merchant']['appliedFilters']),	
+				'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
 				'filterMerchantId' => '!123473|!124147',
 				'limit'			   => $options['Pagination_Limit'],
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'curlCall'		   => 'multi-coupon'
 			);	
-	
+
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);
 		}
 
-		if ($options['Enable_Facets'] && ($query || $filters['merchant'] || $filters['category']))
+		if ($options['Enable_Facets'] && ($query || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
 		{		
 			$merchantFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'merchant',						
-				'filterCategory'   => $filters['category'],
+				'filterCategory'   => $filters['category']['appliedFilters'],
 				'limit'			   => 1,
-				'filterMerchant'   => $filters['merchant'],
+				'filterMerchant'   => $filters['merchant']['allFilters'],
 				'filterMerchantId' => '!123473|!124147',
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
@@ -503,7 +512,7 @@ class ProsperSearchController
 		}
 		else
 		{
-			if ($query && ($filters['merchant'] || $filters['category']))
+			if ($query && ($filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
 			{ 				
 				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
 				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
@@ -515,7 +524,7 @@ class ProsperSearchController
 			if (!$results)
 			{				
 				$settings = array(
-					'page'		=> $params['page']
+					'page' => $params['page']
 				);
 				
 				$allData   = $this->searchModel->trendsApiCall($settings, $fetch);
@@ -656,14 +665,14 @@ class ProsperSearchController
 			'ZipCode: Low to High' 		  => 'zipCode asc',
 		);	
 
-		if ($filterZip || $filterCity || $filterState || $filters['category'] || $params['merchant'])
+		if ($filterZip || $filterCity || $filterState || $filters['category']['appliedFilters'] || $params['merchant'])
 		{			
 			$settings = array(
 				'sortBy'	     => rawurldecode($params['sort']),
-				'filterZipCode'  => implode('|', $filters['zip']),
-				'filterCity'     => implode('|', $filters['city']),
+				'filterZipCode'  => implode('|', $filters['zip']['appliedFilters']),
+				'filterCity'     => implode('|', $filters['city']['appliedFilters']),
 				'filterState'    => $filterState,
-				'filterCategory' => implode('|', $filters['category']),
+				'filterCategory' => implode('|', $filters['category']['appliedFilters']),
 				'filterMerchant' => rawurldecode($params['merchant']),
 				'limit'			 => $options['Pagination_Limit'],
 				'imageSize'		 => $imageSize,
@@ -678,12 +687,12 @@ class ProsperSearchController
 		if ($options['Enable_Facets'] && ($filterZip || $filterCity || $filterState || $params['merchant']))
 		{
 			$zipCodeFacetSettings = array(
-				'filterCity'       => $filters['city'],
+				'filterCity'       => $filters['city']['appliedFilters'],
 				'filterState'      => $filterState,
 				'filterMerchant'   => rawurldecode($params['merchant']),
 				'enableFacets'     => 'zipCode',
 				'limit'			   => 1,
-				'filterCategory'   => $filters['category'],
+				'filterCategory'   => $filters['category']['appliedFilters'],
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
@@ -695,8 +704,8 @@ class ProsperSearchController
 				'filterState'      => $filterState,
 				'enableFacets'     => 'city',
 				'limit'			   => 1,
-				'filterCategory'   => $filters['category'],
-				'filterZipCode'    => $filters['zip'],
+				'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterZipCode'    => $filters['zip']['appliedFilters'],
 				'filterDollarsOff' => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
@@ -730,7 +739,7 @@ class ProsperSearchController
 		}
 		else
 		{
-			if ($filterState && ($filters['merchant'] || $filters['category'] || $filters['zip'] || $filters['city']))
+			if ($filterState && ($filters['merchant'] || $filters['category']['appliedFilters'] || $filters['zip']['appliedFilters'] || $filters['city']['appliedFilters']))
 			{ 				
 				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/query/' . $data['params']['query'], '/merchant/' . $data['params']['merchant'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip']), '', $data['url']);
 				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['category'], $data['filters']['category'], $data['params']['zip'], $data['filters']['zip'], $data['params']['city'], $data['filters']['city'], $data['params']['page']);
@@ -843,15 +852,16 @@ class ProsperSearchController
 			$curlUrls['celebrity'] = $this->searchModel->apiCall($settings, 'fetchCelebrities');
 		}
 
-		if ($params['celebrity'] || $filters['merchant'] || $filters['brand'])
+		if ($params['celebrity'] || $filters['merchant']['appliedFilters'] || $filters['brand']['appliedFilters'] || $filters['category']['appliedFilters'])
 		{
 			$settings = array(
 				'sortBy'	      => rawurldecode($params['sort']),
-				'filterMerchant'  => implode('|', $filters['merchant']),
+				'filterMerchant'  => implode('|', $filters['merchant']['appliedFilters']),
+			    'filterCategory'  => $filters['category']['appliedFilters'],
 				'filterCelebrity' => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'limit'			  => $options['Pagination_Limit'],
 				'imageSize'		  => $imageSize,
-				'filterBrand'	  => implode('|', $filters['brand']),
+				'filterBrand'	  => implode('|', $filters['brand']['appliedFilters']),
 				'page'			  => $params['page'],
 				'curlCall'		  => 'multi-celebrity'
 			);	
@@ -859,12 +869,13 @@ class ProsperSearchController
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, 'fetchProducts');
 		}
 		
-		if ($options['Enable_Facets'] && ($filters['brand'] || $filters['merchant'] || $params['celebrity']))
+		if ($options['Enable_Facets'] && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $params['celebrity'] || $filters['category']['appliedFilters']))
 		{	
 			$merchantFacetSettings = array(
-				'enableFacets'     => array('merchant'),
-				'filterBrand'	   => $filters['brand'],
-				'filterMerchant'   => $filters['merchant'],
+				'enableFacets'     => 'merchant',
+				'filterBrand'	   => $filters['brand']['appliedFilters'],
+				'filterMerchant'   => $filters['merchant']['allFilters'],
+			    'filterCategory'   => $filters['category']['appliedFilters'],
 				'limit'			   => 1,
 				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
@@ -875,22 +886,23 @@ class ProsperSearchController
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, 'fetchProducts');	
 		
 			$brandFacetSettings = array(
-				'enableFacets'     => array('brand'),
+				'enableFacets'     => 'brand',
 				'limit'			   => 1,
 				'filterCelebrity'  => $params['celebrity'] ? rawurldecode($params['celebrity']) : '',
-				'filterMerchant'   => $filters['merchant'],
-				'filterBrand'	   => $filters['brand'],
+				'filterMerchant'   => $filters['merchant']['appliedFilters'],
+			    'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterBrand'	   => $filters['brand']['allFilters'],
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 				'enableFullData'   => 'FALSE'
 			);	
-
+			
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, 'fetchProducts');
 		}
 
 		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
 		
-		if ($everything['merchants']['facets'])
+		if ($everything['brands']['facets'] || $everything['merchants']['facets'])
 		{			
 			$allFilters = array_merge((array) $everything['brands']['facets'], (array) $everything['merchants']['facets']);
 			$filterArray = $this->searchModel->buildFacets($allFilters, $params, $filters, $url);
@@ -899,11 +911,9 @@ class ProsperSearchController
 
 			$brands    = array_splice($filterArray['all']['brand'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 7));
 			$merchants = array_splice($filterArray['all']['merchant'], 0, ($options['Merchant_Facets'] ? $options['Merchant_Facets'] : 7));
-			//$category  = array_splice($filterArray['category'], 0, 10);
 			
 			ksort($filterArray['all']['brand']);
 			ksort($filterArray['all']['merchant']);
-			//sort($filterArray['category']);
 
 			$mainFilters = array('brand' => $brands, 'merchant' => $merchants );
 			$secondaryFilters = array('brand' => $filterArray['all']['brand'], 'merchant' => $filterArray['all']['merchant']);
@@ -918,7 +928,7 @@ class ProsperSearchController
 		}
 		else
 		{
-			if ($params['celebrity'] && ($filters['merchant'] || $filters['brand'] || $filters['category'] || $params['page']))
+			if ($params['celebrity'] && ($filters['merchant']['appliedFilters'] || $filters['brand']['appliedFilters'] || $params['page']))
 			{			
 				$data['url'] = str_replace(array('/page/' . $data['params']['page'], '/query/' . $data['params']['query'], '/merchant/' . $data['params']['merchant'], '/brand/' . $data['params']['brand'], '/category/' . $data['params']['category'], '/page/' . $data['params']['page'], '/query/' . $data['params']['query']), '', $data['url']);
 				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page'], $data['params']['query']);
@@ -962,7 +972,7 @@ class ProsperSearchController
 		$backStates  = array_flip($this->searchModel->states);
 		$curlUrls    = array();
 		$expiration  = PROSPER_CACHE_COUPS;		
-		
+
 		if ($prosperPage == 'coupon')
 		{
 			$visitButton = 'Use Coupon';
@@ -1049,7 +1059,7 @@ class ProsperSearchController
 		
 		if (empty($mainRecord))
 		{
-			header('Location: ' . $matchingUrl . '/query/' . rawurlencode(get_query_var('keyword')));
+			header('Location: ' . $matchingUrl . '/query/' . get_query_var('keyword'));
 			exit;
 		}
 

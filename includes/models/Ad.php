@@ -29,7 +29,12 @@ class Model_Ad extends Model_Base
 	*/	
 	public function performAdShortCode($atts, $content = null)
 	{
-		$this->_options = $this->getOptions();
+		$this->_options = $this->getOptions();		
+		if (!$this->_options['PAAct'])
+		{
+			return;
+		}
+		
 		extract($this->shortCodeExtract($atts, $this->_shortcode));
 		
 		if (!$this->_options['shortCodesAccessed'])

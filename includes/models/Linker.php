@@ -50,6 +50,11 @@ class Model_Linker extends Model_Base
 		$homeUrl   = home_url('/');	
 		$storeUrl  = $homeUrl . $base;	
 			
+		if (!$options['ALAct'])
+		{
+		    return $content;
+		}
+		
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 
 		$brands    = $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '';
@@ -64,7 +69,7 @@ class Model_Linker extends Model_Base
 		
 		// Remove links within links
 		$content = $content ? (preg_match('/<a/i', $content) ? strip_tags($content) : $content) : $query;
-		
+
 		$query = trim(strip_tags($pieces['q']));
 		if ((!$brands || !$merchants) && !$query)
 		{
@@ -332,28 +337,38 @@ class Model_Linker extends Model_Base
 	 */
 	public function autoLinker($text)
 	{	
-		$options 		  = $this->_options;
-		$random 		  = FALSE;
-		$base   		  = $options['Base_URL'] ? $options['Base_URL'] . '/query/' : 'products/query/';
-		$target 		  = $options['Target'] ? '_blank' : '_self';
-		$productSearchUrl = home_url('/') . $base;	
-
-		if ($options['Country'] == 'US')
-		{
-			$fetch = 'fetchProducts';
-		}
-		elseif ($options['Country'] == 'CA')
-		{
-			$fetch = 'fetchCaProducts';
-		}
-		else 
-		{
-			$fetch = 'fetchUkProducts';
-		}			
-		
+	    $options = $this->_options;
+	    
+	    if (!$options['ALAct'])
+	    {
+	        return $text;
+	    }
+	    
 		$text = ' ' . $text . ' ';
 		if (!empty($options['Match'][0]))
 		{
+		    
+		    $random 		  = FALSE;
+		    $basePage         = ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products');
+		    $base   		  = $basePage . '/query/';
+		    $target 		  = $options['Target'] ? '_blank' : '_self';
+		    $productSearchUrl = home_url('/') . $base;
+		    
+		    if ($options['Country'] == 'US')
+		    {
+		        $fetch = 'fetchProducts';
+		    }
+		    elseif ($options['Country'] == 'CA')
+		    {
+		        $fetch = 'fetchCaProducts';
+		    }
+		    else
+		    {
+		        $fetch = 'fetchUkProducts';
+		    }
+		    
+		    $page = get_page_by_path($basePage);
+
 			$val = array();
 			foreach ($options['Match'] as $i => $match)
 			{			
@@ -362,38 +377,25 @@ class Model_Linker extends Model_Base
 					$val[$match] =  $options['Query'][$i] ? $options['Query'][$i] : $match;
 				}
 			}
-			
+
 			$i = 0;				
 			foreach ($val as $oldText => $newText)
 			{ 				
 				$limit = $options['PerPage'][$i] ? $options['PerPage'][$i] : 5;
 				$case  = isset($options['Case'][$i]) ? '' : 'i';
-				
+
 				if (!preg_match('/' . $oldText . '/' . $case, $text))
 				{
-					continue;
-					
+					continue;					
 				}
-
+				
 				$query = rawurlencode(trim($newText));	
 				//$qText = 'q="' . $oldText . '"';
 				preg_match('/q=\".+?\"/', $text, $qText);
-
-				$settings = array(
-					'enableFullData'  => FALSE,
-					'limit'           => 1,
-					'query'           => $newText,
-					'groupBy'		  => 'productId',
-					'interface'		  => 'linker',
-					'curlCall'		  => 'single-product'
-				);
-
-				
-				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url, PROSPER_CACHE_PRODS, $settings);
 				
 				$text = str_ireplace($qText[0], $base = base64_encode($qText[0]), $text);
 				
+				/*
 				if ($random)
 				{							
 					preg_match_all('/\b' . $oldText . '\b/' . $case, $text, $matches, PREG_PATTERN_ORDER);
@@ -462,16 +464,31 @@ class Model_Linker extends Model_Base
 					$text = implode('', $content);
 				}
 				else
-				{
-					if (!isset($options['PSAct']) || isset($options['LTM'][$i]) == 1)
-					{				
-						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw shopCheck">$0</a>', $text, $limit);
+				{*/
+					if (!isset($options['PSAct']) || isset($options['LTM'][$i]) == 1 || $page->post_status != 'publish')
+					{			
+					    $settings = array(
+					        'enableFullData'  => 'FALSE',
+					        'limit'           => 1,
+					        'query'           => $newText,
+					        'groupBy'		  => 'productId',
+					        'interface'		  => 'linker',
+					        'curlCall'		  => 'single-product'
+					    );
+					    					    
+					    $url = $this->apiCall($settings, $fetch);
+					    $allData = $this->singleCurlCall($url, PROSPER_CACHE_PRODS, $settings);
+
+					    if ($allData['data'])
+					    {
+					        $text = preg_replace('/\b\s(' . $oldText . ')\s\b/' . $case, ' <a href="' . $allData['data'][0]['affiliate_url'] . '" target="' . $target . '" class="prosperent-kw shopCheck">$1</a> ', $text, $limit); 
+					    }		   
 					}
 					else
 					{
-						$text = preg_replace('/\b' . $oldText . '\b/' . $case, '<a href="' . $productSearchUrl . $query . '" target="' . $target . '" class="prosperent-kw">$0</a>', $text, $limit);
+						$text = preg_replace('/\b\s(' . $oldText . ')\s\b/' . $case, ' <a href="' . $productSearchUrl . $query . '" target="' . $target . '" class="prosperent-kw">$1</a> ', $text, $limit);
 					}
-				}
+				//}
 				
 				$text = str_ireplace($base, $qText[0], $text);
 

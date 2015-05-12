@@ -24,30 +24,14 @@ class Model_Admin extends Model_Base
 	public $_options;
 			
 	public function init()
-	{
-		$genOpts = get_option('prosperSuite');
-
-		$shopOpts = get_option('prosper_productSearch');
-		$shopOpts['Enable_PPS'] = $genOpts['PSAct'];
-		update_option('prosper_productSearch', $shopOpts);
-		
-		$adsOpts = get_option('prosper_performAds');
-		$adsOpts['Enable_PA'] = $genOpts['PAAct'];
-		update_option('prosper_performAds', $adsOpts);
-		
-		$insertOpts = get_option('prosper_autoComparer');
-		$insertOpts['Enable_AC'] = $genOpts['PICIAct'];
-		update_option('prosper_autoComparer', $insertOpts);
-		
-		$linkerOpts = get_option('prosper_autoLinker');
-		$linkerOpts['Enable_AL'] = $genOpts['ALAct'];
-		update_option('prosper_autoLinker', $linkerOpts);
-		
-		$linksOpts = get_option('prosper_prosperLinks');
-		$linksOpts['Enable_PL'] = $genOpts['PLAct'];
-		update_option('prosper_prosperLinks', $linksOpts);
-		
-		
+	{			    
+	    if ( isset( $_GET['dismissProsper'] ) && wp_verify_nonce( $_GET['nonce'], 'prosperhideDepre' ) && current_user_can( 'manage_options' ) )
+	    {
+	        $genOptions = get_option('prosperSuite');
+	        $genOptions['dismissDepre'] = 1;
+	        update_option('prosperSuite', $genOptions);
+	    }
+	    
 		if ( isset( $_GET['add'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_add_setting' ) && current_user_can( 'manage_options' ) ) 
 		{ 
 			$this->addLinks();
@@ -80,7 +64,7 @@ class Model_Admin extends Model_Base
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
 		}
 		
-		$adOpts = get_option('prosper_performAds');
+		$genOpts = get_option('prosperSuite');
 		if ($_GET['page'] == 'prosper_performAds' && ($genOpts['PAAct'] == FALSE || !$genOpts['PAAct']) && current_user_can( 'manage_options' ) )
 		{
 			$_GET['page'] = 'prosper_general';
@@ -389,12 +373,12 @@ class Model_Admin extends Model_Base
 		{
 			if ( !empty( $label_left ) )
 				$label_left .= ':';
-			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label_left . '</label>';
+			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '[' . $arrayNum . ']">' . $label_left . '</label>';
 			$class        = 'prosper_checkboxinline';
 		} 
 		else 
 		{
-			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '[' . $arrayNum . ']">' . $label . '</label>';
 			$class        = 'prosper_checkboxinline double';
 		}
 
@@ -599,10 +583,16 @@ class Model_Admin extends Model_Base
 			$output = '<label class="prosper_radio"></label>';
 		}
 
+		$i = 0;
 		foreach ( $values as $key => $value ) {
 
+		    if (fmod($i, 5) == 0 )
+		    {
+		        $output .= '<br>';
+		    }
 			$key = esc_attr( $key );
 			$output .= '<input type="checkbox" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']['.$key.']" value="' . $key . '" ' . ( $options[$var][$key] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radiofor" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
+			$i++;
 		}
 		$output .= '</span>';
 
@@ -666,8 +656,8 @@ class Model_Admin extends Model_Base
 		?>
 		<div class="wrap">
 		<?php
-		$options = get_option('prosperSuite');
-		
+		$options = $this->getOptions();
+
 		if ( ( isset( $_GET['updated'] ) && $_GET['updated'] == 'true' ) || ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == 'true' ) ) {
 			$msg = __( 'Settings updated', 'prosperent-suite' );
 
@@ -684,6 +674,7 @@ class Model_Admin extends Model_Base
 			$this->prosperStoreInstall();
 			$this->prosperReroutes();
 			
+			$genOpts = get_option('prosperSuite');
 			echo '<div id="message" style="width:800px;" class="message updated">	
 					<p>
 						<strong style="font-size:14px;">What\'s Next?</strong></br>
@@ -697,8 +688,8 @@ class Model_Admin extends Model_Base
 					</p>			
 				</div>';
 
-			$options['ProsperFirstTimeOperator'] = true;
-			update_option('prosperSuite', $options);
+			$genOpts['ProsperFirstTimeOperator'] = true;
+			update_option('prosperSuite', $genOpts);
 		}
 
 		if ($options['Enable_Caching'] && !extension_loaded('memcache'))

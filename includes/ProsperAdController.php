@@ -20,7 +20,7 @@ class ProsperAdController
 		$prosperAd = new Model_Ad();
 
 		add_shortcode('perform_ad', array($prosperAd, 'performAdShortCode'));		
-		
+	
 		if (is_admin())
 		{
 			add_action('admin_print_footer_scripts', array($prosperAd, 'qTagsAd'));	

@@ -109,6 +109,10 @@ class PerformAdWidget extends WP_Widget
 				{
 					$sidArray[] = get_the_author_meta('user_login');
 				}
+				elseif ('postId' === $sidPiece)
+				{
+				    $sidArray[] = get_the_ID();
+				}
 			}
 		}
 		if ($options['prosperSidText'] && !$sid)

@@ -22,6 +22,10 @@ if ($options['PAAct'])
 	echo $prosperAdmin->checkbox( 'PAAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperAds</span>', 'prosperent-suite' ) );
 	echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 }
+else
+{
+    echo $prosperAdmin->hidden( 'PAAct' );
+}
 
 echo $prosperAdmin->checkbox( 'PICIAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperInsert and Content Inserter</span>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
@@ -46,6 +50,10 @@ if ($options['PSAct'] || $options['PICIAct'] || $options['ALAct'])
 	}
 	echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
 }
+else 
+{
+    echo $prosperAdmin->hidden( 'Enable_Caching' );
+}
 
 echo '<h2 class="prosper_h2">' . __( 'Automatic Updates', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'autoMinorUpdates', __( 'Turn on Automatic Minor Updates', 'prosperent-suite' ));
@@ -59,5 +67,6 @@ echo $prosperAdmin->hidden( 'ProsperFirstTimeOperator' );
 echo $prosperAdmin->hidden( 'prosperNewVersion' );
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 echo $prosperAdmin->hidden( 'prosperNoOptions' );
+echo $prosperAdmin->hidden( 'dismissDepre' );
 
 $prosperAdmin->adminFooter();

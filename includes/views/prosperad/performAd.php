@@ -13,7 +13,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<script type="text/javascript">function setFocus(){document.getElementById("height").focus()};</script>
 	</head>
 	<base target="_self" />
-	<body onload="setFocus()">
+	<body onload="setFocus();">
 		<form action="/" method="get" id="prosperSCForm">
 			<fieldset style="font-size:14px">
 				<legend>Performance Ad</legend>

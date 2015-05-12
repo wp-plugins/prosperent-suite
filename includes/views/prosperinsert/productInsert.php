@@ -10,7 +10,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<link rel="stylesheet" href="<?php echo $mainURL . 'css/prosperMCE.css?v=3.3.3'; ?>">		
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.3.3'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.4.3'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
 
 		<script type="text/javascript">
@@ -23,17 +23,16 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		</script>
     </head>
     <base target="_self" />
-    <body id="inserter" style="display: table" role="application" aria-labelledby="app_label" onload="setFocus();">
-		
+    <body id="inserter" role="application" aria-labelledby="app_label" onload="setFocus();showValues();">		
 		<form action="/" method="get" id="prosperSCForm">
-			<input type="hidden" id="prosperSC" value="compare"/>
-			<div style="width:48%;float:left;display:table-cell">
+			<div style="width:34%;float:left;position:fixed;display:block;">
+			    <input type="hidden" id="prosperSC" value="compare"/>
 				<div class="tabs">
 					<ul>
-						<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:mcTabs.displayTab('products_tab','products_panel');" onmousedown="return false;">Products</a></span></li>
-						<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:mcTabs.displayTab('coupons_tab','coupons_panel');" onmousedown="return false;">Coupons</a></span></li>
-						<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:mcTabs.displayTab('local_tab','local_panel');" onmousedown="return false;">Local Deals</a></span></li>
-						<li id="merchant_tab" aria-controls="merchant_panel"><span><a href="javascript:mcTabs.displayTab('merchant_tab','merchant_panel');" onmousedown="return false;">Merchants</a></span></li>
+						<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:;" onClick="mcTabs.displayTab('products_tab','products_panel');setFocus();showValues();" onmousedown="return false;">Products</a></span></li>
+						<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:;" onClick="mcTabs.displayTab('coupons_tab','coupons_panel');setFocus();showValues();" onmousedown="return false;">Coupons</a></span></li>
+						<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:;" onClick="mcTabs.displayTab('local_tab','local_panel');setFocus();showValues();" onmousedown="return false;">Local Deals</a></span></li>
+						<li id="merchant_tab" aria-controls="merchant_panel"><span><a href="javascript:;" onClick="mcTabs.displayTab('merchant_tab','merchant_panel');setFocus();showValues();" onmousedown="return false;">Merchants</a></span></li>
 					</ul>
 				</div>
 
@@ -42,7 +41,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<fieldset style="font-size:14px;">
 							<legend>Product Insert</legend>
 							<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>
-							<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="prodq" id="prodquery"  onKeyUp="showValues();" placeholder="shoes"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
+							<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="prodq" id="prodquery"  onKeyUp="showValues();" value="shoes" placeholder="shoes"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
 							<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="prodmerchant" name="prodm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>
 							<p><label>Brand:</label><input class="prosperTextSC" tabindex="3" type="text" id="prodbrand" name="prodb"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Brands</strong> If you want to exclude a brand, put an <strong>!</strong> before the brand name.</span></a></p>
 							<p><label>Celebrity Name:</label><input class="prosperTextSC" tabindex="4" type="text" id="prodcelebname" name="prodcelebname"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Celebrity Name to get products of a celebrity.</span></a></p>														
@@ -62,7 +61,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<fieldset style="font-size:14px;">
 							<legend>Coupon Insert</legend>	
 							<input type="hidden" name="coupfetch" id="coupfetch" value="fetchCoupons"/>						
-							<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="coupq" id="coupquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
+							<p><label>Query:</label><input class="prosperTextSC" tabindex="1" type="text" name="coupq" id="coupquery"  value="shoes" onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>
 							<p><label>Merchant:</label><input class="prosperTextSC" tabindex="2" type="text" id="coupmerchant" name="coupm" onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple Merchants</strong> If you want to exclude a merchant, put an <strong>!</strong> before the merchant name.</span></a></p>																											
 							<p><label>Limit:</label><input class="prosperTextSC" tabindex="3" type="text" id="couplimit" style="width:50px"/><a href="#" class="tooltip"><span>This amount of products to display.</span></a></p>                    
 							<p><label>Button Text:</label><input class="prosperTextSC" tabindex="4" type="text" id="coupvisit" name="coupvisit"/><a href="#" class="tooltip"><span>Change the Visit Store button text to anything you'd like. <strong>Defaults to Visit Store</strong></span></a></p>
@@ -76,7 +75,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<fieldset style="font-size:14px;">
 							<legend>Local Deals Insert</legend>					
 							<input type="hidden" name="localfetch" id="localfetch" value="fetchLocal"/>								
-							<p><label>State:</label><input class="prosperTextSC" tabindex="1" type="text" id="state" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by state.</span></a></p>                    
+							<p><label>State:</label><input class="prosperTextSC" tabindex="1" type="text" id="state"  value="California" name="state"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by state.</span></a></p>                    
 							<p><label>City:</label><input class="prosperTextSC" tabindex="2" type="text" id="city" name="city"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by city.</span></a></p>                    
 							<p><label>ZipCode:</label><input class="prosperTextSC" tabindex="3" type="text" id="zipcode" name="zip"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Filter results by zip code.</span></a></p>                    
 							<p><label>Query:</label><input class="prosperTextSC" tabindex="4" type="text" name="localq" id="localquery"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>The query that is  used for the search</span></a></p>									
@@ -92,21 +91,28 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 					<div id="merchant_panel" class="panel">		
 						<fieldset style="font-size:14px;">
 							<legend>Merchant Insert</legend>					
-							<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>																
-							<p><label>Merchant:</label><input class="prosperTextSC" tabindex="5" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name.</span></a></p>														
+							<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>
+							<p>Only Merchants that allow DeepLinking will be shown.</p>																
+							<p><label>Merchant:</label><input class="prosperTextSC" value="Backcountry" tabindex="5" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name.</span></a></p>														
+							<p><label>Image Type:</label><select tabindex="2" id="imageType" name="imageType" onChange="showValues();"><option value="original" selected="selected">Original</option><option value="white">White</option><option value="black">Black</option></select><a href="#" class="tooltip"><span>Choose a logo type.</span></a></p>
 							<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="9" type="checkbox" id="merchantgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>						
 							<input type="hidden" id="merchantid" name="merchantid"/>							
 						</fieldset>
 					</div>
 				</div>
 			</div>
-			<div id="resultsGoHere" class="mceActionPanel" style="width:48%;float:right;display:table-cell">	
-				<input type="hidden" id="images" name="images"/>
-				<input type="hidden" id="keywords" name="keywords"/>
-				<input tabindex="11" type="submit" value="Submit Selected Products" class="button-primary" id="prosperMCE_submit" onClick="javascript:shortCode.insert(shortCode.local_ed);" style="display:none"/>
-				<div id="sticky-anchor"></div>
-				<div class="added" style="display:none" aria-required="true"></div><br>
-				<div class="preview" style="display:none" aria-required="true"></div>
+			
+			<div style="overflow:hidden">
+    			<div id="resultsGoHere" class="mceActionPanel" style="width:65%;float:right;display:block;height:425px;overflow:auto">
+                    <input type="hidden" id="images" name="images"/>
+    				<input type="hidden" id="keywords" name="keywords"/>
+    				<div id="sticky-anchor"></div>
+    				<div class="added" style="display:none" aria-required="true"></div>
+    				<div class="preview" aria-required="true" style="overflow:auto"></div>			        
+    			</div>
+    			<div style="display:block;position:absolute;bottom:10px;right:20px;overflow:hidden;position:fixed">
+    			    <input tabindex="11" type="submit" value="Submit Results" class="button-primary" id="prosperMCE_submit" onClick="javascript:shortCode.insert(shortCode.local_ed);" style="postion:fixed;"/>
+    			</div>
 			</div>
 		</form>
     </body>

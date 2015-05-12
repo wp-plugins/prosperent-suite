@@ -134,10 +134,16 @@ class Model_Inserter extends Model_Base
 	
 	public function inserterShortcode($atts, $content = null)
 	{
+		if (!$this->_options['PICIAct'])
+		{
+			return $content;
+		}
+	    
 		$target  = $this->_options['Target'] ? '_blank' : '_self';
 		$base 	 = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		$homeUrl = home_url();
 		$type 	 = 'product';
+		$page    = get_page_by_path($base);
 
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 		$pieces = array_filter($pieces);
@@ -259,7 +265,7 @@ class Model_Inserter extends Model_Base
 			$recordId 	 = 'merchantId';
 			$type 		 = 'merchant';
 			$pieces['v'] = 'grid';
-			
+
 			$settings = array(
 				'curlCall'		   => 'single-' . $type,
 				'imageSize'		   => '120x60',
@@ -267,7 +273,7 @@ class Model_Inserter extends Model_Base
 				'limit'            => $limit,
 				'filterMerchant'   => str_replace(',', '|', $pieces['m']),		
 				'filterMerchantId' => $id,
-				'imageType'		   => 'original'			
+				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'			
 			);
 		}		
 		

@@ -100,7 +100,10 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 
 = 3.7.3 = 
 * Added Automatic Updates for Minor Update (Option to turn on or off)
-* Added new option to SID tracking, Author Name (UserName)
+* Added new option to SID tracking, Author Name (UserName), Post ID
+* Added info about Tools/Features Deprecation on June 1st
+* Fixed Filtering bug when Positive and Negative filters were used
+* Shortcodes will not be shown if the tool/feature is disabled
 
 = 3.7.2 = 
 * Turned all tools back on

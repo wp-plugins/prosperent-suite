@@ -64,9 +64,15 @@ class Model_Activate extends Model_Base
 		if (!is_array($prosperSuiteOpts = get_option('prosperSuite')))
 		{
 			$prosperSuiteOpts = array(
-				'Target' => 1,
-				'anonymousData' => 1,
-				'prosperNewVersion' => 1
+				'Target'            => 1,
+				'anonymousData'     => 1,
+				'prosperNewVersion' => 1,
+			    'prosperNoOptions'  => 1,
+				'PSAct'	  		    => 1,
+				'PAAct'	  		    => 1,
+				'PICIAct' 		    => 1,
+				'ALAct'	  		    => 1,
+				'PLAct'	  		    => 1
 			);	
 			update_option('prosperSuite', $prosperSuiteOpts);
 		}
@@ -74,21 +80,35 @@ class Model_Activate extends Model_Base
 		{
 			$prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
 				'anonymousData' => 1,
-				'prosperNewVersion' => 1
+				'prosperNewVersion' => 1,
+			    'prosperNoOptions' => 1,
+		        'PSAct'	  		   => 1,
+		        'PAAct'	  		   => 1,
+		        'PICIAct' 		   => 1,
+		        'ALAct'	  		   => 1,
+		        'PLAct'	  		   => 1
 			));
 			update_option('prosperSuite', $prosperSuiteOpts);
+		}
+		elseif (!$prosperSuiteOpts['prosperNoOptions'])
+		{
+		    $prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
+		        'prosperNoOptions' => 1,
+		        'PSAct'	  		   => 1,
+		        'PAAct'	  		   => 1,
+		        'PICIAct' 		   => 1,
+		        'ALAct'	  		   => 1,
+		        'PLAct'	  		   => 1
+		    ));
+		
+		    update_option('prosperSuite', $prosperSuiteOpts);
 		}
 
 		if (!is_array($productOptions = get_option('prosper_productSearch' )))
 		{		
 			$productOptions = array(
-				'Enable_PPS'       	  => 1,
 				'Product_Endpoint' 	  => 1,
 				'Country'		  	  => 'US',
-				'Coupon_Endpoint'     => 1,
-				'Celebrity_Endpoint'  => 0,
-				'Local_Endpoint'      => 1,
-				'Geo_Locate' 		  => 1,
 				'Pagination_Limit'    => 10,
 				'Same_Limit_Merchant' => 4,
 				'Similar_Limit'		  => 0,
@@ -98,26 +118,15 @@ class Model_Activate extends Model_Base
 				'Brand_Facets' 		  => 10,
 				'Starting_Query' 	  => 'shoes',
 				'prodLabel'			  => 'Products',
-				'coupLabel'			  => 'Coupons',
-				'celeLabel'			  => 'Celebrity Products',
-				'localLabel'	      => 'Local Deals',
 				'Product_View'		  => 'list',
 				'MCoupon_Limit'		  => 4
 			);
-			update_option( 'prosper_productSearch', $productOptions );
-		}
-		elseif (!$productOptions['MCoupon_Limit'])
-		{
-			$productOptions = array_merge($productOptions, array(
-				'MCoupon_Limit'	=> 4
-			));
 			update_option( 'prosper_productSearch', $productOptions );
 		}
 
 		if (!is_array($PIopt = get_option('prosper_autoComparer')))
 		{
 			$PIopt = array(
-				'Enable_AC'    => 1,
 				'Link_to_Merc' => 1,
 				'PI_Limit'	   => 1
 			);				
@@ -127,7 +136,6 @@ class Model_Activate extends Model_Base
 		if (!is_array($ALopt = get_option('prosper_autoLinker')))
 		{
 			$ALopt = array(
-				'Enable_AL' 		 => 1,
 				'Auto_Link_Comments' => 0
 			);			
 			update_option( 'prosper_autoLinker', $ALopt );
@@ -171,22 +179,6 @@ class Model_Activate extends Model_Base
 				'Set_Theme' => 'Default'
 			);			
 			update_option( 'prosper_themes', $PTopt );
-		}
-
-		$prospereOpts = get_option('prosperSuite');		
-		if (!$prospereOpts['prosperNoOptions'])
-		{			
-			$PAopt = get_option('prosper_performAds');
-			$newGenOpts = array_merge($prospereOpts, array(
-				'prosperNoOptions' => 1,
-				'PSAct'	  		   => 1,
-				'PAAct'	  		   => 1,
-				'PICIAct' 		   => 1,
-				'ALAct'	  		   => 1,
-				'PLAct'	  		   => 1
-			));
-
-			update_option('prosperSuite', $newGenOpts);
 		}
 	}
 	

@@ -5,7 +5,7 @@
 	style="background: #ddd; display: inline; width: 100%; padding: 4px 0 2px 0; font-size: 12px; text-align: center">
 	<form id="prosperSearchForm" class="searchform" method="POST" action=""
 		rel="nolink" name="prosperentSearchAllForm" style="width: 100%">
-		<label style="display: inline; font-weight: bold">Search</label> <?php if($typeSelector):?> <select
+		<label style="display: inline; font-weight: bold">Search</label> <?php if (count($typeSelector) > 1): ?> <select
 			style="display: inline; overflow: hidden; margin: 0; width: auto; background-color: #fafafa; padding: 6px; min-width: 175px"
 			name="type"> <?php foreach($typeSelector as $i=>$ends){?> <option
 				<?php echo($params['type']==$i?'selected="selected"':'');?>

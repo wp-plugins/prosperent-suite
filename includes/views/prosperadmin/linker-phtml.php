@@ -10,8 +10,6 @@ $prosperAdmin->adminHeader( __( 'Auto-Linker Settings', 'prosperent-suite' ), tr
 
 echo '<p class="prosper_settingDesc" style="font-size:15px;">' . __( 'The AutoLinker is a useful tool to link words, brands, or products to either the ProsperShop or to the merchant page. To link using the Auto-Linker either<br><br>&bull; Use the Content Auto-Linker below to link specific words/phrases on all pages/posts or...<br>&bull; Add a link around a word or phrase while editing a page/post using the shortcode from the <strong>Gear dropdown</strong></span><br><br>Go to <a href="http://wordpress.prosperentdemo.com/auto-linker/">WordPress Prosperent Demo: Auto-linker</a> for more information and to see how it looks.', 'prosperent-suite' ) . '</p>';
 
-echo $prosperAdmin->hidden( 'Enable_AL');
-
 echo '<h2 class="prosper_h2">' . __( 'Matching Settings', 'prosperent-suite' ) . '</h2>';								
 echo $prosperAdmin->checkbox( 'Auto_Link_Comments', __( 'Do you want to match text inside comments?', 'prosperent-suite' ) );
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';

@@ -5,9 +5,9 @@
 		<div class="prosper_searchform" style="padding:0 15px 0 0">
 			<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
 				<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
-				<?php if ($typeSelector): ?>
+				<?php if (count($typeSelector) > 1): ?>
 					<select style="display:inline;overflow:hidden;margin:0" name="type">
-						<?php 				
+						<?php 			
 						foreach ($typeSelector as $i => $ends)
 						{
 							?>

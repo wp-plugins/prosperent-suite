@@ -12,6 +12,8 @@ abstract class Model_Base
 	
 	protected $_endPoints;
 	
+	protected $_deprecated = array();
+	
 	public $widget;
 	
 	private $_allEndPoints = array(
@@ -51,41 +53,30 @@ abstract class Model_Base
 								
 				if (isset($this->_options['PAAct']) || isset($this->_options['PLAct']))
 				{
-					add_action('wp_head', array($this, 'prosperHeaderScript'));
+					add_action('wp_head', $this->prosperHeaderScript());
 				}
 				
 				if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
 				{
 					$this->shopHounds();
 				}
+							
+				require_once(PROSPER_INCLUDE . '/ProsperAdController.php');				
+				
+				require_once(PROSPER_INCLUDE . '/ProsperInsertController.php');
 
-				if (isset($this->_options['PAAct']))
-				{								
-					require_once(PROSPER_INCLUDE . '/ProsperAdController.php');				
-				}
-				
-				if (isset($this->_options['PICIAct']))
-				{
-					require_once(PROSPER_INCLUDE . '/ProsperInsertController.php');
-				}
-				
-				if (isset($this->_options['ALAct']))
-				{
-					require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');				
-				}
-				
-				if (isset($this->_options['PSAct']))
-				{					
-					if (get_option('permalink_structure'))
-					{	
-						require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
-					}
-					else
-					{
-						add_action( 'admin_notices', array($this, 'prosperPermalinkStructure' ));
-					}
+				require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');				
+		
+				if (get_option('permalink_structure'))
+				{	
+					require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
 				}
 				else
+				{
+					add_action( 'admin_notices', array($this, 'prosperPermalinkStructure' ));
+				}
+
+				if (!$this->_options['PSAct'])
 				{				
 					add_action('admin_init', array($this, 'prosperStoreRemove'));
 				}				
@@ -101,7 +92,10 @@ abstract class Model_Base
 					update_option('prosper_advanced', $advancedOpts);
 				}
 				
-				//add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
+				if ($this->_options['autoMinorUpdates'])
+				{
+					add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
+				}
 			}
 			else
 			{
@@ -112,34 +106,35 @@ abstract class Model_Base
 		{
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
 		}		
+    
+		$this->_deprecated = array(
+		    'ProsperAds'              => $this->_options['PAAct'],
+		    'Coupons'                 => $this->_options['Coupon_Endpoint'],
+		    'Celebrity Products'      => $this->_options['Celebrity_Endpoint'],
+		    'Local Deals'             => $this->_options['Local_Endpoint'],
+		    'United Kingdom Products' => $this->_options['Country'] === 'UK',
+		    'Canadian Products'       => $this->_options['Country'] === 'CA'
+		);
+
+		if ($this->_deprecated && !$this->_options['dismissDepre'])
+		{
+		    add_action( 'admin_notices', array($this, 'prosperDeprecation'));
+		}
 	}
 	
-	/*public function autoUpdateProsperMinor ( $update, $item )
+	public function autoUpdateProsperMinor ( $update, $item )
 	{
-		if ( !$this->getIsOption( 'auto_update_minor_releases', 'Y' ) ) 
-		{
-			return $update;
-		}
-
-		// Only supports WordPress 3.8.2+
 		if ( !is_object( $item ) || !isset( $item->new_version ) || !isset( $item->plugin ) )  
-		{ 
-			// WP 3.8.2+
-			return $update;
-		}
-
-		if ( $item->plugin === PROSPER_BASENAME ) 
 		{
-			$currentParts = explode( '-', $this->_version() );
-			$updateParts = explode( '-', $item->new_version );
-			
-			print_r($currentParts);exit;
-			// We only return true (i.e. update if and when the update is a minor version
-			return ( $updateParts[0] === $currentParts[0] );
-		}
-		
-		return $update;
-	}*/
+			return $update;
+		}		
+
+		$currentParts = explode( '.', $this->_version );
+		$updateParts = explode( '.', $item->new_version );
+
+		// Only return true and update when the update is a minor version
+		return ( ($updateParts[0] === $currentParts[0] && $updateParts[1] === $currentParts[1]) );
+	}
 	
 	public function getVersion()
 	{			
@@ -194,9 +189,10 @@ abstract class Model_Base
 		if (!isset($this->_options))
 		{
 			$this->_options = array();
+
 			foreach ($this->getProsperOptionsArray() as $opt)
 			{ 
-				$this->_options = array_merge($this->_options, (array) get_option($opt));
+			    $this->_options = array_merge($this->_options, (array) get_option($opt));
 			}
 		}
 
@@ -256,7 +252,24 @@ abstract class Model_Base
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
 	}	
-
+	
+	public function prosperDeprecation()
+	{
+	    foreach ($this->_deprecated as $i => $deprecated)
+	    {
+	        if ($deprecated == 1)
+	        {
+	           $depString .= '<span style="font-size:16px;font-weight:bold;padding-left:10px">' . $i . '</span><br>';
+	        }
+	    }
+	    
+	    echo '<div class="error" style="padding:6px 0;">';
+	    echo _e('<span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissProsper&nonce='. wp_create_nonce( 'prosperhideDepre' )) . '">' . __( '&#215;', 'prosperent-suite' ) . '</a></span><br>', 'my-text-domain' );
+	    echo _e( '<span style="font-size:14px; padding-left:10px;">The following features that you use will be going away on <strong>June 1st.</strong>&nbsp;&nbsp;</span><br><br>', 'my-text-domain' );
+	    echo _e( $depString, 'my-text-domain' );	    
+	    echo '</div>';	    
+	}	
+	
 	public function prosperPermalinkStructure()
 	{			
 		echo '<div class="error" style="padding:6px 0;">';
@@ -327,7 +340,8 @@ abstract class Model_Base
 			'sbu'    => 'Search', // Search Button Text
 			'vst'    => 'Visit Store', // Product Insert Visit Store text
 			'celeb'  => '', // Celebrity Name,
-			'noShow' => '' // Don't show the Product Insert on this page/post		
+			'noShow' => '', // Don't show the Product Insert on this page/post
+			'imgt'   => '' // ImageType		
 		), $atts, $shortcode);
 	}
 	
@@ -457,22 +471,40 @@ abstract class Model_Base
 		$sidArray = array();
 		if ($this->_options['prosperSid'])
 		{
+			$sidArray = array();
 			foreach ($this->_options['prosperSid'] as $sidPiece)
 			{
-				switch ($sidPiece)
+				if ('blogname' === $sidPiece)
 				{
-					case 'blogname':
-						$sidArray[] = get_bloginfo('name');
-						break;
-					case 'interface':
-						$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						break;
-					case 'query':
-						$sidArray[] = $settings['query'];
-						break;
-					case 'page':
-						$sidArray[] = get_the_title();
-						break;						
+					$sidArray[] = get_bloginfo('name');
+				}
+				elseif ('interface' === $sidPiece)
+				{
+					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+				}
+				elseif ('query' === $sidPiece)
+				{
+					$sidArray[] = $settings['query'];
+				}
+				elseif ('page' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetTitle' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('widgetName' === $sidPiece)
+				{
+					$sidArray[] = get_the_title();
+				}
+				elseif ('authorId' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('ID');
+				}
+				elseif ('authorName' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('user_login');
 				}
 			}
 		}
@@ -499,7 +531,7 @@ abstract class Model_Base
 			}
 		}
 		
-		if (!empty($sidArray))
+		if ($sidArray)
 		{
 			$sidArray = array_filter($sidArray);
 			$sid = implode('_', $sidArray);
@@ -568,7 +600,15 @@ abstract class Model_Base
 				}
 				elseif ('authorId' === $sidPiece)
 				{
-					$sidArray[] = the_author_meta('ID');
+					$sidArray[] = get_the_author_meta('ID');
+				}
+				elseif ('authorName' === $sidPiece)
+				{
+					$sidArray[] = get_the_author_meta('user_login');
+				}
+				elseif ('postId' === $sidPiece)
+				{
+				    $sidArray[] = get_the_ID();
 				}
 			}
 		}

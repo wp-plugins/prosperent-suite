@@ -101,6 +101,7 @@ elseif ($type == 'merchant')
 
 	$settings = array(
 		'filterMerchant' =>  '*' . $merchants[0] . '*',
+	    'imageType'      => ($params['imageType'] ? trim($params['imageType']) : 'original'),
 		'imageSize'		 => '120x60'
 	);
 
@@ -126,7 +127,7 @@ elseif ($type == 'local')
 		'filterState'	 => $state,
 		'filterCity'	 => trim($params['city']),
 		'filterZipCode'	 => trim($params['zipCode']),
-		'imageSize'		 => '125x125'
+		'imageSize'		 => '250x250'
 	);
 }
 else
@@ -149,11 +150,11 @@ else
 	$brands = array_map('trim', explode(',', $params['prodb']));
 
 	$settings = array(
-		'query'            => trim($params['prodq']),
+		'query'            => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
 		'filterMerchant'   => $merchants,
 		'filterCelebrity'  => $params['prodcelebname'],
 		'filterBrand'      => $brands,
-		'imageSize'		   => '125x125',
+		'imageSize'		   => '250x250',
 		'groupBy'	       => 'productId',
 		'filterPriceSale'  => $params['onSale'] ? ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '0.01,') : '',
 		'filterPrice' 	   => $params['onSale'] ? '' : ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '')
@@ -162,8 +163,8 @@ else
 
 $settings = array_merge(array(
 	'api_key'        => '7b0a5297441c39be99fda92fc784b516',
-	'limit'          => 100,
-	'enableFacets'	 => FALSE
+	'limit'          => 99,
+	'enableFacets'	 => 'FALSE'
 ), $settings);
 
 // Set the URL
@@ -197,117 +198,99 @@ if (count($response['errors']))
 if ($results = $response['data'])
 {
 	?>
+	<h2>Results: <span style="font-size:15px;color:#000;">Select specific products or use the results in order.</span></h2>
 	<div id="productList">
-	<?php
-
-		foreach ($results as $record)
-		{			
-			if ($type == 'coup')
-			{
-				$prosperId = $record['couponId'];
-			}
-			elseif ($type == 'merchant')
-			{
-				$prosperId = $record['merchantId'];
-			}
-			elseif ($type == 'local')
-			{
-				$prosperId = $record['localId'];
-			}
-			else
-			{
-				$prosperId = $record['productId'];
-			}	
-
-			?>
-			<div id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull">
-				<div class="productBlock">
-					<div class='productImage'>
-						<span><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
-					</div>
-					<div class='productContent'>
-						<div class='productTitle'><span><?php echo $record['keyword']; ?></span></a></div>
-						<?php
-						if(!empty($record['expiration_date']))
-						{
-							$expires = strtotime($record['expiration_date']);
-							$today = strtotime(date("Y-m-d"));
-							$interval = abs($expires - $today) / (60*60*24);
-
-							if ($interval <= 7 && $interval > 0)
-							{
-								echo '<div class="couponExpire" style=""><span style="color:red; font-weight:bold;">Expires in ' . $interval . ' days!</span></div>';
-							}
-							else
-							{
-								echo '<div class="couponExpire"><span style="color:red; font-weight:bold;">Expires Soon!</span></div>';
-							}
-						}
-						if ($record['coupon_code'])
-						{
-							echo '<div class="couponCode" style="font-weight:bold; padding:5px 0 0 0;">Coupon Code: <span class="code_cc" style="border:2px dashed #3079ed; padding: 2px 3px; font-weight:bold; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius:8px;">' . $record['coupon_code'] . '</span></div>';
-						}
-						
-						if ($type != 'coup' && $type != 'local'): ?>
-						<div class='productDescription'><?php
-							if ($record['price_sale'] || $record['price'] || $record['priceSale'])
-							{
-								$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-								
-								if(empty($priceSale) || $record['price'] <= $priceSale)
-								{
-									//we don't do anything
-									?>
-									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']; ?></span></div>
-									<?php
-								}
-								//otherwise strike-through Price and list the Price_Sale
-								else
-								{
-									?>
-									<span><del><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $record['price']?></del></span>
-									<span style="color:red;"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . $priceSale?></span>
-									<?php
-								}
-							}
-							?>
-							<div class="productBrandMerchant">
-								<?php
-								if($record['brand'] && !$filterBrand)
-								{
-									echo '<span class="brandIn">Brand: <cite>' . $record['brand'] . '</cite></span><br>';
-								}
-								if($record['merchant'] && !$filterMerchant)
-								{
-									echo '<span class="merchantIn">Merchant: <cite>' . $record['merchant'] . '</cite></span><br>';
-								}
-								if($record['deepLinking'])
-								{
-									echo '<span class="merchantIn">DeepLinking: <cite>' . ($record['deepLinking'] == 1 ? 'Yes' : 'No') . '</cite></span><br>';
-								}
-								if($record['category'])
-								{
-									echo '<span class="merchantIn">Category: <cite>' . $record['category'] . '</cite></span><br>';
-								}
-								if($record['minPaymentPercentage'] || $record['maxPaymentPercentage'])
-								{
-									echo '<span class="merchantIn">Payment Percentage: <cite>' . $record['minPaymentPercentage'] . '% to ' . $record['maxPaymentPercentage'] . '%</cite></span><br>';
-								}
-								?>
-							</div>
-						</div>
-						<?php endif; ?>
-					</div>
-				</div>
-			</div>
-		<?php
-		}
-	?>
+    	<ul style="display:inline-block;padding:0;margin:0;">
+        	<?php
+        		foreach ($results as $record)
+        		{			
+        		    $priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
+        		    $price 	   = $priceSale ? $priceSale : $record['price'];
+        		    
+        			if ($type == 'coup')
+        			{
+        				$prosperId = $record['couponId'];
+        				?>
+        				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:105px!important;width:185px!important;background-color:white;">
+            				<div class="listBlock">
+            					<div class="prodImage" style="text-align:center;">        				
+        				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:60px;width:120px;" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+        				        </div>
+        				        <div class="prodContent">
+            						<div class="prodTitle">
+            							<div class="prodPrice"><strong><?php echo ($price ? ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2) : ($record['promo'] ? $record['promo'] : '')) ; ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666"> from ' . $record['merchant'] . '</span>'; } ?></div>
+            						</div>            						                   
+            					</div>			
+    			            </div>   
+        				</li>
+        				<?php 
+        			}
+        			elseif ($type == 'merchant' && $record['deepLinking'] == 1)
+        			{
+        				$prosperId = $record['merchantId'];
+        				?>
+        				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:60px!important;width:185px!important;background-color:white;">
+            				<div class="listBlock">
+            					<div class="prodImage" style="text-align:center;">        				
+        				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:60px;width:120px;" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+        				        </div>		
+    			            </div>   
+        				</li>
+        				<?php         				
+        			}
+        			elseif ($type == 'local')
+        			{
+        				$prosperId = $record['localId'];
+        				?>
+        				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:208px!important;width:185px!important;background-color:white;">
+            				<div class="listBlock">
+            					<div class="prodImage" style="text-align:center;">        				
+        				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:150px;width:150px;" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+        				        </div>
+        				        <div class="prodContent">
+        				            <?php echo ($record['city'] ? $record['city'] . ', ' : ''); ?>
+        				            <?php echo ($record['zipCode'] ? $record['zipCode'] : '&nbsp;'); ?>
+            						<div class="prodTitle">
+            							<?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666"> from ' . $record['merchant'] . '</span>'; } ?>
+            						</div>            						                   
+            					</div>			
+    			            </div>   
+        				</li>
+        				<?php 
+        			}
+        			else
+        			{
+        				$prosperId = $record['productId'];
+        				
+        				?>
+        				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:208px!important;width:185px!important;background-color:white;">
+            				<div class="listBlock">
+            					<div class="prodImage" style="text-align:center;">        				
+        				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:150px;width:150px;" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+        				        </div>
+        				        <div class="prodContent">
+        				            <?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?>
+            						<div class="prodTitle">
+            							<div class="prodPrice"><strong><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666"> from ' . $record['merchant'] . '</span>'; } ?></div>
+            						</div>            						                   
+            					</div>			
+    			            </div>   
+        				</li>
+        				<?php 
+        			}	
+        
+        			?>
+        			
+    				
+        		<?php
+        		}
+        	?>
+	   </ul>
 	</div>
 	<?php
 }
 else
 {
-	echo '<div class="noResults">No Results</div>';
+	echo '<h2>No Results</h2>';
 	echo '<div class="noResults-secondary">Please try another search.</div>';
 }

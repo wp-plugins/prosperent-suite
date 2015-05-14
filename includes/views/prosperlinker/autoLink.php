@@ -30,6 +30,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
     					<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:;" onclick="mcTabs.displayTab('products_tab','products_panel');setFocus();showValues();" onmousedown="return false;">Products</a></span></li>
     					<li id="coupons_tab" aria-controls="coupons_panel"><span><a href="javascript:;" onclick="mcTabs.displayTab('coupons_tab','coupons_panel');setFocus();showValues();" onmousedown="return false;">Coupons</a></span></li>
     					<li id="local_tab" aria-controls="local_panel"><span><a href="javascript:;" onclick="javascript:mcTabs.displayTab('local_tab','local_panel');setFocus();showValues();" onmousedown="return false;">Local</a></span></li>    					
+						<li id="merchant_tab" aria-controls="merchant_panel"><span><a href="javascript:;" onClick="mcTabs.displayTab('merchant_tab','merchant_panel');setFocus();showValues();" onmousedown="return false;">Merchants</a></span></li>
     				</ul>
     			</div>
     			<div class="panel_wrapper">
@@ -102,6 +103,25 @@ $mainURL = preg_replace('/views.+/', '' , $url);
     						<input type="hidden" id="localid" name="localid"/>							
     					</fieldset>
     				</div>
+					 <div id="merchant_panel" class="panel">		
+						<fieldset style="font-size:14px;">
+							<legend>Merchant Linker</legend>					
+							<input type="hidden" name="merchantfetch" id="merchantfetch" value="fetchMerchant"/>
+							<p>Only Merchants that allow DeepLinking.</p>																
+							<p><label>Merchant:</label><input class="prosperTextSC" value="Backcountry" tabindex="5" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name.</span></a></p>														
+							<p><label>Category:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchantcategory" name="merchantcategory"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple categories</strong></span></a>
+							<p><span style="font-size:11px;color:#695F5F;padding-left:55px;">*Uses categories from <a href="http://prosperent.com/merchants/all">All Merchants</a></span></p></p>
+							<table style="font-size:13px;">
+    							<tr>
+    								<td><label><strong>Go To:</strong></label></td><td>Merchant Page</td><td><input tabindex="2" type="radio" name="merchantgoTo" id="merchantgoTo" value="merchant" checked="checked"/></td><td><a href="#" class="tooltip"><span>Checking this will link to the merchant's page.</span></a></td>
+    							</tr>
+    							<tr>					
+    								<td><label>&nbsp;</label></td><td>Product Results</td><td><input type="radio" id="merchantgoTo" name="merchantgoTo" value="prodResults" /></td><td><a href="#" class="tooltip"><span>Checking this will link to the product results with your query as the search term.</span></a></td>
+    							</tr>
+    						</table>						
+							<input type="hidden" id="merchantid" name="merchantid"/>							
+						</fieldset>
+					</div>
     			</div>    			
     		</div>
 

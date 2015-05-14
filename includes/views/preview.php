@@ -100,11 +100,11 @@ elseif ($type == 'merchant')
 	$merchants = array_map('trim', explode(',', $params['merchantm']));
 
 	$settings = array(
-		'filterMerchant' =>  '*' . $merchants[0] . '*',
+		'filterMerchant' =>  $merchants[0] ? '*' . $merchants[0] . '*' : '',
+	    'filterCategory' => $params['merchantcategory'] ? '*' . $params['merchantcategory'] . '*' : '',
 	    'imageType'      => ($params['imageType'] ? trim($params['imageType']) : 'original'),
 		'imageSize'		 => '120x60'
 	);
-
 }
 elseif ($type == 'local')
 {

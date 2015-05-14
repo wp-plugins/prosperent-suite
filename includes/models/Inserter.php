@@ -270,10 +270,11 @@ class Model_Inserter extends Model_Base
 				'curlCall'		   => 'single-' . $type,
 				'imageSize'		   => '120x60',
 				'interface'		   => 'insert',
-				'limit'            => $limit,
+				'limit'            => $limit,	
+				'filterCategory'   => $pieces['cat'] ? str_replace(',', '|', $pieces['cat']) : '',
 				'filterMerchant'   => str_replace(',', '|', $pieces['m']),		
-				'filterMerchantId' => $id,
-				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'			
+				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original',
+				'filterMerchantId' => $id											
 			);
 		}		
 		

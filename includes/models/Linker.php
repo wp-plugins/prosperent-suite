@@ -122,9 +122,10 @@ class Model_Linker extends Model_Base
 					'curlCall'		   => 'single-' . $curlType,
 					'interface'		   => 'linker',
 					'enableFullData'   => 'FALSE',		
-					'limit' 		   => 1,						
+					'limit' 		   => 1,	
+					'filterCategory'   => $pieces['cat'] ? str_replace(',', '|', $pieces['cat']) : '',
 					'filterMerchant'   => $merchants,
-					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
+					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : ''					
 				);				
 			}	
 			else

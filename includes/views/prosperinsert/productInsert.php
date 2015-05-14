@@ -95,6 +95,8 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 							<p>Only Merchants that allow DeepLinking will be shown.</p>																
 							<p><label>Merchant:</label><input class="prosperTextSC" value="Backcountry" tabindex="5" type="text" id="merchantmerchant" name="merchantm"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span>Enter the merchant name.</span></a></p>														
 							<p><label>Image Type:</label><select tabindex="2" id="imageType" name="imageType" onChange="showValues();"><option value="original" selected="selected">Original</option><option value="white">White</option><option value="black">Black</option></select><a href="#" class="tooltip"><span>Choose a logo type.</span></a></p>
+							<p><label>Category:</label><input class="prosperTextSC" tabindex="2" type="text" id="merchantcategory" name="merchantcategory"  onKeyUp="showValues();"/><a href="#" class="tooltip"><span><strong>Comma Seperate multiple categories</strong></span></a>
+							<p><span style="font-size:11px;color:#695F5F;padding-left:55px;">*Uses categories from <a href="http://prosperent.com/merchants/all">All Merchants</a></span></p></p>
 							<p><label style="width:125px;float:left;">Go to Merchant:</label><input tabindex="9" type="checkbox" id="merchantgoTo" checked="checked"/><a href="#" class="tooltip"><span>Checking this will link to the merchant's page, skipping the product page for all links.</span></a></p>						
 							<input type="hidden" id="merchantid" name="merchantid"/>							
 						</fieldset>

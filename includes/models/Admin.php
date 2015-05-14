@@ -669,6 +669,35 @@ class Model_Admin extends Model_Base
 			}
 		}
 		
+		$deprecated = array(
+		    'ProsperAds'              => $options['PAAct'],
+		    'Coupons'                 => $options['Coupon_Endpoint'],
+		    'Celebrity Products'      => $options['Celebrity_Endpoint'],
+		    'Local Deals'             => $options['Local_Endpoint'],
+		    'United Kingdom Products' => $options['Country'] === 'UK',
+		    'Canadian Products'       => $options['Country'] === 'CA'
+		);
+		$deprecated = array_filter($deprecated);
+
+		if (count($deprecated) >= 1 && !$options['dismissDepre'])
+		{		
+			$depString = '';
+			foreach ($deprecated as $i => $deprecate)
+			{
+				if ($deprecate == 1)
+				{
+				   $depString .= '<span style="font-size:16px;font-weight:bold;padding-left:10px">' . $i . '</span><br>';
+				}
+			}
+			
+			echo 
+				'<div class="error" style="padding:6px 0;">
+					<span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissProsper&nonce=' . wp_create_nonce( 'prosperhideDepre' )) . '">&#215;</a></span><br>
+					<span style="font-size:14px; padding-left:10px;">The following features that you use will be going away on <strong>June 1st.</strong>&nbsp;&nbsp;</span><br><br>' . 
+					$depString .   
+				'</div>';
+		}
+		
 		if ($options['Api_Key'] && !$options['ProsperFirstTimeOperator'])
 		{		
 			$this->prosperStoreInstall();

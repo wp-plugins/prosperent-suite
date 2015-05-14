@@ -12,8 +12,6 @@ abstract class Model_Base
 	
 	protected $_endPoints;
 	
-	protected $_deprecated = array();
-	
 	public $widget;
 	
 	private $_allEndPoints = array(
@@ -53,7 +51,7 @@ abstract class Model_Base
 								
 				if (isset($this->_options['PAAct']) || isset($this->_options['PLAct']))
 				{
-					add_action('wp_head', $this->prosperHeaderScript());
+					add_action('wp_head', array($this, 'prosperHeaderScript'));
 				}
 				
 				if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
@@ -106,20 +104,6 @@ abstract class Model_Base
 		{
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
 		}		
-    
-		$this->_deprecated = array(
-		    'ProsperAds'              => $this->_options['PAAct'],
-		    'Coupons'                 => $this->_options['Coupon_Endpoint'],
-		    'Celebrity Products'      => $this->_options['Celebrity_Endpoint'],
-		    'Local Deals'             => $this->_options['Local_Endpoint'],
-		    'United Kingdom Products' => $this->_options['Country'] === 'UK',
-		    'Canadian Products'       => $this->_options['Country'] === 'CA'
-		);
-
-		if ($this->_deprecated && !$this->_options['dismissDepre'])
-		{
-		    add_action( 'admin_notices', array($this, 'prosperDeprecation'));
-		}
 	}
 	
 	public function autoUpdateProsperMinor ( $update, $item )
@@ -251,23 +235,6 @@ abstract class Model_Base
 
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
-	}	
-	
-	public function prosperDeprecation()
-	{
-	    foreach ($this->_deprecated as $i => $deprecated)
-	    {
-	        if ($deprecated == 1)
-	        {
-	           $depString .= '<span style="font-size:16px;font-weight:bold;padding-left:10px">' . $i . '</span><br>';
-	        }
-	    }
-	    
-	    echo '<div class="error" style="padding:6px 0;">';
-	    echo _e('<span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissProsper&nonce='. wp_create_nonce( 'prosperhideDepre' )) . '">' . __( '&#215;', 'prosperent-suite' ) . '</a></span><br>', 'my-text-domain' );
-	    echo _e( '<span style="font-size:14px; padding-left:10px;">The following features that you use will be going away on <strong>June 1st.</strong>&nbsp;&nbsp;</span><br><br>', 'my-text-domain' );
-	    echo _e( $depString, 'my-text-domain' );	    
-	    echo '</div>';	    
 	}	
 	
 	public function prosperPermalinkStructure()
@@ -537,7 +504,7 @@ abstract class Model_Base
 			$sid = implode('_', $sidArray);
 		}
 	
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['PAAct'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
+		//echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['PAAct'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()

@@ -1,22 +1,19 @@
-<script type="text/javascript">function toggle_visibility(e){var l=document.getElementById(e);l&&"none"==l.style.display&&(l.style.display="block")}function toggle_hidden(e){var l=document.getElementById(e);l&&"block"==l.style.display&&(l.style.display="none")}</script>
+<script type="text/javascript">
+function toggle_visible(e) {
+    var l = document.getElementById(e);
+    l && "none" == l.style.display && (l.style.display = "block")
+}
+
+function toggle_hidden(e) {
+    var l = document.getElementById(e);
+    l && "block" == l.style.display && (l.style.display = "none")
+}</script>
 <div class="clear"></div>
 <div id="prosperShopMain">
 	<?php if (!$options['noSearchBar']): ?>
 		<div class="prosper_searchform" style="padding:0 15px 0 0">
 			<form id="prosperSearchForm" class="searchform" method="POST" action="" rel="nolink">
-				<input id="s" class="<?php echo ($type == 'celebrity' ? 'prosper_celeb_field prosper_field' : 'prosper_field'); ?>" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
-				<?php if (count($typeSelector) > 1): ?>
-					<select style="display:inline;overflow:hidden;margin:0" name="type">
-						<?php 			
-						foreach ($typeSelector as $i => $ends)
-						{
-							?>
-							<option <?php echo ($params['type'] == $i ? 'selected="selected"' : ''); ?> value="<?php echo $i; ?>">In: <strong><?php echo $ends; ?></strong></option>
-							<?php 
-						}
-						?>
-					</select>
-				<?php endif; ?>
+				<input id="s" class="prosper_field" value="<?php echo ($query ? $query : ''); ?>" type="text" name="<?php echo $searchPost ? $searchPost : 'q'; ?>" placeholder="<?php echo isset($options['Search_Bar_Text']) ? $options['Search_Bar_Text'] : ($searchTitle ? 'Search ' . $searchTitle : 'Search Products'); ?>">
 				<input class="prosper_submit" type="submit" name="submit" value="Search">
 			</form>
 		</div>
@@ -26,73 +23,36 @@
 	if ($filterArray)
 	{
 		?>
-		<div id="filterSidebar" style="width:19%;overflow:hidden;padding-left:2px;float:left;margin-top:6px; border:1px solid #ddd; background:#f2f0ee;">
-			<div>	
-				<?php 
-				if ($celebrityInfo)
-				{
-					echo '<div style="width:100%; margin:0; padding:4px 2px;border-bottom:2px solid #ddd;">';
-					echo $celebrityInfo['celebrity'] ? '<strong style="text-align:center;">' . $celebrityInfo['celebrity'] . '</strong>' : '';
-					echo '<div><img style="width:160px;" src="' . $celebrityInfo['image_url'] . '" alt="' . $celebrityInfo['celebrity'] . '" style="background: none repeat scroll 0 0 transparent; border: medium none;"/></div>';
-					echo $celebrityInfo['age'] ? '<strong>Age:</strong> ' . $celebrityInfo['age'] : '';
-					echo $celebrityInfo['height'] ? '<br><strong>Height:</strong> ' . $celebrityInfo['height'] : '';
-					echo $celebrityInfo['dateBirth'] ? '<br><strong>DOB:</strong> ' . date('M j, Y', strtotime($celebrityInfo['dateBirth'])) : '<br><br>';	
-					echo '</div>';
-				}			
-				
-				if (!empty($pickedFacets)): ?>
-				<div style="width:100%; margin:0; padding:4px 2px;border-bottom:2px solid #ddd;">
-					<div class="activeFilters">
-						<span><?php echo implode('</span></div><div class="activeFilters"><span>', $pickedFacets);?></span>
-					</div>
+		<div id="filterSidebar">
+			<div class="totalFound">Filter: <span><?php echo ($totalFound > 0 ? (number_format($totalFound) . ' results') : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>'));// . ($demolishUrl && !$trend ? '<strong><a class="xDemolish" href=' . $demolishUrl . '> &#215;</a></strong>' : ''); ?></span></div>
+			<?php if (!empty($pickedFacets)): ?>
+				<div class="activeFilters">
+					<span><?php echo implode('</span></div><div class="activeFilters"><span>', $pickedFacets);?></span>
 				</div>
-				<?php endif; ?>
-			
-				<?php			
+			<?php endif; 				
 				$mainCount = count($mainFilters);
-
 				foreach ($mainFilters as $i => $partials)
-				{				
-					if ($params['zip'])
-					{
-						$params['zipCode'] = $params['zip'];
-					}
-					
+				{								
 					$name = $i;
-					if ($i === 'city')
-						$name = 'citie';
 					if ($i === 'category')
 						$name = 'categorie';	
-					if ($i === 'zipCode')
-						$name = 'Zip Code';
-					?>
-					<div style="display:block;">				
 					
-						<div id="more<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>List'); toggle_hidden('more<?php echo ucfirst($i); ?>s'); toggle_visibility('hide<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:14px; font-weight:bold;"><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
-						<div id="hide<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>List'); toggle_hidden('hide<?php echo ucfirst($i); ?>s'); toggle_visibility('more<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:14px;font-weight:bold;""><?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
-
-						<?php		
-
-						if ((empty($mainFilters[$i]) && !$params[$i]) && $i != 'celebrity')
+						if ((empty($mainFilters[$i]) && !$params[$i]))
 						{
-							echo '<div class="no' .  $i . '">No ' .  $i . 's Found</div>';
-						}
-						else
-						{					
-							echo '<span id="' . $i . 'List" style="padding: 0 0 8px 12px;display:block;">' . implode('</br>', $partials);
-							if ($secondaryFilters[$i])
-							{
-								?>
-								<div id="moreExtra<?php echo ucfirst($i); ?>s" onclick="toggle_visibility('<?php echo $i; ?>ExtraList'); toggle_hidden('moreExtra<?php echo ucfirst($i); ?>s'); toggle_visibility('hideExtra<?php echo ucfirst($i); ?>s'); return false;" style="display:block;cursor:pointer; font-size:13px;font-weight:bold;"">More <?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
-								<div id="hideExtra<?php echo ucfirst($i); ?>s" onclick="toggle_hidden('<?php echo $i; ?>ExtraList'); toggle_hidden('hideExtra<?php echo ucfirst($i); ?>s'); toggle_visibility('moreExtra<?php echo ucfirst($i); ?>s'); return false;" style="display:none;cursor:pointer; font-size:13px;font-weight:bold;"">More <?php echo ucfirst($name); ?>s <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
-								<?php
-								echo '<span id="' . $i . 'ExtraList" style="display:none;">' . implode('</br>', $secondaryFilters[$i]) . '</span>';
-							}				
-							
-							echo '</span>';
-						}				
+						    continue;
+						}		
 						?>
-					</div>
+						
+                        <ul class="filterContainer active">
+                            <li class="parent active">
+                                <a href="javascript:void(0);" onclick="toggle_visible('<?php echo $i; ?>');toggle_hidden('<?php echo $i; ?>'); return false;" style="display:block;cursor:pointer; font-size:14px; font-weight:bold;"><img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/><?php echo ucfirst($name); ?>s</a>
+                            </li>
+                            <ul id="<?php echo $i; ?>" class="filterList <?php echo $i; ?>" style="display:block;">
+        						<?php												
+        							echo implode('', $partials);																
+        						?>
+    					   </ul>
+    				    </ul>
 					<?php
 					$z++;
 				}		
@@ -102,11 +62,13 @@
 					<div id="morePriceRange" onclick="toggle_visibility('priceRangeSlider');  toggle_hidden('morePriceRange'); toggle_visibility('hidePriceRange'); return false;" style="display:none;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
 					<div id="hidePriceRange" onclick="toggle_hidden('priceRangeSlider'); toggle_hidden('hidePriceRange'); toggle_visibility('morePriceRange'); return false;" style="display:block;"><?php echo $dollarSlider; ?> <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>		
 					<div id="priceRangeSlider" style="display:block;">
-						</br>
+						<br>
 						<div id="sliderRange"></div>
 						<form name="priceRange" method="POST" action="">
-							<input type="text" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$0'); ?>">
-							<input type="text" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$500'); ?>"> 
+						    <input type="hidden" id="minRangeValue" value="<?php echo $lowRange; ?>">
+						    <input type="hidden" id="maxRangeValue" value="<?php echo $highRange; ?>">
+							<input type="text" class="min" id="rangeMin" name="priceSliderMin" value="<?php echo ($priceSlider[0] ? '$' . $priceSlider[0] : '$' . $lowRange); ?>">
+							<input type="text" class="max" id="rangeMax" name="priceSliderMax" value="<?php echo ($priceSlider[1] ? '$' . $priceSlider[1] : '$' . $highRange); ?>"> 
 							<input type="submit" value="Submit" style="display: none;" >
 						</form>
 					</div>
@@ -114,21 +76,19 @@
 					<div id="morePercentRange" onclick="toggle_visibility('percentRangeSlider'); toggle_hidden('morePercentRange'); toggle_visibility('hidePercentRange'); return false;" style="display:none;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_down_small.png'; ?>" alt=""/></div>
 					<div id="hidePercentRange" onclick="toggle_hidden('percentRangeSlider'); toggle_hidden('hidePercentRange'); toggle_visibility('morePercentRange'); return false;" style="display:block;">Percent Off <img class="facetArrows" src="<?php echo PROSPER_IMG . '/arrow_up_small.png'; ?>" alt=""/></div>
 					<div id="percentRangeSlider" style="display:block;">
-						</br>
+						<br>
 						<div id="sliderPercent"></div>
 						<form name="percentOffRange" method="POST" action="">
 							<input type="text" class="min" id="percentMin" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] . '%' : '0%'); ?>"/>
 							<input type="text" class="max" id="percentMax" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] . '%' : '100%'); ?>"/>
-							<?php if ($type == 'product') : ?>
 							<div class="clear"></div>
 							<input type="checkbox" style="display:inline-block;" name="onSale" <?php echo ($params['pR'] ? 'checked' : ''); ?> onChange="percentOffRange.submit();">
 							<label style="display:inline-block;" for="onSale">On Sale Only</label>
-							<?php endif; ?>
 							<input type="submit" value="Submit" style="display: none;" >
 						</form>
 					</div>
 				<?php endif; ?>
-			</div>	
+
 		</div>
 
 		<?php
@@ -144,34 +104,33 @@
 		}
 		else
 		{
-			echo '<div class="noResults-secondary">' . ($type == 'celebrity' ? 'Please search for a celebrity' : 'Please try your search again.') . '</div>';
+			echo '<div class="noResults-secondary">Please try your search again.</div>';
 		}
 		echo '<div class="noResults-padding"></div>';
 	}
-	?>
+	?>	
 
-	<div class="totalFound"><?php echo (($totalFound > 0 && isset($title)) ? (number_format($totalFound) . ' results for ' . preg_replace('/\(.+\)/i', '', $title)) : ($newTrendsTitle ? $newTrendsTitle : 'Browse these <strong>' . $trend . '</strong>')) . ($demolishUrl && !$trend ? '<strong><a class="xDemolish" href=' . $demolishUrl . '> &#215;</a></strong>' : ''); ?></div>
-
-	<div class="prosper_priceSorter">
-		<form class="sorterofprice" name="priceSorter" method="POST" action="" >
-			<label for="PriceSort">Sort By: </label>
-			<select name="sort" onChange="priceSorter.submit();">
-				<?php 						
-				foreach ($sortArray as $i => $sort)
-				{
-					?>
-					<option <?php echo (rawurldecode($params['sort']) == $sort ? 'selected="selected"' : ''); ?> value="<?php echo $sort; ?>"><?php echo $i; ?></option>
-					<?php 
-				}
-				?>
-			</select>
-			<?php echo (($params['sort'] != 'rel' && '' != $params['sort']) ? '<strong><a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/sort/' . $params['sort']), '', $url) . '> &#215;</a></strong>' : ''); ?>
-		</form>
-	</div>
-
-	<div id="views">
-		<a href="<?php echo str_replace(array('/view/' . $params['view']), '', $url) . '/view/list'; ?>"><span class="listIcon"></span></a>
-		<a href="<?php echo str_replace(array('/view/' . $params['view']), '', $url) . '/view/grid'; ?>"><span class="gridIcon"></span></a>
+	<div id="prosperPriceSorter">
+		<span class="sortLabel">Sort By: </span>
+                			
+			
+		<?php 	
+		$sortCount = count($sortArray);
+		$c = 0;
+		foreach ($sortArray as $i => $sort)
+		{			        
+			?>
+			&nbsp;&nbsp;<a <?php echo (rawurldecode($params['sort']) == $sort ? 'class="activeSort"' : ''); ?> href="<?php echo $currentUrl . '/sort/' . $sort; ?>"><?php echo $i; ?></a>&nbsp;&nbsp;
+			<?php
+			if ($sortCount > ($c + 1) )
+			{
+                echo '|';
+			}	
+			
+			$c++;		 
+		}
+		?>
+		<?php echo (($params['sort'] != 'rel' && '' != $params['sort']) ? '<strong><a class="xDemolish" href=' . str_replace(array('/page/' . $params['page'], '/sort/' . $params['sort']), '', $url) . '> &#215;</a></strong>' : ''); ?>
 	</div>
 
 	<?php
@@ -191,45 +150,14 @@
 						$record['image_url'] = str_replace('http', 'https', $record['image_url']);
 					}
 					
-					$cid = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);				
+					$cid = $record['catalogId'];				
 					?>
 					<div class="productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
 						<div class="productImage">
-							<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?>  rel="nolink"><span <?php echo ($type === 'coupon' ? 'class="loadCoup"' : 'class="load"'); ?>><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?>  rel="nolink"><span class="load"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
-						<div class="productContent">
-							<?php
-							if ($record['promo'])
-							{					
-								echo '<div class="promo" ' . (($record['expiration_date'] || $record['expirationDate']) ? 'style="width:auto"' : '') . '><span>' . $record['promo'] . '</span></div>' . (($record['expiration_date'] || $record['expirationDate']) ? '&nbsp;&nbsp;&mdash;&nbsp;&nbsp;' : '');
-							}
-														
-							if($record['expiration_date'] || $record['expirationDate'])
-							{
-								$expirationDate = $record['expirationDate'] ? $record['expirationDate'] : $$record['expiration_date'];
-								$expires = strtotime($expirationDate);
-								$today = strtotime(date("Y-m-d"));
-								$interval = ($expires - $today) / (60*60*24);
-
-								if ($interval <= 20 && $interval > 0)
-								{
-									echo '<div class="couponExpire"><span>' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</span></div>';
-								}
-								elseif ($interval <= 0)
-								{
-									echo '<div class="couponExpire"><span>Ends Today!</span></div>';
-								}
-								else
-								{
-									echo '<div class="couponExpire"><span>Expires Soon!</span></div>';
-								}
-							}	
-							?>
+						<div class="productContent">							
 							<div class="productTitle"><a href=<?php echo ($options['titleMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>
-							<?php
-							if ($type != 'coupon' && $type != 'local')
-							{ 
-								?>
 								<div class="productDescription">
 									<?php
 									if (strlen($record['description']) > 200)
@@ -241,29 +169,13 @@
 										echo $record['description'];
 									}
 									?>
-								</div>
-								<?php
-							}	
-							
-							if ($record['coupon_code'])
-							{
-								echo '<div class="couponCode">Coupon Code: <span class="code_cc"><a href="' . $record['affiliate_url'] . '">'.$record['coupon_code'].'</a></span></div>';
-							}	
-				
-							?>				
+								</div>		
 							<div class="productBrandMerchant">
 								<?php
 								if($record['brand'])
 								{
 									echo '<span class="brandIn"><u>Brand</u>: ' . (!(preg_match('/' . $record['brand'] . '/i', rawurldecode($params['brand']))) ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/brand/' . rawurlencode($record['brand']) . '" rel="nolink"><cite>' . $record['brand'] . '</cite></a>' : $record['brand']) . '</span>';
-								}
-								if ($record['state'] || $record['city'] || $record['zipCode'] && !$params['zipCode'])
-								{
-									$city  = ((!$params['city'] || $noResults) ? '<a href="' . str_replace(array('/page/' . $params['page'], '/city/' . $filterCity), array('', ''), $url) . '/city/' . rawurlencode($record['city']) . '" rel="nolink"><cite>' . ucwords($record['city']) . '</cite></a>' : $record['city']) . ($record['state'] ? ', ' : '');
-									$state = (!$params['state'] || $noResults) ? '<a href="' . str_replace(array('/page/' . $params['page'], '/state/' . $filterState), array('', ''), $url) . '/state/' . rawurlencode($record['state']) . '" rel="nolink"><cite>' . ($record['city'] ? strtoupper($record['state']) : ucwords($backStates[$record['state']])) . '</cite></a> ' : ($record['city'] ? strtoupper($record['state']) : ucwords($record['state'])) . '&nbsp;';
-									$zip   = (!$params['zip'] || $noResults) ? ' <a href="' . str_replace(array('/page/' . $params['page'], '/zip/' . $filterZip), array('', ''), $url) . '/zip/' . rawurlencode($record['zipCode']) . '" rel="nolink"><cite>' . $record['zipCode'] . '</cite></a>' : $record['zipCode'];
-									echo '<span class="brandIn" style="display:inline-block;"><u>Location</u>: ' . $city . $state . $zip . '</span>';
-								}
+								}								
 								if($record['merchant'])
 								{
 									echo '<span class="merchantIn"><u>Merchant</u>: ' . (!(preg_match('/\b' . $record['merchant'] . '\b/i', rawurldecode($params['merchant']))) ? '<a href="' . str_replace('/page/' . $params['page'], '', $url) . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"><cite>' . $record['merchant'] . '</cite></a>' : $record['merchant']) . '</span>';
@@ -281,15 +193,15 @@
 								{
 									//we don't do anything
 									?>
-									<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2); ?></span></div>
+									<div class="productPriceNoSale"><span><?php echo '$' . number_format($record['price'], 2); ?></span></div>
 									<?php
 								}
 								//otherwise strike-through Price and list the Price_Sale
 								else
 								{
 									?>
-									<div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2)?></span></div>
-									<div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2)?></span></div>
+									<div class="productPrice"><span><?php echo '$' . number_format($record['price'], 2)?></span></div>
+									<div class="productPriceSale"><span><?php echo '$' . number_format($priceSale, 2)?></span></div>
 									<?php
 								}
 							}
@@ -310,8 +222,8 @@
 		{
 			$gridImage = ($options['Same_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Same_Img_Size']) : 200) . 'px';
 		}
-		$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
-		echo '<div id="simProd" style="' . ($filterArray ? 'width:80%' : 'width:100%') . ';float:right;border-top: 2px solid #ddd;">';
+		$classLoad = $gridImage < 120 ? 'class="loadCoup"' : 'class="load"';
+		echo '<div id="simProd" style="' . ($filterArray ? 'width:80%' : 'width:100%') . ';float:right;border-top: 1px solid #ddd;">';
 		echo '<ul>';	
 		if (!empty($results))
 		{
@@ -323,52 +235,24 @@
 				}
 				
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2) . '</div>';
+				$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
-				$cid 	   = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
+				$cid 	   = $record['catalogId'];
 				?>
-					<li <?php echo 'style="width:' . $gridImage . '!important;"'; ?>>
+				<li <?php echo 'style="width:' . $gridImage . '!important;border:1px solid #000"'; ?>>
 						<div class="listBlock">
 							<div class="prodImage">
 								<a href=<?php echo ($options['imageMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 40px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
-							</div>
-								<?php
-								if ($record['promo'])
-								{					
-									echo '<div class="promo"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $record['promo'] . '!</a></span></div>';
-								}
-								elseif($record['expiration_date'] || $record['expirationDate'])
-								{
-									$expirationDate = $record['expirationDate'] ? $record['expirationDate'] : $record['expiration_date'];			
-									$expires = strtotime($expirationDate);
-									$today = strtotime(date("Y-m-d"));
-									$interval = ($expires - $today) / (60*60*24);
-
-									if ($interval <= 20 && $interval > 0)
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
-									}
-									elseif ($interval <= 0)
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">Ends Today!</a></span></div>';
-									}
-									else
-									{
-										echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
-									}
-								}
-								elseif ($type == 'coupon' || $type == 'local')
-								{
-									echo '<div class="promo">&nbsp;</div>';
-								}
-								?>
+							</div>								
 							<div class="prodContent">
 								<div class="prodTitle">
 									<a href=<?php echo ($options['titleMercLink'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
 										<?php echo $keyword; ?>
 									</a>
-								</div>     
-								<?php if ($price && $type != 'coupon' && $type != 'local'){ echo $price; } ?>												
+								</div>   
+								<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">  
+								    <?php echo $price . '<span style="color:#666;font-size:12px;font-weight:normal;"> from</span><span style="color:#666;font-size:14px;font-weight:normal;"> ' . $record['merchant'] . '</span>' ?>
+								</div>												
 							</div>								
 							<div class="shopCheck prosperVisit">		
 								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $visitButton; ?>"/></a>				

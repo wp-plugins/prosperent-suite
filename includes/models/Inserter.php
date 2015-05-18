@@ -20,7 +20,7 @@ class Model_Inserter extends Model_Base
 	{
 		$id 	 = 'productInsert';
 		$display = 'ProsperInsert';
-		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" ct="US" gtm="GO TO MERCHANT?" c="USE COUPONS?" v="GRID OR LIST"]';
+		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" ct="US" gtm="GO TO MERCHANT?" v="GRID OR LIST"]';
 		$arg2 	 = '[/compare]';		
 	
 		$this->qTagsProsper($id, $display, $arg1, $arg2);
@@ -175,55 +175,8 @@ class Model_Inserter extends Model_Base
 		{
 			$limit = count($id);
 		}
-
-		if ($fetch === 'fetchLocal')
-		{
-			$expiration = PROSPER_CACHE_COUPS;
-			$recordId   = 'localId';
-			$type       = 'local';
 		
-			if (strlen($pieces['state']) > 2)
-			{
-				$searchModel = new Model_Search();
-				$state = $searchModel->states[strtolower($pieces['state'])];
-			}
-			else
-			{
-				$state = $pieces['state'];
-			}
-
-			$settings = array(
-				'curlCall'		  => 'single-' . $type,
-				'interface'		  => 'insert',
-				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
-				'limit'           => $limit,
-				'filterState'	  => $state ? $state : '',
-				'filterCity'	  => $pieces['city'] ? $pieces['city'] : '',
-				'filterZipCode'	  => $pieces['z'] ? $pieces['z'] : '',
-				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
-				'filterLocalId'   => $id				
-			);
-		}
-		elseif ($fetch === 'fetchCoupons' || $pieces['c'])
-		{		
-			$expiration = PROSPER_CACHE_COUPS;
-			$recordId 	= 'couponId';
-			
-			$settings = array(
-				'curlCall'		 => 'single-' . $type,
-				'interface'		 => 'insert',
-				'imageSize'		 => '120x60',
-				'limit'          => $limit,
-				'query'          => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				'filterMerchant' => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',		
-				'filterCouponId' => $id									
-			);			
-
-			$imageLoader = 'small';
-			$type = 'coupon';
-		}
-		elseif ($fetch === 'fetchProducts')
+		if ($fetch === 'fetchProducts')
 		{
 			$expiration = PROSPER_CACHE_PRODS;
 			$recordId 	= 'catalogId';
@@ -253,7 +206,6 @@ class Model_Inserter extends Model_Base
 				//'filterKeyword'   => $pieces['k'],
 				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
 				'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
-				'filterCelebrity' => $pieces['celeb'],	
 				'filterProductId' => $id,
 				'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
 				'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''))				
@@ -270,10 +222,11 @@ class Model_Inserter extends Model_Base
 				'curlCall'		   => 'single-' . $type,
 				'imageSize'		   => '120x60',
 				'interface'		   => 'insert',
-				'limit'            => $limit,
+				'limit'            => $limit,			    
 				'filterMerchant'   => str_replace(',', '|', $pieces['m']),		
 				'filterMerchantId' => $id,
-				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'			
+			    'filterCategory'   => $pieces['cat'] ? '*' . $pieces['cat'] . '*' : '',
+				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'            		
 			);
 		}		
 		

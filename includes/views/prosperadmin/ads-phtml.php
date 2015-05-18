@@ -1,4 +1,6 @@
 <?php
+
+// TODO DELETE
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 

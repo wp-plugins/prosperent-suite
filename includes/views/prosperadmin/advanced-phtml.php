@@ -37,7 +37,7 @@ echo $prosperAdmin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosper
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 */
 
-if ($genOptions['PSAct'] || $genOptions['PICIAct'] || $genOptions['ALAct'] || $genOptions['PAAct'])
+if ($genOptions['PSAct'] || $genOptions['PICIAct'] || $genOptions['ALAct'])
 {
 	echo '<h2 class="prosper_h2">' . __( 'SID Tracking', 'prosperent-suite' ) . '</h2>';
 	echo $prosperAdmin->multiCheckbox( 'prosperSid',  array( 'blogname' => 'Blog Name', 'interface' => 'Interface', 'query' => 'Query/Topic', 'page' => 'Page', 'pageNumber' => 'Page Number', 'widgetTitle' => 'Widget Title', 'widgetName' => 'Widget Type', 'authorId' => 'Author ID', 'authorName' => 'Author Name', 'postId' => 'Post ID'  ), 'Select what you\'d like to be included in the SID ', '', '<a href="#" class="prosper_tooltip"><span>Choose a SID Tracking for your blog.</span></a>' );

@@ -30,8 +30,8 @@ else
 	
 	$examples = array(
 		'products.css' => PROSPER_CSS . '/products.css',
-		'product.php' => PROSPER_VIEW . '/prospersearch/themes/Default/original.php',
-		'productPage.php' => PROSPER_VIEW . '/prospersearch/original.php'
+		'product.php' => PROSPER_VIEW . '/prospersearch/themes/Default/product.php',
+		'productPage.php' => PROSPER_VIEW . '/prospersearch/productPage.php'
 	);
 	foreach ($examples as $i => $exPart)
 	{

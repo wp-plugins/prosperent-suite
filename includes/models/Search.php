@@ -7,60 +7,6 @@ require_once(PROSPER_MODEL . '/Base.php');
  */
 class Model_Search extends Model_Base
 {
-	public $states = array(
-		'alabama'		 =>'AL',
-		'alaska'		 =>'AK',
-		'arizona'		 =>'AZ',
-		'arkansas'		 =>'AR',
-		'california'	 =>'CA',
-		'colorado'		 =>'CO',
-		'connecticut'	 =>'CT',
-		'DC'	 		 =>'DC',
-		'delaware'		 =>'DE',
-		'florida'		 =>'FL',
-		'georgia'		 =>'GA',
-		'hawaii'		 =>'HI',
-		'idaho'		 	 =>'ID',
-		'illinois'		 =>'IL',
-		'indiana'		 =>'IN',
-		'iowa'			 =>'IA',
-		'kansas'		 =>'KS',
-		'kentucky'		 =>'KY',
-		'louisiana'		 =>'LA',
-		'maine'			 =>'ME',
-		'maryland'		 =>'MD',
-		'massachusetts'	 =>'MA',
-		'michigan'		 =>'MI',
-		'minnesota'		 =>'MN',
-		'mississippi'	 =>'MS',
-		'missouri'		 =>'MO',
-		'montana'		 =>'MT',
-		'nebraska'		 =>'NE',
-		'nevada'		 =>'NV',
-		'new hampshire'	 =>'NH',
-		'new jersey'	 =>'NJ',
-		'new mexico'	 =>'NM',
-		'new york'		 =>'NY',
-		'north carolina' =>'NC',
-		'north dakota'	 =>'ND',
-		'ohio'			 =>'OH',
-		'oklahoma'		 =>'OK',
-		'oregon'		 =>'OR',
-		'pennsylvania'	 =>'PA',
-		'rhode island'   =>'RI',
-		'south carolina' =>'SC',
-		'south dakota'   =>'SD',
-		'tennessee'      =>'TN',
-		'texas'			 =>'TX',
-		'utah'			 =>'UT',
-		'vermont'		 =>'VT',
-		'virginia'		 =>'VA',
-		'washington'	 =>'WA',
-		'west virginia'	 =>'WV',
-		'wisconsin'		 =>'WI',
-		'wyoming'		 =>'WY'
-	);
-	
 	public $_options;
 			
 	public function init()
@@ -119,22 +65,8 @@ class Model_Search extends Model_Base
 		{ 
 			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
 			{
-				if (current($postArray) == 'prod')
-				{
-					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
-				}
-				elseif (current($postArray) == 'coup')
-				{
-					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/brand/' . $data['params']['brand'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
-				}
-				elseif (current($postArray) == 'local')
-				{
-					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/brand/' . $data['params']['brand'], '/query/' . $data['params']['query'], '/sort/' . $data['params']['sort'], '/merchant/' . $data['params']['merchant'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
-				}
-				elseif (current($postArray) == 'cele')
-				{
-					$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/sort/' . $data['params']['sort'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query']), '', $newUrl);
-				}
+				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery']), '', $newUrl);
+
 			}	
 			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['query'] != current($postArray) && key($postArray) == 'query')
 			{
@@ -236,34 +168,6 @@ class Model_Search extends Model_Base
 		return array('appliedFilters' => $filterCategory, 'allFilters' => $filterCategory);
 	}	
 	
-	public function getCities($city = null)
-	{
-		$filterCity = array();
-
-		if ($city)		
-		{
-			$city = explode('~', str_replace(',SL,', '/', $city));
-			$filterCity = $city;
-			$city = array_combine($filterCity, $filterCity);
-		}
-
-		return array('appliedFilters' => $city, 'allFilters' => $filterCity);
-	}
-	
-	public function getZips($zip = null)
-	{
-		$filterZip = array();
-
-		if ($zip)		
-		{
-			$zip = explode('~', str_replace(',SL,', '/', $zip));
-			$filterZip = $zip;
-			$zip = array_combine($filterZip, $filterZip);
-		}
-
-		return array('appliedFilters' => $zip, 'allFilters' => $filterZip);
-	}
-	
 	public function buildFacets($facets, $params, $filters, $url)
 	{
 		if (preg_match('/\/\?gclid=.+/i', $url))
@@ -288,18 +192,16 @@ class Model_Search extends Model_Base
 					{
 						$newFilters = $filters[$i]['appliedFilters'];
 						unset($newFilters[$facet['value']]);
-						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
-						$facetsPicked[] = '<a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+						$facetsNew[$i][$facet['value']] = '<li class="active"><a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a></li>';						
 					}
 					else
 					{
-						$facetsNew[$i][$facet['value']] = '<a style="font-weight:bold;font-size:13px;" href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
-						$facetsPicked[] = '<a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') .'>' . $facet['value'] . ' <l style="font-size:12px;">&#215;</l></a>';
+						$facetsNew[$i][$facet['value']] = '<li class="active"><a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a></li>';						
 					}
 				}
 				elseif ($facet['value'])
 				{
-					$facetsNew[$i][$facet['value']] = '<a style="font-size:12px;" href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) .($params[$i] ? '~' .  $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a>';
+					$facetsNew[$i][$facet['value']] = '<li><a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) .($params[$i] ? '~' .  $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '>' . $facet['value'] . '</a></li>';
 				}
 			}
 		}
@@ -353,40 +255,9 @@ class Model_Search extends Model_Base
 	public function getEndpoints()
 	{
 		$sepEnds = array();
-		if ($this->_options['Product_Endpoint'])
-		{
 			$title = $this->_options['prodLabel'] ? $title = $this->_options['prodLabel'] : 'Products'; 
 		
 			$sepEnds['prod'] = $title;
-		}
-		
-		if ($this->_options['Coupon_Endpoint'])
-		{
-			$title = $this->_options['coupLabel'] ? $title = $this->_options['coupLabel'] : 'Coupons'; 
-		
-			$sepEnds['coup'] = $title;
-		}
-				
-		if ($this->_options['Local_Endpoint'])
-		{
-			$title = $this->_options['localLabel'] ? $title = $this->_options['localLabel'] : 'Local Deals'; 
-		
-			$sepEnds['local'] = $title;
-		}
-		
-		if ($this->_options['Celebrity_Endpoint'])
-		{	
-			if ($this->_options['celeLabel'])
-			{
-				$title = $this->_options['celeLabel'];
-			}
-			else
-			{
-				$title = count($sepEnds) < 3 ? 'Celebrity Products' : 'Celebrity'; 
-			}
-			
-			$sepEnds['cele'] = $title;
-		}
 		
 		return $sepEnds;
 	}
@@ -539,44 +410,10 @@ class Model_Search extends Model_Base
 			}
 
 			$prosperPage = get_query_var('prosperPage');
-
-			if ('coupon' === $prosperPage)
-			{
-				$expiration = PROSPER_CACHE_COUPS;
-				$fetch  = 'fetchCoupons';
-				$filter = 'filterCouponId';
-			}
-			elseif ('local' === $prosperPage)
-			{
-				$expiration = PROSPER_CACHE_COUPS;
-				$fetch  = 'fetchLocal';
-				$filter = 'filterLocalId';
-				$image  = '125x125';
-			}
-			elseif ('celebrity' === $prosperPage)
-			{
-				$expiration = PROSPER_CACHE_PRODS;
-				$fetch  = 'fetchProducts';
-				$filter = 'filterCatalogId';
-			}
-			else
-			{
-				$expiration = PROSPER_CACHE_PRODS;
-				$fetch = 'fetchProducts';
-				$currency = 'USD';
-
-				if ($this->_options['Country'] === 'CA')
-				{
-					$fetch = 'fetchCaProducts';
-					$currency = 'CAD';
-				}
-				elseif ($this->_options['Country'] === 'UK')
-				{
-					$fetch = 'fetchUkProducts';
-					$currency = 'GBP';
-				}
-				$filter = 'filterCatalogId';
-			}
+			$expiration  = PROSPER_CACHE_PRODS;
+			$fetch       = 'fetchProducts';
+			$currency    = 'USD';
+			$filter      = 'filterCatalogId';
 			
 			if ($this->_options['OG_Image'] > '250' || !$this->_options['OG_Image'])
 			{
@@ -675,21 +512,6 @@ class Model_Search extends Model_Base
 		$city 	  	 = ucwords(rawurldecode($params['city']));
 		$zip 		 = ucwords(rawurldecode($params['zip']));
 		$celeb 		 = ucwords(rawurldecode($params['celebrity']));
-		
-		if ($params['state'])
-		{
-			$backStates = array_flip($this->states);
-			$state = ucwords($backStates[$params['state']]) . ' Deals';
-		}
-		
-		if ('coup' === $type)
-		{
-			$query = $params['query'] ? $params['query'] : ($this->_options['Coupon_Query'] ? $this->_options['Coupon_Query'] : '');
-		}
-		if ('cele' === $type)
-		{		
-			$query = $params['query'] ? $params['query'] : (($this->_options['Celebrity_Query'] && !$brand && !$merchant) ? $this->_options['Celebrity_Query'] : '');		
-		}
 
 		$query = ucwords(rawurldecode(str_replace('+', ' ', $query)));
 		
@@ -701,47 +523,23 @@ class Model_Search extends Model_Base
 		}
 		elseif (is_page($page))
 		{
-			if ('local' == $type)
+			switch ( $this->_options['Title_Structure'] )
 			{
-				switch ( $this->_options['Title_Structure'] )
-				{
-					case '0':
-						$title =  $title;
-						break;
-					case '1':
-						$title =  $title . $page_num . (($zip || $city || $state) ? $sep : '') . ($zip ? $zip : '') . ($zip && $city ? ' ' : '') . ($city ? $city : '') . (($zip && $state || $state && $city) ? ' ' : '') . ($state ? $state : '');
-						break;
-					case '2':
-						$title = ($zip ? $zip : '') . ($zip && $city ? ' ' : '') . ($city ? $city : '') . (($zip && $state && !$city) ? ' ' : (($state && $city) ? ', ' : '')) . ($state ? $state : '') . (($zip || $city || $state) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
-						break;
-					case '3':
-						$title =  !$zip ? $title : ($zip ? $zip : '') . ($city ?  ' &raquo; ' . $city : '') . ($state ? ' &raquo; ' . $state : '') . $page_num;
-						break;
-					case '4':
-						$title =  $title;
-						break;
-				}
-			}
-			else
-			{
-				switch ( $this->_options['Title_Structure'] )
-				{
-					case '0':
-						$title =  $title;
-						break;
-					case '1':
-						$title =  $blogname . $sep . $pagename . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
-						break;
-					case '2':
-						$title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
-						break;
-					case '3':
-						$title =  !$query ? $title : ($query ? $query : '') . ($brand ?  ' &raquo; ' . $brand : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
-						break;
-					case '4':
-						$title =  $title;
-						break;
-				}
+				case '0':
+					$title =  $title;
+					break;
+				case '1':
+					$title =  $blogname . $sep . $pagename . $page_num . (($query || $brand || $merchant) ? $sep : '') . ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '');
+					break;
+				case '2':
+					$title = ($query ? $query : '') . ($query && $brand ? ' &raquo; ' : '') . ($brand ? $brand : '') . (($query && $merchant || $merchant && $brand) ? ' &raquo; ' : '') . ($merchant ? $merchant : '') . (($query || $brand || $merchant) ? $sep : '') . $pagename . $page_num . $sep . $blogname;
+					break;
+				case '3':
+					$title =  !$query ? $title : ($query ? $query : '') . ($brand ?  ' &raquo; ' . $brand : '') . ($merchant ? ' &raquo; ' . $merchant : '') . $page_num;
+					break;
+				case '4':
+					$title =  $title;
+					break;
 			}
 		}
 		
@@ -764,24 +562,16 @@ class Model_Search extends Model_Base
 			$url = home_url('/') . $base;
 		}
 
-		$sepEnds 	  = $this->getEndpoints();
-		$newEnds 	  = array_keys($sepEnds);
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';
 		$merchant 	  = isset($params['merchant']) ? str_replace('|', '~', rawurldecode(stripslashes($params['merchant']))) : '';		
 		$category 	  = isset($params['category']) ? str_replace('|', '~', rawurldecode(stripslashes($params['category']))) : '';	
-		$city 	  	  = isset($params['city']) ? str_replace('|', '~', rawurldecode(stripslashes($params['city']))) : '';
-		$zipCode 	  = isset($params['zip']) ? str_replace('|', '~', rawurldecode(stripslashes($params['zip']))) : '';
 
 		return array(
-			'startingType' => $newEnds[0],
 			'filters'	   => array(
 				'brand' 	=> $this->getBrands($brand),
 				'merchant'  => $this->getMerchants($merchant),
-				'category'	=> $this->getCategories($category),
-				'city'		=> $this->getCities($city),
-				'zip'   	=> $this->getZips($zipCode)
+				'category'	=> $this->getCategories($category)
 			),
-			'typeSelector' => $sepEnds,
 			'params'	   => $params,
 			'url'		   => $url,
 			'merchantUrl'  => $merchantUrl

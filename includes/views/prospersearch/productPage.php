@@ -25,28 +25,7 @@
 		</div>
         <div class="productContent">
             <div class="productDescription" itemprop="description">
-				<?php
-				if ($mainRecord[0]['expiration_date'] || $mainRecord[0]['expirationDate'])
-				{
-					$expirationDate = $mainRecord[0]['expirationDate'] ? $mainRecord[0]['expirationDate'] : $mainRecord[0]['expiration_date'];
-					$expires = strtotime($expirationDate);
-					$today = strtotime(date("Y-m-d"));
-					$interval = ($expires - $today) / (60*60*24);
-					
-					echo '<meta itemprop="priceValidUntil" content="' . $mainRecord[0][0]['expiration_date'] . '"/>';
-					if ($interval <= 60 && $interval > 0)
-					{
-						echo '<div class="couponExpire"><span>' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</span></div>';
-					}
-					elseif ($interval <= 0)
-					{
-						echo '<div class="couponExpire"><span>Ends Today!</span></div>';
-					}
-					else
-					{
-						echo '<div class="couponExpire"><span>Expires Soon!</span></div>';
-					}
-				}			
+				<?php 
                 if (strlen($mainRecord[0]['description']) > 200)
                 {
                     echo trim(substr($mainRecord[0]['description'], 0, 200));					
@@ -62,12 +41,6 @@
             </div>
             <div class="productBrandMerchant">
                 <?php 
-				$cityUrl = ($mainRecord[0]['city'] ? '/city/' . rawurlencode($mainRecord[0]['city']) : '');
-				
-				if ($mainRecord[0]['city'] || $mainRecord[0]['state'] || $mainRecord[0]['zip'])
-				{
-					echo '<div class="prodBrand"><u>Location</u>: <strong><a href="' . $matchingUrl . $cityUrl . '" rel="nolink"><span itemprop="category">' . $mainRecord[0]['city'] . '</span></a>' . ($mainRecord[0]['state'] ? ', ' . '<a href="' . $matchingUrl . '/state/' . rawurlencode($mainRecord[0]['state']) . '"><span itemprop="category">' . $mainRecord[0]['state'] . '</span></a>' : '') . ($mainRecord[0]['zip'] ? ' ' . '<a href="' . $matchingUrl . '/zip/' . rawurlencode($mainRecord[0]['zip']) . '"><span itemprop="category">' . $mainRecord[0]['zip'] . '</span></a>' : '') . '</strong></div>';
-				}
                 if($mainRecord[0]['category'])
                 {	
 					$mainRecord[0]['category'] = preg_replace('/\/$/', '', $mainRecord[0]['category']);
@@ -106,11 +79,7 @@
                 if($mainRecord[0]['brand'])
                 {
                     echo '<div class="prodBrand"><u>Brand</u>: <a href="' . $matchingUrl . '/brand/' . rawurlencode($mainRecord[0]['brand']) . '" rel="nolink"><span itemprop="brand">' . $mainRecord[0]['brand'] . '</span></a></div>';
-                }
-				if($mainRecord[0]['coupon_code'])
-				{
-					echo '<div class="prodBrand"><u>Coupon Code</u>: <strong style="font-size:16px;"><a href="' . $record['affiliate_url'] . '">'.$mainRecord[0]['coupon_code'].'</a></strong></div>';
-				}	
+                }	
 
 				if (count($results) > 1)
 				{
@@ -130,7 +99,7 @@
 								
 								echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
 								echo '<td itemprop="seller"><a href="' . $matchingUrl . '/merchant/' . rawurlencode($product['merchant']) . '" rel="nolink"><span>' . $product['merchant'] . '</span></a></td>';
-								echo '<td itemprop="price">' . ($priceSale ? '<span style="color:#bb0628">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</span>' :  ($currency == 'GBP' ? '&pound;' : '$') . number_format($product['price'], 2, '.', ',')) . '</td>';
+								echo '<td itemprop="price">' . ($priceSale ? '<span style="color:#bb0628">$' . number_format($priceSale, 2) . '</span>' :  '$' . number_format($product['price'], 2, '.', ',')) . '</td>';
 								echo '<meta itemprop="priceCurrency" content="' . $currency . '"/>';
 								echo '<td><div class="shopCheck prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . $visitButton . '"/></a></div></td>';
 								echo '</tr>';
@@ -144,12 +113,12 @@
 					$priceSale = $mainRecord[0]['priceSale'] ? $mainRecord[0]['priceSale'] : $mainRecord[0]['price_sale'];
 					if(empty($priceSale) || $mainRecord[0]['price'] <= $priceSale)
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($mainRecord[0]['price'], 2) . '</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;"><strong>$' . number_format($mainRecord[0]['price'], 2) . '</strong></div>';
 					}
 					else
 					{
-						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</strong></div>';
-						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>' . ($currency == 'GBP' ? '&pound;' : '$') . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2)) . '!</strong></div>';
+						echo '<br><div class="prodBrand" style="font-size:24px;padding-top:8px;"><strong>$' . number_format($priceSale, 2) . '</strong></div>';
+						echo '<div class="prodBrand" style="color:#ED3E30;font-size:18px;">A savings of <strong>$' . ($mainRecord[0]['dollarsOff'] ? $mainRecord[0]['dollarsOff'] : number_format($mainRecord[0]['price'] - $priceSale, 2)) . '!</strong></div>';
 					}
 				}
 				?>
@@ -160,157 +129,12 @@
 
 <?php
 $gridImage = ($options['Same_Img_Size'] ? preg_replace('/px|em|%/i', '', $options['Same_Img_Size']) : 200) . 'px';
-$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
-
-if (($coupCount = count($merchantCoups)) > 1)
-{
-	echo '<div class="clear"></div>';
-	echo '<div class="simTitle" style="border-bottom:none;">' . ($type === 'coupon' ? 'Other ' : '') . 'Coupons from <a href="' . $homeUrl . '/' . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '/type/coup/merchant/' . rawurlencode($mainRecord[0]['merchant']) . '" rel="nolink"><span>' . $mainRecord[0]['merchant'] . '</span></a>' . '</div>';
-	echo '<div id="productList" style="width:100%;float:right;">';
-	//echo '<ul>';
-
-	foreach ($merchantCoups as $i => $merchantCoup)
-	{
-		$priceSale = $prod['priceSale'] ? $prod['priceSale'] : $prod['price_sale'];
-		$price 	   = $priceSale ? $priceSale : $prod['price'];
-		$keyword   = preg_replace('/\(.+\)/i', '', $merchantCoup['keyword']);
-		$cid 	   = $merchantCoup['couponId'];
-		?>
-			<div class="productBlock" style="width:100%; <?php echo ($i == ($coupCount - 1) ? 'border-bottom:none;' : ''); ?>">
-				<div class="productContent">
-					<?php
-					if ($merchantCoup['promo'])
-					{					
-						echo '<div class="promo"><span>' . $merchantCoup['promo'] . '</span></div>' . (($merchantCoup['expiration_date'] || $merchantCoup['expirationDate']) ? '&nbsp;&nbsp;&mdash;&nbsp;&nbsp;' : '');
-					}
-					
-					if($merchantCoup['expiration_date'] || $merchantCoup['expirationDate'])
-					{
-						$expirationDate = $merchantCoup['expirationDate'] ? $merchantCoup['expirationDate'] : $$merchantCoup['expiration_date'];
-						$expires = strtotime($expirationDate);
-						$today = strtotime(date("Y-m-d"));
-						$interval = ($expires - $today) / (60*60*24);
-
-						if ($interval <= 20 && $interval > 0)
-						{
-							echo '<div class="couponExpire"><span>' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</span></div>';
-						}
-						elseif ($interval <= 0)
-						{
-							echo '<div class="couponExpire"><span>Ends Today!</span></div>';
-						}
-						else
-						{
-							echo '<div class="couponExpire"><span>Expires Soon!</span></div>';
-						}
-					}	
-					?>					
-					<div class="productTitle" style="font-size:0.85em"><a href=<?php echo ($options['titleMercLink'] ? '"' . $merchantCoup['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/coupon/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span><?php echo preg_replace('/\(.+\)/i', '', $merchantCoup['keyword']); ?></span></a></div>
-					<?php
-					
-					if ($merchantCoup['coupon_code'])
-					{
-						echo '<div class="couponCode">Coupon Code: <span class="code_cc"><a href="' . $merchantCoup['affiliate_url'] . '">'.$merchantCoup['coupon_code'].'</a></span></div>';
-					}	
-		
-					?>				
-				</div>
-				<div class="productEnd">
-					<?php
-					
-					if ($merchantCoup['price_sale'] || $merchantCoup['price'] || $merchantCoup['priceSale'])
-					{
-						$priceSale = $merchantCoup['priceSale'] ? $merchantCoup['priceSale'] : $merchantCoup['price_sale'];
-						
-						if(empty($priceSale) || $merchantCoup['price'] <= $priceSale)
-						{
-							//we don't do anything
-							?>
-							<div class="productPriceNoSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($merchantCoup['price'], 2); ?></span></div>
-							<?php
-						}
-						//otherwise strike-through Price and list the Price_Sale
-						else
-						{
-							?>
-							<div class="productPrice"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($merchantCoup['price'], 2)?></span></div>
-							<div class="productPriceSale"><span><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2)?></span></div>
-							<?php
-						}
-					}
-					
-					?>
-					<div class="shopCheck prosperVisit">		
-						<a href="<?php echo $merchantCoup['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="Use Coupon"/></a>				
-					</div>
-				</div>
-			</div>
-		<?php
-	}
-	
-	
-	
-	/*foreach ($merchantCoup as $merchantCoup)
-	{
-		$price 	   = $priceSale ? $priceSale : $merchantCoup['price'];
-		$keyword   = preg_replace('/\(.+\)/i', '', $merchantCoup['keyword']);
-		$cid 	   = $merchantCoup['couponId'];
-		?>
-			<li class="coupBlock">
-				<div class="listBlock">
-					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . 'style="height:60px;width:120px"'; ?>><img style="height:60px;width:120px" src="<?php echo $merchantCoup['image_url']; ?>" alt="<?php echo $merchantCoup['keyword']; ?>" title="<?php echo $merchantCoup['keyword']; ?>"/></span></a>
-					</div>
-					<?php
-					if ($record['promo'])
-					{					
-						echo '<div class="promo"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $merchantCoup['promo'] . '!</a></span></div>';
-					}
-					elseif($merchantCoup['expiration_date'] || $merchantCoup['expirationDate'])
-					{
-						$expirationDate = $merchantCoup['expirationDate'] ? $merchantCoup['expirationDate'] : $merchantCoup['expiration_date'];
-						$expires = strtotime($expirationDate);
-						$today = strtotime(date("Y-m-d"));
-						$interval = ($expires - $today) / (60*60*24);
-
-						if ($interval <= 20 && $interval > 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
-						}
-						elseif ($interval <= 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid . '" rel="nolink">Ends Today!</a></span></div>';
-						}
-						else
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
-						}
-					}
-					?>
-					<div class="prodContent">
-						<div class="prodTitle">
-							<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantCoup['keyword'])) . '/cid/' . $cid; ?>" rel="nolink">
-								<?php echo $keyword; ?>
-							</a>
-						</div>    									
-					</div>			
-				</div>			
-				
-				<div class="shopCheck prosperVisit">		
-					<a href="<?php echo $merchantCoup['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $visitButton; ?>"/></a>				
-				</div>	
-			</li>
-		<?php
-	}*/
-	
-
-	echo '</div>';
-}
+$classLoad = $gridImage < 120 ? 'class="loadCoup"' : 'class="load"';
 
 if (count($similar) > 1)
 {
     echo '<div class="clear"></div>';
-    echo '<div class="simTitle">Similar ' . (($type === 'coupon' || $type === 'local') ? 'Deals' : 'Products') . ($type === 'local' ? ' for' . ucwords($fullState) : '') . '</div>';
+    echo '<div class="simTitle">Similar Products</div>';
     echo '<div id="simProd">';
     echo '<ul>';
     foreach ($similar as $prod)
@@ -318,47 +142,21 @@ if (count($similar) > 1)
 		$priceSale = $prod['priceSale'] ? $prod['priceSale'] : $prod['price_sale'];
         $price 	   = $priceSale ? $priceSale : $prod['price'];
 		$keyword   = preg_replace('/\(.+\)/i', '', $prod['keyword']);
-		$cid 	   = $type === 'coupon' ? $prod['couponId'] : ($type === 'local' ? $prod['localId'] : $prod['catalogId']);
+		$cid 	   = $prod['catalogId'];
         ?>
-            <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
+            <li style="width:<?php echo $gridImage; ?> !important;">
 				<div class="listBlock">
 					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $prod['image_url']; ?>" alt="<?php echo $prod['keyword']; ?>" title="<?php echo $prod['keyword']; ?>" /></span></a>
+						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?>><img <?php echo 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?> src="<?php echo $prod['image_url']; ?>" alt="<?php echo $prod['keyword']; ?>" title="<?php echo $prod['keyword']; ?>" /></span></a>
 					</div>
-					<?php
-					if ($prod['promo'])
-					{					
-						echo '<div class="promo"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $prod['promo'] . '!</a></span></div>';
-					}
-					elseif($prod['expiration_date'] || $prod['expirationDate'])
-					{
-						$expirationDate = $prod['expirationDate'] ? $prod['expirationDate'] : $prod['expiration_date'];
-						$expires = strtotime($expirationDate);
-						$today = strtotime(date("Y-m-d"));
-						$interval = ($expires - $today) / (60*60*24);
-
-						if ($interval <= 20 && $interval > 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
-						}
-						elseif ($interval <= 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid . '" rel="nolink">Ends Today!</a></span></div>';
-						}
-						else
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
-						}
-					}
-					?>
 					<div class="prodContent">
 						<div class="prodTitle">
 							<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>" rel="nolink">
 								<?php echo $keyword; ?>
 							</a>
 						</div>
-						<?php if ($price && $type != 'coupon' && $type != 'local'): ?>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>
+						<?php if ($price): ?>
+						<div class="prodPrice"><?php echo '$' . number_format($price, 2); ?></div>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -396,7 +194,7 @@ if (count($sameBrand) > 1)
 								<?php echo $keyword; ?>
 							</a>
 						</div>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>                   
+						<div class="prodPrice"><?php echo '$' . number_format($price, 2); ?></div>                   
 					</div>			
 				</div>
 				<div class="shopCheck prosperVisit">		
@@ -422,45 +220,19 @@ if (count($sameMerchant) > 1)
 		$keyword   = preg_replace('/\(.+\)/i', '', $merchantProd['keyword']);
 		$cid 	   = $type === 'coupon' ? $merchantProd['couponId'] : ($type === 'local' ? $merchantProd['localId'] : $merchantProd['catalogId']);
         ?>
-            <li <?php echo ($type === 'coupon' ? 'class="coupBlock"' : 'style="width:' . $gridImage . '!important;"'); ?>>
+            <li style="width:<?php echo $gridImage; ?>!important;">
 				<div class="listBlock">
 					<div class="prodImage">
-						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px""'); ?> src="<?php echo $merchantProd['image_url']; ?>" alt="<?php echo $merchantProd['keyword']; ?>" title="<?php echo $merchantProd['keyword']; ?>"/></span></a>
-					</div>
-					<?php
-					if ($record['promo'])
-					{					
-						echo '<div class="promo"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $merchantProd['promo'] . '!</a></span></div>';
-					}
-					elseif($merchantProd['expiration_date'] || $merchantProd['expirationDate'])
-					{
-						$expirationDate = $merchantProd['expirationDate'] ? $merchantProd['expirationDate'] : $merchantProd['expiration_date'];
-						$expires = strtotime($expirationDate);
-						$today = strtotime(date("Y-m-d"));
-						$interval = ($expires - $today) / (60*60*24);
-
-						if ($interval <= 20 && $interval > 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid . '" rel="nolink">' . $interval . ' Day' . ($interval > 1 ? 's' : '') . ' Left!</a></span></div>';
-						}
-						elseif ($interval <= 0)
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid . '" rel="nolink">Ends Today!</a></span></div>';
-						}
-						else
-						{
-							echo '<div class="couponExpire"><span><a href="' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid . '" rel="nolink">Expires Soon!</a></span></div>';
-						}
-					}
-					?>
+						<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink"><span <?php echo $classLoad . 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?>><img <?php echo 'style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"'; ?> src="<?php echo $merchantProd['image_url']; ?>" alt="<?php echo $merchantProd['keyword']; ?>" title="<?php echo $merchantProd['keyword']; ?>"/></span></a>
+					</div>					
 					<div class="prodContent">
 						<div class="prodTitle">
 							<a href="<?php echo $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $merchantProd['keyword'])) . '/cid/' . $cid; ?>" rel="nolink">
 								<?php echo $keyword; ?>
 							</a>
 						</div>       
-						<?php if ($price && $type != 'coupon' && $type != 'local'): ?>
-						<div class="prodPrice"><?php echo ($currency == 'GBP' ? '&pound;' : '$') . number_format($price, 2); ?></div>
+						<?php if ($price): ?>
+						<div class="prodPrice"><?php echo '$' . number_format($price, 2); ?></div>
 						<?php endif; ?>					
 					</div>			
 				</div>			

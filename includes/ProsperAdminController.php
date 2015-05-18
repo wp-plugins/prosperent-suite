@@ -43,10 +43,6 @@ class ProsperAdminController
 		{
 			add_submenu_page('prosper_general', __('ProsperShop', 'prosperent-suite' ), __( 'ProsperShop', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
 		}
-		if ($this->_options['PAAct'])
-		{
-			add_submenu_page('prosper_general', __( 'ProsperAds', 'prosperent-suite' ), __( 'ProsperAds', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
-		}
 		if ($this->_options['PICIAct'])
 		{
 			add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
@@ -102,15 +98,6 @@ class ProsperAdminController
 	{
 		if ( isset( $_GET['page'] ) && 'prosper_productSearch' == $_GET['page'] )
 			require_once( PROSPER_VIEW . '/prosperadmin/search-phtml.php' );
-	}	
-		
-	/**
-	 * Loads the form for the performance ads page.
-	 */
-	public function performancePage() 
-	{
-		if ( isset( $_GET['page'] ) && 'prosper_performAds' == $_GET['page'] )
-			require_once( PROSPER_VIEW . '/prosperadmin/ads-phtml.php' );
 	}	
 	
 	/**

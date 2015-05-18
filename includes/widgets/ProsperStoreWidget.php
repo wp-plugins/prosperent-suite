@@ -54,22 +54,6 @@ class ProsperStoreWidget extends WP_Widget
 		{
 			$searchBarText = trim($instance['sBarText']);
 		}
-		else
-		{
-			
-			if ($instance['searchFor'] == 'coup')
-			{
-				$searchBarText = 'Search Coupons';
-			}
-			elseif ($instance['searchFor'] == 'local')
-			{
-				$searchBarText = 'Search Local Deals';
-			}
-			elseif ($instance['searchFor'] == 'cele')
-			{
-				$searchBarText = 'Search Celebrities';
-			}
-		}				
         ?>
         <form class="searchform" method="POST" action="" rel="nolink">
             <input class="prosper_field" type="text" name="q" id="s" placeholder="<?php echo $searchBarText; ?>" style="margin:14px 0 0 18px;width:<?php echo $width; ?>;">

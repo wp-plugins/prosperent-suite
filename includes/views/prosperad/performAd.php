@@ -1,4 +1,6 @@
 <?php
+
+// TODO DELETE
 $url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $result = preg_replace('/wp-content.*/i', '', $url);
 $mainURL = preg_replace('/views.+/', '' , $url);

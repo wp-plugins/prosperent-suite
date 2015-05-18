@@ -41,22 +41,8 @@ class TopProductsWidget extends WP_Widget
 					
 		$expiration = PROSPER_CACHE_PRODS;
 		$type = 'product';
-		
-		if ($options['Country'] === 'US')
-		{
-			$fetch = 'fetchProducts';
-			$currency = 'USD';
-		}
-		elseif($options['Country'] === 'UK')
-		{
-			$fetch = 'fetchUkProducts';
-			$currency = 'GBP';
-		}
-		else
-		{
-			$fetch = 'fetchCaProducts';
-			$currency = 'CAD';
-		}
+		$fetch = 'fetchProducts';
+	   $currency = 'USD';
 
 		$sidArray = array();
 		if ($options['prosperSid'] && !$sid)

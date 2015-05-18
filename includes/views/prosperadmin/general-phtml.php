@@ -17,16 +17,6 @@ echo '<h2 class="prosper_h2">' . __( 'Enable/Disable...', 'prosperent-suite' ) .
 echo $prosperAdmin->checkbox( 'PSAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperShop</span>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
-if ($options['PAAct'])
-{
-	echo $prosperAdmin->checkbox( 'PAAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperAds</span>', 'prosperent-suite' ) );
-	echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
-}
-else
-{
-    echo $prosperAdmin->hidden( 'PAAct' );
-}
-
 echo $prosperAdmin->checkbox( 'PICIAct', __( '<span style="font-size:18px;line-height:1.2em;">ProsperInsert and Content Inserter</span>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc" style="padding-bottom:2px;">' . __( "", 'prosperent-suite' ) . '</p>';
 
@@ -40,7 +30,7 @@ if ($options['PSAct'] || $options['PICIAct'] || $options['ALAct'])
 {
 	echo '<h2 class="prosper_h2">' . __( 'Links', 'prosperent-suite' ) . '</h2>';
 	echo $prosperAdmin->checkbox( 'Target', __( 'Open Links in New Window/Tab', 'prosperent-suite' ));
-	echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in a new window/tab <br><strong>Unchecked</strong> : opens link in the same window<br><strong>Will Not Change the Functionality of ProsperAds or ProsperLinks</strong>", 'prosperent-suite' ) . '</p>';
+	echo '<p class="prosper_descb">' . __( "<strong>Checked</strong> : opens link in a new window/tab <br><strong>Unchecked</strong> : opens link in the same window<br><strong>Will Not Change ProsperLinks</strong>", 'prosperent-suite' ) . '</p>';
 
 	echo '<h2 class="prosper_h2">' . __( 'Caching', 'prosperent-suite' ) . '</h2>';
 	echo $prosperAdmin->checkbox( 'Enable_Caching', __( 'Turn on Caching', 'prosperent-suite' ));
@@ -48,7 +38,7 @@ if ($options['PSAct'] || $options['PICIAct'] || $options['ALAct'])
 	{
 		echo '<a style="margin:10px 0 6px 35px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_general&clearCache&nonce='. wp_create_nonce( 'prosper_clear_cache' )) . '">' . __( 'Clear Memcache', 'prosperent-suite' ) . '</a>';
 	}
-	echo '<p class="prosper_descb">' . __( 'Caching now uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
+	echo '<p class="prosper_descb">' . __( 'Caching uses <strong>Memcache</strong>. You may have to install Memcache on your server.<br>If you have set up an alternate IP and port go to <a href="' . admin_url( 'admin.php?page=prosper_advanced') . '">Advanced Settings</a> to change these.', 'prosperent-suite' ) . '</p>';
 }
 else 
 {
@@ -57,16 +47,15 @@ else
 
 echo '<h2 class="prosper_h2">' . __( 'Automatic Updates', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'autoMinorUpdates', __( 'Turn on Automatic Minor Updates', 'prosperent-suite' ));
-echo '<p class="prosper_descb">' . __( "This will only apply to minor maintenance and bug fixes. You will still have to update for major releases, which are less often.", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_descb">' . __( "Only applies to minor updates which are maintenance and small bug fixes. You will still have to update for major releases, but these are less often.", 'prosperent-suite' ) . '</p>';
 
 echo '<h2 class="prosper_h2">' . __( 'Help Us, Help You', 'prosperent-suite' ) . '</h2>';
 echo $prosperAdmin->checkbox( 'anonymousData', __( 'Send data back to Prosperent', 'prosperent-suite' ));
-echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and understanding how to make the plugin better for everyone and helping with support when needed.", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and helping with support when needed.", 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->hidden( 'ProsperFirstTimeOperator' );
 echo $prosperAdmin->hidden( 'prosperNewVersion' );
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 echo $prosperAdmin->hidden( 'prosperNoOptions' );
-echo $prosperAdmin->hidden( 'dismissDepre' );
 
 $prosperAdmin->adminFooter();

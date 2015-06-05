@@ -20,8 +20,8 @@ class Model_Inserter extends Model_Base
 	{
 		$id 	 = 'productInsert';
 		$display = 'ProsperInsert';
-		$arg1 	 = '[compare q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" ct="US" gtm="GO TO MERCHANT?" v="GRID OR LIST"]';
-		$arg2 	 = '[/compare]';		
+		$arg1 	 = '[prosperInsert q="QUERY" b="BRAND" m="MERCHANT" l="LIMIT" v="GRID, LIST OR PRICE COMP"]';
+		$arg2 	 = '[/prosperInsert]';		
 	
 		$this->qTagsProsper($id, $display, $arg1, $arg2);
 	}
@@ -33,6 +33,11 @@ class Model_Inserter extends Model_Base
 	
 	public function contentInserter($text)
 	{		
+	    if (!$this->_options['PICIAct'])
+	    {
+	        return $text;
+	    }
+	    
 		$newTitle = get_the_title();
 
 		if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs))
@@ -45,13 +50,6 @@ class Model_Inserter extends Model_Base
 				return trim($text);
 			}
 		}
-		
-	if (preg_match('/\[prosperNewQuery="(.+)"\]/i', $text, $regs))
-	{
-		$newTitle = $regs[1];
-		$text = preg_replace('/\[prosperNewQuery="(.+)"\]/i', '', $text);
-	}
-	
 
 		if ($this->_options['prosper_inserter_negTitles'])
 		{
@@ -104,29 +102,23 @@ class Model_Inserter extends Model_Base
 		
 		if ($this->_options['prosper_inserter_pages'] && $this->_options['prosper_inserter_posts'])
 		{
-			if( is_singular() && is_main_query() ) 
+			if( is_page() ) 
 			{
 				$text = $content;
 			}
 			
-			if(is_single()) 
+			if(is_singular('post')) 
 			{
 				$text = $content;	
 			}
 		}
-		elseif($this->_options['prosper_inserter_posts'])
+		elseif($this->_options['prosper_inserter_posts'] && is_singular('post'))
 		{
-			if(is_single()) 
-			{
-				$text = $content;
-			}				
+			$text = $content;			
 		}
-		elseif($this->_options['prosper_inserter_pages'])
+		elseif($this->_options['prosper_inserter_pages'] && is_page())
 		{
-			if( is_singular() && is_main_query() ) 
-			{
-				$text = $content;
-			}
+			$text = $content;
 		}		
 
 		return trim($text);
@@ -180,22 +172,8 @@ class Model_Inserter extends Model_Base
 		{
 			$expiration = PROSPER_CACHE_PRODS;
 			$recordId 	= 'catalogId';
-			$type = 'product';
-			
-			if ($pieces['ct'] === 'UK')
-			{
-				$fetch = 'fetchUkProducts';
-				$currency = 'GBP';
-			}
-			elseif ($pieces['ct'] === 'CA')
-			{
-				$fetch = 'fetchCaProducts';
-				$currency = 'CAD';
-			}
-			else 
-			{
-				$currency = 'USD';
-			}	
+			$type = 'product';			
+			$currency = 'USD';	
 
 			$settings = array(
 				'curlCall'		  => 'single-' . $type,
@@ -210,6 +188,19 @@ class Model_Inserter extends Model_Base
 				'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
 				'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''))				
 			);
+			
+			if ($pieces['v'] == 'pc')
+			{
+			    $productIds = array_map('trim', explode(',', $params['prodid']));
+			     
+			    $settings = array(
+			        'query'           => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
+			        'filterProductId' => $id,
+			        'imageSize'		  => '250x250',
+			        'groupBy'         => 'merchant',
+			        'limit'           => 5,
+			    );
+			}
 		}
 		elseif ($fetch === 'fetchMerchant')
 		{

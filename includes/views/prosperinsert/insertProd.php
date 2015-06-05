@@ -81,6 +81,39 @@ if ($pieces['v'] === 'grid')
     </div>
 	<?php
 }
+elseif ($pieces['v'] === 'pc')
+{
+    ?>
+	<div id="product">
+    	<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer" style="<?php echo ($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'); ?>width:45%">        		
+    		<?php	           
+			foreach ($results as $product)
+			{						
+			    $priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
+			    $price 	   = $priceSale ? $priceSale : $record['price'];
+			    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';		
+			    if (!$imageSet)						
+			    {
+				   echo '<tr><td colSpan="3><div id="prosperPCImage" sty><img style="text-align:center;" src="' . $product['image_url'] . '"/></div></td></tr>';
+				   $imageSet = true;
+			    }
+			    if (!$keywordSet)
+			    {
+				   echo '<tr><td colSpan="3"><div id="prosperPCKeyword">' . $product['keyword'] . '</div></td></tr>';
+				   $keywordSet = true;
+			    }
+				echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
+				echo '<td itemprop="seller""><a href="javascript:void(0);" onClick="return false;" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . $pieces['imgt'] . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
+				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
+				echo '<meta itemprop="priceCurrency" content="USD"/>';
+				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
+				echo '</tr>';
+			}
+			?>
+		</table>
+	</div>
+	<?php
+}
 else
 { 
 	?>

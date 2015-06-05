@@ -22,6 +22,11 @@ class ProsperSearchController
 		
 		$this->searchModel->init();
 		
+		if (!$this->searchModel->_options['PSAct'])
+		{
+		    return;
+		}
+		
 		add_shortcode('prosper_store', array($this, 'storecode'));
 		add_shortcode('prosper_search', array($this->searchModel, 'searchShortcode'));
 		
@@ -33,6 +38,8 @@ class ProsperSearchController
 			add_action('admin_print_footer_scripts', array($this->searchModel, 'qTagsStore'));	
 			add_action('admin_print_footer_scripts', array($this->searchModel, 'qTagsSearch'));	
 		}
+
+		add_action( 'wp_enqueue_scripts', array($this->searchModel, 'prosperShopVars' ));
     }
 	
 	public function storecode()
@@ -110,7 +117,7 @@ class ProsperSearchController
 		
 		if ($options['Enable_Facets'] && $options['Enable_Sliders'])
 		{
-			$this->searchModel->sliderJs();
+			//$this->searchModel->sliderJs();
 		}		
 
 		$data['params']['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
@@ -128,9 +135,9 @@ class ProsperSearchController
 		$dollarSlider = 'Price Range';
 		$url		  = $data['url'];
 		$visitButton  = 'Visit Store';
-		global $wp;
-		$currentUrl = home_url( $wp->request );
-		
+		//global $wp;
+		$currentUrl = rtrim(home_url( $_SERVER['REQUEST_URI']/*$wp->request*/ ), '/');
+
 		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
 		{
 			$imageSize = '250x250';
@@ -173,7 +180,7 @@ class ProsperSearchController
 		        $query = $params['city'];
 		    }
 		}
-		
+				
 		/*
 		 * Get title for results line
 		 */ 
@@ -216,12 +223,32 @@ class ProsperSearchController
 			$title = '<strong>Products</strong>';
 		}
 
+		/* 
+		 * price desc
+		 * price asc
+		 * merchant asc
+		 * merchant desc
+		 * 
+		 */
+		
+
+		$dir = 'asc';
+		$icon = '<i class="fa fa-sort"></i>';
+		$sortedParam = 'rel';
+		
+		if ($params['sort'])
+		{
+		    $sortedParam         = str_replace(array('asc', 'desc', ' '), '', rawurldecode($params['sort']));
+		    $sortedDir           = str_replace(array('price', 'merchant', ' '), '', rawurldecode($params['sort']));
+		    ${dir . $sortedParam}  = $sortedDir == 'asc' ? 'desc' : 'asc';
+            ${icon . $sortedParam} = '<i class="fa fa-sort-' . ($sortedParam == 'price' ? 'numeric-' : 'alpha-') . $sortedDir . '"></i>';
+            $sortUrl             = rtrim(str_replace('/sort/' . $params['sort'], '', $currentUrl), '/');
+		}
+
 		$sortArray = array(
-			'Default'			 => 'rel',
-			'Price: &#9650;' => 'price desc',
-			'Price: Low to High' => 'price asc',
-			'Merchant: A-Z' 	 => 'merchant asc',
-			'Merchant: Z-A' 	 => 'merchant desc'			
+			'Relevance'			                                  => 'rel',
+			'Price ' . ($iconprice ? $iconprice : $icon)          => 'price ' . ($dirprice ? $dirprice : $dir),
+			'Merchant ' . ($iconmerchant ? $iconmerchant : $icon) => 'merchant ' . ($dirmerchant ? $dirmerchant : $dir) 
 		);
 
 		if ($params['dR'])
@@ -234,8 +261,8 @@ class ProsperSearchController
 		    $percentSlider = explode(',', rawurldecode($params['pR']));
 		    $pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}	
-		
-		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters'])
+		print_r($filters['category']);
+		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters'])
 		{		
 			$settings = array(
 				'page'			   => $params['page'],
@@ -343,26 +370,27 @@ class ProsperSearchController
 		}
 
 		if ($results = $everything['results']['data'])
-		{			
+		{	
+		    
 			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);	
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
 		{
-			if ($query && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
-			{ 				
-				$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
-				unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
+		    if ($query && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
+		    {
+		        $data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
+		        unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
+		    
+		        if (strlen($query) > 60)
+		        {
+		            $query = substr($query, 0, 12) . '...';
+		        }
+		    
+		        $this->productAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products to ' . ucwords($query));
+		        return;
+		    }
 
-				if (strlen($query) > 60)
-				{
-				    $query = substr($query, 0, 12) . '...';
-				}
-				
-				$this->productAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products to ' . ucwords($query));
-				return;		
-			}
-			
 			if (!$results)
 			{
 				$settings = array(
@@ -373,13 +401,8 @@ class ProsperSearchController
 				$results   = $allData['data'];	
 
 				$noResults = true;
-				$trend     = 'Top Products';
+				$trend     = 'Popular Products';
 				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
-
-				if (!$results)
-				{
-					$newTrendsTitle = 'No Top Products at this Time';
-				}
 			}
 		}
 
@@ -459,48 +482,18 @@ class ProsperSearchController
 	
 		$curlUrls['results'] = $this->searchModel->apiCall($settings3, $fetch);
 
-		if ($options['Similar_Limit'] > 0)
-		{
-			/*
-			/  SIMILAR
-			*/
-			$settings4 = array(
-				'limit'          => $settings['simProdLimit'] = $options['Similar_Limit'],
-				'query'		     => $settings['query'] = $mainRecord[0]['keyword'],
-				'enableFullData' => 'FALSE',
-				'imageSize'		 => $image ? $image : ''
-			);
-			
-			$curlUrls['similar'] = $this->searchModel->apiCall($settings4, $fetch);
-		}
+		/*
+		/  SIMILAR
+		*/
+		$settings4 = array(
+			'limit'              => 7,
+			'query'		         => $settings['query'] = $mainRecord[0]['keyword'],
+			'enableFullData'     => 'FALSE',
+			'imageSize'		     => '250x250',
+		    'relevancyThreshold' => $settings['relevancyThreshold'] = '1'			    
+		);
 		
-		if ($options['Same_Limit'] > 0)
-		{
-			/*
-			/  SAME BRAND
-			*/
-			$settings5 = array(
-				'limit'       => $settings['sameBrandLimit'] = $options['Same_Limit'],
-				'imageSize'   => $image ? $image : '',
-				'filterBrand' => $settings['filterBrand'] = $mainRecord[0]['brand']
-			);
-
-			$curlUrls['sameBrand'] = $this->searchModel->apiCall($settings5, $fetch);	
-		}
-		
-		if ($options['Same_Limit_Merchant'] > 0)
-		{ 
-			/*
-			/  SAME MERCHANT
-			*/
-			$settings6 = array(
-				'limit'            => $settings['sameMerchantLimit'] = $options['Same_Limit_Merchant'],
-				'imageSize'		   => $image ? $image : '',
-				'filterMerchantId' => $settings['filterMerchantId'] = $mainRecord[0]['merchantId']
-			);
-			
-			$curlUrls['sameMerchant'] = $this->searchModel->apiCall($settings6, $fetch);		
-		}	
+		$curlUrls['similar'] = $this->searchModel->apiCall($settings4, $fetch);
 
 		$settings['curlCall'] = 'multi-prodPage';
 
@@ -509,10 +502,7 @@ class ProsperSearchController
 		$groupedResult = $allData['groupedResult']['data'];
 		$results 	   = $allData['results']['data'];
 		$similar 	   = $allData['similar']['data'];		
-		$sameBrand     = $allData['sameBrand']['data'];
-		$sameMerchant  = $allData['sameMerchant']['data'];
-		$merchantCoups = $allData['merchantCoupons']['data'];
-
+		
 		require_once($productPage);	
 	}
 }

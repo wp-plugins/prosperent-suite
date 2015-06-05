@@ -29,7 +29,7 @@ abstract class Model_Base
 	);	
 
 	public function init()
-	{
+	{	    
 		if (extension_loaded('curl'))
 		{
 			$this->_options = $this->getOptions();
@@ -87,6 +87,8 @@ abstract class Model_Base
 			{
 				add_action( 'admin_notices', array($this, 'prosperBadSettings' ));
 			}	
+			
+			add_action( 'wp_enqueue_scripts', array($this, 'prefixEnqueueFAwesome' ));
 		}
 		else
 		{
@@ -96,6 +98,11 @@ abstract class Model_Base
 		add_shortcode('perform_ad', array($this, 'performAdShortCode'));
     }
 	
+    public function prefixEnqueueFAwesome() 
+    {
+        wp_enqueue_style( 'prefix-font-awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', array(), '4.0.3' );
+    }
+    
     /**
      * Performs shortcode extraction for ProsperAds
      *
@@ -219,7 +226,7 @@ abstract class Model_Base
 		
 	public function prosperStylesheets()
 	{
-		$css = PROSPER_CSS . '/products.min.css';
+		$css = PROSPER_CSS . '/products2.css';
 
 		// Product Search CSS for results and search
 		if ($this->_options['Set_Theme'] != 'Default')
@@ -391,7 +398,7 @@ abstract class Model_Base
 	public function prosperCustomAdd()
 	{
 		// Add only in Rich Editor mode
-		if (get_user_option('rich_editing') == 'true')
+		if (get_user_option('rich_editing') == 'true' && ($this->_options['PSAct'] || $this->_options['ALAct'] || $this->_options['PICIAct']) )
 		{
 			add_filter('mce_external_plugins', array($this, 'prosperTinyRegister'));
 			add_filter('mce_buttons', array($this, 'prosperTinyAdd'));
@@ -402,12 +409,13 @@ abstract class Model_Base
 	{		
 		if (get_bloginfo('version') >= 3.9)
 		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version .'11';
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version . 2134;
 		}
 		else
 		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version .'11';
-		}
+			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version. 21332;
+		}	
+		
 		return $plugin_array;
 	}	
 	
@@ -502,7 +510,7 @@ abstract class Model_Base
 			$sid = implode('_', $sidArray);
 		}
 	
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pa_active":' . ($this->_options['PAAct'] ? 1 : 0) . ', "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
+		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()

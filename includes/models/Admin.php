@@ -19,16 +19,18 @@ class Model_Admin extends Model_Base
 	/**
 	 * @var array $adminPages Array of admin pages that the plugin uses.
 	 */
-	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_performAds', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
+	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
 	
 	public $_options;
 			
 	public function init()
-	{			    
-	    if ( isset( $_GET['dismissProsper'] ) && wp_verify_nonce( $_GET['nonce'], 'prosperhideDepre' ) && current_user_can( 'manage_options' ) )
+	{		  
+	    add_action( 'admin_enqueue_scripts', array($this, 'prefixEnqueueFAwesome' ));
+	    
+	    if ( isset( $_GET['dismissOpenMessage'] ) && wp_verify_nonce( $_GET['nonce'], 'prosperhideOpenMessage' ) && current_user_can( 'manage_options' ) )
 	    {
 	        $genOptions = get_option('prosperSuite');
-	        $genOptions['dismissDepre'] = 1;
+	        $genOptions['dismissOpenMessage'] = 1;
 	        update_option('prosperSuite', $genOptions);
 	    }
 	    
@@ -63,14 +65,13 @@ class Model_Admin extends Model_Base
 		{
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
 		}
-		
-		$genOpts = get_option('prosperSuite');
-		if ($_GET['page'] == 'prosper_performAds' && ($genOpts['PAAct'] == FALSE || !$genOpts['PAAct']) && current_user_can( 'manage_options' ) )
-		{
-			$_GET['page'] = 'prosper_general';
-		}
-    }	
-	
+    }		
+    
+    public function prefixEnqueueFAwesome()
+    {
+        wp_enqueue_style( 'prefix-font-awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', array(), '4.0.3' );
+    }    
+    
 	public function addLinks()
 	{
 		$options = get_option('prosper_autoLinker');
@@ -89,7 +90,6 @@ class Model_Admin extends Model_Base
 		$intOptNum = intval($optNum);			
 				
 		array_splice($options['recentSearches'], $intOptNum, 1);
-
 		update_option('prosper_productSearch', $options);
 	}
 	
@@ -126,6 +126,23 @@ class Model_Admin extends Model_Base
 		wp_register_style( 'prospere_admin_style', PROSPER_URL . 'includes/css/admin.min.css', array(), $this->getVersion() );
         wp_enqueue_style( 'prospere_admin_style');
 	}
+	
+	public function prosperSuiteMCEOpts()
+	{
+	    $options = get_option('prosperSuite');
+	    
+	    $currentScreen = get_current_screen();
+	    
+	    $enabledOpts = array(
+	        'prosperShop'   => $options['PSAct'],
+	        'prosperInsert' => $options['PICIAct'],
+	        'autoLinker'    => $options['ALAct'],
+	        'currentScreen' => $currentScreen->id
+	        
+	    ); 
+	    
+	    echo '<script type="text/javascript">var prosperSuiteVars = ' . json_encode($enabledOpts) . '</script>';
+	}
 		
 	/**
 	 * Add a link to the settings page to the plugins list
@@ -157,7 +174,6 @@ class Model_Admin extends Model_Base
 	{
 		register_setting( 'prosperent_options', 'prosperSuite' );
 		register_setting( 'prosperent_products_options', 'prosper_productSearch' );
-		register_setting( 'prosperent_perform_options', 'prosper_performAds' );
 		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );
 		register_setting( 'prosperent_linker_options', 'prosper_autoLinker' );
 		register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
@@ -202,13 +218,8 @@ class Model_Admin extends Model_Base
 			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
 			'prosperShop'		  => $options['PSAct'] ? 1 : 0,
 			'productEndpoint' 	  => $options['Product_Endpoint'] ? 1 : 0,
-			'productCountry' 	  => $options['Country'],
-			'couponEndpoint' 	  => $options['Coupon_Endpoint'] ? 1 : 0,
-			'celebrityEndpoint'   => $options['Celebrity_Endpoint'] ? 1 : 0,
-			'localEndpoint' 	  => $options['Local_Endpoint'] ? 1 : 0,
 			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
 			'sliders' 			  => $options['Enable_Sliders'] ? 1 : 0,
-			'prosperAds' 		  => $options['PAAct'] ? 1 : 0,
 			'prosperInsert' 	  => $options['PICIAct'] ? 1 : 0,
 			'contentInsert' 	  => ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages']) ? 1 : 0,
 			'autoLinker' 		  => $options['ALAct'] ? 1 : 0,
@@ -221,8 +232,7 @@ class Model_Admin extends Model_Base
 			'theme' 			  => $options['Set_Theme'],
 			'shortCodes'  		  => $options['shortCodesAccessed'] ? 1 : 0,
 			'trendsWidget'		  => is_active_widget(false, false, 'prosper_top_products', true) ? 1 : 0,
-			'prosperAdsWidget'    => is_active_widget(false, false, 'performance_ad_sb', true) ? 1 : 0,
-			'prosperInsertWidget' => is_active_widget(false, false, 'prosperproductinsert', true) ? 1 : 0,
+		    'prosperInsertWidget' => is_active_widget(false, false, 'prosperproductinsert', true) ? 1 : 0,
 			'searchWidget'		  => is_active_widget(false, false, 'prosperent_store', true) ? 1 : 0,
 			'recentWidget'		  => is_active_widget(false, false, 'prosper_recent_searches', true) ? 1 : 0
 		));
@@ -320,26 +330,22 @@ class Model_Admin extends Model_Base
 
 		if ( $label_left !== false ) 
 		{
-			if ( !empty( $label ) )
-				$label .= ':';
-			$output_label = '<label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . '</label>' . $tooltip;
-			$class        = $class;
-		} 
-		else 
-		{
-			$output_label = '<label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . '</label>' . $tooltip;
-			$class        = $class . ' double';
-		}
-		
+		    if ( !empty( $label ) )
+		        $label .= ':';
+		    $output_label = '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . '</label></span>';
+		    $class        = $class;
+		    
+		    $output_input = '<input style="float:none!important;margin:0 0 0 8px!important;" class="' . $class . '" type="checkbox" value="1" id="' . esc_attr( $var ) . '" name="' . esc_attr( $option ) . '[' . esc_attr( $var ) . ']" '  . checked( $options[$var], 1, false ) . '/>';
 
-		$output_input = '<input class="' . $class . '" type="checkbox" value="1" id="' . esc_attr( $var ) . '" name="' . esc_attr( $option ) . '[' . esc_attr( $var ) . ']" '  . checked( $options[$var], 1, false ) . '/>';
-
-		if ( $label_left !== false ) 
-		{
 			$output = $output_label . $output_input;
 		} 
 		else 
 		{
+		    $output_label = '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . '</label></span>';
+		    $class        = $class . ' double';
+		    
+		    $output_input = '<input class="' . $class . '" type="checkbox" value="1" id="' . esc_attr( $var ) . '" name="' . esc_attr( $option ) . '[' . esc_attr( $var ) . ']" '  . checked( $options[$var], 1, false ) . '/>';
+		    
 			$output = $output_input . $output_label;
 		}
 
@@ -415,7 +421,7 @@ class Model_Admin extends Model_Base
 		if ( isset( $options[$var] ) )
 			$val = esc_attr( $options[$var] );
 
-		return '<label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="' . $class . '" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>'. '<br class="clear" />';
+		return '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . ':</label></span><input class="' . $class . '" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . esc_attr( $var ) . ']" value="' . $val . '"/>'. '<br class="clear" />';
 	}
 
 	/**
@@ -450,7 +456,7 @@ class Model_Admin extends Model_Base
 	 * @param string $tooltip The tooltip for the option
 	 * @return string
 	 */
-	public function textinputinline( $var, $label, $arrayNum, $option = '', $tooltip = '' ) 
+	public function textinputinline( $var, $label, $arrayNum, $option = '', $tooltip = '', $class = 'prosper_textinputinline' ) 
 	{
 		if ( empty( $option ) )
 			$option = $this->currentOption;
@@ -461,7 +467,7 @@ class Model_Admin extends Model_Base
 		if ( isset( $options[$var][$arrayNum] ) )
 			$val = esc_attr( $options[$var][$arrayNum] );
 			
-		return '<label class="prosper_textinputinline" for="' . esc_attr( $var ) . '">' . $label . ':' . $tooltip . '</label><input class="prosper_textinputinline" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . $var . '][' . $arrayNum . ']" value="' . $val . '"/>';	
+		return '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . ':</label></span><input class="' . $class . '" type="text" id="' . esc_attr( $var ) . '" name="' . $option . '[' . $var . '][' . $arrayNum . ']" value="' . $val . '"/>';	
 	}
 	
 	/**
@@ -504,7 +510,7 @@ class Model_Admin extends Model_Base
 		$options = get_option( $option );
 
 		$var_esc = esc_attr( $var );
-		$output  = '<label class="' . $class . '" for="' . $var_esc . '">' . $label . ':' . $tooltip . '</label>';
+		$output  = '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . $var_esc . '">' . $label . ':</label></span>';
 		$output .= '<select class="' . $class . '" name="' . $option . '[' . $var_esc . ']" id="' . $var_esc . '">';
 
 		foreach ( $values as $value => $label ) {
@@ -528,7 +534,7 @@ class Model_Admin extends Model_Base
 	 * @param string $option The option the variable belongs to.
 	 * @return string
 	 */
-	public function radio( $var, $values, $label, $option = '' ) 
+	public function radio( $var, $values, $label, $option = '', $tooltip ) 
 	{
 		if ( empty( $option ) )
 			$option = $this->currentOption;
@@ -540,7 +546,7 @@ class Model_Admin extends Model_Base
 
 		$var_esc = esc_attr( $var );
 
-		$output = '<label class="prosper_radio">' . $label . ':</label><br><br><span style="margin-left:40px;">';
+		$output = '<span title="' . $tooltip . '"><label class="prosper_radio">' . $label . ':</label></span><span>';
 		if (empty($label))
 		{
 			$output = '<label class="prosper_radio"></label>';
@@ -577,13 +583,14 @@ class Model_Admin extends Model_Base
 
 		$var_esc = esc_attr( $var );
 
-		$output = '<label class="prosper_radio">' . $label . ':' . $tooltip . '</label><br><br><span style="margin-left:40px;">';
+		$output = '<div style="width:100%"><ul style="list-style:none;margin:6px 0 5px 20px"><span title="' . $tooltip . '"><label class="prosper_radio">' . $label . ':</label></span><br><br><span style="margin-left:40px;">';
 		if (empty($label))
 		{
-			$output = '<label class="prosper_radio"></label>';
+			$output = '<div style="width:100%"><ul style="list-style:none;margin:6px 0 5px 20px">';
 		}
 
 		$i = 0;
+		
 		foreach ( $values as $key => $value ) {
 
 		    if (fmod($i, 5) == 0 )
@@ -591,10 +598,11 @@ class Model_Admin extends Model_Base
 		        $output .= '<br>';
 		    }
 			$key = esc_attr( $key );
-			$output .= '<input type="checkbox" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']['.$key.']" value="' . $key . '" ' . ( $options[$var][$key] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radiofor" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label>';
+			$output .= '<li style="display:inline-block;width:150px;"><input type="checkbox" class="prosper_radio" id="' . $var_esc . '-' . $key . '" name="' . esc_attr( $option ) . '[' . $var_esc . ']['.$key.']" value="' . $key . '" ' . ( $options[$var][$key] == $key ? ' checked="checked"' : '' ) . ' /> <label class="prosper_radiofor" for="' . $var_esc . '-' . $key . '">' . esc_attr( $value ) . '</label></li>';
 			$i++;
 		}
-		$output .= '</span>';
+		
+		$output .= '</span></ul></div>';
 
 		return $output;
 	}
@@ -668,57 +676,70 @@ class Model_Admin extends Model_Base
 				$this->_settingsHistory('activated');
 			}
 		}
-		
-		$deprecated = array(
-		    'ProsperAds'              => $options['PAAct'],
-		    'Coupons'                 => $options['Coupon_Endpoint'],
-		    'Celebrity Products'      => $options['Celebrity_Endpoint'],
-		    'Local Deals'             => $options['Local_Endpoint'],
-		    'United Kingdom Products' => $options['Country'] === 'UK',
-		    'Canadian Products'       => $options['Country'] === 'CA'
-		);
-		$deprecated = array_filter($deprecated);
 
-		if (count($deprecated) >= 1 && !$options['dismissDepre'])
-		{		
-			$depString = '';
-			foreach ($deprecated as $i => $deprecate)
-			{
-				if ($deprecate == 1)
-				{
-				   $depString .= '<span style="font-size:16px;font-weight:bold;padding-left:10px">' . $i . '</span><br>';
-				}
-			}
-			
-			echo 
-				'<div class="error" style="padding:6px 0;">
-					<span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissProsper&nonce=' . wp_create_nonce( 'prosperhideDepre' )) . '">&#215;</a></span><br>
-					<span style="font-size:14px; padding-left:10px;">The following features that you use will be going away on <strong>June 1st.</strong>&nbsp;&nbsp;</span><br><br>' . 
-					$depString .   
-				'</div>';
-		}
-		
-		if ($options['Api_Key'] && !$options['ProsperFirstTimeOperator'])
+		if ($options['Api_Key'] && !$options['dismissOpenMessage'])
 		{		
 			$this->prosperStoreInstall();
 			$this->prosperReroutes();
 			
-			$genOpts = get_option('prosperSuite');
-			echo '<div id="message" style="width:800px;" class="message updated">	
-					<p>
-						<strong style="font-size:14px;">What\'s Next?</strong></br>
-						Now that you have signed up and entered your API Key, the shop has been created for you at <a target="BLANK" href="' . home_url('/') . 'products' . '">Products</a> with a default query of "shoes". You can change that setting and more <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_productSearch') . '">here</a>.</br></br>
-						After that, feel free to have a look at our other tools/features: 
-						<ul style="list-style-type:disc;margin-left:25px;">
-							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoComparer') . '">ProsperInsert</a></li>
-							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoLinker') . '">Auto-Linker</a></li>
-							<li><a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">ProsperLinks</a></li>
-						</ul
-					</p>			
-				</div>';
+			echo '
+                <div id="message" style="width:800px;" class="message updated">	
+                    <span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissOpenMessage&nonce=' . wp_create_nonce( 'prosperhideOpenMessage' )) . '">&#215;</a></span><br>
+                    <p>
+                    <strong style="font-size:20px;">Welcome to Prosperent!</strong>
+                    <p style="font-size:18px;color:#796A6A;">To help you get started:</p>
+                    <table style="width:100%;font-size:14px;">
+                        <tr>
+                            <td>
+                                <i style="font-size:18px;" class="fa fa-shopping-cart"></i> 
+                            </td>
+                            <td>
+                                <a target="BLANK" href="' . home_url('/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '">View Your Shop</a> 
+                            </td>	            
+                            <td>
+                                <i style="font-size:18px;" class="fa fa-upload"></i>
+                            </td>
+                            <td>
+                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoComparer') . '">Insert Products Automatically into Content</a> 
+                            </td>                            
+                            <td>
+                                <i style="font-size:18px;" class="fa fa-link"></i>
+                            </td>
+                            <td>
+                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoLinker') . '">Create Product Links Automatically</a> 
+                            </td>		    
+                                   
+                        </tr>
+                        <tr>
+                            <td>
+                                &nbsp; 
+                            </td>
+                            <td>
+                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_productSearch') . '">Edit Your Shop</a>
+                            </td>	
+                            <td>
+                                <i style="font-size:18px;" class="fa fa-link"></i>
+                            </td>
+                            <td>
+		                        <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">Let ProsperLinks handle Link Affiliation For You</a>
+                            </td>	
+                            <td>
+                                <i style="font-size:18px;" class="fa fa-plus"></i>
+                            </td>
+		                    <td>
+		                        <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">Add Prosperent Widgets to Sidebars/Footers</a>
+                            </td>
+                        </tr>
+                    </table>		    
 
-			$genOpts['ProsperFirstTimeOperator'] = true;
-			update_option('prosperSuite', $genOpts);
+                    <p style="font-size:18px;color:#796A6A;">Other helpful things:</p>
+                    <ul style="list-style-type:disc;margin-left:25px;font-size:15px;">
+                        <li>Look for the <i style="font-size:18px;padding:0 4px;" class="mce-ico mce-i-prosperent"></i> when editing pages/posts for Prosperent Shortcodes</li>
+                        <li>Log in to <a target="BLANK" href="http://prosperent.com">Prosperent</a> to view your Clicks and Commissions </li>
+                        <li>View the <a target="BLANK" href="http://community.prosperent.com/">Forums</a> if you have any Questions</li>
+                    </ul>		
+                </div>'
+			;			
 		}
 
 		if ($options['Enable_Caching'] && !extension_loaded('memcache'))
@@ -745,7 +766,7 @@ class Model_Admin extends Model_Base
 		<?php
 		if ( $form ) 
 		{
-			echo '<form action="' . admin_url( 'options.php' ) . '" method="post" id="prosper-conf"' . ( $contains_files ? ' enctype="multipart/form-data"' : '' ) . '>';
+			echo '<form onsubmit="setFormSubmitting()"  action="' . admin_url( 'options.php' ) . '" method="post" id="prosper-conf"' . ( $contains_files ? ' enctype="multipart/form-data"' : '' ) . '>';
 			settings_fields( $option );
 			$this->currentOption = $optionshort;
 		}

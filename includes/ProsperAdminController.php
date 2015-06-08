@@ -26,11 +26,12 @@ class ProsperAdminController
 		
 		$this->_options = $prosperAdmin->getOptions();
 		add_action( 'admin_init', array( $prosperAdmin, 'optionsInit' ) );
-		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperAdminCss' ));	
-		add_action( 'init', array( $prosperAdmin, 'init' ), 20 );
+		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperAdminCss' ));
+		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperSuiteMCEOpts' ));
+		add_action( 'admin_init', array( $prosperAdmin, 'init' ), 20 );
 		add_filter( 'plugin_action_links', array( $prosperAdmin, 'addActionLink' ), 10, 2 );
-	}
-		
+	}	
+	
 	/**
 	 * Register the menu item and its sub menu's.
 	 *
@@ -43,17 +44,13 @@ class ProsperAdminController
 		{
 			add_submenu_page('prosper_general', __('ProsperShop', 'prosperent-suite' ), __( 'ProsperShop', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
 		}
-		if ($this->_options['PAAct'])
-		{
-			add_submenu_page('prosper_general', __( 'ProsperAds', 'prosperent-suite' ), __( 'ProsperAds', 'prosperent-suite' ), 'manage_options', 'prosper_performAds', array( $this, 'performancePage' ) );
-		}
 		if ($this->_options['PICIAct'])
 		{
-			add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
+			add_submenu_page('prosper_general', __( 'ContentInsert', 'prosperent-suite' ), __( 'ContentInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
 		}
 		if ($this->_options['ALAct'])
 		{
-			add_submenu_page('prosper_general', __( 'Auto-Linker', 'prosperent-suite' ), __( 'Auto-Linker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
+			add_submenu_page('prosper_general', __( 'AutoLinker', 'prosperent-suite' ), __( 'AutoLinker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
 		}
 		if ($this->_options['PLAct'])
 		{
@@ -102,15 +99,6 @@ class ProsperAdminController
 	{
 		if ( isset( $_GET['page'] ) && 'prosper_productSearch' == $_GET['page'] )
 			require_once( PROSPER_VIEW . '/prosperadmin/search-phtml.php' );
-	}	
-		
-	/**
-	 * Loads the form for the performance ads page.
-	 */
-	public function performancePage() 
-	{
-		if ( isset( $_GET['page'] ) && 'prosper_performAds' == $_GET['page'] )
-			require_once( PROSPER_VIEW . '/prosperadmin/ads-phtml.php' );
 	}	
 	
 	/**

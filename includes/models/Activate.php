@@ -69,7 +69,6 @@ class Model_Activate extends Model_Base
 				'prosperNewVersion' => 1,
 			    'prosperNoOptions'  => 1,
 				'PSAct'	  		    => 1,
-				'PAAct'	  		    => 1,
 				'PICIAct' 		    => 1,
 				'ALAct'	  		    => 1,
 				'PLAct'	  		    => 1
@@ -83,7 +82,6 @@ class Model_Activate extends Model_Base
 				'prosperNewVersion' => 1,
 			    'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
-		        'PAAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
 		        'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
@@ -95,7 +93,6 @@ class Model_Activate extends Model_Base
 		    $prosperSuiteOpts = array_merge($prosperSuiteOpts, array(
 		        'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
-		        'PAAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
 		        'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
@@ -107,8 +104,7 @@ class Model_Activate extends Model_Base
 		if (!is_array($productOptions = get_option('prosper_productSearch' )))
 		{		
 			$productOptions = array(
-				'Product_Endpoint' 	  => 1,
-				'Country'		  	  => 'US',
+				'Product_Endpoint' 	  => 1,				
 				'Pagination_Limit'    => 10,
 				'Same_Limit_Merchant' => 4,
 				'Similar_Limit'		  => 0,
@@ -173,12 +169,21 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_advanced', $advOpts );
 		}
 		
-		if (!is_array(get_option('prosper_themes')))
+		if (!is_array($themesOpts = get_option('prosper_themes')))
 		{
 			$PTopt = array(
-				'Set_Theme' => 'Default'
+				'Set_Theme' => 'Default',
+		        'resetThemes' => true
 			);			
 			update_option( 'prosper_themes', $PTopt );
+		}
+		elseif (!$themesOpts['resetThemes'])
+		{
+		    $PTopt = array(
+		        'Set_Theme' => 'Default',
+		        'resetThemes' => true
+		    );
+		    update_option( 'prosper_themes', $PTopt );
 		}
 	}
 	

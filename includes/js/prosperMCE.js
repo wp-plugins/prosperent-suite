@@ -1,5 +1,63 @@
-var shortCode={local_ed:"ed",init:function(b){shortCode.local_ed=b;tinyMCEPopup.resizeToInnerSize()},insert:function(b){b=getNewCurrent()?getNewCurrent():"";var d=jQuery("#"+b+"fetch").val(),e=jQuery("#"+b+"query").val(),f=jQuery("#state").val(),g=jQuery("#city").val(),h=jQuery("#zipcode").val(),k=jQuery("#"+b+"merchant").val(),l=jQuery("#"+b+"limit").val(),m=jQuery("#country").val(),n=jQuery("#"+b+"view:checked").val(),p=jQuery("#"+b+"goTo:checked").val(),q=jQuery("#"+b+"brand").val(),r=jQuery("#"+
-b+"visit").val(),t=jQuery("#prodcelebname").val(),u=jQuery("#"+b+"id").val(),v=jQuery("#height").val(),c=jQuery("#width").val(),w=jQuery("#topic").val(),x=jQuery("#useTags").is(":checked"),y=jQuery("#useTitle").is(":checked"),z=jQuery("#onSale").is(":checked"),A=jQuery("#gridimgsz").val(),B=jQuery("#prosperSC").val(),C=jQuery("#widthStyle:checked").val(),D=jQuery("#css").val(),E=jQuery("#searchFor:checked").val(),F=jQuery("#sBarText").val(),G=jQuery("#sButtonText").val(),H=jQuery("#pricerangea").val(),
-I=jQuery("#pricerangeb").val(),J=jQuery("#noShow:checked").val(),K=jQuery("#imageType").val(),L = jQuery("#" + L + "category").val(),a="["+B;e&&(a+=' q="'+e+'"');f&&(a+=' state="'+f+'"');g&&(a+=' city="'+g+'"');h&&(a+=' z="'+h+'"');p&&(a+=' gtm="'+p+'"');q&&(a+=' b="'+q+'"');k&&(a+=' m="'+k+'"');l&&(a+=' l="'+l+'"');m&&(a+=' ct="'+m+'"');n&&(a+=' v="'+n+'"');u&&(a+=' id="'+u+'"');d&&(a+=' ft="'+d+'"');v&&(a+=' h="'+v+'"');a=c&&"auto"!=c?a+(' w="'+c+'"'):a+' w="auto"';C&&(a+=' ws="'+C+'"');D&&(a+=' css="'+D+'"');w&&(a+=' q="'+w+'"');x&&
-(a+=' utg="'+x+'"');y&&(a+=' utt="'+y+'"');z&&(a+=' sale="'+z+'"');E&&(a+=' sf="'+E+'"');F&&(a+=' sbar="'+F+'"');G&&(a+=' sbu="'+G+'"');r&&(a+=' vst="'+r+'"');t&&(a+=' celeb="'+t+'"');J&&(a+=' noShow="'+J+'"');K&&(a+=' imgt="'+K+'"');L && (a += ' cat="' + L + '"');(H||I)&&(a+=' pr="'+H+","+I+'"');A&&"prod"==b&&(a+=' gimgsz="'+A+'"');a+="]"+shortCode.local_ed.selection.getContent()+"[/"+B+"]";tinyMCEPopup.execCommand("mceReplaceContent",!1,a);tinyMCEPopup.close()}};tinyMCEPopup.onInit.add(shortCode.init,shortCode);
-document.write('<base href="'+tinymce.baseURL+'" />');function getNewCurrent(){var b;jQuery("#products_tab").hasClass("current")?b="prod":jQuery("#coupons_tab").hasClass("current")?b="coup":jQuery("#merchant_tab").hasClass("current")?b="merchant":jQuery("#local_tab").hasClass("current")&&(b="local");return b};
+var shortCode={local_ed:"ed",init:function(b){shortCode.local_ed=b;tinyMCEPopup.resizeToInnerSize()},insert:function(b){b=getNewCurrent()?getNewCurrent():"";var d=jQuery("#"+b+"fetch").val(),e=jQuery("#"+b+"query").val(),f=jQuery("#"+b+"merchant").val(),g=jQuery("#"+b+"limit").val(),h=jQuery("#"+b+"view:checked").val(),k=jQuery("#"+b+"goTo:checked").val(),l=jQuery("#"+b+"brand").val(),m=jQuery("#"+b+"visit").val(),n=jQuery("#"+b+"id").val(),p=jQuery("#topic").val(),q=jQuery("#useTags").is(":checked"),
+r=jQuery("#useTitle").is(":checked"),t=jQuery("#onSale").is(":checked"),u=jQuery("#gridimgsz").val(),v=jQuery("#prosperSC").val(),w=jQuery("#css").val(),x=jQuery("#searchFor:checked").val(),y=jQuery("#sBarText").val(),z=jQuery("#sButtonText").val(),A=jQuery("#pricerangea").val(),B=jQuery("#pricerangeb").val(),C=jQuery("#noShow:checked").val(),D=jQuery("#imageType").val(),c=jQuery("#"+c+"category").val(),a="["+v;e&&(a+=' q="'+e+'"');k&&(a+=' gtm="'+k+'"');l&&(a+=' b="'+l+'"');f&&(a+=' m="'+f+'"');
+g&&(a+=' l="'+g+'"');h&&(a+=' v="'+h+'"');n&&(a+=' id="'+n+'"');d&&(a+=' ft="'+d+'"');w&&(a+=' css="'+w+'"');p&&(a+=' q="'+p+'"');q&&(a+=' utg="'+q+'"');r&&(a+=' utt="'+r+'"');t&&(a+=' sale="'+t+'"');x&&(a+=' sf="'+x+'"');y&&(a+=' sbar="'+y+'"');z&&(a+=' sbu="'+z+'"');m&&(a+=' vst="'+m+'"');C&&(a+=' noShow="'+C+'"');D&&(a+=' imgt="'+D+'"');c&&(a+=' cat="'+c+'"');(A||B)&&(a+=' pr="'+A+","+B+'"');u&&"prod"==b&&(a+=' gimgsz="'+u+'"');a+="]"+shortCode.local_ed.selection.getContent()+"[/"+v+"]";tinyMCEPopup.execCommand("mceReplaceContent",
+!1,a);tinyMCEPopup.close()}};tinyMCEPopup.onInit.add(shortCode.init,shortCode);document.write('<base href="'+tinymce.baseURL+'" />');function getNewCurrent(){var b;jQuery("#products_tab").hasClass("current")?b="prod":b="merchant";return b};
+
+/*
+
+var shortCode = {
+local_ed: "ed",
+init: function(b) {
+    shortCode.local_ed = b;
+    tinyMCEPopup.resizeToInnerSize()
+},
+insert: function(b) {
+    b = getNewCurrent() ? getNewCurrent() : "";
+    var d = jQuery("#" + b + "fetch").val(),
+        e = jQuery("#" + b + "query").val(),
+        f = jQuery("#" + b + "merchant").val(),
+        h = jQuery("#" + b + "view:checked").val(),
+        l = jQuery("#" + b + "brand").val(),
+        n = jQuery("#" + b + "id").val(),
+        t = jQuery("#onSale").is(":checked"),
+        v = jQuery("#prosperSC").val(),
+        w = jQuery("#css").val(),
+        y = jQuery("#sBarText").val(),
+        z = jQuery("#sButtonText").val(),
+         = jQuery("#pricerangea").val(),
+        B = jQuery("#pricerangeb").val(),
+        A = jQuery("#pricerangea").val(),
+        B = jQuery("#pricerangeb").val(),
+        C = jQuery("#noShow:checked").val(),
+        D = jQuery("#imageType").val(),
+        c = jQuery("#" + c + "category").val(),
+        a = "[" + v;
+    e && (a += ' q="' + e + '"');
+    l && (a += ' b="' + l + '"');
+    f && (a += ' m="' + f + '"');
+    h && (a += ' v="' + h + '"');
+    n && (a += ' id="' + n + '"');
+    d && (a += ' ft="' + d + '"');
+    w && (a += ' css="' + w + '"');
+    t && (a += ' sale="' + t + '"');
+    y && (a += ' sbar="' + y + '"');
+    z && (a += ' sbu="' + z + '"');
+    C && (a += ' noShow="' + C + '"');
+    D && (a += ' imgt="' + D + '"');
+    c && (a += ' cat="' + c + '"');
+    (A || B) && (a += ' pr="' + A + "," + B + '"');
+    a += "]" + shortCode.local_ed.selection.getContent() + "[/" + v + "]";
+    tinyMCEPopup.execCommand("mceReplaceContent", !1, a);
+    tinyMCEPopup.close()
+}
+};
+tinyMCEPopup.onInit.add(shortCode.init, shortCode);
+document.write('<base href="' + tinymce.baseURL + '" />');
+
+function getNewCurrent() {
+var b;
+jQuery("#products_tab").hasClass("current") ? b = "prod" : b = "merchant";
+return b
+}; 
+
+*/

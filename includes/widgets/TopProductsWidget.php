@@ -5,7 +5,7 @@ class TopProductsWidget extends WP_Widget
     {
 	    parent::__construct(
 			'prosper_top_products', 
-			'Top Products', 
+			'Popular Products', 
 			array('classname' => 'top_products_widget', 'description' => __( "Displays the top Products of Prosperent at the time"))
 		);
     }
@@ -22,7 +22,7 @@ class TopProductsWidget extends WP_Widget
 		$target  = isset($options['Target']) ? '_blank' : '_self';
 		
         extract($args);	
-        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Top Products' : $instance['title'], $instance, $this->id_base );	
+        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Popular Products' : $instance['title'], $instance, $this->id_base );	
 
 		if($instance['useTitle'])
 		{ 
@@ -41,22 +41,8 @@ class TopProductsWidget extends WP_Widget
 					
 		$expiration = PROSPER_CACHE_PRODS;
 		$type = 'product';
-		
-		if ($options['Country'] === 'US')
-		{
-			$fetch = 'fetchProducts';
-			$currency = 'USD';
-		}
-		elseif($options['Country'] === 'UK')
-		{
-			$fetch = 'fetchUkProducts';
-			$currency = 'GBP';
-		}
-		else
-		{
-			$fetch = 'fetchCaProducts';
-			$currency = 'CAD';
-		}
+		$fetch = 'fetchProducts';
+	    $currency = 'USD';
 
 		$sidArray = array();
 		if ($options['prosperSid'] && !$sid)
@@ -130,19 +116,10 @@ class TopProductsWidget extends WP_Widget
 			$sid = implode('_', $sidArray);
 		}	
 		
-		if (($instance['imageSize'] > 125 || !$instance['imageSize']))
-		{
-			$imageSize = '250x250';
-		}
-		else
-		{
-			$imageSize = '125x125';
-		}		
-		
 		$settings = array(
 			'limit' 		 => $instance['numProd']  ? $instance['numProd'] : 5,
 			'enableFullData' => $instance['showImages'] ? 1 : 0,
-			'imageSize'		 => $imageSize
+			'imageSize'		 => '500x500'
 		);
 		
 		$categories = $instance['categories'] ? array_map('trim', explode(',', $instance['categories'])) : '';
@@ -157,38 +134,35 @@ class TopProductsWidget extends WP_Widget
 			if ( $title )
 				echo $before_title . $title . $after_title;	
 				
-			$gridImage = ($instance['imageSize'] ? preg_replace('/px|em|%/i', '', $instance['imageSize']) : 200) . 'px';
-				
-			$classLoad = ($type === 'coupon' || $gridImage < 120) ? 'class="loadCoup"' : 'class="load"';
-			echo '<div id="simProd" style="width:100%">';
-			echo '<ul>';	
+			echo '<div id="simProd" class="prosperSide" style="width:100%;">';
+			echo '<ul style="width:100%;">';	
 
 			foreach ($allData['data'] as $record)
 			{						
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-				$price 	   = $priceSale ? '<div class="prodPriceSale">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($priceSale, 2) . '</div>' : '<div class="prodPrice">' . ($currency == 'GBP' ? '&pound;' : '$') . number_format($record['price'], 2) . '</div>';
+				$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
-				$cid 	   = $type === 'coupon' ? $record['couponId'] : ($type === 'local' ? $record['localId'] : $record['catalogId']);
+				$cid 	   = $record['catalogId'];
 				?>
-					<li style="float:none;">
-						<div class="listBlock">
-							<div class="prodImage">
-								<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span <?php echo $classLoad . ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;margin:0 15px"'); ?>><img <?php echo ($type != 'coupon' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px;"'); ?> src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
-							</div>								
-							<div class="prodContent">
-								<div class="prodTitle">
-									<a href=<?php echo ($instance['goToMerch'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink">
-										<?php echo $keyword; ?>
-									</a>
-								</div>     
-								<?php echo $price; ?>												
-							</div>
-														
-							<div class="shopCheck prosperVisit">		
-								<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="Visit Store"/></a>				
-							</div>	
-						</div>			
-					</li>
+				<li style="float:none;margin:0;width:100%;">
+					<div class="prodImage">
+						<a href=<?php echo ($instance['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					</div>
+					<div class="prodContent">
+						<div class="prodTitle">
+						    <a onClick="return false;" href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'; ?> rel="nolink" style="text-decoration:none;color:#646464"><?php echo $record['brand']; ?></a>
+							<?php /*<a href=<?php echo ($options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"javascript:void(0);" onClick="prosperProdDetails();"'); ?> rel="nolink">
+								<?php echo $keyword; ?>
+							</a> */?>
+						</div>   
+						<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">  
+						    <?php echo $price . '<span style="color:#666;font-size:12px;font-weight:normal;"> from</span><div style="display:inline;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;"> ' . $record['merchant'] . '</div>' ?>
+						</div>												
+					</div>								
+					<div class="shopCheck prosperVisit">		
+						<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="Visit Store<?php //echo $visitButton; ?>"/></a>				
+					</div>				
+				</li>
 				<?php
 			}
 
@@ -206,7 +180,7 @@ class TopProductsWidget extends WP_Widget
 				<?php
 				foreach ($allData['data'] as $record)
 				{
-					if ($instance['goToMerch'])
+					if ($instance['gotoMerchantBypass'])
 					{
 						$goToUrl = $record['affiliate_url'];
 					}
@@ -242,31 +216,27 @@ class TopProductsWidget extends WP_Widget
 		}	
 		
         $new_instance = (array) $new_instance;
-        $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => '', 'goToMerch' => '', 'useTitle' => '', 'showImages' => '', 'imageSize' => 125));
+        $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => '', 'useTitle' => '', 'showImages' => ''));
         $instance['title'] = strip_tags($new_instance['title']);
 		$instance['categories'] = strip_tags($new_instance['categories']);
 		$instance['merchants'] = strip_tags($new_instance['merchants']);
 		$instance['brands'] = strip_tags($new_instance['brands']);
 		$instance['numProd'] = strip_tags($new_instance['numProd']);
-		$instance['goToMerch'] = strip_tags($new_instance['goToMerch']);
 		$instance['useTitle'] = strip_tags($new_instance['useTitle']);
 		$instance['showImages'] = strip_tags($new_instance['showImages']);
-		$instance['imageSize'] = strip_tags($new_instance['imageSize']);
         return $instance;
     }
 
     public function form( $instance )
     {
-        $instance   = wp_parse_args( (array) $instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => 5, 'goToMerch' => '', 'useTitle' => '', 'showImages' => '', 'imageSize' => 125) );
+        $instance   = wp_parse_args( (array) $instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => 5, 'useTitle' => '', 'showImages' => '') );
         $title      = $instance['title'];
 		$categories = $instance['categories'];
 		$merchants  = $instance['merchants'];
 		$brands	    = $instance['brands'];
 		$numProd    = $instance['numProd'];
-		$goToMerch  = $instance['goToMerch'];
 		$useTitle   = $instance['useTitle'];
 		$showImages = $instance['showImages'];
-		$imageSize  = $instance['imageSize'];
         ?>
         <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
         <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
@@ -278,8 +248,6 @@ class TopProductsWidget extends WP_Widget
         <input class="widefat" id="<?php echo $this->get_field_id('brands'); ?>" name="<?php echo $this->get_field_name('brands'); ?>" type="text" value="<?php echo esc_attr($brands); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id('numProd'); ?>"><?php _e('Number of Products to Show:'); ?></label>
         <input class="widefat" id="<?php echo $this->get_field_id('numProd'); ?>" name="<?php echo $this->get_field_name('numProd'); ?>" type="text" value="<?php echo esc_attr($numProd); ?>" /></p>
-		<p><label for="<?php echo $this->get_field_id('goToMerch'); ?>"><?php _e('Go To Merchant:'); ?></label><a href="#" class="prosper_tooltip"><span>When clicked, the link will go to the merchant page instead of the product page.</span></a>
-        <input id="<?php echo $this->get_field_id('goToMerch'); ?>" name="<?php echo $this->get_field_name('goToMerch'); ?>" type="checkbox" value="1" <?php echo checked( esc_attr($goToMerch), 1, false ); ?> /></p>
 		<p><label for="<?php echo $this->get_field_id('useTitle'); ?>"><?php _e('Use Page/Post Title as:'); ?></label><a href="#" class="prosper_tooltip"><span>Make sure the page/post titles are compatible. Some titles may result in little or no results. If checked this will be true for all pages/posts with the Top Products widget.</span></a>
 		<div style="text-align:center;">
 			<input type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="categories" <?php echo checked( esc_attr($useTitle), 'categories', false ); ?> /> <strong>Category</strong>
@@ -287,10 +255,8 @@ class TopProductsWidget extends WP_Widget
 			<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="brands" <?php echo checked( esc_attr($useTitle), 'brands', false ); ?> /> <strong>Brand</strong>
 			<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="" <?php echo checked( esc_attr($useTitle), '', false ); ?> /> <strong>None</strong>
 		</div>
-		<p><label for="<?php echo $this->get_field_id('showImages'); ?>"><?php _e('Display Image:'); ?></label><a href="#" class="prosper_tooltip"><span>Will show the trending product image instead of the title.</span></a>
+		<p><label for="<?php echo $this->get_field_id('showImages'); ?>"><?php _e('Display Images:'); ?></label><a href="#" class="prosper_tooltip"><span>Will show the trending product image instead of the title.</span></a>
         <input id="<?php echo $this->get_field_id('showImages'); ?>" name="<?php echo $this->get_field_name('showImages'); ?>" type="checkbox" value="1" <?php echo checked( esc_attr($showImages), 1, false ); ?> /></p>
-		<p><label for="<?php echo $this->get_field_id('imageSize'); ?>"><?php _e('Image Size:'); ?></label><a href="#" class="prosper_tooltip"><span>Enter the image size for your widget.</span></a>
-        <input class="widefat" id="<?php echo $this->get_field_id('imageSize'); ?>" name="<?php echo $this->get_field_name('imageSize'); ?>" type="text" value="<?php echo esc_attr($imageSize); ?>" /></p>
 		<br>
         <?php
     }

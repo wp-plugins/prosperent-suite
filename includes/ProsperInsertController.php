@@ -29,6 +29,7 @@ class ProsperInsertController
 		else
 		{ 
 			add_shortcode('compare', array($prosperInserter, 'inserterShortcode'));
+			add_shortcode('prosperInsert', array($prosperInserter, 'inserterShortcode'));
 			add_shortcode('prosperNewQuery', array($prosperInserter, 'newQueries'));
 		}
 		

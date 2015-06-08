@@ -12,9 +12,7 @@ if (!file_exists(PROSPER_THEME))
 	echo '</div>';
 }
 
-echo '<p class="prosper_settingDesc"  style="font-size:15px;">' . __( '<span style="font-size:16px;font-weight:bold;">Themes can change the look of either the ProsperShop or the ProsperInsert.</span><br><br>Themes will allow anyone to easily edit their ProsperShop and ProsperInsert how they see fit. Whether they want to change the layout, styling, or change the entire store. Themes will make that possible, even when the plugin is updated.<br><br>To make your own theme, follow these simple instructions.<br><span style="font-size:13px;margin-left:2em;">First, make sure the <strong>prosperent-themes</strong> directory exists inside wp-content, if not create it.</span><br><span style="font-size:13px;margin-left:2em;">Next, create your own directory inside prosperent-themes and name it anything you\'d like.</span><br><span style="font-size:13px;margin-left:2em;">Now make any changes to the file of your choice below depending on what you are changing.</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; css file</strong> - change any of the styling within the plugin easily</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; product.php</strong> - this file controls the layout of the store</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; productPage.php</strong> - this file controls each product page view</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; insertProd.php</strong> - this file controls the layout of the ProsperInsert</span></span><br><span style="font-size:13px;margin-left:2em;">Now select your theme from below.</span><br><br>An ExampleTheme should be loaded for you inside prosperent-themes. This is to give you a starting point and show you how easy it is to create your own.<br><br>Go to <a href="http://wordpress.prosperentdemo.com/themes/">WordPress Prosperent Demo: Themes</a> for more information. .', 'prosperent-suite' ) . '</p>';
-
-echo '<h2 class="prosper_h2">' . __( 'Change the Theme for the Search', 'prosperent-suite' ) . '</h2>';
+echo '<p class="prosper_settingDesc"  style="font-size:15px;">' . __( '<span style="font-size:14px;font-weight:bold;">Themes allow you to change the look of either the ProsperShop or ProsperInsert.</span><br><br>Themes will allow you to easily edit your ProsperShop and ProsperInsert how you want. You can change the layout and styling in your own theme and it will last even when the plugin is updated.<br><br>To make your own theme, follow these simple instructions.<br><span style="font-size:13px;margin-left:2em;">First, make sure the <strong>prosperent-themes</strong> directory exists inside wp-content, if not create it.</span><br><span style="font-size:13px;margin-left:2em;">Next, create your own directory inside prosperent-themes and name it anything you\'d like.</span><br><span style="font-size:13px;margin-left:2em;">Now make any changes to the file of your choice below depending on what you are changing.</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; css file</strong> - change any of the styling within the plugin easily</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; product.php</strong> - this file controls the layout of the store</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; productPage.php</strong> - this file controls each product page view</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; insertProd.php</strong> - this file controls the layout of the ProsperInsert</span></span><br><span style="font-size:13px;margin-left:2em;">Now select your theme from below.</span><br><br>An ExampleTheme should be loaded for you inside prosperent-themes. This is to give you a starting point and show you how easy it is to create your own.<br><br>Go to <a href="http://wordpress.prosperentdemo.com/themes/">WordPress Prosperent Demo: Themes</a> for more information. .', 'prosperent-suite' ) . '</p>';
 
 $themesDir = array();
 if (file_exists(PROSPER_THEME))
@@ -30,8 +28,8 @@ else
 	
 	$examples = array(
 		'products.css' => PROSPER_CSS . '/products.css',
-		'product.php' => PROSPER_VIEW . '/prospersearch/themes/Default/original.php',
-		'productPage.php' => PROSPER_VIEW . '/prospersearch/original.php'
+		'product.php' => PROSPER_VIEW . '/prospersearch/themes/Default/product.php',
+		'productPage.php' => PROSPER_VIEW . '/prospersearch/productPage.php'
 	);
 	foreach ($examples as $i => $exPart)
 	{
@@ -45,8 +43,7 @@ else
 }
 
 $mainThemesDir = scandir(PROSPER_VIEW . '/prospersearch/themes');
-unset($mainThemesDir[0], $mainThemesDir[1]);
-
+unset($mainThemesDir[0], $mainThemesDir[1], $mainThemesDir[3], $mainThemesDir[4]);
 $themesDir = array_merge($mainThemesDir, $themesDir);
 
 $themes = array();
@@ -55,7 +52,7 @@ foreach ($themesDir as $theme)
 	$themes[$theme] = ucwords($theme);
 }
 
-echo $prosperAdmin->select( 'Set_Theme', __( 'Select Theme to Use', 'prosperent-suite' ),  $themes);
-echo '<p class="prosper_desc">' . __( "Select <strong>Default</strong> if you want to use the default theme.", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->select( 'Set_Theme', __( '<strong style="font-size:14px;white-space: nowrap;">Shop/Insert Theme</strong>', 'prosperent-suite' ),  $themes, '', 'Select Default if you want to use the default theme.');
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 $prosperAdmin->adminFooter();

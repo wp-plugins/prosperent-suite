@@ -12,12 +12,10 @@ echo '<p class="prosper_settingDesc" style="font-size:15px;">' . __( 'This tool 
 
 <br>', 'prosperent-suite' ) . '</p>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on Link Affiliator...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'PL_LinkAff', __( 'Yes!', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Detects URLs for the merchants we work with, and on click turns those links into affiliate URLs.</span></a>' );
-echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+echo $prosperAdmin->checkbox( 'PL_LinkAff', __( '<strong style="font-size:16px;">Turn on Link Affiliator</strong>', 'prosperent-suite' ), true);
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo '<h2 class="prosper_h2">' . __( 'Turn on Link Optimizer...', 'prosperent-suite' ) . '</h2>';
-echo $prosperAdmin->checkbox( 'PL_LinkOpt', __( 'Yes!', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span>Takes a merchant URL and tries to find a higher converting/ higher paying merchant to send the click to.</span></a>' );
+echo $prosperAdmin->checkbox( 'PL_LinkOpt', __( '<strong style="font-size:16px;">Turn on Link Optimizer</strong>', 'prosperent-suite' ), true);
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 $prosperAdmin->adminFooter();

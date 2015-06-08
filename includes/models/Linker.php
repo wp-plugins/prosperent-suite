@@ -76,7 +76,7 @@ class Model_Linker extends Model_Base
 			$query = $content;
 		}
 		
-		if ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage' || $pieces['ft'] == 'fetchMerchant')
+		if ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
@@ -84,18 +84,7 @@ class Model_Linker extends Model_Base
 				$type = '';
 				$page = $curlType = 'product';
 				
-				if ($pieces['ct'] === 'UK')
-				{
-					$fetch = 'fetchUkProducts';
-				}
-				elseif ($pieces['ct'] === 'CA')
-				{
-					$fetch = 'fetchCaProducts';
-				}
-				else 
-				{
-					$fetch = 'fetchProducts';
-				}	
+				$fetch = 'fetchProducts';
 				
 				$settings = array(
 					'curlCall'		  => 'single-' . $curlType,
@@ -122,63 +111,12 @@ class Model_Linker extends Model_Base
 					'curlCall'		   => 'single-' . $curlType,
 					'interface'		   => 'linker',
 					'enableFullData'   => 'FALSE',		
-					'limit' 		   => 1,	
-					'filterCategory'   => $pieces['cat'] ? str_replace(',', '|', $pieces['cat']) : '',
+					'limit' 		   => 1,				    
 					'filterMerchant'   => $merchants,
-					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : ''					
+					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
+				    'filterCategory'   => $pieces['cat'] ? '*' . $pieces['cat'] . '*' : ''
 				);				
-			}	
-			else
-			{
-				$expiration = PROSPER_CACHE_COUPS;
-				$fetch = $pieces['ft'];
-				
-				if ($fetch === 'fetchCoupons')
-				{
-					$type = '/type/coup/';
-					$page = $curlType = 'coupon';
-				
-					$settings = array(
-						'curlCall'		  => 'single-' . $curlType,
-						'interface'		 => 'linker',
-						'enableFullData' => 'FALSE',
-						'limit'          => 1,
-						'query'          => $query,
-						'filterMerchant' => $merchants,
-						'filterCouponId' => str_replace(',', '|', $pieces['id'])
-					);				
-				}
-				elseif ($fetch === 'fetchLocal')
-				{
-					$expiration = PROSPER_CACHE_COUPS;
-					$type = '/type/local/';
-					$page = $curlType = 'local';
-				
-					require_once(PROSPER_MODEL . '/Search.php');
-					$searchModel = new Model_Search();
-					if (strlen($pieces['state']) > 2)
-					{
-						$state = $searchModel->states[strtolower($pieces['state'])];
-					}
-					else
-					{
-						$state = $pieces['state'];
-					}
-
-					$settings = array(
-						'curlCall'		  => 'single-' . $curlType,
-						'interface'		  => 'linker',
-						'limit'           => 1,
-						'enableFullData'  => 'FALSE',
-						'filterState'	  => $state ? $state : '',
-						'filterCity'	  => $pieces['city'] ? str_replace(',', '|', $pieces['city']) : '',
-						'filterZipCode'	  => $pieces['z'] ? str_replace(',', '|', $pieces['z']) : '',
-						'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-						'filterMerchant'  => $merchants,
-						'filterLocalId'   => str_replace(',', '|', $pieces['id'])				
-					);
-				}
-			}
+			}				
 			
 			if (count($settings) < 4)
 			{
@@ -309,16 +247,18 @@ class Model_Linker extends Model_Base
 		$fM = '';
 		if ($merchants)
 		{
+		    $merchants = explode('|', $merchants);
 			foreach ($merchants as $merchant)
 			{
 				if (!preg_match('/^!/', $merchant))
 				{
-					$fM = $merchant;
+					$fM = '/merchant/' . $merchant;
+					break;
 				}
 			}
 		}
 
-		$query = isset($pieces['q']) ? '/query/' . rawurlencode($pieces['q']) : '';
+		$query = $pieces['q'] ? '/query/' . rawurlencode($pieces['q']) : '';
 
 		if ($fB || $fM || $query)
 		{
@@ -354,19 +294,7 @@ class Model_Linker extends Model_Base
 		    $base   		  = $basePage . '/query/';
 		    $target 		  = $options['Target'] ? '_blank' : '_self';
 		    $productSearchUrl = home_url('/') . $base;
-		    
-		    if ($options['Country'] == 'US')
-		    {
-		        $fetch = 'fetchProducts';
-		    }
-		    elseif ($options['Country'] == 'CA')
-		    {
-		        $fetch = 'fetchCaProducts';
-		    }
-		    else
-		    {
-		        $fetch = 'fetchUkProducts';
-		    }
+            $fetch            = 'fetchProducts';
 		    
 		    $page = get_page_by_path($basePage);
 

@@ -226,7 +226,7 @@ abstract class Model_Base
 		
 	public function prosperStylesheets()
 	{
-		$css = PROSPER_CSS . '/products2.css';
+		$css = PROSPER_CSS . '/products.min.css';
 
 		// Product Search CSS for results and search
 		if ($this->_options['Set_Theme'] != 'Default')

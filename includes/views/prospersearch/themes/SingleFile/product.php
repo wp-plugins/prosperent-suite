@@ -50,7 +50,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 		class="productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
 		<div class="productImage">
 			<a
-				href=<?php echo($options['imageMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
+				href=<?php echo($options['gotoMerchantBypass']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 				rel="nolink"><span
 				<?php echo($type==='coupon'?'class="loadCoup"':'class="load"');?>><img
 					src="<?php echo $record['image_url'];?>"
@@ -60,7 +60,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 		<div class="productContent"> <?php if($record['promo']){echo '<div class="promo" ' . (($record['expiration_date'] || $record['expirationDate']) ? 'style="width:auto"' : '') . '><span>'.$record['promo'].'</span></div>'.(($record['expiration_date']||$record['expirationDate'])?'&nbsp;&nbsp;&mdash;&nbsp;&nbsp;':'');}if($record['expiration_date']||$record['expirationDate']){$expirationDate=$record['expirationDate']?$record['expirationDate']:$$record['expiration_date'];$expires=strtotime($expirationDate);$today=strtotime(date("Y-m-d"));$interval=($expires - $today)/(60*60*24);if($interval<=20&&$interval>0){echo '<div class="couponExpire"><span>'.$interval.' Day'.($interval>1?'s':'').' Left!</span></div>';}elseif($interval<=0){echo '<div class="couponExpire"><span>Ends Today!</span></div>';}else{echo '<div class="couponExpire"><span>Expires Soon!</span></div>';}}?> <div
 				class="productTitle">
 				<a
-					href=<?php echo($options['titleMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
+					href=<?php echo($options['gotoMerchantBypass']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 					rel="nolink"><span><?php echo preg_replace('/\(.+\)/i','',$record['keyword']);?></span></a>
 			</div> <?php if($type!='coupon'&&$type!='local'){?> <div
 				class="productDescription"> <?php if(strlen($record['description'])>200){echo substr($record['description'],0,200).'...';}else{echo $record['description'];}?> </div> <?php }if($record['coupon_code']){echo '<div class="couponCode">Coupon Code: <span class="code_cc"><a href="' . $record['affiliate_url'] . '">'.$record['coupon_code'].'</a></span></div>';}?> <div
@@ -84,7 +84,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 		<div class="listBlock">
 			<div class="prodImage">
 				<a
-					href=<?php echo($options['imageMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
+					href=<?php echo($options['gotoMerchantBypass']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 					rel="nolink"><span
 					<?php echo $classLoad.($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;margin:0 15px"');?>><img
 						<?php echo($type!='coupon'?('style="width:'.$gridImage.'!important; height:'.$gridImage.'!important;"'):'style="height:60px;width:120px;"');?>
@@ -95,7 +95,7 @@ endif;if(!$params['view']||$params['view']==='list'){?>
 				class="prodContent">
 				<div class="prodTitle">
 					<a
-						href=<?php echo($options['titleMercLink']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
+						href=<?php echo($options['gotoMerchantBypass']?'"'.$record['affiliate_url'].'" target="'.$target.'"':'"'.$homeUrl.'/'.$type.'/'.rawurlencode(str_replace('/',',SL,',$record['keyword'])).'/cid/'.$cid.'"');?>
 						rel="nolink"> <?php echo $keyword;?> </a>
 				</div> <?php if($price&&$type!='coupon'&&$type!='local'){echo $price;}?> </div>
 			<div class="shopCheck prosperVisit">		

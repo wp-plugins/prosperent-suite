@@ -43,7 +43,7 @@ if ($options['ProsperCategories'])
     $categories = explode(',', $options['ProsperCategories']);
     foreach ($categories as $category)
     {
-        echo '<li id="' . $category . '" class="ProsperCategories" data-filtype="ProsperCategories" style="float:left;margin:0;padding:6px;" onClick="removeFilter(this);"><span><a data-filtype="ProsperCategories" href="javascript:void(0);">' . $category . '</a></span></li>';
+        echo '<li id="' . $category . '" class="ProsperCategories" data-filtype="ProsperCategories" style="float:left;margin:0;padding:6px;" onClick="removeFilter(this);"><span><a data-filtype="ProsperCategories" style="text-decoration:none;" href="javascript:void(0);">' . str_replace('-', ' > ', $category) . ' <i class="fa fa-times"></i></a></span></li>';
     }  
 }
 echo '</ul></div>';

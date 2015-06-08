@@ -14,188 +14,25 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
 
 		<script type="text/javascript">
-		function editInsert () {
+		/*function editInsert () {
 			console.log(shortCode.local_ed.selection.getContent());
-
-		}
-
-
-		
-		var t;
-		function showValues() {			
-		    var b = getNewCurrent();
-		    clearTimeout(t);
-		    var c = "",
-		        c = jQuery("form").serialize();
-		    xmlhttp = new XMLHttpRequest;
-		    xmlhttp.onreadystatechange = function() {
-		        jQuery("div." + b + "preview").html(xmlhttp.responseText).show()
-		    };
-		    var d = window.location.pathname,
-		        e = d.substring(0, d.lastIndexOf("prosperinsert/")) + "preview.php?type=" + b + "&";
-		    xmlhttp.open("GET", e + c, !0);
-		    t = setTimeout(function() {
-		        try {
-		            xmlhttp.send(), c = "";
-		        } catch (a) {}
-		    }, 500);
-		    c || clearTimeout(t)
-		}
-
-		function setFocus() {
-			var d = getNewCurrent();			
-			(d == 'prod') ? document.getElementById("prodquery").focus() : document.getElementById("merchantmerchant").focus();
-		    shortCode.local_ed.selection.getContent() && !shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig) && (document.getElementById("prodquery").value = (shortCode.local_ed.selection.getContent() ? shortCode.local_ed.selection.getContent() : 'shoes'), document.getElementById("merchantmerchant").value = (shortCode.local_ed.selection.getContent() ? shortCode.local_ed.selection.getContent() : 'Backcountry'), showValues())
-		}
-
-		function openPreview() 
-		{
-		    jQuery("#truePreview").css('visibility', jQuery("#truePreview").css('visibility') == 'hidden' ? 'visible' : 'hidden');
-		    jQuery("#truePreview").css('z-index', jQuery("#truePreview").css('z-index') == '1000' ? '-1000' : '1000');
-		    jQuery("#mainFormDiv").css('z-index', jQuery("#mainFormDiv").css('z-index') == '1' ? '-1000' : '1');
-		    jQuery("#prosperMCE_preview").prop('value', jQuery("#prosperMCE_preview").prop('value') == 'Preview' ? 'Close Preview' : 'Preview');
-
-		    var b = getNewCurrent(),
-    		    c = "",
-    		    c = jQuery("form").serialize();
-    	    xmlhttp = new XMLHttpRequest;
-    	    xmlhttp.onreadystatechange = function() {
-    	        jQuery("div#truePreview").html(xmlhttp.responseText).show()
-    	    };
-    	    var d = window.location.pathname,
-    	        b = d.substring(0, d.lastIndexOf("prosperinsert/")) + "truePreview.php?type=" + b + "&";
-    	    xmlhttp.open("GET", b + c, !0);
-    	    
-	        try {
-	            xmlhttp.send(), c = ""
-	        } catch (a) {};;
-		}
-
-		function getIdofItem(b, c) 
-		{
-		    var d = getNewCurrent(),		        
-		        a = (!0 == c ? b.id.replace("small", "") : b.id),
-		        e = (jQuery("#small" + a).attr("src") ? jQuery("#small" + a).attr("src") :  jQuery("#" + a).find("img.newImage").attr("src")),
-		        v = jQuery("#prodview:checked").val();
-
-		    if (v == 'pc')
-		    {
-		    	0 <= document.getElementById(d + "id").value.indexOf(a) ? (jQuery("#" + a).removeClass("highlight"), a = document.getElementById(d + "id").value.replace(a, ""), document.getElementById(d + "id").value = a) : (document.getElementById(d + "id").value = a, jQuery('#productList li').removeClass('highlight'),jQuery("li#" + a).addClass("highlight"));
-		    }
-		    else
-		    {		    
-		    	  0 <= document.getElementById(d + "id").value.indexOf(a + ",") ? (e = document.getElementById(d + "images").value.replace(e + ",", ""), jQuery("#" + a).removeClass("highlight"), a = document.getElementById(d + "id").value.replace(a + ",", ""), document.getElementById(d + "id").value = a, document.getElementById(d + "images").value = e) : (document.getElementById(d + "id").value += a + ",", jQuery("#" + a).addClass("highlight"), document.getElementById(d + "images").value += e + ",");
-		    	  showAddedValues();
-
-		    	  jQuery("#" + d + "resultsGoHere").css('height', document.getElementById(d + "images").value ? '380px' : '480px');	
-		    }	    
-		}
-
-		function getFilters () {		
-			var merchants = (jQuery("#prodd").val() ? (jQuery("#prodd").val().replace(',','|')) : ''),
-			    brands    = (jQuery("#prodb").val() ? (jQuery("#prodb").val().replace(',','|')) : ''),
-                pRange    = ((jQuery('#pricerangea').val() ? jQuery('#pricerangea').val() + ',' : '0.01,') + (jQuery('#pricerangeb').val() ? jQuery('#pricerangeb').val() : '')),
-                perRange  = (jQuery("#onSale:checked").val() ? '1,' : (jQuery('#percentrangea').val() ? jQuery('#percentrangea').val() + ',' : '') + (jQuery('#percentrangeb').val() ? jQuery('#percentrangeb').val() : ''));
-
-    	    jQuery.ajax({
-	            type: "POST",
-	            url: "http://api.prosperent.com/api/search",
-	            data: {
-	                api_key: "fc91d36b383ca0231ee59c5048eabedc",
-	                query: jQuery("#prodquery").val(),
-	                filterMerchantId:merchants,
-	                filterBrand:brands,
-	                filterPrice:pRange,
-	                filterPercentOff:perRange,
-	                limit: 1,
-	                enableFacets: "merchantId|merchant|brand",
-	                enableFullData: 0
-	            },
-	            contentType: "application/json; charset=utf-8",
-	            dataType: "jsonp",
-	            success: function(a) {
-	            	jQuery("#prodbrand").empty();
-	    			jQuery("#prodmerchant").empty();	    		
-	                jQuery.each(a.facets.merchantId, function(c, b) {		                
-		                if (merchants.match(b.value))
-		                {
-		                	  jQuery("#prodmerchant").append('<li id="d'+b.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.facets.merchant[c].value+'</span></a></li>');
-		                }
-		                else
-		                {
-		                	jQuery("#prodmerchant").append('<li id="d'+b.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.facets.merchant[c].value+'</span></a></li>');
-		                }                
-	                }),
-	                jQuery.each(a.facets.brand, function(c, b) {	
-	                	if (brands.match(b.value))
-		                {	                			                
-	                	    jQuery("#prodbrand").append('<li id="b'+b.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.value+'</span></a></li>');
-		                }
-		                else
-		                {
-		                	jQuery("#prodbrand").append('<li id="b'+b.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.value+'</span></a></li>');
-		                } 
-	                })
-	            },
-	            error: function() {
-	                alert("Failed to load data.")
-	            }
-    	    });		    
-		}
-
-		function getIdValue(b, c) 
-		{
-			var a = b.id,       
-			    d = a.slice(0,1),
-			    e = a.slice(1);	    
-			0 <= document.getElementById("prod" + d).value.indexOf(e + ",") ? (jQuery("#" + a).removeClass("activeFilter"), a = document.getElementById("prod" + d).value.replace(e + ",", ""), document.getElementById("prod" + d).value = a) : (document.getElementById("prod" + d).value += e + ",", jQuery("#" + a).addClass("activeFilter"));
-			showValues();						 
-		}
-		
-		function showAddedValues() {
-			
-		    var b = getNewCurrent(),
-		        c = "",
-		        c = jQuery("form").serialize();
-		    xmlhttp = new XMLHttpRequest;
-		    xmlhttp.onreadystatechange = function() {
-		        jQuery("div."+b+"added").html(xmlhttp.responseText).show()
-		    };
-		    var d = window.location.pathname,
-		        e = d.substring(0, d.lastIndexOf("prosperinsert/")) + "added.php?type=" + b + "&";
-		    xmlhttp.open("GET", e + c, !0);
-		    xmlhttp.send()
-		}
-		
-		function sticky_relocate() {
-		    var b = jQuery(window).scrollTop(),
-		        c = jQuery("#sticky-anchor").offset().top;
-		    b > c ? jQuery("#stickyHeader").addClass("sticky") : jQuery("#stickyHeader").removeClass("sticky")
-		}
-		
-		jQuery(function() {
-		    jQuery(window).scroll(sticky_relocate);
-		    sticky_relocate();
-
-			var height = ((jQuery(window).height() < 950) ? 675 : 750);
-		    jQuery("#prodresultsGoHere").css('height', (height == 675 ? '400px' : '480px'));
-		    jQuery("#merchantresultsGoHere").css('height', (height == 675 ? '400px' : '480px'));
-		    jQuery("#truePreview").css('height', (height == 675 ? '635px' : '708px'));
-		});
-
-		function openImageType() {
-			var view = jQuery("#prodview:checked").val();
-			if (view == 'pc')
-			{
-				jQuery("#prosperAddedprod").css('display', 'none');				
-				jQuery("#prodImageType").css('visibility', 'visible');
-			}
-			else
-			{
-				jQuery("#prosperAddedprod").css('display', 'block');
-				jQuery("#prodImageType").css('visibility', 'hidden');
-			}
-		}	
+		}*/	
+		var t;function showValues(){var c=getNewCurrent();clearTimeout(t);var d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+c+"preview").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"preview.php?type="+c+"&";xmlhttp.open("GET",a+d,!0);t=setTimeout(function(){try{xmlhttp.send(),d=""}catch(a){}},500);d||clearTimeout(t)}
+		function setFocus(){"prod"==getNewCurrent()?document.getElementById("prodquery").focus():document.getElementById("merchantmerchant").focus();shortCode.local_ed.selection.getContent()&&!shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig)&&(document.getElementById("prodquery").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():"shoes",document.getElementById("merchantmerchant").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():
+		"Backcountry",showValues())}
+		function openPreview(){jQuery("#truePreview").css("visibility","hidden"==jQuery("#truePreview").css("visibility")?"visible":"hidden");jQuery("#truePreview").css("z-index","1000"==jQuery("#truePreview").css("z-index")?"-1000":"1000");jQuery("#mainFormDiv").css("z-index","1"==jQuery("#mainFormDiv").css("z-index")?"-1000":"1");jQuery("#prosperMCE_preview").prop("value","Preview"==jQuery("#prosperMCE_preview").prop("value")?"Close Preview":"Preview");var c=getNewCurrent(),d="",d=jQuery("form").serialize();
+		xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div#truePreview").html(xmlhttp.responseText).show()};var a=window.location.pathname,c=a.substring(0,a.lastIndexOf("prosperinsert/"))+"truePreview.php?type="+c+"&";xmlhttp.open("GET",c+d,!0);try{xmlhttp.send(),d=""}catch(b){}}
+		function getIdofItem(c,d){var a=getNewCurrent(),b=1==d?c.id.replace("small",""):c.id,e=jQuery("#small"+b).attr("src")?jQuery("#small"+b).attr("src"):jQuery("#"+b).find("img.newImage").attr("src");"pc"==jQuery("#prodview:checked").val()?0<=document.getElementById(a+"id").value.indexOf(b)?(jQuery("#"+b).removeClass("highlight"),b=document.getElementById(a+"id").value.replace(b,""),document.getElementById(a+"id").value=b):(document.getElementById(a+"id").value=b,jQuery("#productList li").removeClass("highlight"),
+		jQuery("li#"+b).addClass("highlight")):(0<=document.getElementById(a+"id").value.indexOf(b+",")?(e=document.getElementById(a+"images").value.replace(e+",",""),jQuery("#"+b).removeClass("highlight"),b=document.getElementById(a+"id").value.replace(b+",",""),document.getElementById(a+"id").value=b,document.getElementById(a+"images").value=e):(document.getElementById(a+"id").value+=b+",",jQuery("#"+b).addClass("highlight"),document.getElementById(a+"images").value+=e+","),showAddedValues(),jQuery("#"+
+		a+"resultsGoHere").css("height",document.getElementById(a+"images").value?"380px":"480px"))}
+		function getFilters(){var c=jQuery("#prodd").val()?jQuery("#prodd").val().replace(",","|"):"",d=jQuery("#prodb").val()?jQuery("#prodb").val().replace(",","|"):"",a=(jQuery("#pricerangea").val()?jQuery("#pricerangea").val()+",":"0.01,")+(jQuery("#pricerangeb").val()?jQuery("#pricerangeb").val():""),b=jQuery("#onSale:checked").val()?"1,":(jQuery("#percentrangea").val()?jQuery("#percentrangea").val()+",":"")+(jQuery("#percentrangeb").val()?jQuery("#percentrangeb").val():"");jQuery.ajax({type:"POST",
+		url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#prodquery").val(),filterMerchantId:c,filterBrand:d,filterPrice:a,filterPercentOff:b,limit:1,enableFacets:"merchantId|merchant|brand",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(a){jQuery("#prodbrand").empty();jQuery("#prodmerchant").empty();jQuery.each(a.facets.merchantId,function(b,d){c.match(d.value)?jQuery("#prodmerchant").append('<li id="d'+
+		d.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.facets.merchant[b].value+"</span></a></li>"):jQuery("#prodmerchant").append('<li id="d'+d.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.facets.merchant[b].value+"</span></a></li>")});jQuery.each(a.facets.brand,function(a,b){d.match(b.value)?jQuery("#prodbrand").append('<li id="b'+b.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+
+		b.value+"</span></a></li>"):jQuery("#prodbrand").append('<li id="b'+b.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.value+"</span></a></li>")})},error:function(){alert("Failed to load data.")}})}
+		function getIdValue(c,d){var a=c.id,b=a.slice(0,1),e=a.slice(1);0<=document.getElementById("prod"+b).value.indexOf(e+",")?(jQuery("#"+a).removeClass("activeFilter"),a=document.getElementById("prod"+b).value.replace(e+",",""),document.getElementById("prod"+b).value=a):(document.getElementById("prod"+b).value+=e+",",jQuery("#"+a).addClass("activeFilter"));showValues()}
+		function showAddedValues(){var c=getNewCurrent(),d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+c+"added").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"added.php?type="+c+"&";xmlhttp.open("GET",a+d,!0);xmlhttp.send()}
+		function sticky_relocate(){var c=jQuery(window).scrollTop(),d=jQuery("#sticky-anchor").offset().top;c>d?jQuery("#stickyHeader").addClass("sticky"):jQuery("#stickyHeader").removeClass("sticky")}jQuery(function(){jQuery(window).scroll(sticky_relocate);sticky_relocate();var c=950>jQuery(window).height()?675:750;jQuery("#prodresultsGoHere").css("height",675==c?"400px":"480px");jQuery("#merchantresultsGoHere").css("height",675==c?"400px":"480px");jQuery("#truePreview").css("height",675==c?"635px":"708px")});
+		function openImageType(){"pc"==jQuery("#prodview:checked").val()?(jQuery("#prosperAddedprod").css("display","none"),jQuery("#prodImageType").css("visibility","visible")):(jQuery("#prosperAddedprod").css("display","block"),jQuery("#prodImageType").css("visibility","hidden"))};
 		</script>
     </head>
     <base target="_self" />

@@ -124,7 +124,7 @@ class ProsperSearchController
 		$this->productAction($data, $homeUrl, 'product', $searchPage, $options);			
 	}
 	
-	public function productAction($data, $homeUrl, $type, $searchPage, $options, $trend = '')
+	public function productAction($data, $homeUrl, $type, $searchPage, $options)
 	{		
 		$filters 	  = $data['filters'];
 		$params 	  = $data['params'];
@@ -223,15 +223,6 @@ class ProsperSearchController
 			$title = '<strong>Products</strong>';
 		}
 
-		/* 
-		 * price desc
-		 * price asc
-		 * merchant asc
-		 * merchant desc
-		 * 
-		 */
-		
-
 		$dir = 'asc';
 		$icon = '<i class="fa fa-sort"></i>';
 		$sortedParam = 'rel';
@@ -261,8 +252,8 @@ class ProsperSearchController
 		    $percentSlider = explode(',', rawurldecode($params['pR']));
 		    $pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}	
-		print_r($filters['category']);
-		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters'])
+
+		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['allFilters'] ||$filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters'])
 		{		
 			$settings = array(
 				'page'			   => $params['page'],
@@ -270,7 +261,7 @@ class ProsperSearchController
 				'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
 				'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
 				'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
-				'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
+				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',				
 				'limit'			   => $options['Pagination_Limit'],
@@ -376,18 +367,17 @@ class ProsperSearchController
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
-		{
+		{		    
 		    if ($query && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
 		    {
-		        $data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
-		        unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
+		        //$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
+		        //unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
+
+		        $data = $this->searchModel->storeSearch(true);
+		        
+
 		    
-		        if (strlen($query) > 60)
-		        {
-		            $query = substr($query, 0, 12) . '...';
-		        }
-		    
-		        $this->productAction($data, $homeUrl, $type, $searchPage, $options, 'Related Products to ' . ucwords($query));
+		        $this->productAction($data, $homeUrl, $type, $searchPage, $options);
 		        return;
 		    }
 
@@ -486,7 +476,7 @@ class ProsperSearchController
 		/  SIMILAR
 		*/
 		$settings4 = array(
-			'limit'              => 7,
+			'limit'              => 6,
 			'query'		         => $settings['query'] = $mainRecord[0]['keyword'],
 			'enableFullData'     => 'FALSE',
 			'imageSize'		     => '250x250',

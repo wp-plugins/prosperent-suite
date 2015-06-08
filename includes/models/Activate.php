@@ -169,12 +169,21 @@ class Model_Activate extends Model_Base
 			update_option( 'prosper_advanced', $advOpts );
 		}
 		
-		if (!is_array(get_option('prosper_themes')))
+		if (!is_array($themesOpts = get_option('prosper_themes')))
 		{
 			$PTopt = array(
-				'Set_Theme' => 'Default'
+				'Set_Theme' => 'Default',
+		        'resetThemes' => true
 			);			
 			update_option( 'prosper_themes', $PTopt );
+		}
+		elseif (!$themesOpts['resetThemes'])
+		{
+		    $PTopt = array(
+		        'Set_Theme' => 'Default',
+		        'resetThemes' => true
+		    );
+		    update_option( 'prosper_themes', $PTopt );
 		}
 	}
 	

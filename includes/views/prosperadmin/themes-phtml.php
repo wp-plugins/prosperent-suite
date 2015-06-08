@@ -43,8 +43,7 @@ else
 }
 
 $mainThemesDir = scandir(PROSPER_VIEW . '/prospersearch/themes');
-unset($mainThemesDir[0], $mainThemesDir[1]);
-
+unset($mainThemesDir[0], $mainThemesDir[1], $mainThemesDir[3], $mainThemesDir[4]);
 $themesDir = array_merge($mainThemesDir, $themesDir);
 
 $themes = array();

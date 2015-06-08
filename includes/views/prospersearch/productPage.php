@@ -13,8 +13,10 @@ jQuery(function(){jQuery(document).ready(function(){
 	var bodyWidth   = Math.floor(jQuery('#simProd.prosperSimResults')[0].getBoundingClientRect().width),
 	    prodCount   = Math.ceil(bodyWidth / 185),
 	    liEach      = Math.floor((bodyWidth - (prodCount * 8)) / prodCount);
-	console.log(liEach);
-	jQuery( "#simProd.prosperSimResults li" ).css( "width", liEach);
+	jQuery( "#simProd.prosperSimResults li" ).css({
+        height:'225px',
+        width:liEach
+    });
 	jQuery("#simProd.prosperSimResults li .prosperLoad").css({
         height:liEach,
         width:liEach
@@ -26,12 +28,14 @@ var resizeTimer;
 jQuery(window).resize(function() {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(function() {
-		var bodyWidth   = jQuery('#simProd.prosperSimResults').width(),
-	    prodWidth   = Math.round(bodyWidth / 125),
-	    liEach      = (bodyWidth - (prodWidth * 8)) / prodWidth;
-
+		var bodyWidth   = Math.floor(jQuery('#simProd.prosperSimResults')[0].getBoundingClientRect().width),
+	        prodWidth   = Math.ceil(bodyWidth / 185),
+	        liEach      = (bodyWidth - (prodWidth * 8)) / prodWidth;
 		
-		jQuery( "#simProd.prosperSimResults li" ).css( "width", liEach);
+		jQuery( "#simProd.prosperSimResults li" ).css({
+	        height:'225px',
+	        width:liEach
+	    });
 		jQuery("#simProd.prosperSimResults li .prosperLoad").css({
 	        height:liEach,
 	        width:liEach

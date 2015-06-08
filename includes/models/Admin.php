@@ -676,7 +676,7 @@ class Model_Admin extends Model_Base
 				$this->_settingsHistory('activated');
 			}
 		}
-		
+
 		if ($options['Api_Key'] && !$options['dismissOpenMessage'])
 		{		
 			$this->prosperStoreInstall();

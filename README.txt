@@ -99,12 +99,19 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 == Changelog ==
 
 = 4.0 = 
-* Updated the shop
+* Overhauled the shop
 * Removed Deprecated Items
 * Updated Options Pages
 * Added a ProsperDetails popup
 * Updated Facebook Open Graph Details
-
+* Added Price Comparison Insert Widget
+* Removed many options to simplify things
+* Updated the Shortcode menu systems
+* Category filters for whole shops
+* Removed Brand Positive and Negative
+* Autocomplete Fields for Merchants
+* Increased simplification
+* More jquery for added seamlessness of shopping experience (More on the way)
 
 = 3.7.3 = 
 * Added Automatic Updates for Minor Update (Option to turn on or off)

@@ -167,7 +167,7 @@ class Model_Inserter extends Model_Base
 		{
 			$limit = substr_count($id, '|');
 		}
-		print_r($pieces);echo '<br><br><br>';
+		
 		if ($fetch === 'fetchProducts')
 		{
 			$expiration = PROSPER_CACHE_PRODS;

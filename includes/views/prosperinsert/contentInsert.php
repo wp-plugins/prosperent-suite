@@ -17,7 +17,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		/*function editInsert () {
 			console.log(shortCode.local_ed.selection.getContent());
 		}*/
-		
+		var screenHeight=725>jQuery(window).height()?600:750;
 		var t;function showValues(){var b=getNewCurrent();clearTimeout(t);var d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+b+"preview").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"preview.php?type="+b+"&";xmlhttp.open("GET",a+d,!0);t=setTimeout(function(){try{xmlhttp.send(),d=""}catch(a){}},500);d||clearTimeout(t)}
 		function setFocus(){"prod"==getNewCurrent()?document.getElementById("prodquery").focus():document.getElementById("merchantmerchant").focus();shortCode.local_ed.selection.getContent()&&!shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig)&&(document.getElementById("prodquery").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():"shoes",document.getElementById("merchantmerchant").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():
 		"Backcountry",showValues())}
@@ -32,7 +32,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		b.value+"</span></a></li>"):jQuery("#prodbrand").append('<li id="b'+b.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.value+"</span></a></li>")})},error:function(){alert("Failed to load data.")}})}
 		function getIdValue(b,d){var a=b.id,c=a.slice(0,1),e=a.slice(1);0<=document.getElementById("prod"+c).value.indexOf(e+",")?(jQuery("#"+a).removeClass("activeFilter"),a=document.getElementById("prod"+c).value.replace(e+",",""),document.getElementById("prod"+c).value=a):(document.getElementById("prod"+c).value+=e+",",jQuery("#"+a).addClass("activeFilter"));showValues()}
 		function showAddedValues(){var b=getNewCurrent(),d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+b+"added").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"added.php?type="+b+"&";xmlhttp.open("GET",a+d,!0);xmlhttp.send()}
-		function sticky_relocate(){var b=jQuery(window).scrollTop(),d=jQuery("#sticky-anchor").offset().top;b>d?jQuery("#stickyHeader").addClass("sticky"):jQuery("#stickyHeader").removeClass("sticky")}jQuery(function(){jQuery(window).scroll(sticky_relocate);sticky_relocate();var b=950>jQuery(window).height()?675:750;jQuery("#prodresultsGoHere").css("height",675==b?"400px":"480px");jQuery("#merchantresultsGoHere").css("height",675==b?"400px":"480px");jQuery("#truePreview").css("height",675==b?"635px":"708px")});
+		function sticky_relocate(){var b=jQuery(window).scrollTop(),d=jQuery("#sticky-anchor").offset().top;b>d?jQuery("#stickyHeader").addClass("sticky"):jQuery("#stickyHeader").removeClass("sticky")}jQuery(function(){jQuery(window).scroll(sticky_relocate);sticky_relocate();jQuery("#prodresultsGoHere").css("height",600==screenHeight?"337px":"480px");jQuery("#merchantresultsGoHere").css("height",600==screenHeight?"337px":"480px");jQuery("#truePreview").css("height",600==screenHeight?"558px":"708px")});
 		function openImageType(){"pc"==jQuery("#prodview:checked").val()?(jQuery("#prosperAddedprod").css("display","none"),jQuery("#prodImageType").css("visibility","visible")):(jQuery("#prosperAddedprod").css("display","block"),jQuery("#prodImageType").css("visibility","hidden"))};
 		</script>
     </head>

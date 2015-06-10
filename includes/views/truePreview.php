@@ -202,7 +202,7 @@ if ($results = $response['data'])
         else
         { 
         	?>
-        	<div id="productList" style="border:none;border-top:1px solid #ddd;background-color:white;">
+        	<div id="productList" style="width:98%;margin:0 auto;border:none;border-top:1px solid #ddd;background-color:white;margin-top:5px;">
         		<?php
         		// Loop to return Products and corresponding information
         		foreach ($results as $record)

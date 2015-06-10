@@ -102,60 +102,60 @@ class Model_Search extends Model_Base
 	
 	public function getBrands($brand = null)
 	{
-		$filterBrands = array();
-
+        $brands = array();
+	    
 		if ($brand)
 		{
 			$brands = explode('~', str_replace(',SL,', '/', $brand));
-			$filterBrands = $brands;
-			$brands = array_combine($filterBrands,$filterBrands);
+			$brands = array_combine($brands, $brands);
 		}
 		
-		return array('appliedFilters' => $brands, 'allFilters' => $filterBrands);
+		return array('appliedFilters' => $brands);
 	}
 	
 	public function getMerchants($merchant = null)
 	{
 		$filterMerchants = array();
+	    $merchants = array();
 
 		if ($merchant)		
 		{
 			$merchants = explode('~', str_replace(',SL,', '/', $merchant));
-			$filterMerchants = $merchants;
-			$merchants = array_combine($filterMerchants, $filterMerchants);
+			//$filterMerchants = $merchants;
+			$merchants = array_combine($merchants, $merchants);
 		}
 
-		if ($this->_options['Positive_Merchant'])
+		if ($this->_options['PositiveMerchant'])
 		{
-			$plusMerchants = array_map('stripslashes', explode(',', $this->_options['Positive_Merchant']));
+			$plusMerchants = explode(',', $this->_options['PositiveMerchant']);
 			foreach ($plusMerchants as $positive)
 			{
 				array_push($filterMerchants, trim($positive));
 			}
 		}
 		
-		if ($this->_options['Negative_Merchant'])
+		if ($this->_options['NegativeMerchant'])
 		{
-			$minusMerchants = array_map('stripslashes', explode(',', $this->_options['Negative_Merchant']));
+			$minusMerchants = explode(',', $this->_options['NegativeMerchant']);
 
 			foreach ($minusMerchants as $negative)
 			{
 				array_push($filterMerchants, '!' . trim($negative));
 			}
 		}
-		
+
 		return array('appliedFilters' => $merchants, 'allFilters' => $filterMerchants);
 	}	
 	
 	public function getCategories($category = null)
 	{
 		$filterCategory = array();
+		$categories = array();
 
 		if ($category)		
-		{echo $category;
+		{
 		    $categories = explode('~', '*' . str_replace(',SL,', '/', $category). '*');
-		    $filterCategory = $categories;
-		    $categories = array_combine($filterCategory, $filterCategory);
+		    $categories = array_combine($categories, $categories);
 		}
 
 		if ($this->_options['ProsperCategories'])
@@ -194,18 +194,18 @@ class Model_Search extends Model_Base
 					{
 						$newFilters = $filters[$i]['appliedFilters'];
 						unset($newFilters[$facet['value']]);
-						$facetsNew[$i][$facet['value']] = '<li class="prosperActive"><a href="' . (str_replace(array('/cid/' . $params['cid'], '/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i>' . $facet['value'] . '</a></li>';						
-						$facetsPicked[] = '<span class="activeFilters"><a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i>' . $facet['value'] . ' <i class="fa fa-times"></i></a></span>';
+						$facetsNew[$i][$facet['value']] = '<li class="prosperActive"><a href="' . (str_replace(array('/cid/' . $params['cid'], '/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i><span>' . $facet['value'] . '</span></a></li>';						
+						$facetsPicked[] = '<span class="activeFilters"><a href="' . (str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(implode('~', $newFilters))) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i style="padding-right:3px;" class="fa fa-times"></i>' . $facet['value'] . '</a></span>';
 					}
 					else
 					{
 						$facetsNew[$i][$facet['value']] = '<li class="prosperActive"><a href="' . str_replace(array('/cid/' . $params['cid'], '/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i>' . $facet['value'] . '</a></li>';						
-						$facetsPicked[] = '<span class="activeFilters"><a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') .'> <i class="fa fa-times"></i>' . $facet['value'] . '</a></span>';
+						$facetsPicked[] = '<span class="activeFilters"><a href="' . str_replace(array('/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') .'> <i style="padding-right:3px;" class="fa fa-times"></i>' . $facet['value'] . '</a></span>';
 					}
 				}
 				elseif ($facet['value'])
 				{
-					$facetsNew[$i][$facet['value']] = '<li class="prosperFilter"><a href="' . (str_replace(array('/cid/' . $params['cid'], '/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) .($params[$i] ? '~' .  $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i>' . $facet['value'] . '</a></li>';
+					$facetsNew[$i][$facet['value']] = '<li class="prosperFilter"><a href="' . (str_replace(array('/cid/' . $params['cid'], '/page/' . $params['page'], '/' . $i . '/' . $params[$i]),  '', $url) . '/' . $i . '/' . rawurlencode(str_replace('/', ',SL,', $facet['value']))) .($params[$i] ? '~' .  $params[$i] : '') . '"' . ($this->_options['noFollowFacets'] ? ' rel="nofollow,nolink"' : ' rel="nolink"') . '><i class="fa fa-times"></i><span>' . $facet['value'] . '</span></a></li>';
 				}
 			}
 		}
@@ -251,6 +251,12 @@ class Model_Search extends Model_Base
 				wp_enqueue_script( 'Beta' );	
 				wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
 			}
+		}
+		else
+		{
+			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
+			wp_enqueue_script( 'productPhp');
+			wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
 		}
 		
 		return $phtml;
@@ -431,6 +437,7 @@ class Model_Search extends Model_Base
 			'imageSize' => $imageSize,
 			'curlCall'	=> 'single-productPage-' . $prosperPage
 		);
+		
 		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
 		if (!$cid)
 		{
@@ -445,28 +452,31 @@ class Model_Search extends Model_Base
 		$allData = $this->singleCurlCall($curlUrl, 0);
 		$record = $allData['data'];		    
 		    
-		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
-		// Open Graph: FaceBook
-		echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
-		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
-		echo '<meta property="og:type" content="website" />';
-		echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
-		echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
-		echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
-		echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
-		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
-
-		// Twitter Cards
-		echo '<meta name="twitter:card" content="record[0]">';
-		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
-		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
-		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
-		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
-		echo '<meta name="twitter:label1" content="Price">';
-		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
-		echo '<meta name="twitter:label2" content="Brand">';
-		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
-		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+		if ($record)
+		{
+    		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
+    		// Open Graph: FaceBook
+    		echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
+    		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
+    		echo '<meta property="og:type" content="website" />';
+    		echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
+    		echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
+    		echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
+    		echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
+    		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+    
+    		// Twitter Cards
+    		echo '<meta name="twitter:card" content="record[0]">';
+    		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
+    		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
+    		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
+    		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
+    		echo '<meta name="twitter:label1" content="Price">';
+    		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
+    		echo '<meta name="twitter:label2" content="Brand">';
+    		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
+    		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+		}
 	}	
 		
 	public function storeChecker()

@@ -31,7 +31,7 @@
 
 .prosperSearchInputs .prosper_field {
 	display:table-cell;
-	width:100%;
+	width:100%!important;
 	line-height:30.6px;
 	font-size:18px;
 	border-radius:4px;
@@ -192,7 +192,6 @@
 	padding:0.5em;
 	margin-top:0.5em;
 	min-height: 40px;	
-	width:98%;
 	max-width:165px;
 	overflow-x: hidden;
 }
@@ -604,6 +603,9 @@ span.loadCoup {
 
 #simProd .prodContent {
 	text-align:left;	
+}
+#simProd .prodContent a:hover {
+	text-decoration:none;
 }
 
 #simProd .prodPriceSale {

@@ -699,7 +699,7 @@ abstract class Model_Base
 		return $result;
 	}
 	
-	public function singleCurlCall ($url = '', $expiration = 86400, $settings)
+	public function singleCurlCall ($url = '', $expiration = 86400, $settings = array())
 	{	
 		require_once(PROSPER_PATH . 'prosperMemcache.php');
 		$cache = new Prosper_Cache();

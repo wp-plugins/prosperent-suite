@@ -12,7 +12,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=3.3.3'; ?>"></script>
 		<script type="text/javascript">		
-		jQuery(function(){var b=950>jQuery(window).height()?675:750;jQuery("#prodresultsGoHere").css("height",675==b?"400px":"480px");jQuery("#merchantresultsGoHere").css("height",675==b?"400px":"480px");jQuery("#truePreview").css("height",675==b?"635px":"708px")});var t;
+		jQuery(function(){var b=950>jQuery(window).height()?600:750;jQuery("#prodresultsGoHere").css("height",600==b?"345px":"500px");jQuery("#merchantresultsGoHere").css("height",600==b?"345px":"500px");var t;
 		function showValues(){var b=getNewCurrent();clearTimeout(t);var c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+b+"preview").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperlinker/"))+"preview.php?type="+b+"&";xmlhttp.open("GET",a+c,!0);t=setTimeout(function(){try{xmlhttp.send(),c=""}catch(a){}},500);c||clearTimeout(t)}
 		function setFocus(){"prod"==getNewCurrent()?document.getElementById("prodquery").focus():document.getElementById("merchantmerchant").focus();shortCode.local_ed.selection.getContent()&&!shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig)&&(document.getElementById("prodquery").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():"shoes",document.getElementById("merchantmerchant").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():
 		"Backcountry",showValues())}function getIdofItem(b,c){var a=getNewCurrent(),f=b.id;0<=document.getElementById(a+"id").value.indexOf(f)?(jQuery("#"+f).removeClass("highlight"),f=document.getElementById(a+"id").value.replace(f,""),document.getElementById(a+"id").value=f):(document.getElementById(a+"id").value=f,jQuery("#productList li").removeClass("highlight"),jQuery("li#"+f).addClass("highlight"))}
@@ -53,7 +53,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
                                 </td>
                             </tr>
 						</table>
-						<div id="prodresultsGoHere" class="mceActionPanel" style="overflow:auto;display:block;height:500px!important;border:1px solid #919B9C;background-color:gray;">  				
+						<div id="prodresultsGoHere" class="mceActionPanel" style="overflow:auto;display:block;border:1px solid #919B9C;background-color:gray;">  				
             				<div class="prodpreview" aria-required="true" style="overflow:auto;"></div>    						        
             			</div>           			
 					</div>

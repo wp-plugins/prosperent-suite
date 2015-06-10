@@ -1,5 +1,6 @@
 <script type="text/javascript">
 jQuery(function(){jQuery(document).ready(function(){jQuery("#prosper-conf").data("serialize",jQuery("#prosper-conf").serialize())});jQuery(window).bind("beforeunload",function(a){if(jQuery("#prosper-conf").serialize()!=jQuery("#prosper-conf").data("serialize"))return"You have unsaved settings."})});function deleteMyParent(a){var b=document.getElementById("linkCarrier");window.setTimeout(function(){b.removeChild(a)},50);return!1};
+</script>
 <?php
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();

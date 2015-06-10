@@ -153,7 +153,7 @@ class Model_Inserter extends Model_Base
 		$content = strip_tags($content);
 
 		$id = $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '';
-		
+
 		$limit = 1;		
 		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
 		{
@@ -165,9 +165,9 @@ class Model_Inserter extends Model_Base
 		}
 		elseif ($id)
 		{
-			$limit = count($id);
+			$limit = substr_count($id, '|');
 		}
-		
+		print_r($pieces);echo '<br><br><br>';
 		if ($fetch === 'fetchProducts')
 		{
 			$expiration = PROSPER_CACHE_PRODS;
@@ -194,7 +194,7 @@ class Model_Inserter extends Model_Base
 			    $productIds = array_map('trim', explode(',', $params['prodid']));
 			     
 			    $settings = array(
-			        'query'           => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
+			        'query'           => trim($params['prodq'] ? $params['prodq'] : ''),
 			        'filterProductId' => $id,
 			        'imageSize'		  => '250x250',
 			        'groupBy'         => 'merchant',
@@ -214,7 +214,7 @@ class Model_Inserter extends Model_Base
 				'imageSize'		   => '120x60',
 				'interface'		   => 'insert',
 				'limit'            => $limit,			    
-				'filterMerchant'   => str_replace(',', '|', $pieces['m']),		
+				'filterMerchant'   => (!$id ? str_replace(',', '|', $pieces['m']) : ''),		
 				'filterMerchantId' => $id,
 			    'filterCategory'   => $pieces['cat'] ? '*' . $pieces['cat'] . '*' : '',
 				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'            		

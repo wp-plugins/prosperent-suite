@@ -1,8 +1,48 @@
 <?php
-if ($pieces['v'] === 'grid')
+if ($type == 'merchant' )
 {
-	$gridImage = ($pieces['gimgsz'] ? preg_replace('/\s?(px|em|%)/i', '', $pieces['gimgsz']) : 200) . 'px';
-	$classLoad = ($type === 'merchant' ? '' : ($gridImage < 120 ? 'class="loadCoup"' : 'class="load"'));
+    ?>
+	<div style="clear:both;"></div>
+	<div id="simProd">
+		<ul>
+		<?php
+        foreach ($results as $record)
+        {
+            if (is_ssl())
+            {
+                $record['image_url'] = str_replace('http', 'https', $record['image_url']);
+            }
+
+            if ($record['deepLinking'] == 1 && $this->_options['gotoMerchantBypass'])
+            {
+                if ($record['domain'] == 'sportsauthority.com')
+                {
+                    $record['domain'] = $record['domain'] . '%2Fhome%2Findex.jsp';
+                }
+                	
+                $goToUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $this->_options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $record['domain']);
+            }
+            else
+            {
+                $goToUrl = '"' . $homeUrl . '/' . $base . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"';
+            }
+            ?>
+            <li style="overflow:hidden;list-style:none;margin:9px;float:left;height:76px!important;width:136px!important;">
+            	<div class="listBlock">
+            		<div class="prodImage" style="text-align:center;margin:8px;">
+                    	<a href="<?php echo $goToUrl; ?>"><span title="<?php echo $record['merchant']; ?>"><img class="newImage" style="height:60px!important;width:120px!important;" src='<?php echo $record['logoUrl']; ?>'  alt='<?php echo $record['merchant']; ?>' title='<?php echo $record['merchant']; ?>'/></span></a>
+        	        </div>		
+                </div>   
+        	</li>
+        	<?php
+        } 
+        ?>
+		</ul>
+    </div>
+	<?php
+}
+elseif ($pieces['v'] === 'grid')
+{
 	?>
 	<div style="clear:both;"></div>
 	<div id="simProd">
@@ -10,7 +50,6 @@ if ($pieces['v'] === 'grid')
 		<?php
 		foreach ($results as $record)
 		{
-			$record['image_url'] = ($record['image_url'] ? $record['image_url'] : $record['logoUrl']);
 			if (is_ssl())
 			{
 				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
@@ -20,59 +59,31 @@ if ($pieces['v'] === 'grid')
 			$price 	   = $priceSale ? $priceSale : $record['price'];
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 			$cid 	   = $record[$recordId];
-			
-			if ($this->_options['PSAct'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
+
+			if ($this->_options['PSAct'] && (!$this->_options['gotoMerchantBypass'] || $this->_options['gotoMerchantBypass'] === 'false'))
 			{
-				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
-				if ($type === 'merchant')
-				{
-					$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode($record['merchant']) . '" rel="nolink"';
-				}				
+				$goToUrl = '"' . $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 			}		
 			else
 			{
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
-				
-				if ($type === 'merchant')
-				{
-					if ($record['deepLinking'] == 1)
-					{
-						if ($record['domain'] == 'sportsauthority.com')
-						{
-							$record['domain'] = $record['domain'] . '%2Fhome%2Findex.jsp';
-						}
-					
-						$goToUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $this->_options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $record['domain']);							
-					}
-					else					
-					{
-						$goToUrl = '"' . $homeUrl . '/' . $base . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"';				
-					}
-				}
 			}
 			?>
-				<li <?php echo 'style="width:' . $gridImage . '!important;"'; ?>>
-					<div class="listBlock">
-						<div class="prodImage">
-							<a href=<?php echo $goToUrl; ?>><span <?php echo $classLoad . ($type != 'merchant' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?>><img <?php echo ($type != 'merchant' ? ('style="width:' . $gridImage . '!important; height:' . $gridImage . '!important;"') : 'style="height:60px;width:120px"'); ?> src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
-						</div>						
-						<div class="prodContent">
-							<div class="prodTitle">
-								<a href=<?php echo $goToUrl; ?> >
-									<?php echo $keyword; ?>
-								</a>
-							</div>                    
-							<?php if ($price): ?>
-							<div class="prodPrice"><?php echo '$' . $price; ?></div>
-							<?php endif; ?>
-						</div>
-
-						<?php if ($type != 'merchant') : ?>
+		        <li style="overflow:hidden;list-style:none;margin:6px;float:left;height:285px!important;width:210px!important;">
+    				<div class="listBlock">
+    					<div class="prodImage" style="text-align:center;">     				
+				        	<a href=<?php echo $goToUrl; ?>><span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:185px;width:185px;" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span></a>
+				        </div>
+				        <div class="prodContent" style="font-size:15px">
+				            <a href=<?php echo $goToUrl; ?> ><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a>
+    						<div class="prodTitle">
+    							<div class="prodPrice"><strong>$<?php echo number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $record['merchant'] . '</span>'; } ?></div>
+    						</div>          						          						                   
+    					</div>	
 						<div class="shopCheck prosperVisit">		
 							<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $pieces['vst']; ?>"/></a>				
-						</div>	
-						<?php endif; ?>
-					</div>			
+						</div>		
+		            </div> 
 				</li>
 			<?php
 		}
@@ -103,10 +114,10 @@ elseif ($pieces['v'] === 'pc')
 				   $keywordSet = true;
 			    }
 				echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-				echo '<td itemprop="seller""><a href="javascript:void(0);" onClick="return false;" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . $pieces['imgt'] . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
+				echo '<td itemprop="seller""><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . $pieces['imgt'] . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
 				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
 				echo '<meta itemprop="priceCurrency" content="USD"/>';
-				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
+				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
 				echo '</tr>';
 			}
 			?>

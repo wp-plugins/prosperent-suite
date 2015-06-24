@@ -38,89 +38,73 @@ class Model_Inserter extends Model_Base
 	        return $text;
 	    }
 	    
-		$newTitle = get_the_title();
+	    if (($this->_options['prosper_inserter_posts'] && is_singular('post')) || ($this->_options['prosper_inserter_pages'] && (is_page() || is_product())))
+	    {
+    		$newTitle = get_the_title();
+    
+    		if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs) || preg_match('/\[contentInsert (.+)\]\[\/contentInsert\]/i', $text, $regs))
+    		{
+    			preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
+    			$allParams = array_combine($results[1], $results[2]);
+    	
+    			if ($allParams['noShow'])
+    			{
+    				return trim($text);
+    			}
+    		}
+    
+    		if ($this->_options['prosper_inserter_negTitles'])
+    		{
+    			if(function_exists('prosper_negatives') === false)
+    			{
+    				function prosper_negatives($negative)
+    				{
+    					return '/\b' . trim($negative) . '\b/i';
+    				}
+    			}	
+    
+    			$exclude = array_map(
+    				"prosper_negatives",
+    				explode(',', $this->_options['prosper_inserter_negTitles'])
+    			);
+    
+    			$newTitle = preg_replace($exclude, '', $newTitle);
+    		}
+    
+    		if (!$newTitle)
+    		{
+    			return trim($text);
+    		}
+    		
+    		if ($this->_options['contentAnalyzer'])
+    		{
+    			$settings = array(
+    				'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
+    			);
+    
+    			$url = $this->apiCall($settings, 'fetchAnalyzer');
+    			$allData = $this->singleCurlCall($url, 86400, $settings);
+    
+    			foreach ($allData['data'] as $newKeyword)
+    			{
+    				$newKeywords[] = $newKeyword['phrase']; 
+    			}		
+    		}
+    		
+    		$insert = '<p>[prosperInsert imgt="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" q="' . ($allParams['q'] ? $allParams['q'] : $newTitle) . '" b="' . $allParams['b'] . '" m="' . $allParams['m'] . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/prosperInsert]</p>';
 
-		if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs))
-		{
-			preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
-			$allParams = array_combine($results[1], $results[2]);
-	
-			if ($allParams['noShow'])
-			{
-				return trim($text);
-			}
-		}
-
-		if ($this->_options['prosper_inserter_negTitles'])
-		{
-			if(function_exists('prosper_negatives') === false)
-			{
-				function prosper_negatives($negative)
-				{
-					return '/\b' . trim($negative) . '\b/i';
-				}
-			}	
-
-			$exclude = array_map(
-				"prosper_negatives",
-				explode(',', $this->_options['prosper_inserter_negTitles'])
-			);
-
-			$newTitle = preg_replace($exclude, '', $newTitle);
-		}
-
-		if (!$newTitle)
-		{
-			return trim($text);
-		}
-		
-		if ($this->_options['contentAnalyzer'])
-		{
-			$settings = array(
-				'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
-			);
-
-			$url = $this->apiCall($settings, 'fetchAnalyzer');
-			$allData = $this->singleCurlCall($url, 86400, $settings);
-
-			foreach ($allData['data'] as $newKeyword)
-			{
-				$newKeywords[] = $newKeyword['phrase']; 
-			}		
-		}
-		
-		$insert = '<p>[compare q="' . ($allParams['q'] ? $allParams['q'] : $newTitle) . '" b="' . $allParams['b'] . '" m="' . $allParams['m'] . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/compare]</p>';
-
-		if ('top' == $this->_options['prosper_inserter'])
-		{
-			$content = $insert . $text;
-		}
-		else
-		{
-			$content = $text . $insert;
-		}
-		
-		if ($this->_options['prosper_inserter_pages'] && $this->_options['prosper_inserter_posts'])
-		{
-			if( is_page() ) 
-			{
-				$text = $content;
-			}
-			
-			if(is_singular('post')) 
-			{
-				$text = $content;	
-			}
-		}
-		elseif($this->_options['prosper_inserter_posts'] && is_singular('post'))
-		{
-			$text = $content;			
-		}
-		elseif($this->_options['prosper_inserter_pages'] && is_page())
-		{
-			$text = $content;
-		}		
-
+    		if ('top' == $this->_options['prosper_inserter'])
+    		{
+    			$content = $insert . $text;
+    		}
+    		else
+    		{
+    			$content = $text . $insert;
+    		}
+    			
+    		$text = $content;
+	    }
+    		
 		return trim($text);
 	}
 	
@@ -130,7 +114,7 @@ class Model_Inserter extends Model_Base
 		{
 			return $content;
 		}
-	    
+
 		$target  = $this->_options['Target'] ? '_blank' : '_self';
 		$base 	 = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		$homeUrl = home_url();
@@ -139,7 +123,7 @@ class Model_Inserter extends Model_Base
 
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 		$pieces = array_filter($pieces);
-		
+
 		$fetch = $pieces['ft'];
 
 		if (!$this->_options['shortCodesAccessed'])
@@ -181,7 +165,7 @@ class Model_Inserter extends Model_Base
 				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
 				'limit'           => $limit,
 				'query'           => trim(strip_tags($pieces['q'] ? $pieces['q'] : $content)),
-				//'filterKeyword'   => $pieces['k'],
+				//'filterKeyword' => $pieces['k'],
 				'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
 				'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
 				'filterProductId' => $id,
@@ -191,10 +175,12 @@ class Model_Inserter extends Model_Base
 			
 			if ($pieces['v'] == 'pc')
 			{
-			    $productIds = array_map('trim', explode(',', $params['prodid']));
-			     
+			    $productIds = array_map('trim', explode(',', $pieces['prodid']));
+			    $type = 'productPC';
+			    
 			    $settings = array(
-			        'query'           => trim($params['prodq'] ? $params['prodq'] : ''),
+			        'curlCall'		   => 'single-' . $type,
+			        'query'           => trim($pieces['q'] ? $pieces['q'] : ''),
 			        'filterProductId' => $id,
 			        'imageSize'		  => '250x250',
 			        'groupBy'         => 'merchant',
@@ -220,13 +206,14 @@ class Model_Inserter extends Model_Base
 				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'            		
 			);
 		}		
-		
+		$settings = array_filter($settings);
 		if (count($settings) < 5)
 		{
 			return;
 		}
 
 		$url = $this->apiCall($settings, $fetch);
+		
 		$allData = $this->singleCurlCall($url, $expiration, $settings);
 
 		if (!$allData['data'])

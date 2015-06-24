@@ -168,6 +168,10 @@ if ($results = $response['data'])
         	?>
 	   </ul>
 	</div>
+	
+	<script type="text/javascript">
+	jQuery(function(){var a=top.tinymce.activeEditor.windowManager.getParams();if(a&&(a=jQuery("<i "+a+">").attr("id"),"undefined"!=typeof a&&null!==a))return a=a.split(","),jQuery.each(a,function(a,b){"undefined"!=typeof b&&null!==b&&0<b.length&&(document.getElementById(b).className+=" highlight")}),!1});
+    </script>
 	<?php
 }
 else

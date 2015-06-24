@@ -3,7 +3,7 @@ Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 4.2.2
-Stable tag: 4.0.1.1
+Stable tag: 4.0.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,11 +13,9 @@ Make Money on Your Blog with a Full Shop, Product Inserts, and Direct-to-Merchan
 
 This plugin contains the following tools from Prosperent:
 
-* **ProsperShop-** Create a shop on your blog filled with products relevant to your site content.
-* **Auto-Linker-** Convert any keyword or phrase into an affiliated link to the highest converting, most relevant product.
-* **ProsperInsert-** Insert relevant products and deals within your pages and posts..
-* **ContentInsert-** Automatically places products within all posts and pages on your blog.
 * **ProsperLinks-** Any link on your site that leads to a product or merchant will automatically convert to an affiliate link.
+* **ProsperInsert-** Insert relevant products and deals within your pages and posts, can also be automated.
+* **ProsperShop-** Create a shop on your blog filled with products relevant to your site content, links phrases to the shop to gain exposure automatically.
 
 This suite will give you everything you need to easily start making money with your blog.
 
@@ -39,7 +37,7 @@ To view a tutorials and a demo of the Prosperent Suite, visit [Prosperent Demo](
 1. The ProsperShop
 2. The product page for a product that was clicked on in the ProsperShop
 3. The ProsperInsert in a sidebar widget
-4. The Auto-Linker showing an image and phrase linked to the merchant
+4. The AutoLinker showing an image and phrase linked to the Shop
 5. ProsperLinks has turned the merchant links on the logos into affiliate URLs
 
 == Installation ==
@@ -63,11 +61,9 @@ Follow the tutorials at [Prosperent Demo](http://wordpress.prosperentdemo.com/)
 Log in to **[Prosperent](http://prosperent.com)** every so often to check your stats.
 
 = Features: About and How to Use =
-* **ProsperShop** is a full fledged shop with millions of products from over 4500 merchants. This is created automatically when you activate the plugin. 
-* **ProsperInsert** allows you to place products on pages and posts using the Gear icon dropdown when editing a page or post. It can also be placed in widgets.
-* **Auto-Linker** is done either in the settings or on a page or post using the shortcode generator in the Gear icon dropdown. You can turn words or phrases into affiliate links.
 * **ProsperLinks** is completely automated, once turned on (it is on by default), the plugin will begin affiliating links or re-affiliating links to better converting, high commission merchants.
-* **ContentInserter** automatically places products within all posts and pages on your blog.
+* **ProsperInsert** allows you to place products on pages and posts using the Gear icon dropdown when editing a page or post. It can also be placed in widgets and automated to place products on all posts or pages.
+* **ProsperShop** is a full fledged shop with millions of products from over 4500 merchants. This is created automatically when you activate the plugin. 
 
 = Additional Notes for Installation =
 
@@ -97,6 +93,28 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 4.0.2 = 
+* Added Dashboard stats- shows commissions and clicks
+* Improved design of turning tools on or off, easier to tell which are on
+* Condensed Options - 3 main tools 
+* Cleaned up Settings
+* AutoLinker is part of the shop now- link phrases to the shop
+* Added control over Visit Store buttons in the shop and in each insert shortcode
+* Fixed bugs in Price Range
+* Added Grid/List view icons back into store
+* Fixed Bugs with removing certain categories
+* Improved Shop Javascript - scrolls to show details when item is clicked
+* Added close button to details view
+* CSS improvements- Better Responsiveness
+* Added ability to double click shortcodes to edit them
+* Added some old options back into the shortcodes as requested
+* Shortcodes now show as images or red link instead of shortcodes in Visual editor
+* Added Intercom into Prosperent Settings to help with communication
+* Added fix to QuickTags so it is only requested on Text Editor
+* Optimized Automated ProsperInsert
+* Fixed PriceComparison ProsperInsert
+* Shop Improvements
 
 = 4.0.1 = 
 * CSS bug fixes
@@ -189,7 +207,7 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 
 = 3.4 = 
 * Changed File Caching to Memcache
-* Add ProsperNewQuery shortcode for ContentInsert
+* Add ProsperNewQuery shortcode for ProsperInsert
 * ProsperAds has been deprecated
 * ProsperShop Page should be created again on installation
 

@@ -70,7 +70,7 @@ class Model_Activate extends Model_Base
 			    'prosperNoOptions'  => 1,
 				'PSAct'	  		    => 1,
 				'PICIAct' 		    => 1,
-				'ALAct'	  		    => 1,
+				//'ALAct'	  		    => 1,
 				'PLAct'	  		    => 1
 			);	
 			update_option('prosperSuite', $prosperSuiteOpts);
@@ -83,7 +83,7 @@ class Model_Activate extends Model_Base
 			    'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
-		        'ALAct'	  		   => 1,
+		       //'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
 			));
 			update_option('prosperSuite', $prosperSuiteOpts);
@@ -94,7 +94,7 @@ class Model_Activate extends Model_Base
 		        'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
-		        'ALAct'	  		   => 1,
+		        //'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
 		    ));
 		
@@ -151,24 +151,12 @@ class Model_Activate extends Model_Base
 			$advOpts = array(
 				'Title_Structure' => 0,
 				'Base_URL'		  => 'products',
-				'Image_Masking'	  => 0,
-				'URL_Masking'	  => 0,
 				'MemcacheIP'	  => '127.0.0.1',
 				'MemcachePort'    => '11211'
 			);			
 			update_option( 'prosper_advanced', $advOpts );
 		}
-		elseif (!$advOpts['MemcacheIP'] || !$advOpts['MemcachePort'])
-		{
-			$advOpts = array_merge($advOpts, array(
-				'Image_Masking'	=> 0,
-				'URL_Masking'	=> 0,
-				'MemcacheIP'	=> '127.0.0.1',
-				'MemcachePort'	=> '11211'
-			));
-			update_option( 'prosper_advanced', $advOpts );
-		}
-		
+
 		if (!is_array($themesOpts = get_option('prosper_themes')))
 		{
 			$PTopt = array(

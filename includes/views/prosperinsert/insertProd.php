@@ -13,7 +13,7 @@ if ($type == 'merchant' )
                 $record['image_url'] = str_replace('http', 'https', $record['image_url']);
             }
 
-            if ($record['deepLinking'] == 1 && $this->_options['gotoMerchantBypass'])
+            if ($record['deepLinking'] == 1 && $pieces['gtm'])
             {
                 if ($record['domain'] == 'sportsauthority.com')
                 {
@@ -60,7 +60,7 @@ elseif ($pieces['v'] === 'grid')
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 			$cid 	   = $record[$recordId];
 
-			if ($this->_options['PSAct'] && (!$this->_options['gotoMerchantBypass'] || $this->_options['gotoMerchantBypass'] === 'false'))
+			if ($this->_options['PSAct'] && (!$pieces['gtm'] || $pieces['gtm'] === 'false' || $pieces['gtm'] === 'prodPage'))
 			{
 				$goToUrl = '"' . $homeUrl . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
 			}		
@@ -75,9 +75,11 @@ elseif ($pieces['v'] === 'grid')
 				        	<a href=<?php echo $goToUrl; ?>><span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:185px;width:185px;" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span></a>
 				        </div>
 				        <div class="prodContent" style="font-size:15px">
-				            <a href=<?php echo $goToUrl; ?> ><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a>
-    						<div class="prodTitle">
-    							<div class="prodPrice"><strong>$<?php echo number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $record['merchant'] . '</span>'; } ?></div>
+				            <div class="prodTitle">
+				            <a href=<?php echo $goToUrl; ?>><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a> 
+				            </div>		
+    						<div class="prodPrice">
+                                <strong>$<?php echo number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $record['merchant'] . '</span>'; } ?>
     						</div>          						          						                   
     					</div>	
 						<div class="shopCheck prosperVisit">		
@@ -114,7 +116,7 @@ elseif ($pieces['v'] === 'pc')
 				   $keywordSet = true;
 			    }
 				echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-				echo '<td itemprop="seller""><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . $pieces['imgt'] . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
+				echo '<td itemprop="seller""><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
 				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
 				echo '<meta itemprop="priceCurrency" content="USD"/>';
 				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';

@@ -30,6 +30,14 @@ class ProsperAdminController
 		add_action( 'admin_enqueue_scripts', array( $prosperAdmin, 'prosperSuiteMCEOpts' ));
 		add_action( 'admin_init', array( $prosperAdmin, 'init' ), 20 );
 		add_filter( 'plugin_action_links', array( $prosperAdmin, 'addActionLink' ), 10, 2 );
+		
+		require_once(PROSPER_WIDGET . '/ProsperDashStats.php');
+		$prosperDashWidget = new Widget_ProsperDashStats();
+		add_action('wp_dashboard_setup', array($prosperDashWidget, 'init'));
+		
+		/*require_once(PROSPER_WIDGET . '/PostBoxMeta.php');
+		$prosperPostBox = new ProsperPostBox();
+		add_action('wp_dashboard_setup', array($prosperDashWidget, 'init'));*/
 	}	
 	
 	/**
@@ -40,33 +48,26 @@ class ProsperAdminController
 	public function registerSettingsPage() 
 	{
 		add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_IMG . '/prosperentWhite.png' );
+		
+		if ($this->_options['PLAct'])
+		{
+		    add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
+		}
 		if ($this->_options['PSAct'])
 		{
 			add_submenu_page('prosper_general', __('ProsperShop', 'prosperent-suite' ), __( 'ProsperShop', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
 		}
 		if ($this->_options['PICIAct'])
 		{
-			add_submenu_page('prosper_general', __( 'ContentInsert', 'prosperent-suite' ), __( 'ContentInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
-		}
-		if ($this->_options['ALAct'])
-		{
-			add_submenu_page('prosper_general', __( 'AutoLinker', 'prosperent-suite' ), __( 'AutoLinker', 'prosperent-suite' ), 'manage_options', 'prosper_autoLinker', array( $this, 'linkerPage' ) );
-		}
-		if ($this->_options['PLAct'])
-		{
-			add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
+			add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
 		}
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
-		if ($this->_options['PSAct'] || $this->_options['PICIAct'])
-		{
-			add_submenu_page('prosper_general', __( 'ProsperThemes', 'prosperent-suite' ), __( 'ProsperThemes', 'prosperent-suite' ), 'manage_options', 'prosper_themes', array( $this, 'themesCssPage' ) );
-		}
 		
 		global $submenu;
 		if (isset($submenu['prosper_general']))
 			$submenu['prosper_general'][0][0] = __('General Settings', 'prosperent-suite' );		
 	}	
-		
+	
 	/**
 	 * Register the settings page for the Network settings.
 	 */
@@ -109,16 +110,7 @@ class ProsperAdminController
 		if ( isset( $_GET['page'] ) && 'prosper_autoComparer' == $_GET['page'] )
 			require_once( PROSPER_VIEW . '/prosperadmin/inserter-phtml.php' );
 	}
-		
-	/**
-	 * Loads the form for the auto-linker page.
-	 */
-	public function linkerPage() 
-	{
-		if ( isset( $_GET['page'] ) && 'prosper_autoLinker' == $_GET['page'] )
-			require_once( PROSPER_VIEW . '/prosperadmin/linker-phtml.php' );
-	}	
-		
+				
 	/**
 	 * Loads the form for the prosperLinks page.
 	 */
@@ -136,15 +128,6 @@ class ProsperAdminController
 		if ( isset( $_GET['page'] ) && 'prosper_advanced' == $_GET['page'] )
 			require_once( PROSPER_VIEW . '/prosperadmin/advanced-phtml.php' );
 	}	
-	
-	/**
-	 * Loads the form for the product search page.
-	 */
-	public function themesCssPage() 
-	{	
-		if ( isset( $_GET['page'] ) && 'prosper_themes' == $_GET['page'] )
-			require_once( PROSPER_VIEW . '/prosperadmin/themes-phtml.php' );
-	}	
 }
- 
+
 $prosperAdmin = new ProsperAdminController;

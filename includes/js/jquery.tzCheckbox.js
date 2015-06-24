@@ -1,0 +1,2 @@
+jQuery(function(){jQuery.fn.tzCheckbox=function(a){a=jQuery.extend({labels:["on","off"]},a);return this.each(function(){var b=jQuery(this),d=[];b.data("on")?(d[0]=b.data("on"),d[1]=b.data("off")):d=a.labels;var c=jQuery("<span>",{"class":"tzCheckBox "+(this.checked?"checked":""),html:'<span class="tzCBContent">'+d[this.checked?0:1]+'</span><span class="tzCBPart"></span>'});c.insertAfter(b.hide());c.click(function(){c.toggleClass("checked");var a=c.hasClass("checked");b.prop("checked",a);c.find(".tzCBContent").html(d[a?
+0:1])});b.bind("change",function(){c.click()})})}});

@@ -1,25 +1,34 @@
+<script>
+jQuery(function(){"pc"==jQuery("#prosper_insertView-pc").is(":checked")?jQuery("#prosperpc").css("display","block"):jQuery("#prodImageType").css("display","none")});
+</script>
 <?php
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 
-$prosperAdmin->adminHeader( __( 'ContentInsert Settings', 'prosperent-suite' ), true, 'prosperent_compare_options', 'prosper_autoComparer' );
+$prosperAdmin->adminHeader( __( 'ProsperInsert Settings', 'prosperent-suite' ), true, 'prosperent_compare_options', 'prosper_autoComparer' );
 
-echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'Insert Products into All Posts and/or Pages.<br>Uses the PagePost titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br><br>You can edit products on a page/post by using gear icon in the visual editor and clicking "Edit ContentInsert Products"<br><br>Go to <a href="http://wordpress.prosperentdemo.com/prodinsert/">WordPress Prosperent Demo: ProsperInsert</a> for more information and to see how it looks and works.', 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'Insert Products into All Posts and/or Pages.<br>Uses the PagePost titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br><br>You can edit products on a page/post by using gear icon in the visual editor and clicking "Edit ProsperInsert Products".', 'prosperent-suite' ) . '</p>';						
 
-								
-
-echo $prosperAdmin->checkbox( 'prosper_inserter_posts', __( '<strong style="font-size:14px;">Add ContentInsert to All Posts</strong>', 'prosperent-suite' ), true );
+echo $prosperAdmin->checkbox( 'prosper_inserter_posts', __( '<strong style="font-size:14px;">Add ProsperInsert to All Posts</strong>', 'prosperent-suite' ), true );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->checkbox( 'prosper_inserter_pages', __( '<strong style="font-size:14px;">Add ContentInsert to All Pages</strong>', 'prosperent-suite' ), true );
+echo $prosperAdmin->checkbox( 'prosper_inserter_pages', __( '<strong style="font-size:14px;">Add ProsperInsert to All Pages</strong>', 'prosperent-suite' ), true );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
 echo $prosperAdmin->radio( 'prosper_inserter', array('top'=> 'Above', 'bottom'=> 'Below'), __( '<strong style="font-size:14px;">Insert Above or Below content</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->radio( 'prosper_insertView', array('grid'=> 'Grid', 'list'=> 'List/Detail', 'pc' => 'Price Comparison'), __( '<strong style="font-size:14px;">View of ContentInserts</strong>', 'prosperent-suite' ) );
+echo $prosperAdmin->radio( 'prosper_insertView', array('grid'=> 'Grid', 'list'=> 'List/Detail', 'pc' => 'Price Comparison'), __( '<strong style="font-size:14px;">View of Automated ProsperInsert</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
-	
+
+echo '<div id="prosperpc" style="display:none;">';
+echo $prosperAdmin->radio( 'prosper_imageType', array('original'=> 'Original Logo', 'black'=> 'Black Logo', 'white' => 'White Logo'), __( '<strong style="font-size:14px;">Price Comparison Image</strong>', 'prosperent-suite' ) );
+echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+echo '</div>';
+
+echo $prosperAdmin->checkbox( 'Link_to_Merc', __( '<strong style="font-size:14px;">Link to Merchant</strong>', 'prosperent-suite' ), true);
+echo '<p class="prosper_desc" style="font-weight:600;">' . __( "Will Link to the Shop if not checked.", 'prosperent-suite' ) . '</p>';
+
 echo $prosperAdmin->textinput( 'PI_Limit', __( '<strong style="font-size:14px;">Number of Products to Insert</strong>', 'prosperent-suite' ), '', '', 'prosper_textinputsmall' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 

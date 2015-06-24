@@ -20,7 +20,7 @@ class ProsperLinkerController extends Model_Admin
 		require_once(PROSPER_MODEL . '/Linker.php');
 		
 		$prosperLinker = new Model_Linker();
-	
+
 		if(is_admin())
 		{
 			add_action('admin_print_footer_scripts', array($prosperLinker, 'qTagsLinker'));

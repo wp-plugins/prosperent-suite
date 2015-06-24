@@ -87,7 +87,7 @@ jQuery(window).resize(function() {
 						$priceSale = $product['priceSale'] ? $product['priceSale'] : $product['price_sale'];
 						
 						echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-						echo '<td itemprop="seller"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/original/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></td>';
+						echo '<td itemprop="seller"><img style="width:80px;height:40p" src="http://images.prosperentcdn.com/images/logo/merchant/original/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></td>';
 						echo '<td itemprop="price" style="vertical-align:middle;">' . ($priceSale ? '$' . number_format($priceSale, 2) :  '$' . number_format($product['price'], 2, '.', ',')) . '</td>';
 						echo '<meta itemprop="priceCurrency" content=USD"/>';
 						echo '<td style="vertical-align:middle;"><div class="shopCheck prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '" target="' . $target . '" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . $visitButton . '"/></a></div></td>';
@@ -119,7 +119,7 @@ if (count($similar) > 1)
 				</div>
 				<div class="prodContent">
 					<div class="prodTitle">
-                        <a href="<?php echo  $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>"><?php echo $prod['brand']; ?></a>
+                        <a href="<?php echo  $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $prod['keyword'])) . '/cid/' . $cid; ?>"><?php echo ($prod['brand'] ? $prod['brand'] : '&nbsp;'); ?></a>
 					</div>
 					$<?php echo $price; ?>
 				</div>

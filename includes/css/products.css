@@ -19,6 +19,31 @@
 	margin-bottom:8px;
 }
 
+#views{
+	float:left;
+	margin-right:12px;
+}
+
+#views span.gridIcon {
+	background:url(../img/grid_icon.png) 50% bottom no-repeat;
+	display:inline-block;
+	height:10px;
+	width:10px;;
+	margin-right:2px
+}
+
+#views span.listIcon { 
+	background:url(../img/list_icon.png) 50% bottom no-repeat;
+	display:inline-block;
+	height:10px;
+	width:14px;
+	margin-right:2px
+}
+
+#views span:hover.gridIcon,#views span:hover.listIcon {
+	background-position:0 0
+}
+
 .prosperSearchInputs {
 	position:relative;
 	display:inline-table;
@@ -45,7 +70,6 @@
 
 .prosperSearchRight {
 	white-space:nowrap;
-	font-size:0;
 	width:1% !important;
 	vertical-align:middle;
 	display:table-cell;
@@ -54,6 +78,8 @@
 }
 
 .prosperSearchInputs .prosper_submit {
+	display:inline-block!important;
+	margin-top:0!important;
 	line-height:30.6px;
 	border-radius:0 4px 4px 0;
 	border:1px solid #ccc;
@@ -191,7 +217,7 @@
 	border:1px solid #ccc;
 	padding:0.5em;
 	margin-top:0.5em;
-	min-height: 40px;	
+	min-height: 35px;	
 	max-width:165px;
 	overflow-x: hidden;
 }
@@ -213,7 +239,6 @@
 	margin-top:3px;
 	border-radius:2px;
 	cursor:pointer;
-	padding-left:1px;
 }
 
 .prosperFilterList .prosperActive i {
@@ -233,7 +258,7 @@
 	text-decoration:none;
 }
 
-#prosperFilterSidebar ul .prosperFilterList a {
+#prosperFilterSidebar ul .prosperFilterList a span {
 	max-width:100px;	
 	font-size:12px;
 	display:inline-block;
@@ -483,7 +508,7 @@ span.loadCoup {
 
 #product .productContent {
 	display:table-cell;
-	vertical-align:middle;
+	vertical-align:top;
 }
 
 #product .couponExpire {
@@ -638,13 +663,12 @@ span.loadCoup {
 }
 
 .prosperDetails .prosperDetContent {
-	display:table;
+	display:table-row;
 }
 
 .prosperDetails .pDetailsImage {
 	float:left;
 	display:table-cell;
-	width:44%;
 }
 
 .prosperDetails .pDetailsImage img {
@@ -657,7 +681,7 @@ span.loadCoup {
 .pDetailsAll {
 	vertical-align:top;
 	padding:6px;
-	display:inline-block;
+	display:table-cell;
 	width:54%;
 }
 
@@ -670,6 +694,7 @@ span.loadCoup {
 .prosperDets {
 	border-bottom:1px solid #ddd;
 	margin:6px;	
+	display:table;
 }
 
 .prosperDetsContain {
@@ -740,5 +765,71 @@ table.productResults, table.productResults tr, table.productResults td {
 	}
 }
 
+@media all and (min-width:300px) and (max-width:770px) {
+	#product .productBlock {
+		width:100%;
+		display:inline-block;
+		padding:4px 0;
+		height:auto;
+	}
+	
+	#product .productImage {
+		padding:0 20px;
+		display:block;
+		width:100%;
+	}
+	
+	#product .productContent {
+		display:block;
+		width:100%;
+	}
+	
+	#product .productTitle {
+		padding-bottom:5px;
+		text-align:center;
+		font-size:20px;
+	}
+	
+	#product .productContent .productDescription {
+		padding-bottom:5px;
+		font-size:14px;
+		-moz-hyphens:none;
+	}
+	
+	#product .productResults {
+		width:100%
+	}
+	
+	#product .productResults td img {
+		width:120px!important;
+		height:60px!important;
+	}
+		#prosperPriceSorter {
+		display:none;
+	}
+	
+	#productList .productImage {
+		display:block;
+		width:100%
+		
+	}
+	
+	#productList .productContent {
+		display:block;
+		width:100%
+	}
+	
+	#productList .productEnd {
+		display:block;
+		width:100%
+	}
+	
+	.productEnd .productPriceNoSale, .productEnd .productPriceSale {
+		padding:0;
+	}
+	
+	#simProd .prosperVisit {
+		margin:0;
+	}
 
 }

@@ -18,7 +18,10 @@ class Model_Search extends Model_Base
 	{  
 	    $keys = array(
 	        'api' => $this->_options['Api_Key'],
-	        'img' => PROSPER_IMG
+	        'img' => PROSPER_IMG,
+	        'imk' => $this->_options['ImageCname'],
+	        'cmk' => $this->_options['ClickCname'],
+	        'vbt' => $this->_options['VisitStoreButton']
 	    );
 	     
 	    echo '<script type="text/javascript">var _prosperShop = ' . json_encode($keys) . '</script>';
@@ -160,10 +163,10 @@ class Model_Search extends Model_Base
 
 		if ($this->_options['ProsperCategories'])
 		{
-		    $categories = array_map('stripslashes', explode(',', $this->_options['ProsperCategories']));
-		    foreach ($categories as $category)
+		    $positiveCategories = array_map('stripslashes', explode(',', $this->_options['ProsperCategories']));
+		    foreach ($positiveCategories as $category)
 		    {
-		        array_push($filterCategory, trim(str_replace('-', ' > ', $category)));
+		        array_push($filterCategory, trim(str_replace('_', ' ', $category)));
 		    }
 		}
 
@@ -254,11 +257,10 @@ class Model_Search extends Model_Base
 		}
 		else
 		{
-			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
+			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2'));
 			wp_enqueue_script( 'productPhp');
-			wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
 		}
-		
+
 		return $phtml;
 	}
 	

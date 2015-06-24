@@ -18,14 +18,18 @@ abstract class Model_Base
 		'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
 		'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
 		'fetchTrends'	   => 'http://api.prosperent.com/api/trends?',
-		'fetchAnalyzer'	   => 'http://api.prosperent.com/api/content/analyzer?'
+		'fetchAnalyzer'	   => 'http://api.prosperent.com/api/content/analyzer?',
+	    'fetchClicks'	   => 'http://api.prosperent.com/api/clicks?',
+	    'fetchCommissions' => 'http://api.prosperent.com/api/commissions?'
 	);
 	
 	private $_privateNetEndPoints = array(
 		'fetchMerchant'    => 'http://192.168.1.104/api/merchant?',
 		'fetchProducts'    => 'http://192.168.1.104/api/search?',
 		'fetchTrends'      => 'http://192.168.1.104/api/trends?',
-		'fetchAnalyzer'	   => 'http://192.168.1.104/api/content/analyzer?'
+		'fetchAnalyzer'	   => 'http://192.168.1.104/api/content/analyzer?',
+	    'fetchClicks'	   => 'http://192.168.1.104/api/clicks?',
+	    'fetchCommissions' => 'http://192.168.1.104/api/commissions?'
 	);	
 
 	public function init()
@@ -166,9 +170,9 @@ abstract class Model_Base
 			wp_enqueue_script( 'loginCheck' );	
 		}					
 	
-		wp_register_script('Beta', '', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
-		wp_enqueue_script( 'Beta' );	
-		wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
+		//wp_register_script('Beta', '', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
+		//wp_enqueue_script( 'Beta' );	
+		//wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
 	}
 	
 	/**
@@ -226,7 +230,7 @@ abstract class Model_Base
 		
 	public function prosperStylesheets()
 	{
-		$css = PROSPER_CSS . '/products.min.css';
+		$css = PROSPER_CSS . '/products.css';
 
 		// Product Search CSS for results and search
 		if ($this->_options['Set_Theme'] != 'Default')
@@ -260,10 +264,12 @@ abstract class Model_Base
 	
 	public function prosperBadSettings()
 	{			
+	    
 		$url = admin_url( 'admin.php?page=prosper_general' );
 		echo '<div class="error" style="padding:6px 0;">';
 		echo _e( '<span style="font-size:14px; padding-left:10px;">Your <strong>API Key</strong> is either incorrect or missing. </span></br>', 'my-text-domain' );
-		echo _e('<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent API Key</strong> by following the directions in <a href="' . $url . '">General Settings</a>.</span></br>', 'my-text-domain' ); 
+		
+		echo _e('<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent API Key</strong> by following the directions ' . ('prosper_general' == $_GET['page'] ? 'below' : 'in <a href="' . $url . '">General Settings</a>') . '.</span></br>', 'my-text-domain' ); 
 		echo _e('<span style="font-size:14px; padding-left:10px;">Prosperent Suite will not work without this information.</span>', 'my-text-domain' );
 		echo '</div>';		
 	}
@@ -306,6 +312,7 @@ abstract class Model_Base
 			'ft'  	 => 'fetchProducts', // fetch method
 			'sale'   => 0, // on sale products only
 			'pr'	 => '', // priceRange
+		    'po'	 => '', // percentoff
 			'gimgsz' => 200,	 // grid image size
 			'sf'     => 'prod', // Search For, changes the endpoint
 			'sbar'   => 'Search Products', // Search Bar Text
@@ -398,7 +405,7 @@ abstract class Model_Base
 	public function prosperCustomAdd()
 	{
 		// Add only in Rich Editor mode
-		if (get_user_option('rich_editing') == 'true' && ($this->_options['PSAct'] || $this->_options['ALAct'] || $this->_options['PICIAct']) )
+		if (get_user_option('rich_editing') == 'true' && ($this->_options['PSAct'] || $this->_options['PICIAct']) )
 		{
 			add_filter('mce_external_plugins', array($this, 'prosperTinyRegister'));
 			add_filter('mce_buttons', array($this, 'prosperTinyAdd'));
@@ -427,11 +434,14 @@ abstract class Model_Base
 	
 	public function qTagsProsper($id, $display, $arg1, $arg2)
 	{
-		?>
-		<script type="text/javascript">
-			QTags.addButton(<?php echo "'" . $id . "', '" . $display . "', '" . $arg1 . "', '" . $arg2 . "'"; ?>);
-		</script>
-		<?php
+	    if (wp_script_is('quicktags'))
+	    {
+    		?>
+    		<script type="text/javascript">
+    			QTags.addButton(<?php echo "'" . $id . "', '" . $display . "', '" . $arg1 . "', '" . $arg2 . "'"; ?>);
+    		</script>
+    		<?php
+	    }
 	}
 	
 	public function doOutputBuffer()
@@ -510,7 +520,7 @@ abstract class Model_Base
 			$sid = implode('_', $sidArray);
 		}
 	
-		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":' . ($this->_options['PL_LinkAff'] ? 1 : 0) . ', "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
+		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":1, "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
 	
 	public function prosperStoreRemove()

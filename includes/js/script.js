@@ -1,0 +1,1 @@
+jQuery(document).ready(function(){jQuery(".prosperLights").tzCheckbox({labels:["On","Off"]});jQuery(".tzCheckBox").click(function(){jQuery(".prosperSaveSettings").click()})});

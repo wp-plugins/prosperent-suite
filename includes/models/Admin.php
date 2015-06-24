@@ -19,14 +19,15 @@ class Model_Admin extends Model_Base
 	/**
 	 * @var array $adminPages Array of admin pages that the plugin uses.
 	 */
-	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
+	public $adminPages = array('prosper_general', 'prosper_productSearch', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_advanced', 'prosper_themes');
 	
 	public $_options;
 			
 	public function init()
 	{		  
+
 	    add_action( 'admin_enqueue_scripts', array($this, 'prefixEnqueueFAwesome' ));
-	    
+	    add_action('admin_head', array($this, 'adminIntercom'));
 	    if ( isset( $_GET['dismissOpenMessage'] ) && wp_verify_nonce( $_GET['nonce'], 'prosperhideOpenMessage' ) && current_user_can( 'manage_options' ) )
 	    {
 	        $genOptions = get_option('prosperSuite');
@@ -136,7 +137,7 @@ class Model_Admin extends Model_Base
 	    $enabledOpts = array(
 	        'prosperShop'   => $options['PSAct'],
 	        'prosperInsert' => $options['PICIAct'],
-	        'autoLinker'    => $options['ALAct'],
+	        //'autoLinker'    => $options['ALAct'],
 	        'currentScreen' => $currentScreen->id
 	        
 	    ); 
@@ -173,13 +174,10 @@ class Model_Admin extends Model_Base
 	public function optionsInit() 
 	{
 		register_setting( 'prosperent_options', 'prosperSuite' );
-		register_setting( 'prosperent_products_options', 'prosper_productSearch' );
-		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );
-		register_setting( 'prosperent_linker_options', 'prosper_autoLinker' );
 		register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
+		register_setting( 'prosperent_products_options', 'prosper_productSearch' );
+		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );	
 		register_setting( 'prosperent_advanced_options', 'prosper_advanced' );
-		register_setting( 'prosperent_themescss_options', 'prosper_themes' );
-		register_setting( 'prosperent_generator_options', 'prosper_generator' );
 		
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) 
 		{
@@ -217,14 +215,11 @@ class Model_Admin extends Model_Base
 			'privateNetwork'	  => file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') ? 1 : 0,
 			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
 			'prosperShop'		  => $options['PSAct'] ? 1 : 0,
-			'productEndpoint' 	  => $options['Product_Endpoint'] ? 1 : 0,
 			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
-			'sliders' 			  => $options['Enable_Sliders'] ? 1 : 0,
 			'prosperInsert' 	  => $options['PICIAct'] ? 1 : 0,
 			'contentInsert' 	  => ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages']) ? 1 : 0,
-			'autoLinker' 		  => $options['ALAct'] ? 1 : 0,
 			'linkerAmount'		  => $options['LinkAmount'],
-			'linkAffiliator' 	  => $options['PL_LinkAff'] ? 1 : 0,
+			'prosperLinks' 	      => $options['PLAct'] ? 1 : 0,
 			'linkOptimizer' 	  => $options['PL_LinkOpt'] ? 1 : 0,
 			'relevancyThreshold'  => $options['relThresh'],
 			'baseUrl' 			  => $options['Manual_Base'] ? 1 : 0,
@@ -315,6 +310,42 @@ class Model_Admin extends Model_Base
 	 * @param string $class   The class of the object.
 	 * @return string
 	 */
+	public function activatedLights( $var, $label, $option = '', $tooltip = '', $class = 'prosper_checkbox')
+	{
+		if ( empty( $option ) )
+			$option = $this->currentOption;
+
+		$options = get_option( $option );
+
+		if ( !isset( $options[$var] ) )
+			$options[$var] = false;
+		
+		if ( $options[$var] === true )
+			$options[$var] = 1;
+
+	    if ( !empty( $label ) )
+	        $label .= ':';
+	    $output_label = '<span title="' . $tooltip . '"><label class="' . $class . '" for="' . esc_attr( $var ) . '">' . $label . '</label></span>';
+	    $class        = $class;
+	    
+	    $output_input = '<input style="float:none!important;margin:0 0 0 8px!important;" class="' . $class . '" type="checkbox" value="1" id="' . esc_attr( $var ) . '" name="' . esc_attr( $option ) . '[' . esc_attr( $var ) . ']" '  . checked( $options[$var], 1, false ) . '/>';
+
+		$output = $output_label . $output_input;
+
+	    return $output . '<br class="clear" />';
+	}	
+	
+	/**
+	 * Create a Checkbox input field.
+	 *
+	 * @param string $var        The variable within the option to create the checkbox for.
+	 * @param string $label      The label to show for the variable.
+	 * @param bool   $label_left Whether the label should be left (true) or right (false).
+	 * @param string $option     The option the variable belongs to.
+	 * @param string $tooltip The tooltip for the option
+	 * @param string $class   The class of the object.
+	 * @return string
+	 */
 	public function checkbox( $var, $label, $label_left = false, $option = '', $tooltip = '', $class = 'prosper_checkbox') 
 	{
 		if ( empty( $option ) )
@@ -379,7 +410,7 @@ class Model_Admin extends Model_Base
 		{
 			if ( !empty( $label_left ) )
 				$label_left .= ':';
-			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '[' . $arrayNum . ']">' . $label_left . '</label>';
+			$output_label = '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '[' . $arrayNum . ']">' . $label . ':</label>';
 			$class        = 'prosper_checkboxinline';
 		} 
 		else 
@@ -391,7 +422,7 @@ class Model_Admin extends Model_Base
 		$output_input = "<input class='$class' type='checkbox' value='1' id='" . esc_attr( $var ) . "' name='" . esc_attr( $option) . "[" . esc_attr( $var ) . "][" . $arrayNum . "]' " . checked( $options[$var][$arrayNum], 1, false ) . "/>";
 
 		if ( $label_left !== false ) {
-			$output = $output_label . $output_input . '<label class="prosper_checkboxinline" for="' . esc_attr( $var ) . '">' . $label . '</label>';
+			$output = $output_label . $output_input;
 		} else 
 		{
 			$output = $output_input . $output_label;
@@ -650,6 +681,11 @@ class Model_Admin extends Model_Base
 		return $content;
 	}
 	
+	public function adminIntercom ()
+	{
+
+	 }
+	
 	/**
 	 * Generates the header for admin pages
 	 *
@@ -660,16 +696,48 @@ class Model_Admin extends Model_Base
 	 * @param bool   $contains_files Whether the form should allow for file uploads.
 	 */
 	public function adminHeader( $title, $form = true, $option = 'prosperent_options', $optionshort = 'prosperSuite', $contains_files = false ) 
-	{
-		?>
+	{	    
+	    global $current_user;
+	    get_currentuserinfo();
+	    $options = $this->getOptions();
+	    ?>
+	    		
+		<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/x8zql53k';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+        <script>
+        window.intercomSettings = {    
+            name: "<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>",
+            email: "<?php echo get_option('admin_email'); ?>",
+            app_id: "x8zql53k",	                
+            updated_at: "<?php echo time(); ?>",
+            wordPressSite: "<?php echo get_option('home'); ?>",
+            user_hash: "<?php echo hash_hmac("sha256", get_option('admin_email'), "5219X1tSYeD6mJ4nBtfIsDWarGHrXr_Xd5RnDDoV"); ?>",
+            version: "<?php echo $this->getVersion(); ?>"
+        };
+        </script>
 		<div class="wrap">
-		<?php
-		$options = $this->getOptions();
-
+		<?php 
+		if ('General Settings' == $title) : ?>
+			<table><tr>
+			<td><img style="max-width:200px;display:block;" src="<?php echo PROSPER_IMG . '/adminImg/prosperent-logo-black.png'; ?>"/></td>
+			</tr><tr>
+			<td><h1 style="font-size:23px;max-width:876px;font-weight:300;padding:0 15px 4px 0;margin-top:15px;line-height:29px;">Make money from ordinary links on your blog, add a shop, and insert products into your posts.</h1></td></tr><div style="clear:both"></div>
+			</table>		
+            <h2 style="display:inline;margin:0;padding:0;float:left;">&nbsp;</h2>
+			
+		<?php elseif ('Advanced Settings' == $title || 'ProsperThemes' == $title || 'MultiSite Settings' == $title ): ?>
+			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div><h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>';
+		 else :?>
+			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div><h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>';
+		endif; ?>
+		
+		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:900px; max-width:950px;">
+		<div class="metabox-holder">
+		<div class="meta-box-sortables">
+		<?php		
 		if ( ( isset( $_GET['updated'] ) && $_GET['updated'] == 'true' ) || ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == 'true' ) ) {
 			$msg = __( 'Settings updated', 'prosperent-suite' );
 
-			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
+			echo '<div id="message" style="max-width:900px;" class="message updated"><p><strong>' . esc_html( $msg ) . '.</strong></p></div>';
 			
 			if ($options['anonymousData'])
 			{
@@ -677,96 +745,17 @@ class Model_Admin extends Model_Base
 			}
 		}
 
-		if ($options['Api_Key'] && !$options['dismissOpenMessage'])
-		{		
-			$this->prosperStoreInstall();
-			$this->prosperReroutes();
-			
-			echo '
-                <div id="message" style="width:800px;" class="message updated">	
-                    <span style="float:right;padding:9px;font-size:20px;"><a style="text-decoration:none!important;color:red" href="' . admin_url(str_replace('/wp-admin/', '', $_SERVER['REQUEST_URI']) . '&dismissOpenMessage&nonce=' . wp_create_nonce( 'prosperhideOpenMessage' )) . '">&#215;</a></span><br>
-                    <p>
-                    <strong style="font-size:20px;">Welcome to Prosperent!</strong>
-                    <p style="font-size:18px;color:#796A6A;">To help you get started:</p>
-                    <table style="width:100%;font-size:14px;">
-                        <tr>
-                            <td>
-                                <i style="font-size:18px;" class="fa fa-shopping-cart"></i> 
-                            </td>
-                            <td>
-                                <a target="BLANK" href="' . home_url('/') . ($options['Base_URL'] ? $options['Base_URL'] : 'products') . '">View Your Shop</a> 
-                            </td>	            
-                            <td>
-                                <i style="font-size:18px;" class="fa fa-upload"></i>
-                            </td>
-                            <td>
-                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoComparer') . '">Insert Products Automatically into Content</a> 
-                            </td>                            
-                            <td>
-                                <i style="font-size:18px;" class="fa fa-link"></i>
-                            </td>
-                            <td>
-                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_autoLinker') . '">Create Product Links Automatically</a> 
-                            </td>		    
-                                   
-                        </tr>
-                        <tr>
-                            <td>
-                                &nbsp; 
-                            </td>
-                            <td>
-                                <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_productSearch') . '">Edit Your Shop</a>
-                            </td>	
-                            <td>
-                                <i style="font-size:18px;" class="fa fa-link"></i>
-                            </td>
-                            <td>
-		                        <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">Let ProsperLinks handle Link Affiliation For You</a>
-                            </td>	
-                            <td>
-                                <i style="font-size:18px;" class="fa fa-plus"></i>
-                            </td>
-		                    <td>
-		                        <a target="BLANK" href="' . admin_url( 'admin.php?page=prosper_prosperLinks') . '">Add Prosperent Widgets to Sidebars/Footers</a>
-                            </td>
-                        </tr>
-                    </table>		    
-
-                    <p style="font-size:18px;color:#796A6A;">Other helpful things:</p>
-                    <ul style="list-style-type:disc;margin-left:25px;font-size:15px;">
-                        <li>Look for the <i style="font-size:18px;padding:0 4px;" class="mce-ico mce-i-prosperent"></i> when editing pages/posts for Prosperent Shortcodes</li>
-                        <li>Log in to <a target="BLANK" href="http://prosperent.com">Prosperent</a> to view your Clicks and Commissions </li>
-                        <li>View the <a target="BLANK" href="http://community.prosperent.com/">Forums</a> if you have any Questions</li>
-                    </ul>		
-                </div>'
-			;			
-		}
-
 		if ($options['Enable_Caching'] && !extension_loaded('memcache'))
 		{
-			echo '<div style="width:800px;" class="update-nag">';
+			echo '<div style="max-width:900px;" class="update-nag">';
 			echo '<span style="font-size:14px; padding-left:10px;">You have caching enabled but <strong>Memcache</strong> is not installed on your server.</span></br>';
 			echo '<span style="font-size:14px; padding-left:10px;">Caching will be skipped.</span></br>'; 
 			echo '</div>';
 		}
 		
-		if ('General Settings' == $title) : ?>
-			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">Prosperent Suite</h1></td></tr></table><div style="clear:both"></div>';?>
-			<h1 id="prosper-title"><?php echo $title; ?></h1>
-		<?php elseif ('Advanced Settings' == $title || 'ProsperThemes' == $title || 'MultiSite Settings' == $title ): ?>
-			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
-		 else :?>
-			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div>';
-		endif; ?>
-		
-		<h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>
-		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:auto;padding: 0 20px 0 0;">
-		<div class="metabox-holder">
-		<div class="meta-box-sortables">
-		<?php
 		if ( $form ) 
 		{
-			echo '<form onsubmit="setFormSubmitting()"  action="' . admin_url( 'options.php' ) . '" method="post" id="prosper-conf"' . ( $contains_files ? ' enctype="multipart/form-data"' : '' ) . '>';
+			echo '<form action="' . admin_url( 'options.php' ) . '" method="post" id="prosper-conf"' . ( $contains_files ? ' enctype="multipart/form-data"' : '' ) . '>';
 			settings_fields( $option );
 			$this->currentOption = $optionshort;
 		}
@@ -782,7 +771,7 @@ class Model_Admin extends Model_Base
 		if ( $submit ) 
 		{
 			?>
-			<div class="submit"><input type="submit" class="button-primary" name="submit" value="<?php _e( "Save Settings", 'prosperent-suite' ); ?>"/></div>
+			<div class="submit"><input type="submit" class="button-primary prosperSaveSettings" name="submit" value="<?php _e( "Save Settings", 'prosperent-suite' ); ?>"/></div>
 			<?php 
 		} 
 		?>

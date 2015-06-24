@@ -50,7 +50,7 @@ class Model_Linker extends Model_Base
 		$homeUrl   = home_url('/');	
 		$storeUrl  = $homeUrl . $base;	
 			
-		if (!$options['ALAct'])
+		if (!$options['PLAct'])
 		{
 		    return $content;
 		}
@@ -76,7 +76,7 @@ class Model_Linker extends Model_Base
 			$query = $content;
 		}
 		
-		if ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true' || $pieces['gtm'] === 'prodPage')
+		if ($pieces['gtm'] || !$options['PSAct'] || $pieces['gtm'] === 'prodPage')
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
@@ -216,19 +216,19 @@ class Model_Linker extends Model_Base
 					return $content;
 				}
 			}	
-			elseif ($pieces['gtm'] === 'merchant' || !$options['PSAct'] || $pieces['gtm'] === 'true')
+			elseif ($pieces['gtm'] || !$options['PSAct'])
 			{			
 				$affUrl = $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
 				$checkClass =  'shopCheck';
 			}
-			else if ($pieces['gtm'] === 'prodPage')
+			else
 			{				
 				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['data'][0]['keyword'])) . '/cid/' . $allData['data'][0]['catalogId'];
 				$rel = 'nolink';
 			}
 
-			return '<a class="shopCheck" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
+			return '<a class="shopCheck" style="text-decoration:none;" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
 		}
 
 		$fB = '';
@@ -262,7 +262,7 @@ class Model_Linker extends Model_Base
 
 		if ($fB || $fM || $query)
 		{
-			return '<a href="' . $storeUrl . $query . $fB . $fM . $type . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
+			return '<a style="text-decoration:none;" href="' . $storeUrl . $query . $fB . $fM . $type . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';
 		}
 		else 
 		{
@@ -280,7 +280,7 @@ class Model_Linker extends Model_Base
 	{	
 	    $options = $this->_options;
 	    
-	    if (!$options['ALAct'])
+	    if (!isset($options['PSAct']))
 	    {
 	        return $text;
 	    }
@@ -310,7 +310,7 @@ class Model_Linker extends Model_Base
 			$i = 0;				
 			foreach ($val as $oldText => $newText)
 			{ 				
-				$limit = $options['PerPage'][$i] ? $options['PerPage'][$i] : 5;
+				$limit = $options['PerPage'][$i] ? $options['PerPage'][$i] : 3;
 				$case  = isset($options['Case'][$i]) ? '' : 'i';
 
 				if (!preg_match('/' . $oldText . '/' . $case, $text))
@@ -393,7 +393,7 @@ class Model_Linker extends Model_Base
 					$text = implode('', $content);
 				}
 				else
-				{*/
+				{
 					if (!isset($options['PSAct']) || isset($options['LTM'][$i]) == 1 || $page->post_status != 'publish')
 					{			
 					    $settings = array(
@@ -414,9 +414,9 @@ class Model_Linker extends Model_Base
 					    }		   
 					}
 					else
-					{
+					{*/
 						$text = preg_replace('/\b\s(' . $oldText . ')\s\b/' . $case, ' <a href="' . $productSearchUrl . $query . '" target="' . $target . '" class="prosperent-kw">$1</a> ', $text, $limit);
-					}
+					//}
 				//}
 				
 				$text = str_ireplace($base, $qText[0], $text);

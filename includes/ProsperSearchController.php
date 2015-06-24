@@ -134,7 +134,7 @@ class ProsperSearchController
 		$curlUrls	  = array();
 		$dollarSlider = 'Price Range';
 		$url		  = $data['url'];
-		$visitButton  = 'Visit Store';
+		$visitButton  = $options['VisitStoreButton'] ? $options['VisitStoreButton'] : 'Visit Store';
 		//global $wp;
 		$currentUrl = rtrim(home_url( $_SERVER['REQUEST_URI']/*$wp->request*/ ), '/');
 
@@ -310,7 +310,8 @@ class ProsperSearchController
 		        'query'            => $query,
 		        'sortBy'	       => 'price desc',
 		        'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
-		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
+		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
+			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 		        'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
 		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 		        'limit'			   => 1,
@@ -323,7 +324,8 @@ class ProsperSearchController
 		        'query'            => $query,
 		        'sortBy'	       => 'price asc',
 		        'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
-		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
+		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
+			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 		        'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
 		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 		        'limit'			   => 1,
@@ -332,7 +334,7 @@ class ProsperSearchController
 		    );
 		
 		    $curlUrls['highRange'] = $this->searchModel->apiCall($settingsHigh, $fetch);
-		    $curlUrls['lowRange'] = $this->searchModel->apiCall($settingsLow, $fetch);			
+		    $curlUrls['lowRange'] = $this->searchModel->apiCall($settingsLow, $fetch);		
 		}
 
 		$everything = $this->searchModel->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
@@ -362,8 +364,7 @@ class ProsperSearchController
 		}
 
 		if ($results = $everything['results']['data'])
-		{	
-		    
+		{			    
 			$totalFound = (!$trend ? $everything['results']['totalRecordsFound'] : 0);	
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}

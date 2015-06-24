@@ -12,7 +12,7 @@ echo '<p class="prosper_settingDesc" style="font-size:15px;">' . __( 'These sett
 echo $prosperAdmin->checkbox( 'Option_Delete', __( '<strong style="font-size:14px">Delete Options on Uninstall</strong>', 'prosperent-suite' ), true );
 echo '<p class="prosper_descb">' . __( "On reinstallation, some options will be added automatically.", 'prosperent-suite' ) . '</p><br>';
 
-if ($genOptions['PSAct'] || $genOptions['PICIAct'] || $genOptions['ALAct'])
+if ($genOptions['PSAct'] || $genOptions['PICIAct'])
 {
 	echo $prosperAdmin->textinput( 'MemcacheIP', __( '<strong style="font-size:14px">Memcache IP</strong>', 'prosperent-suite' ), '', 'Enter your Memcache IP if it differs from the default of 127.0.0.1</span></a>');
 	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
@@ -34,7 +34,7 @@ echo $prosperAdmin->checkbox( 'Image_Masking', __( 'Image URL Masking', 'prosper
 echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p>';
 */
 
-if ($genOptions['PSAct'] || $genOptions['PICIAct'] || $genOptions['ALAct'])
+if ($genOptions['PSAct'] || $genOptions['PICIAct'])
 {
 	echo '<strong style="float:left;margin:6px 0 5px 20px;font-size:14px;">SID Tracking</strong><br>';
 	echo $prosperAdmin->multiCheckbox( 'prosperSid',  array( 'blogname' => 'Blog Name', 'interface' => 'Interface', 'query' => 'Query/Topic', 'page' => 'Page', 'pageNumber' => 'Page Number', 'widgetTitle' => 'Widget Title', 'widgetName' => 'Widget Type', 'authorId' => 'Author ID', 'authorName' => 'Author Name', 'postId' => 'Post ID'  ));
@@ -69,7 +69,7 @@ if ($genOptions['PSAct'])
 	if ($options['Manual_Base'])
 	{
 		echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-		echo $prosperAdmin->textinput( 'Base_URL', __( '<strong style="font-size:14px">Base Url</strong>', 'prosperent-suite' ), '', 'If you have a different URL from "<strong>your-blog.com/products</strong>" that you want the search query to go to.' );
+		echo $prosperAdmin->textinput( 'Base_URL', __( '<strong style="font-size:14px">Base Url</strong>', 'prosperent-suite' ), '', 'If you have a different URL from - your-blog.com/products - that you want the search query to go to.' );
 		echo '<p class="prosper_desc">' . __( "<strong>Deactivate and Reactivate the plugin for the new routes to take effect after saving.</strong>", 'prosperent-suite' ) . '</p><br>';
 	}
 	else
@@ -84,7 +84,70 @@ if ($genOptions['PSAct'])
 	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 	
 	echo $prosperAdmin->textinput( 'OG_Image', __( '<strong style="font-size:14px">Facebook Image Width</strong>', 'prosperent-suite' ), '', 'Changes the size of the image when someone shares a shop link on Facebook', 'prosper_textinputsmall');
-	echo '<p class="prosper_desc">' . __( "Minimum is <strong>200</strong>, Maximum is <strong>500</strong><br>Height of image will be the same as the width.", 'prosperent-suite' ) . '</p>';
+	echo '<p class="prosper_descb">' . __( "Minimum is <strong>200</strong>, Maximum is <strong>500</strong><br>Height of image will be the same as the width.", 'prosperent-suite' ) . '</p>';
+}
+
+if ($genOptions['PSAct'] || $genOptions['PICIAct'])
+{
+    if ($themeOpts = get_option('prosper_themes'))
+    {
+        $options['Set_Theme'] = $themeOpts['Set_Theme'];
+        update_option('prosper_advanced', $options);
+        delete_option('prosper_themes');
+    }
+    echo '<h2><span id="prosperThemes">Theme Options</span></h2>';        
+    
+    if (!file_exists(PROSPER_THEME))
+    {
+        echo '<div class="update-nag" style="padding:6px 0;margin:0;margin-bottom:20px;">';
+        echo _e( '<span style="font-size:14px; padding-left:10px;">The plugin was <strong>unable</strong> to create the <strong>prosperent-themes</strong> directory inside <strong>wp-content</strong>.</span><br><br>', 'my-text-domain' );
+        echo _e( '<span style="font-size:14px; padding-left:10px;">Please create a <strong>prosperent-themes</strong> directory inside <strong>wp-content</strong>.</span><br>', 'my-text-domain' );
+        echo '</div>';
+    }
+    
+    echo '<p class="prosper_desc" style="font-size:15px;">' . __( '<span style="font-size:14px;font-weight:bold;">Themes allow you to change the look of either the ProsperShop or ProsperInsert.</span><br><br>You can change the layout and styling in your own theme and it will last even when the plugin is updated.<br><br>To make your own theme, follow these simple instructions.<br><span style="font-size:13px;margin-left:2em;">First, make sure the <strong>prosperent-themes</strong> directory exists inside wp-content, if not create it.</span><br><span style="font-size:13px;margin-left:2em;">Next, create your own directory inside prosperent-themes and name it anything you\'d like.</span><br><span style="font-size:13px;margin-left:2em;">Now make any changes to the file of your choice below depending on what you are changing.</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; css file</strong> - change any of the styling within the plugin easily</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; product.php</strong> - this file controls the layout of the store</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; productPage.php</strong> - this file controls each product page view</span><br><span style="font-size:13px;margin-left:3.5em;"><strong>&bull; insertProd.php</strong> - this file controls the layout of the ProsperInsert</span></span><br><span style="font-size:13px;margin-left:2em;">Now select your theme from below.</span><br><br>An ExampleTheme should be loaded for you inside prosperent-themes. This is to give you a starting point and show you how easy it is to create your own.', 'prosperent-suite' ) . '</p>';
+    
+    $themesDir = array();
+    if (file_exists(PROSPER_THEME))
+    {
+        $dir    = PROSPER_THEME;
+        $themesDir = scandir($dir);
+        unset($themesDir[0], $themesDir[1]);
+    }
+    else
+    {
+        shell_exec('mkdir ' . PROSPER_THEME);
+        shell_exec('mkdir ' . PROSPER_THEME . '/ExampleTheme');
+    
+        $examples = array(
+            'products.css' => PROSPER_CSS . '/products.css',
+            'product.php' => PROSPER_VIEW . '/prospersearch/themes/Default/product.php',
+            'productPage.php' => PROSPER_VIEW . '/prospersearch/productPage.php'
+        );
+        foreach ($examples as $i => $exPart)
+        {
+            copy($exPart, PROSPER_THEME . '/ExampleTheme/' . $i);
+        }
+    
+        if (file_exists(PROSPER_THEME))
+        {
+            wp_redirect( admin_url( 'admin.php?page=prosper_advanced' ) );
+        }
+    }
+    
+    $mainThemesDir = scandir(PROSPER_VIEW . '/prospersearch/themes');
+    unset($mainThemesDir[0], $mainThemesDir[1], $mainThemesDir[3], $mainThemesDir[4]);
+    $themesDir = array_merge($mainThemesDir, $themesDir);
+    
+    $themes = array();
+    foreach ($themesDir as $theme)
+    {
+        $themes[$theme] = ucwords($theme);
+    }
+    
+    echo $prosperAdmin->select( 'Set_Theme', __( '<strong style="font-size:14px;white-space: nowrap;">Set Theme</strong>', 'prosperent-suite' ),  $themes, '', 'Select Default if you want to use the default theme.');
+    echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+    
 }
 
 $prosperAdmin->adminFooter();

@@ -78,7 +78,9 @@ echo $prosperAdmin->textinput( 'Api_Key', __( '<strong style="font-size:14px;">P
 echo '<p class="prosper_desc">' . __( '', 'prosperent-suite' ) . '</p><br>';
 
 echo $prosperAdmin->textinput( 'prosperAccess', __( '<strong style="font-size:14px;">Prosperent AccessKey</strong>', 'prosperent-suite' ), '');
-echo '<p class="prosper_desc">' . __( 'This is for the dashboard widget that will show your Clicks and Commissions earned from this domain.', 'prosperent-suite' ) . '</p><br>';
+echo '<p class="prosper_desc">' . __( 'This is for the dashboard widget that will show your Clicks and Commissions earned from this domain.', 'prosperent-suite' ) . '</p>';
+
+echo '<p class="prosper_desc" style="font-size:14px;">' . __( 'Get Your Prosperent Keys <a href="https://prosperent.com/account/api/keys" target="blank">Here!</a>', 'prosperent-suite' ) . '</p><br>';
 
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 echo $prosperAdmin->hidden( 'prosperNoOptions' );

@@ -10,27 +10,151 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/jquery/jquery.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/tiny_mce_popup.js'; ?>"></script>
 		<script data-cfasync="false" type="text/javascript" src="<?php echo $result . 'wp-includes/js/tinymce/utils/mctabs.js'; ?>"></script>
-		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=4.3322224.1'; ?>"></script>
+		<script data-cfasync="false" type="text/javascript" src="<?php echo $mainURL . 'js/prosperMCE.js?v=4.43322224.1'; ?>"></script>
 		<script type="text/javascript">		
-		jQuery(function(){var a=top.tinymce.activeEditor.windowManager.getParams();if(a){var c="fetchProducts"==jQuery("<i "+a+">").attr("ft")?"prod":"merchant",b=jQuery("<i "+a+">").attr("id"),f=jQuery("<i "+a+">").attr("mid"),g=jQuery("<i "+a+">").attr("b"),h=jQuery("<i "+a+">").attr("sale"),k=jQuery("<i "+a+">").attr("pr"),l=jQuery("<i "+a+">").attr("po"),m=jQuery("<i "+a+">").attr("q"),a=jQuery("<i "+a+">").attr("gtm");"prod"!=c&&(jQuery("#products_tab").removeClass("current"),jQuery("#merchant_tab").addClass("current"),
-				jQuery("#products_panel").removeClass("current"),jQuery("#merchant_panel").addClass("current"));"undefined"!=typeof b&&null!==b&&(document.getElementById(c+"id").value=b);"undefined"!=typeof f&&null!==f&&(document.getElementById(c+"d").value=f);"undefined"!=typeof m&&null!==m&&(document.getElementById(c+"query").value=m);"undefined"!=typeof g&&null!==g&&(document.getElementById(c+"b").value=g);"undefined"!=typeof k&&null!==k&&(b=k.split(","),document.getElementById("pricerangea").value=b[0],document.getElementById("pricerangeb").value=
-				b[1]);"undefined"!=typeof h&&null!==h&&(document.getElementById("onSale").value=h);"undefined"!=typeof l&&null!==l&&(h=l.split(","),document.getElementById("percentrangea").value=h[0],document.getElementById("percentrangeb").value=h[1]);"undefined"!=typeof a&&null!==a&&(document.getElementById(c+"goTo").checked=a)}c=950>jQuery(window).height()?600:750;jQuery("#prodresultsGoHere").css("height",600==c?"345px":"500px");jQuery("#merchantresultsGoHere").css("height",600==c?"345px":"500px")});var t;
-				function showValues(){var a=getNewCurrent();clearTimeout(t);var c="",c=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+a+"preview").html(xmlhttp.responseText).show()};var b=window.location.pathname,b=b.substring(0,b.lastIndexOf("prosperlinker/"))+"preview.php?type="+a+"&";xmlhttp.open("GET",b+c,!0);t=setTimeout(function(){try{xmlhttp.send(),c=""}catch(b){}},500);c||clearTimeout(t)}
-				function setFocus(){"prod"==getNewCurrent()?document.getElementById("prodquery").focus():document.getElementById("merchantquery").focus();top.tinymce.activeEditor.windowManager.getParams()||shortCode.local_ed.selection.getContent()&&!shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig)&&(document.getElementById("prodquery").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():"shoes",document.getElementById("merchantquery").value=shortCode.local_ed.selection.getContent()?
-				shortCode.local_ed.selection.getContent():"Backcountry",showValues())}function getIdofItem(a,c){var b=getNewCurrent(),f=a.id;0<=document.getElementById(b+"id").value.indexOf(f)?(jQuery("#"+f).removeClass("highlight"),f=document.getElementById(b+"id").value.replace(f,""),document.getElementById(b+"id").value=f):(document.getElementById(b+"id").value=f,jQuery("#productList li").removeClass("highlight"),jQuery("li#"+f).addClass("highlight"))}
-				function getFilters(){var a=jQuery("#prodd").val()?jQuery("#prodd").val().replace(",","|"):"",c=jQuery("#prodb").val()?jQuery("#prodb").val().replace(",","|"):"";pRange=(jQuery("#pricerangea").val()?jQuery("#pricerangea").val()+",":"0.01,")+(jQuery("#pricerangeb").val()?jQuery("#pricerangeb").val():"");perRange=jQuery("#onSale:checked").val()?"1,":(jQuery("#percentrangea").val()?jQuery("#percentrangea").val()+",":"")+(jQuery("#percentrangeb").val()?jQuery("#percentrangeb").val():"");jQuery.ajax({type:"POST",
-				url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#prodquery").val(),filterBrand:c,filterPrice:pRange,filterPercentOff:perRange,limit:1,enableFacets:"merchantId|merchant",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(b){jQuery("#prodmerchant").empty();jQuery.each(b.facets.merchantId,function(c,g){a.match(g.value)?jQuery("#prodmerchant").append('<li id="d'+g.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+
-				b.facets.merchant[c].value+"</span></a></li>"):jQuery("#prodmerchant").append('<li id="d'+g.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.facets.merchant[c].value+"</span></a></li>")})},error:function(){alert("Failed to load data.")}});jQuery.ajax({type:"POST",url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#prodquery").val(),filterMerchantId:a,filterBrand:c,filterPrice:pRange,filterPercentOff:perRange,
-				limit:1,enableFacets:"brand",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(b){jQuery("#prodbrand").empty();jQuery.each(b.facets.brand,function(b,a){"undefined"!=typeof a.value&&null!==a.value&&0<a.value.length&&(c.match(a.value)?jQuery("#prodbrand").append('<li id="b'+a.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.value+"</span></a></li>"):jQuery("#prodbrand").append('<li id="b'+a.value+
-				'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.value+"</span></a></li>"))})},error:function(){alert("Failed to load data.")}})}
-				function getIdValue(a,c){var b=a.id;d=b.slice(0,1);e=b.slice(1);0<=document.getElementById("prod"+d).value.indexOf(e+",")?(jQuery("#"+b).removeClass("activeFilter"),b=document.getElementById("prod"+d).value.replace(e+",",""),document.getElementById("prod"+d).value=b):(document.getElementById("prod"+d).value+=e+",",jQuery("#"+b).addClass("activeFilter"));showValues()};
+		jQuery(function() {
+		    var a = top.tinymce.activeEditor.windowManager.getParams();
+		    if (a) {
+		        var c = "fetchProducts" == jQuery("<i " + a + ">").attr("ft") ? "prod" : "merchant",
+		            b = jQuery("<i " + a + ">").attr("id"),
+		            f = jQuery("<i " + a + ">").attr("mid"),
+		            g = jQuery("<i " + a + ">").attr("b"),
+		            h = jQuery("<i " + a + ">").attr("sale"),
+		            k = jQuery("<i " + a + ">").attr("pr"),
+		            l = jQuery("<i " + a + ">").attr("po"),
+		            m = jQuery("<i " + a + ">").attr("q"),
+		            a = jQuery("<i " + a + ">").attr("gtm");
+
+		        "prod" != c && (jQuery("#products_tab").removeClass("current"), jQuery("#merchant_tab").addClass("current"),
+		            jQuery("#products_panel").removeClass("current"), jQuery("#merchant_panel").addClass("current"));
+		        //"undefined" != typeof b && null !== b && (document.getElementById(c + "id").value = b);
+		        "undefined" != typeof f && null !== f && (document.getElementById(c + "d").value = f);
+		        "undefined" != typeof m && null !== m && (document.getElementById(c + "query").value = m);
+		        "undefined" != typeof g && null !== g && (document.getElementById(c + "b").value = g);
+		        "undefined" != typeof k && null !== k && (b = k.split(","), document.getElementById("pricerangea").value = b[0], document.getElementById("pricerangeb").value =
+		            b[1]);
+		        "undefined" != typeof h && null !== h && (jQuery("input[name=onSale][value="+h+"]").attr('checked', true));
+		        "undefined" != typeof l && null !== l && (h = l.split(","), document.getElementById("percentrangea").value = h[0], document.getElementById("percentrangeb").value = h[1]);
+		        "undefined" != typeof a && null !== a && ((jQuery("input[name="+c+"goTo][value="+a+"]").attr('checked', true)));	        	
+		    }
+		    c = 950 > jQuery(window).height() ? 600 : 750;
+		    jQuery("#prodresultsGoHere").css("height", 600 == c ? "345px" : "500px");
+		    jQuery("#merchantresultsGoHere").css("height", 600 == c ? "345px" : "500px");
+		    jQuery(window).keydown(function(event){
+		        if(event.keyCode == 13) {
+		          event.preventDefault();
+		          return false;
+		        }
+		      });
+		});
+		var t;
+
+		function showValues() {
+		    var a = getNewCurrent();
+		    clearTimeout(t);
+		    var c = "",
+		        c = jQuery("form").serialize();
+		    xmlhttp = new XMLHttpRequest;
+		    xmlhttp.onreadystatechange = function() {
+		        jQuery("div." + a + "preview").html(xmlhttp.responseText).show()
+		    };
+		    var b = window.location.pathname,
+		        b = b.substring(0, b.lastIndexOf("prosperlinker/")) + "preview.php?type=" + a + "&";
+		    xmlhttp.open("GET", b + c, !0);
+		    t = setTimeout(function() {
+		        try {
+		            xmlhttp.send(), c = ""
+		        } catch (b) {}
+		    }, 500);
+		    c || clearTimeout(t)
+		}
+
+		function setFocus() {
+		    "prod" == getNewCurrent() ? document.getElementById("prodquery").focus() : document.getElementById("merchantquery").focus();
+		    top.tinymce.activeEditor.windowManager.getParams() || shortCode.local_ed.selection.getContent() && !shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig) && (document.getElementById("prodquery").value = shortCode.local_ed.selection.getContent() ? shortCode.local_ed.selection.getContent() : "shoes", document.getElementById("merchantquery").value = shortCode.local_ed.selection.getContent() ?
+		        shortCode.local_ed.selection.getContent() : "Backcountry", showValues())
+		}
+
+		function getIdofItem(a, c) {
+		    var b = getNewCurrent(),
+		        f = a.id;
+		    0 <= document.getElementById(b + "id").value.indexOf(f) ? (jQuery("#" + f).removeClass("highlight"), f = document.getElementById(b + "id").value.replace(f, ""), document.getElementById(b + "id").value = f) : (document.getElementById(b + "id").value = f, jQuery("#productList li").removeClass("highlight"), jQuery("li#" + f).addClass("highlight"))
+		}
+
+		function getFilters() {
+		    var a = jQuery("#prodd").val() ? jQuery("#prodd").val().replace(",", "|") : "",
+		        c = jQuery("#prodb").val() ? jQuery("#prodb").val().replace(",", "|") : "";
+		    pRange = (jQuery("#pricerangea").val() ? jQuery("#pricerangea").val() + "," : "0.01,") + (jQuery("#pricerangeb").val() ? jQuery("#pricerangeb").val() : "");
+		    perRange = jQuery("#onSale:checked").val() ? "1," : (jQuery("#percentrangea").val() ? jQuery("#percentrangea").val() + "," : "") + (jQuery("#percentrangeb").val() ? jQuery("#percentrangeb").val() : "");
+		    jQuery.ajax({
+		        type: "POST",
+		        url: "http://api.prosperent.com/api/search",
+		        data: {
+		            api_key: "fc91d36b383ca0231ee59c5048eabedc",
+		            query: jQuery("#prodquery").val(),
+		            filterBrand: c,
+		            filterPrice: pRange,
+		            filterPercentOff: perRange,
+		            limit: 1,
+		            enableFacets: "merchantId|merchant",
+		            enableFullData: 0
+		        },
+		        contentType: "application/json; charset=utf-8",
+		        dataType: "jsonp",
+		        success: function(b) {
+		            jQuery("#prodmerchant").empty();
+		            jQuery.each(b.facets.merchantId, function(c, g) {
+		                a.match(g.value) ? jQuery("#prodmerchant").append('<li id="d' + g.value + '" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' +
+		                    b.facets.merchant[c].value + "</span></a></li>") : jQuery("#prodmerchant").append('<li id="d' + g.value + '" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' + b.facets.merchant[c].value + "</span></a></li>")
+		            })
+		        },
+		        error: function() {
+		            alert("Failed to load data.")
+		        }
+		    });
+		    jQuery.ajax({
+		        type: "POST",
+		        url: "http://api.prosperent.com/api/search",
+		        data: {
+		            api_key: "fc91d36b383ca0231ee59c5048eabedc",
+		            query: jQuery("#prodquery").val(),
+		            filterMerchantId: a,
+		            filterBrand: c,
+		            filterPrice: pRange,
+		            filterPercentOff: perRange,
+		            limit: 1,
+		            enableFacets: "brand",
+		            enableFullData: 0
+		        },
+		        contentType: "application/json; charset=utf-8",
+		        dataType: "jsonp",
+		        success: function(b) {
+		            jQuery("#prodbrand").empty();
+		            jQuery.each(b.facets.brand, function(b, a) {
+		                "undefined" != typeof a.value && null !== a.value && 0 < a.value.length && (c.match(a.value) ? jQuery("#prodbrand").append('<li id="b' + a.value + '" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' + a.value + "</span></a></li>") : jQuery("#prodbrand").append('<li id="b' + a.value +
+		                    '" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' + a.value + "</span></a></li>"))
+		            })
+		        },
+		        error: function() {
+		            alert("Failed to load data.")
+		        }
+		    })
+		}
+
+		function getIdValue(a, c) {
+		    var b = a.id;
+		    d = b.slice(0, 1);
+		    e = b.slice(1);
+		    0 <= document.getElementById("prod" + d).value.indexOf(e + ",") ? (jQuery("#" + b).removeClass("activeFilter"), b = document.getElementById("prod" + d).value.replace(e + ",", ""), document.getElementById("prod" + d).value = b) : (document.getElementById("prod" + d).value += e + ",", jQuery("#" + b).addClass("activeFilter"));
+		    showValues()
+		};
 		</script>
     </head>
     <base target="_self" />
     <body id="linker" role="application" aria-labelledby="app_label" onload="setFocus();showValues();getFilters();">
 		<form action="/" method="get" id="prosperSCForm">
             <div id="mainFormDiv" style="display:block;position:relative;z-index:1;width:100%;">
-                <input type="hidden" id="prosperSC" value="linker"/>
+                <input type="hidden" id="prosperSC" name="prosperSC" value="linker"/>
 			    <div class="tabs">
 					<ul>
 						<li id="products_tab" aria-controls="products_panel" class="current"><span><a href="javascript:;" onClick="mcTabs.displayTab('products_tab','products_panel');setFocus();showValues();getFilters();" onmousedown="return false;">Products</a></span></li>						
@@ -44,7 +168,7 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 						<input type="hidden" id="prodd" name="prodd"/>
 						<input type="hidden" id="prodb" name="prodb"/>
 						<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>						
-						<label><strong>Search Products:</strong></label><input class="prosperMainTextSC" tabindex="1" type="text" name="prodq" id="prodquery" onKeyUp="showValues();getFilters();" value="shoes" placeholder="shoes"/>						
+						<label><strong>Search Products:</strong></label><input class="prosperMainTextSC" tabindex="1" type="text" name="prodq" id="prodquery" onKeyUp="showValues();" onBlur="getFilters();" value="shoes" placeholder="shoes"/>						
 						<table>
     						<tr>
         						<td><div style="display:block;padding-right:10px;"><label class="secondaryLabels" style="width:70px;">Merchant:</label><ul style="max-height:125px;" class="prosperSelect" id="prodmerchant"></ul></div></td>

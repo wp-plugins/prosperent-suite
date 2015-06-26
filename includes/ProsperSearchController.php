@@ -110,7 +110,8 @@ class ProsperSearchController
 		}
 		
 		if (get_query_var('cid'))
-		{ 
+		{   
+		    wp_dequeue_script( 'productPhp' );
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
 		}
@@ -273,14 +274,15 @@ class ProsperSearchController
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);			
 		}
 
-		if ($options['Enable_Facets'] && ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
+		if ($options['Enable_Facets'] && ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['allFilters'] ||$filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters']))
 		{
 			$merchantFacetSettings = array(
 				'query'            => $query,
 				'enableFacets'     => 'merchant',
 				'limit'			   => 1,
-				'filterMerchantId' => $filters['merchant']['allFilters'],				
-				'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterMerchantId' => $filters['merchant']['allFilters'],	
+			    'filterMerchant'   => (($filters['merchant']['appliedFilters'] && !$query) ? $filters['merchant']['appliedFilters'] : ''),
+				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterBrand'	   => ($filters['brand']['appliedFilters'] ? $filters['brand']['appliedFilters'] : ($filters['brand']['allFilters'] ? $filters['brand']['allFilters'] : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
@@ -294,9 +296,10 @@ class ProsperSearchController
 				'query'            => $query,
 				'enableFacets'     => 'brand',
 				'limit'			   => 1,
+			    'filterBrand'      => (($filters['brand']['appliedFilters'] && !$query && !$filters['merchant']['appliedFilters'] && !$filters['merchant']['allFilters']) ? implode('|', $filters['brand']['appliedFilters']) : ''),
 				'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? $filters['merchant']['appliedFilters'] : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
-				'filterCategory'   => $filters['category']['appliedFilters'],
+				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 			    'imageSize'        => '75x75',
@@ -312,7 +315,7 @@ class ProsperSearchController
 		        'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
 		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
-		        'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
+		        'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 		        'limit'			   => 1,
 		        'enableFullData'   => 'FALSE',
@@ -326,7 +329,7 @@ class ProsperSearchController
 		        'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
 		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
-		        'filterCategory'   => implode('|', $filters['category']['appliedFilters']),
+		        'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
 		        'limit'			   => 1,
 		        'enableFullData'   => 'FALSE',

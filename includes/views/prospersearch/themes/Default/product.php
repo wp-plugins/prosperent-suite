@@ -78,10 +78,10 @@
                                 <span class="prosperFilterName">Price Range</span>
                             </a>
                         </li>
-                        <li id="prospPrice" class="prosperFilterList prospPrice">
-    							<div style="padding-bottom:4px;"><span style="color:#747474;padding-right:2px;">$</span><input style="width:45px!important;" type="text" class="min" id="prospRangeMin" name="priceSliderMin" value="<?php echo number_format(($priceSlider[0] ? $priceSlider[0] : $lowRange)); ?>">
-    							<span style="color:#747474;padding-right:4px;">&nbsp;to&nbsp;</span>
-    							<span style="color:#747474;padding-right:2px;">$</span><input style="width:60px!important;" type="text" class="max" id="prospRangeMax" name="priceSliderMax" value="<?php echo number_format(($priceSlider[1] ? $priceSlider[1] : $highRange) ); ?>"> 
+                        <li id="prospPrice" class="prosperFilterList prospPrice" style="text-align:center">
+							<span style="color:#747474;padding-right:2px;">$</span><input style="width:24%!important;" type="text" class="min" id="prospRangeMin" name="priceSliderMin" value="<?php echo number_format(($priceSlider[0] ? $priceSlider[0] : $lowRange)); ?>">
+							<span style="color:#747474;">to</span>
+							<span style="color:#747474;padding-right:2px;">$</span><input style="width:34%!important;" type="text" class="max" id="prospRangeMax" name="priceSliderMax" value="<?php echo number_format(($priceSlider[1] ? $priceSlider[1] : $highRange) ); ?>"> 
                         </li>
 					
 				<?php endif; ?>
@@ -91,10 +91,10 @@
                                 <span class="prosperFilterName">Discount</span>
                             </a>
                         </li>
-                        <li id="prospPercent" class="prosperFilterList prospPercent" style="width:100%; margin-bottom:6px!important;">
-    						<input type="text" class="min" id="prospPercentMin" style="width:32%" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] : '0'); ?>"/><span style="color:#747474;padding-left:2px;">%</span>
+                        <li id="prospPercent" class="prosperFilterList prospPercent" style="width:100%; margin-bottom:6px!important;text-align:center">
+    						<input type="text" class="min" id="prospPercentMin" style="width:25%" name="percentSliderMin" value="<?php echo ($percentSlider[0] ? $percentSlider[0] : '0'); ?>"/><span style="color:#747474;padding-left:2px;">%</span>
     						<span style="color:#747474;">to</span>
-    						<input type="text" class="max" id="prospPercentMax" style="width:32%!important;" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] : '100'); ?>"/><span style="color:#747474;padding-left:2px;">%</span>
+    						<input type="text" class="max" id="prospPercentMax" style="width:25%!important;" name="percentSliderMax" value="<?php echo ($percentSlider[1] ? $percentSlider[1] : '100'); ?>"/><span style="color:#747474;padding-left:2px;">%</span>
         				</li>
 						<li style="min-height:1.6em;padding-bottom:6px;margin-bottom:6px;"><input style="float:right;" type="submit" id="s" value="Go" class="submit"/></li> 
 				    </ul>

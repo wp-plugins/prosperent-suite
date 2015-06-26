@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);   
+//error_reporting(0);   
 $params = array_filter($_GET); 
 $type = $params['type'];
 
@@ -170,13 +170,36 @@ if ($results = $response['data'])
 	</div>
 	
 	<script type="text/javascript">
-	jQuery(function(){var a=top.tinymce.activeEditor.windowManager.getParams();if(a&&(a=jQuery("<i "+a+">").attr("id"),"undefined"!=typeof a&&null!==a))return a=a.split(","),jQuery.each(a,function(a,b){"undefined"!=typeof b&&null!==b&&0<b.length&&(document.getElementById(b).className+=" highlight")}),!1});
+	jQuery(document).ready(function() {		
+	    var a = top.tinymce.activeEditor.windowManager.getParams();
+	  		j = jQuery("<i " + a + ">").attr("ahl"),
+	  		"undefined" != typeof j && null !== j && (document.getElementById("prosperHeldURL").value = j);
+	    if (a && (a = jQuery("<i " + a + ">").attr("id"), "undefined" != typeof a && null !== a)) 
+		{
+			a = a.split(",");
+			jQuery.each(a, function(a, b) {
+    	        if ("undefined" != typeof b && null !== b && 0 < b.length)
+    	        {
+    	        //	jQuery( "#"+b ).trigger("click");    	        	
+    	        }
+    		});
+		}
+	});
     </script>
 	<?php
 }
 else
 {
-	echo '<h2>No Results</h2>';
-	echo '<div class="noResults-secondary">Please try another search.</div>';
+	echo '<h2 style="color:white;margin-left:12px;">No Results From Prosperent, Please Try Another Search</h2>';
+	
+	
+	if ($_GET['prosperSC'] == 'linker')
+	{
+	   echo '<div style="color:white;margin-left:12px;" class="noResults-secondary">- or -</div>';
+	   echo '<div style="font-size:18px;margin-left:12px;color:white">Enter the Product Url From the Merchant';
+	   echo '<span></span>';
+	   echo '<input class="prosperMainTextSC" tabindex="1" type="text" name="prosperHeldURL" id="prosperHeldURL" value="http://"/></div>';
+	   echo '<div style="margin-left:12px;color:white;font-size:14px;">If ProsperLinks is active and we get this merchant in the future, this link will be automatically affiliated for you.</div>';
+	}
 }
 

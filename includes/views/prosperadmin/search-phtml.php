@@ -31,8 +31,8 @@ if ($optionsGen['gotoMerchantBypass'])
 }
 
 $prosperAdmin->adminHeader( __( 'ProsperShop Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
-
-echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperShop is a store that gives visitors to your site access to products from over 4500 merchants.<br><br>The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store.<br><br><b style="font-size:14px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
+echo '<h1 style="font-size:23px;max-width:876px;font-weight:300;padding:0 15px 4px 0;margin-top:15px;line-height:29px;">Create a shop that gives your visitors access to products you can curate.</h1>';
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store.<br><br><b style="font-size:14px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->textinput( 'Starting_Query', __( '<strong style="font-size:14px">Starting Query</strong>', 'prosperent-suite' ), '', 'This will be used if no search query was provided. If not set and no query, the shop shows the No Results page which show Popular Products.' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
@@ -60,13 +60,16 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
 echo '<div style="margin:0 0 5px 20px;">';
 echo '<label style="font-size:14px;font-weight:bold;display:block;">Use These Categories</label>';
-echo '<input style="margin-left:5px;margin-top:4px;" id="categories" type="text" class="ProsperCategories" placeholder="Enter Category"/>';
+echo '<input style="margin-top:4px;width:444px;" id="categories" type="text" class="ProsperCategories" placeholder="Enter Category"/>';
+echo '<a style="margin-left:2px; vertical-align:baseline;" class="button-secondary" href="javascript:void(0);" onClick="addNewCategory();">Add</a>';
+
+echo '<div id="prosperTotalResults" style="font-weight:bold;"></div>';
 
 echo '<div style="margin:6px 0 5px 20px;width:100%;display:inline-block;"><ul style="margin:0;list-style:none;display:inline-block;width:100%" id="ProsperCategoryFilters">';
 if ($options['ProsperCategories'])
 {
-    $options['ProsperCategories'] = rtrim($options['ProsperCategories'], ',');
-    $categories = explode(',', $options['ProsperCategories']);
+    $options['ProsperCategories'] = rtrim($options['ProsperCategories'], '|');
+    $categories = explode('|', $options['ProsperCategories']);
     foreach ($categories as $category)
     {
         echo '<li data-savedvalue="' . $category . '" class="ProsperCategories" data-filtype="ProsperCategories" style="float:left;margin:0;padding:6px;" onClick="removeFilter(this);"><span><a data-filtype="ProsperCategories" style="text-decoration:none;" href="javascript:void(0);">' . str_replace('_', ' ', $category) . ' <i class="fa fa-times"></i></a></span></li>';
@@ -92,6 +95,7 @@ echo $prosperAdmin->hidden( 'PositiveMerchant');
 echo $prosperAdmin->hidden( 'NegativeMerchant');
 echo $prosperAdmin->hidden( 'Positive_Merchant');
 echo $prosperAdmin->hidden( 'Negative_Merchant');
+echo $prosperAdmin->hidden( 'refreshFilters');
 
 if ($options['recentSearches'])
 {
@@ -115,7 +119,7 @@ if ($options['recentSearches'])
 
 echo $prosperAdmin->hidden( 'LinkAmount' );
 
-echo '<p style="margin-top:18px;"><label style="font-size:14px;font-weight:bold;">Link Phrases to the Shop</label></p>';
+echo '<p style="margin-top:18px;"><label style="font-size:14px;font-weight:bold;">Link phrases to your ProsperShop</label></p>';
 
 if ($options['LinkAmount'])
 {
@@ -127,7 +131,7 @@ if ($options['LinkAmount'])
         echo $prosperAdmin->textinputinline( 'Query', __( '<strong style="font-size:14px">Query</strong>', 'prosperent-suite' ), $i, '', 'Word to be used as the query, if empty, it will use the matched word as the query.' );
         echo $prosperAdmin->textinputinline( 'PerPage', __( '<strong style="font-size:14px;">Links Per Page</strong>', 'prosperent-suite' ), $i, '', 'Amount of times to link matched word. Matches the first appearances of the word. If no limit is given, it will match 5.', 'prosper_textinputinlinesmall' );
         echo $prosperAdmin->checkboxinline( 'Case', __( '<strong style="font-size:14px">Case Sensitive</strong>', 'prosperent-suite' ), true, $i );
-		echo '<a style="margin-left:10px; vertical-align:baseline;" class="button-secondary" onClick="deleteMyParent(this.parentNode);"  href="' . admin_url( 'admin.php?page=prosper_autoLinker&delete=' . $i . '&nonce='. wp_create_nonce( 'prosper_delete_setting' )) . '">' . __( 'Delete', 'prosperent-suite' ) . '</a>';
+		echo '<a style="margin-left:10px; vertical-align:baseline;" class="button-secondary" onClick="deleteMyParent(this.parentNode);"  href="' . admin_url( 'admin.php?page=prosper_productSearch&delete=' . $i . '&nonce='. wp_create_nonce( 'prosper_delete_setting' )) . '">' . __( 'Delete', 'prosperent-suite' ) . '</a>';
 		echo '</span>';
         echo '<br class="clear" />';
     }
@@ -137,7 +141,7 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 }
 
 
-echo '<a style="margin-left:24px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_autoLinker&add&nonce='. wp_create_nonce( 'prosper_add_setting' )) . '">' . __( 'Add New', 'prosperent-suite' ) . '</a>';
+echo '<a style="margin-left:24px; vertical-align:baseline;" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_productSearch&add&nonce='. wp_create_nonce( 'prosper_add_setting' )) . '">' . __( 'Add New', 'prosperent-suite' ) . '</a>';
 echo '<p class="prosper_desc">' . __( '', 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->checkbox( 'Auto_Link_Comments', __( '<strong style="font-size:14px">Match Inside Comments</strong>', 'prosperent-suite' ), true );

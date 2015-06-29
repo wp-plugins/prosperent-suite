@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);  
+//error_reporting(0);  
 $params = array_filter($_GET); 
 
 if ($params['prodimages'] && $params['type'] == 'prod')

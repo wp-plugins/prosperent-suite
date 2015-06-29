@@ -49,7 +49,7 @@ class Model_Search extends Model_Base
 			
 	public function getUrlParams()
 	{
-		$params = explode('/', get_query_var('queryParams'));
+	    $params = explode('/', get_query_var('queryParams'));
 
 		$sendParams = array();
 		foreach ($params as $k => $p)
@@ -130,21 +130,14 @@ class Model_Search extends Model_Base
 
 		if ($this->_options['PositiveMerchant'])
 		{
-			$plusMerchants = explode(',', $this->_options['PositiveMerchant']);
-			foreach ($plusMerchants as $positive)
-			{
-				array_push($filterMerchants, trim($positive));
-			}
+		    $this->_options['PositiveMerchant'] = rtrim($this->_options['PositiveMerchant'], '|');
+			$filterMerchants = array_map('trim', explode('|', $this->_options['PositiveMerchant']));
 		}
 		
 		if ($this->_options['NegativeMerchant'])
 		{
-			$minusMerchants = explode(',', $this->_options['NegativeMerchant']);
-
-			foreach ($minusMerchants as $negative)
-			{
-				array_push($filterMerchants, '!' . trim($negative));
-			}
+		    $this->_options['NegativeMerchant'] = '!' . str_replace('|', '|!', rtrim($this->_options['NegativeMerchant'], '|'));
+			$filterMerchants = array_merge($filterMerchants, array_map('trim', explode('|', $this->_options['NegativeMerchant'])));
 		}
 
 		return array('appliedFilters' => $merchants, 'allFilters' => $filterMerchants);
@@ -163,11 +156,8 @@ class Model_Search extends Model_Base
 
 		if ($this->_options['ProsperCategories'])
 		{
-		    $positiveCategories = array_map('stripslashes', explode(',', $this->_options['ProsperCategories']));
-		    foreach ($positiveCategories as $category)
-		    {
-		        array_push($filterCategory, trim(str_replace('_', ' ', $category)));
-		    }
+		    $this->_options['ProsperCategories'] = rtrim(str_replace(array('_', '|'), array(' ', '*|'), $this->_options['ProsperCategories']), '|');
+		    $filterCategory = array_map('trim', explode('|', $this->_options['ProsperCategories']));
 		}
 
 		return array('appliedFilters' => $categories, 'allFilters' => $filterCategory);
@@ -257,7 +247,7 @@ class Model_Search extends Model_Base
 		}
 		else
 		{
-			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2'));
+			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2'), $this->_version);
 			wp_enqueue_script( 'productPhp');
 		}
 
@@ -562,28 +552,31 @@ class Model_Search extends Model_Base
 	
 	public function storeSearch($related = false)
 	{		
+	    $base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
+	    
 		if(get_query_var('queryParams'))
 		{
 			$params = str_replace('%7C', '~', $this->getUrlParams());	
 		}
-		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . str_replace('%7C', '~', $_SERVER['REQUEST_URI']);
+
+		$url = home_url() . str_replace('%7C', '~', $_SERVER['REQUEST_URI']);
 		$url = preg_replace('/\/$/', '', $url);
 
+		if(is_front_page())
+		{			
+			$url = home_url('/') . $base;
+		}
+		
 		if ($related)
 		{
 		    $prosperLastValue = end($params);
 		    $prosperLastKey = key($params);
 		    unset($params[$prosperLastKey]);
-		    $url = str_replace('/' . $prosperLastKey . '/' . $prosperLastValue, $url); 
+		    $newParams = implode('/', $params);
+		    set_query_var('queryParams', $newParams);
+		    $url = home_url('/') . $base . '/' . $newParams;
 		}
 		
-		if(is_front_page())
-		{
-			$base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-			$url = home_url('/') . $base;
-		}
-
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';
 		$merchant 	  = isset($params['merchant']) ? str_replace('|', '~', rawurldecode(stripslashes($params['merchant']))) : '';		
 		$category 	  = isset($params['category']) ? str_replace('|', '~', rawurldecode(stripslashes($params['category']))) : '';	

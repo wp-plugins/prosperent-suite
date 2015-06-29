@@ -109,9 +109,9 @@ class Widget_ProsperDashStats extends WP_Widget {
             ?>
                 <table style="width:100%;">
                     <tr style="float:right;">
-                        <td><a style="vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=yesterday'); ?>">Yesterday</a></td>
-                        <td><a style="vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=week'); ?>">Last 7 Days</a></td>
-                        <td><a style="margin-left:2px; vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=month'); ?>">Last 30 Days</a></td>
+                        <td><a style="vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=yesterday#prosper_dash_stats'); ?>">Yesterday</a></td>
+                        <td><a style="vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=week#prosper_dash_stats'); ?>">Last 7 Days</a></td>
+                        <td><a style="margin-left:2px; vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=month#prosper_dash_stats'); ?>">Last 30 Days</a></td>
                     </tr>
                 </table>
             <?php 

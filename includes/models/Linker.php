@@ -58,7 +58,7 @@ class Model_Linker extends Model_Base
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
 
 		$brands    = $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '';
-		$merchants = $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '';
+		$merchants = $pieces['m'] ? str_replace(',', '|', $pieces['m']) : ''; 
 
 		if (!$options['shortCodesAccessed'])
 		{
@@ -76,7 +76,7 @@ class Model_Linker extends Model_Base
 			$query = $content;
 		}
 		
-		if ($pieces['gtm'] || !$options['PSAct'] || $pieces['gtm'] === 'prodPage')
+		if (($pieces['gtm'] || !$options['PSAct']) && ($pieces['gtm'] === 'prodPage' && $pieces['ft'] == 'fetchProducts') && ($pieces['gtm'] !== 'prodResults' && $pieces['ft'] != 'fetchMerchant'))
 		{			
 			if ($pieces['ft'] == 'fetchProducts')
 			{		
@@ -216,7 +216,7 @@ class Model_Linker extends Model_Base
 					return $content;
 				}
 			}	
-			elseif ($pieces['gtm'] || !$options['PSAct'])
+			elseif ($pieces['gtm'] == 'merchant' || !$options['PSAct'])
 			{			
 				$affUrl = $allData['data'][0]['affiliate_url'];
 				$rel = 'nofollow,nolink';
@@ -224,7 +224,7 @@ class Model_Linker extends Model_Base
 			}
 			else
 			{				
-				$affUrl = $homeUrl . $page . '/' . rawurlencode(str_replace('/', ',SL,', $allData['data'][0]['keyword'])) . '/cid/' . $allData['data'][0]['catalogId'];
+				$affUrl = $homeUrl . $page . '/' . str_replace('/', ',SL,', $allData['data'][0]['keyword']) . '/cid/' . $allData['data'][0]['catalogId'];
 				$rel = 'nolink';
 			}
 
@@ -257,9 +257,9 @@ class Model_Linker extends Model_Base
 				}
 			}
 		}
-
-		$query = $pieces['q'] ? '/query/' . rawurlencode($pieces['q']) : '';
-
+		
+		$query = ($pieces['q'] && $pieces['ft'] == 'fetchProducts') ? '/query/' . rawurlencode($pieces['q']) : ($pieces['q'] && $pieces['ft'] == 'fetchMerchant') ? '/merchant/' . rawurlencode($pieces['q'])  : '';
+		  
 		if ($fB || $fM || $query)
 		{
 			return '<a style="text-decoration:none;" href="' . $storeUrl . $query . $fB . $fM . $type . '" TARGET="' . $target . '" class="prosperent-kw">' . $content . '</a>';

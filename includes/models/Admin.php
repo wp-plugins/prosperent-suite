@@ -25,7 +25,6 @@ class Model_Admin extends Model_Base
 			
 	public function init()
 	{		  
-
 	    add_action( 'admin_enqueue_scripts', array($this, 'prefixEnqueueFAwesome' ));
 	    add_action('admin_head', array($this, 'adminIntercom'));
 	    if ( isset( $_GET['dismissOpenMessage'] ) && wp_verify_nonce( $_GET['nonce'], 'prosperhideOpenMessage' ) && current_user_can( 'manage_options' ) )
@@ -38,13 +37,13 @@ class Model_Admin extends Model_Base
 		if ( isset( $_GET['add'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_add_setting' ) && current_user_can( 'manage_options' ) ) 
 		{ 
 			$this->addLinks();
-			wp_redirect( admin_url( 'admin.php?page=prosper_autoLinker&settings-updated=true' ) );
+			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch&settings-updated=true' ) );
 		}	
 		
 		if ( isset( $_GET['delete'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_delete_setting' ) && current_user_can( 'manage_options' ) ) 
 		{
 			$this->deleteLinks($_GET['delete']);
-			wp_redirect( admin_url( 'admin.php?page=prosper_autoLinker' ) );
+			wp_redirect( admin_url( 'admin.php?page=prosper_productSearch' ) );
 		}		
 		
 		if ( isset( $_GET['deleteRecent'] ) && wp_verify_nonce( $_GET['nonce'], 'prosper_delete_recent' ) && current_user_can( 'manage_options' ) ) 
@@ -65,6 +64,15 @@ class Model_Admin extends Model_Base
 		if ( isset( $_GET['cacheCleared'] ))
 		{
 			echo '<div id="message" style="width:800px;" class="message updated"><p><strong>' . esc_html('Cache Cleared.') . '</strong></p></div>';
+		}
+
+        $shopOpts = get_option('prosper_productSearch');
+		if (!$shopOpts['refreshFilters'])
+		{
+		    $shopOpts['ProsperCategories'] = str_replace(',', '|', $shopOpts['ProsperCategories']); 
+		    $shopOpts['PositiveMerchant'] = str_replace(',', '|', $shopOpts['PositiveMerchant']);
+		    $shopOpts['NegativeMerchant'] = str_replace(',', '|', $shopOpts['NegativeMerchant']);
+		    update_option('prosper_productSearch', $shopOpts);
 		}
     }		
     
@@ -131,15 +139,18 @@ class Model_Admin extends Model_Base
 	public function prosperSuiteMCEOpts()
 	{
 	    $options = get_option('prosperSuite');
+	    $contentInsert = get_option('prosper_autoComparer');
+	    
+	    $contentInsertType = ($contentInsert['prosper_inserter_pages'] && $contentInsert['prosper_inserter_posts'] ? 'all' : ($contentInsert['prosper_inserter_posts'] ? 'post' : ($contentInsert['prosper_inserter_pages'] ? 'page' : '')));
 	    
 	    $currentScreen = get_current_screen();
-	    
+
 	    $enabledOpts = array(
 	        'prosperShop'   => $options['PSAct'],
 	        'prosperInsert' => $options['PICIAct'],
 	        //'autoLinker'    => $options['ALAct'],
-	        'currentScreen' => $currentScreen->id
-	        
+	        'currentScreen' => $currentScreen->id,
+	        'contentInsert' => $contentInsertType
 	    ); 
 	    
 	    echo '<script type="text/javascript">var prosperSuiteVars = ' . json_encode($enabledOpts) . '</script>';
@@ -700,20 +711,7 @@ class Model_Admin extends Model_Base
 	    global $current_user;
 	    get_currentuserinfo();
 	    $options = $this->getOptions();
-	    ?>
-	    		
-		<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/x8zql53k';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-        <script>
-        window.intercomSettings = {    
-            name: "<?php echo $current_user->user_firstname . ' ' . $current_user->user_lastname; ?>",
-            email: "<?php echo get_option('admin_email'); ?>",
-            app_id: "x8zql53k",	                
-            updated_at: "<?php echo time(); ?>",
-            wordPressSite: "<?php echo get_option('home'); ?>",
-            user_hash: "<?php echo hash_hmac("sha256", get_option('admin_email'), "5219X1tSYeD6mJ4nBtfIsDWarGHrXr_Xd5RnDDoV"); ?>",
-            version: "<?php echo $this->getVersion(); ?>"
-        };
-        </script>
+        ?>
 		<div class="wrap">
 		<?php 
 		if ('General Settings' == $title) : ?>
@@ -747,10 +745,11 @@ class Model_Admin extends Model_Base
 
 		if ($options['Enable_Caching'] && !extension_loaded('memcache'))
 		{
-			echo '<div style="max-width:900px;" class="update-nag">';
-			echo '<span style="font-size:14px; padding-left:10px;">You have caching enabled but <strong>Memcache</strong> is not installed on your server.</span></br>';
-			echo '<span style="font-size:14px; padding-left:10px;">Caching will be skipped.</span></br>'; 
+			echo '<div style="max-width:900px;margin-bottom:12px;" class="update-nag">';
+			echo '<span style="font-size:14px; padding-left:10px;">The <strong>memcached library</strong> is needed in order to use caching. </span></br>';
+			echo '<span style="font-size:14px; padding-left:10px;">Caching will be <strong>skipped</strong> until it is installed.</span></br>'; 
 			echo '</div>';
+			
 		}
 		
 		if ( $form ) 

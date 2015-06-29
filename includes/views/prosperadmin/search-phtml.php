@@ -31,8 +31,8 @@ if ($optionsGen['gotoMerchantBypass'])
 }
 
 $prosperAdmin->adminHeader( __( 'ProsperShop Settings', 'prosperent-suite' ), true, 'prosperent_products_options', 'prosper_productSearch' );
-
-echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'ProsperShop is a store that gives visitors to your site access to products from over 4500 merchants.<br><br>The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store.<br><br><b style="font-size:14px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
+echo '<h1 style="font-size:23px;max-width:876px;font-weight:300;padding:0 15px 4px 0;margin-top:15px;line-height:29px;">Create a shop that gives your visitors access to products you can curate.</h1>';
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'The store was automatically created for you.<br><br>Next step is to play around with the following settings to change the look of your store.<br><br><b style="font-size:14px;">*If you make the shop your static front page, follow this <a href="http://wordpress.prosperentdemo.com/prodstore/#prosperShopFaq">guide</a></b>.', 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->textinput( 'Starting_Query', __( '<strong style="font-size:14px">Starting Query</strong>', 'prosperent-suite' ), '', 'This will be used if no search query was provided. If not set and no query, the shop shows the No Results page which show Popular Products.' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';

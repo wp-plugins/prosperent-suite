@@ -14,11 +14,11 @@ echo '<p class="prosper_descb">' . __( "On reinstallation, some options will be 
 
 if ($genOptions['PSAct'] || $genOptions['PICIAct'])
 {
-	echo $prosperAdmin->textinput( 'MemcacheIP', __( '<strong style="font-size:14px">Memcache IP</strong>', 'prosperent-suite' ), '', 'Enter your Memcache IP if it differs from the default of 127.0.0.1</span></a>');
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->textinput( 'MemcacheIP', __( '<strong style="font-size:14px">Memcache IP</strong>', 'prosperent-suite' ));
+	echo '<p class="prosper_desc">' . __( "Enter your Memcache IP if it differs from the default of 127.0.0.1", 'prosperent-suite' ) . '</p><br>';
 
-	echo $prosperAdmin->textinput( 'MemcachePort', __( '<strong style="font-size:14px">Memcache Port</strong>', 'prosperent-suite' ), '', 'Enter your Memcache Port if it differs from the default of 11211</span></a>');
-	echo '<p class="prosper_descb">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->textinput( 'MemcachePort', __( '<strong style="font-size:14px">Memcache Port</strong>', 'prosperent-suite' ));
+	echo '<p class="prosper_descb">' . __( "Enter your Memcache Port if it differs from the default of 11211", 'prosperent-suite' ) . '</p><br>';
 
 	echo '<p class="prosper_settingDescb" style="font-size:14px;">' . __( 'CNAMES will need to be added to your Server\'s DNS Settings first. This <a href="http://community.prosperent.com/showthread.php?2442-Image-url-s-and-CNAME-masking">post</a> shoes how to set up a CNAME.<br><span style="font-size:14px;font-weight:bold;">DO NOT forget the http:// or https://</span>', 'prosperent-suite' ) . '</p>';
 	echo $prosperAdmin->textinput( 'ImageCname', __( '<strong style="font-size:14px">Image CNAME</strong>', 'prosperent-suite' ), '');
@@ -48,20 +48,20 @@ if ($genOptions['PSAct'])
 	echo '<table><tr><td><img src="' . PROSPER_IMG . '/adminImg/ProsperShop Settings.png"/></td><td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">Advanced ProsperShop Settings</h1></td></tr></table><div style="clear:both"></div>';
 	echo '<p class="prosper_settingDesc" style="border:none;">' . __( '', 'prosperent-suite' ) . '</p>';								
 
-	echo $prosperAdmin->textinput( 'relThresh', __( '<strong style="font-size:14px">Relevancy Threshold</strong>', 'prosperent-suite' ), '', 'Controls the relevancy for queries passed to the ProsperShop. Any decimal value between 0 and 1.<br>Lower values will return more results, but not as relevant, while higher values will return less results, but more relevant.' );
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->textinput( 'relThresh', __( '<strong style="font-size:14px">Relevancy Threshold</strong>', 'prosperent-suite' ));
+	echo '<p class="prosper_desc">' . __( "Increase or decrease the relevancy of each query. Enter a decimal value between 0 and 1. Defaults to 0.7.", 'prosperent-suite' ) . '</p><br>';
 
-	echo $prosperAdmin->checkbox( 'noSearchBar', __( '<strong style="font-size:14px">Disable the Shop\'s Search Bar</strong>', 'prosperent-suite' ), true);
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
+	echo $prosperAdmin->checkbox( 'noSearchBar', __( '<strong style="font-size:14px">Hide the Shop\'s Search Bar</strong>', 'prosperent-suite' ), true);
+	echo '<p class="prosper_desc">' . __( "Hides the primary search bar, use only if you have another way for people to search the shop.", 'prosperent-suite' ) . '</p>';
 
-	echo $prosperAdmin->checkbox( 'noFollowFacets', __( '<strong style="font-size:14px">Add a noFollow to the filters</strong>', 'prosperent-suite' ), true, '', 'May help reduce the amount of pages crawled');
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->checkbox( 'noFollowFacets', __( '<strong style="font-size:14px">Add a noFollow to the filters</strong>', 'prosperent-suite' ), true);
+	echo '<p class="prosper_desc">' . __( "Adds a NoFollow to Filter Links for Crawlers. This may help reduce the amount of pages that get crawled.", 'prosperent-suite' ) . '</p><br>';
 
-	echo $prosperAdmin->select( 'Title_Structure', __( '<strong style="font-size:14px">Shop\'s Title Structure</strong>', 'prosperent-suite' ), array( 0 => __( 'WordPress Default', 'prosperent-suite' ), 1 => __( 'Page Title | Query', 'prosperent-suite' ), 2 => __( 'Query | Page Title', 'prosperent-suite' ), 3 => __( 'Query', 'prosperent-suite' ), 4 => __( 'Page Title', 'prosperent-suite' ) ), '', 'You can choose which seperator to use for option 2 and 3 in the next option. These titles will only change the title on the Store Page.' );
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->select( 'Title_Structure', __( '<strong style="font-size:14px">Shop\'s Title Structure</strong>', 'prosperent-suite' ), array( 0 => __( 'WordPress Default', 'prosperent-suite' ), 1 => __( 'Page Title | Query', 'prosperent-suite' ), 2 => __( 'Query | Page Title', 'prosperent-suite' ), 3 => __( 'Query', 'prosperent-suite' ), 4 => __( 'Page Title', 'prosperent-suite' ) ));
+	echo '<p class="prosper_desc">' . __( "Choose a title structure for product results and product pages.", 'prosperent-suite' ) . '</p><br>';
 
-	echo $prosperAdmin->textinput( 'Title_Sep', __( '<strong style="font-size:14px">Title seperator</strong>', 'prosperent-suite' ), '', 'Optional</span></a>' );
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo $prosperAdmin->textinput( 'Title_Sep', __( '<strong style="font-size:14px">Title seperator</strong>', 'prosperent-suite' ) );
+	echo '<p class="prosper_desc">' . __( "Enter a seperator to use for the title structure above.", 'prosperent-suite' ) . '</p><br>';
 
 	echo $prosperAdmin->checkbox( 'Manual_Base', __( '<strong style="font-size:14px">Change Base URL Manually</strong>', 'prosperent-suite' ), true, '',  'Check this box if you\'d like to change your site\'s Base URL manually. Helpful if it set incorrectly by the Plugin, or you have a special use case.' );
 	echo '<p class="prosper_desc">' . __( "Base URL for the ProsperShop. Gets <strong>set automatically</strong> by the plugin, but there are some instances that you may need to change it manually, for example if you are using the shop as a static front page.", 'prosperent-suite' ) . '</p>';
@@ -78,13 +78,13 @@ if ($genOptions['PSAct'])
 	}
 
 	echo $prosperAdmin->textinput( 'Twitter_Site', __( '<strong style="font-size:14px">Twitter Site Handle</strong>', 'prosperent-suite' ) );
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo '<p class="prosper_desc">' . __( "Your site's Twitter Handle.", 'prosperent-suite' ) . '</p><br>';
 
 	echo $prosperAdmin->textinput( 'Twitter_Creator', __( '<strong style="font-size:14px">Twitter Site Creator Handle</strong>', 'prosperent-suite' ) );
-	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
+	echo '<p class="prosper_desc">' . __( "Your Twitter Handle.", 'prosperent-suite' ) . '</p><br>';
 	
 	echo $prosperAdmin->textinput( 'OG_Image', __( '<strong style="font-size:14px">Facebook Image Width</strong>', 'prosperent-suite' ), '', 'Changes the size of the image when someone shares a shop link on Facebook', 'prosper_textinputsmall');
-	echo '<p class="prosper_descb">' . __( "Minimum is <strong>200</strong>, Maximum is <strong>500</strong><br>Height of image will be the same as the width.", 'prosperent-suite' ) . '</p>';
+	echo '<p class="prosper_descb">' . __( "Insert a width for the Facebook Image when a product page is linked to. The height will be the same as your width.<br>Minimum is <strong>200</strong>, Maximum is <strong>500</strong>", 'prosperent-suite' ) . '</p>';
 }
 
 if ($genOptions['PSAct'] || $genOptions['PICIAct'])

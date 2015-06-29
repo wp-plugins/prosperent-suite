@@ -624,7 +624,7 @@ abstract class Model_Base
 			$sid = implode('_', $sidArray);
 		}
 
-		$settings = array_merge($settings, array(
+		$settings = array_merge(array(
 			'api_key' 		  	 => $this->_options['Api_Key'],
 			'location'  	  	 => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
 			'referrer' 		  	 => $_SERVER['HTTP_REFERER'],
@@ -632,7 +632,7 @@ abstract class Model_Base
 			'clickMaskDomain' 	 => $this->_options['ClickCname'],
 			'sid'			  	 => $sid,
 			'relevancyThreshold' => $this->_options['relThresh']
-		));	
+		), $settings);	
 
 		$settings = array_filter( $settings);
 

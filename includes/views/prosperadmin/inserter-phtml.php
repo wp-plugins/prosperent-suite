@@ -7,7 +7,8 @@ $prosperAdmin = new Model_Admin();
 
 $prosperAdmin->adminHeader( __( 'ProsperInsert Settings', 'prosperent-suite' ), true, 'prosperent_compare_options', 'prosper_autoComparer' );
 
-echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'Insert Products into All Posts and/or Pages.<br>Uses the PagePost titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br><br>You can edit products on a page/post by using gear icon in the visual editor and clicking "Edit ProsperInsert Products".', 'prosperent-suite' ) . '</p>';						
+echo '<h1 style="font-size:23px;max-width:876px;font-weight:300;padding:0 15px 4px 0;margin-top:15px;line-height:29px;">Insert Products into All Posts and/or Pages.</h1>';
+echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'Uses the PagePost titles to create a ProsperInsert above or below the content for all posts/pages.<br>You can also choose words to exclude from page titles.<br><br>You can edit products on a page/post by using gear icon in the visual editor and clicking "Edit ProsperInsert Products".', 'prosperent-suite' ) . '</p>';						
 
 echo $prosperAdmin->checkbox( 'prosper_inserter_posts', __( '<strong style="font-size:14px;">Add ProsperInsert to All Posts</strong>', 'prosperent-suite' ), true );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';

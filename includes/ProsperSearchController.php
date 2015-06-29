@@ -257,6 +257,9 @@ class ProsperSearchController
 		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['allFilters'] ||$filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters'])
 		{		
 			$settings = array(
+			    'limit'			   => $options['Pagination_Limit'],
+			    'imageSize'		   => $imageSize,
+			    'curlCall'		   => 'multi-product',
 				'page'			   => $params['page'],
 				'query'            => $query,
 				'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
@@ -265,10 +268,7 @@ class ProsperSearchController
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
-				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',				
-				'limit'			   => $options['Pagination_Limit'],
-				'imageSize'		   => $imageSize,
-				'curlCall'		   => 'multi-product'
+				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',						
 			);	
 
 			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);			
@@ -377,11 +377,7 @@ class ProsperSearchController
 		    {
 		        //$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
 		        //unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
-
-		        $data = $this->searchModel->storeSearch(true);
-		        
-
-		    
+                $data = $this->searchModel->storeSearch(true);		        
 		        $this->productAction($data, $homeUrl, $type, $searchPage, $options);
 		        return;
 		    }

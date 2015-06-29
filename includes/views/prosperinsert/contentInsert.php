@@ -17,203 +17,27 @@ $mainURL = preg_replace('/views.+/', '' , $url);
 		/*function editInsert () {
 			console.log(shortCode.local_ed.selection.getContent());
 		}*/
-		var screenHeight = 725 > jQuery(window).height() ? 600 : 750,
-			    t;
-
-			function getNewCurrent() {
-			    var b;
-			    jQuery("#products_tab").hasClass("current") ? b = "prod" : b = "merchant";
-			    return b
-			}
-
-			function showValues() {
-			    var b = getNewCurrent();
-			    clearTimeout(t);
-			    var c = "",
-			        c = jQuery("form").serialize();
-			    xmlhttp = new XMLHttpRequest;
-			    xmlhttp.onreadystatechange = function() {
-			        jQuery("div." + b + "preview").html(xmlhttp.responseText).show()
-			    };
-			    var a = window.location.pathname,
-			        a = a.substring(0, a.lastIndexOf("prosperinsert/")) + "preview.php?type=" + b + "&";
-			    xmlhttp.open("GET", a + c, !0);
-			    t = setTimeout(function() {
-			        try {
-			            xmlhttp.send(), c = ""
-			        } catch (a) {}
-			    }, 500);
-			    c || clearTimeout(t)
-			}
-
-			function setFocus() {
-			    "prod" == getNewCurrent() ? document.getElementById("prodquery").focus() : document.getElementById("merchantmerchant").focus();
-			    top.tinymce.activeEditor.windowManager.getParams() || shortCode.local_ed.selection.getContent() && !shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig) && (document.getElementById("prodquery").value = shortCode.local_ed.selection.getContent() ? shortCode.local_ed.selection.getContent() : "shoes", showValues())
-			}
-
-			function openPreview() {
-			    jQuery("#truePreview").css("visibility", "hidden" == jQuery("#truePreview").css("visibility") ? "visible" : "hidden");
-			    jQuery("#truePreview").css("z-index", "1000" == jQuery("#truePreview").css("z-index") ? "-1000" : "1000");
-			    jQuery("#mainFormDiv").css("z-index", "1" == jQuery("#mainFormDiv").css("z-index") ? "-1000" : "1");
-			    jQuery("#prosperMCE_preview").prop("value", "Preview" == jQuery("#prosperMCE_preview").prop("value") ? "Close Preview" : "Preview");
-			    var b = getNewCurrent(),
-			        c = "",
-			        c = jQuery("form").serialize();
-			    xmlhttp = new XMLHttpRequest;
-			    xmlhttp.onreadystatechange = function() {
-			        jQuery("div#truePreview").html(xmlhttp.responseText).show()
-			    };
-			    var a = window.location.pathname,
-			        b = a.substring(0, a.lastIndexOf("prosperinsert/")) + "truePreview.php?type=" + b + "&";
-			    xmlhttp.open("GET", b + c, !0);
-			    try {
-			        xmlhttp.send(), c = ""
-			    } catch (d) {}
-			}
-
-			function getIdofItem(b, c) {
-			    var a = getNewCurrent(),
-			        d = 1 == c ? b.id.replace("small", "") : b.id,
-			        e = jQuery("#small" + d).attr("src") ? jQuery("#small" + d).attr("src") : jQuery("#" + d).find("img.newImage").attr("src");
-			    "pc" == jQuery("#prodview:checked").val() ? 0 <= document.getElementById(a + "id").value.indexOf(d) ? (jQuery("#" + d).removeClass("highlight"), d = document.getElementById(a + "id").value.replace(d, ""), document.getElementById(a + "id").value = d) : (document.getElementById(a + "id").value = d, jQuery("#productList li").removeClass("highlight"),
-			        jQuery("li#" + d).addClass("highlight")) : (0 <= document.getElementById(a + "id").value.indexOf(d + ",") ? (e = document.getElementById(a + "images").value.replace(e + ",", ""), jQuery("#" + d).removeClass("highlight"), d = document.getElementById(a + "id").value.replace(d + ",", ""), document.getElementById(a + "id").value = d, document.getElementById(a + "images").value = e) : (document.getElementById(a + "id").value += d + ",", jQuery("#" + d).addClass("highlight"), document.getElementById(a + "images").value += e + ","), showAddedValues(), jQuery("#" +
-			        a + "resultsGoHere").css("height", document.getElementById(a + "images").value ? 600 == screenHeight ? "233px" : "380px" : 600 == screenHeight ? "337px" : "480px"))
-			}
-
-			function getFilters() {
-			    var b = jQuery("#prodd").val() ? jQuery("#prodd").val().replace(",", "|") : "",
-			        c = jQuery("#prodb").val() ? jQuery("#prodb").val().replace(",", "|") : "";
-			    pRange = (jQuery("#pricerangea").val() ? jQuery("#pricerangea").val() + "," : "0.01,") + (jQuery("#pricerangeb").val() ? jQuery("#pricerangeb").val() : "");
-			    perRange = jQuery("#onSale:checked").val() ? "1," : (jQuery("#percentrangea").val() ? jQuery("#percentrangea").val() + "," : "") + (jQuery("#percentrangeb").val() ? jQuery("#percentrangeb").val() : "");
-			    jQuery.ajax({
-			        type: "POST",
-			        url: "http://api.prosperent.com/api/search",
-			        data: {
-			            api_key: "fc91d36b383ca0231ee59c5048eabedc",
-			            query: jQuery("#prodquery").val(),
-			            filterBrand: c,
-			            filterPrice: pRange,
-			            filterPercentOff: perRange,
-			            limit: 1,
-			            enableFacets: "merchantId|merchant",
-			            enableFullData: 0
-			        },
-			        contentType: "application/json; charset=utf-8",
-			        dataType: "jsonp",
-			        success: function(a) {
-			            jQuery("#prodmerchant").empty();
-			            jQuery.each(a.facets.merchantId, function(d, c) {
-			                b.match(c.value) ? jQuery("#prodmerchant").append('<li id="d' + c.value + '" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' +
-			                    a.facets.merchant[d].value + "</span></a></li>") : jQuery("#prodmerchant").append('<li id="d' + c.value + '" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' + a.facets.merchant[d].value + "</span></a></li>")
-			            })
-			        },
-			        error: function() {
-			            alert("Failed to load data.")
-			        }
-			    });
-			    jQuery.ajax({
-			        type: "POST",
-			        url: "http://api.prosperent.com/api/search",
-			        data: {
-			            api_key: "fc91d36b383ca0231ee59c5048eabedc",
-			            query: jQuery("#prodquery").val(),
-			            filterMerchantId: b,
-			            filterBrand: c,
-			            filterPrice: pRange,
-			            filterPercentOff: perRange,
-			            limit: 1,
-			            enableFacets: "brand",
-			            enableFullData: 0
-			        },
-			        contentType: "application/json; charset=utf-8",
-			        dataType: "jsonp",
-			        success: function(a) {
-			            jQuery("#prodbrand").empty();
-			            jQuery.each(a.facets.brand, function(a, b) {
-			                c.match(b.value) ? jQuery("#prodbrand").append('<li id="b' + b.value + '" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' + b.value + "</span></a></li>") : jQuery("#prodbrand").append('<li id="b' + b.value + '" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>' +
-			                    b.value + "</span></a></li>")
-			            })
-			        },
-			        error: function() {
-			            alert("Failed to load data.")
-			        }
-			    })
-			}
-
-			function getIdValue(b, c) {
-			    var a = b.id,
-			        d = a.slice(0, 1),
-			        e = a.slice(1);
-			    0 <= document.getElementById("prod" + d).value.indexOf(e + ",") ? (jQuery("#" + a).removeClass("activeFilter"), a = document.getElementById("prod" + d).value.replace(e + ",", ""), document.getElementById("prod" + d).value = a) : (document.getElementById("prod" + d).value += e + ",", jQuery("#" + a).addClass("activeFilter"));
-			    showValues()
-			}
-
-			function showAddedValues() {
-			    var b = getNewCurrent(),
-			        c = "",
-			        c = jQuery("form").serialize();
-			    xmlhttp = new XMLHttpRequest;
-			    xmlhttp.onreadystatechange = function() {
-			        jQuery("div." + b + "added").html(xmlhttp.responseText).show()
-			    };
-			    var a = window.location.pathname,
-			        a = a.substring(0, a.lastIndexOf("prosperinsert/")) + "added.php?type=" + b + "&";
-			    xmlhttp.open("GET", a + c, !0);
-			    xmlhttp.send()
-			}
-
-			function sticky_relocate() {
-			    var b = jQuery(window).scrollTop(),
-			        c = jQuery("#sticky-anchor").offset().top;
-			    b > c ? jQuery("#stickyHeader").addClass("sticky") : jQuery("#stickyHeader").removeClass("sticky")
-			}
-			jQuery(function() {
-			    jQuery(window).scroll(sticky_relocate);
-			    sticky_relocate();
-			    var b = top.tinymce.activeEditor.windowManager.getParams();
-			    if (b) {
-			        var c = "prod",
-				            a = jQuery("<i " + b + ">").attr("id"),
-				            d = jQuery("<i " + b + ">").attr("mid"),
-				            e = jQuery("<i " + b + ">").attr("b"),
-				            f = jQuery("<i " + b + ">").attr("sale"),
-				            g = jQuery("<i " + b + ">").attr("pr"),
-				            h = jQuery("<i " + b + ">").attr("po"),
-				            k = jQuery("<i " + b + ">").attr("q"),
-				            goTo = jQuery("<i " + b + ">").attr("gtm"),
-				            noShow = jQuery("<i " + b + ">").attr("noShow"),
-				            view = jQuery("<i " + b + ">").attr("v"),
-				            visit = jQuery("<i " + b + ">").attr("vst"),
-				            cat = jQuery("<i " + b + ">").attr("cat"),
-				            imtype = jQuery("<i " + b + ">").attr("imgt");
-				        "undefined" != typeof d && null !== d && (document.getElementById(c + "d").value = d);
-				        "undefined" != typeof k && null !== k && (document.getElementById(c + "query").value = k);
-				        "undefined" != typeof e && null !== e && (document.getElementById(c + "b").value = e);
-				        "undefined" != typeof cat && null !== cat && (document.getElementById("merchantcategory").value = cat);
-				        "undefined" != typeof visit && null !== visit && (document.getElementById("prodvisit").value = visit);
-				        "undefined" != typeof g && null !== g && (a = g.split(","), document.getElementById("pricerangea").value =
-				            a[0], document.getElementById("pricerangeb").value = a[1]);
-				        "undefined" != typeof f && null !== f && (jQuery("input[name=onSale]").attr('checked', true));
-				        "undefined" != typeof view && null !== view && (jQuery("input[name=prodview][value="+view+"]").attr('checked', true)), view == 'pc' && openImageType();
-				        "undefined" != typeof h && null !== h && (f = h.split(","), document.getElementById("percentrangea").value = f[0], document.getElementById("percentrangeb").value = f[1]);
-				        "undefined" != typeof goTo && null !== goTo && (jQuery("input[name="+c+"goTo][value="+goTo+"]").attr('checked', true));
-				        "undefined" != typeof noShow && null !== noShow && (jQuery("input[name=noShow]").attr('checked', true));			        
-			    }
-			    jQuery(window).keydown(function(event){
-			        if(event.keyCode == 13) {
-			          event.preventDefault();
-			          return false;
-			        }
-			      });
-			    
-			    jQuery("#prodresultsGoHere").css("height", 600 == screenHeight ? "337px" : "480px");
-			    jQuery("#truePreview").css("height", 600 == screenHeight ? "558px" :
-			        "708px")
-			});
-
-			function openImageType() {
-			    "pc" == jQuery("#prodview:checked").val() ? (jQuery("#prosperAddedprod").css("display", "none"), jQuery("#prodImageType").css("visibility", "visible")) : (jQuery("#prosperAddedprod").css("display", "block"), jQuery("#prodImageType").css("visibility", "hidden"))
-			};</script>
+		var screenHeight=725>jQuery(window).height()?600:750,t;function getNewCurrent(){var b;jQuery("#products_tab").hasClass("current")?b="prod":b="merchant";return b}
+		function showValues(){var b=getNewCurrent();clearTimeout(t);var d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+b+"preview").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"preview.php?type="+b+"&";xmlhttp.open("GET",a+d,!0);t=setTimeout(function(){try{xmlhttp.send(),d=""}catch(a){}},500);d||clearTimeout(t)}
+		function setFocus(){"prod"==getNewCurrent()?document.getElementById("prodquery").focus():document.getElementById("merchantmerchant").focus();top.tinymce.activeEditor.windowManager.getParams()||shortCode.local_ed.selection.getContent()&&!shortCode.local_ed.selection.getContent().match(/(<([^>]+)>)/ig)&&(document.getElementById("prodquery").value=shortCode.local_ed.selection.getContent()?shortCode.local_ed.selection.getContent():"shoes",showValues())}
+		function openPreview(){jQuery("#truePreview").css("visibility","hidden"==jQuery("#truePreview").css("visibility")?"visible":"hidden");jQuery("#truePreview").css("z-index","1000"==jQuery("#truePreview").css("z-index")?"-1000":"1000");jQuery("#mainFormDiv").css("z-index","1"==jQuery("#mainFormDiv").css("z-index")?"-1000":"1");jQuery("#prosperMCE_preview").prop("value","Preview"==jQuery("#prosperMCE_preview").prop("value")?"Close Preview":"Preview");var b=getNewCurrent(),d="",d=jQuery("form").serialize();
+		xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div#truePreview").html(xmlhttp.responseText).show()};var a=window.location.pathname,b=a.substring(0,a.lastIndexOf("prosperinsert/"))+"truePreview.php?type="+b+"&";xmlhttp.open("GET",b+d,!0);try{xmlhttp.send(),d=""}catch(c){}}
+		function getIdofItem(b,d){var a=getNewCurrent(),c=1==d?b.id.replace("small",""):b.id,e=jQuery("#small"+c).attr("src")?jQuery("#small"+c).attr("src"):jQuery("#"+c).find("img.newImage").attr("src");"pc"==jQuery("#prodview:checked").val()?0<=document.getElementById(a+"id").value.indexOf(c)?(jQuery("#"+c).removeClass("highlight"),c=document.getElementById(a+"id").value.replace(c,""),document.getElementById(a+"id").value=c):(document.getElementById(a+"id").value=c,jQuery("#productList li").removeClass("highlight"),
+		jQuery("li#"+c).addClass("highlight")):(0<=document.getElementById(a+"id").value.indexOf(c+",")?(e=document.getElementById(a+"images").value.replace(e+",",""),jQuery("#"+c).removeClass("highlight"),c=document.getElementById(a+"id").value.replace(c+",",""),document.getElementById(a+"id").value=c,document.getElementById(a+"images").value=e):(document.getElementById(a+"id").value+=c+",",jQuery("#"+c).addClass("highlight"),document.getElementById(a+"images").value+=e+","),showAddedValues(),jQuery("#"+
+		a+"resultsGoHere").css("height",document.getElementById(a+"images").value?600==screenHeight?"233px":"380px":600==screenHeight?"337px":"480px"))}
+		function getFilters(){var b=jQuery("#prodd").val()?jQuery("#prodd").val().replace(",","|"):"",d=jQuery("#prodb").val()?jQuery("#prodb").val().replace(",","|"):"";pRange=(jQuery("#pricerangea").val()?jQuery("#pricerangea").val()+",":"0.01,")+(jQuery("#pricerangeb").val()?jQuery("#pricerangeb").val():"");perRange=jQuery("#onSale:checked").val()?"1,":(jQuery("#percentrangea").val()?jQuery("#percentrangea").val()+",":"")+(jQuery("#percentrangeb").val()?jQuery("#percentrangeb").val():"");jQuery.ajax({type:"POST",
+		url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#prodquery").val(),filterBrand:d,filterPrice:pRange,filterPercentOff:perRange,limit:1,enableFacets:"merchantId|merchant",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(a){jQuery("#prodmerchant").empty();jQuery.each(a.facets.merchantId,function(c,d){b.match(d.value)?jQuery("#prodmerchant").append('<li id="d'+d.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+
+		a.facets.merchant[c].value+"</span></a></li>"):jQuery("#prodmerchant").append('<li id="d'+d.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+a.facets.merchant[c].value+"</span></a></li>")})},error:function(){alert("Failed to load data.")}});jQuery.ajax({type:"POST",url:"http://api.prosperent.com/api/search",data:{api_key:"fc91d36b383ca0231ee59c5048eabedc",query:jQuery("#prodquery").val(),filterMerchantId:b,filterBrand:d,filterPrice:pRange,filterPercentOff:perRange,
+		limit:1,enableFacets:"brand",enableFullData:0},contentType:"application/json; charset=utf-8",dataType:"jsonp",success:function(a){jQuery("#prodbrand").empty();jQuery.each(a.facets.brand,function(a,b){d.match(b.value)?jQuery("#prodbrand").append('<li id="b'+b.value+'" class="activeFilter" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+b.value+"</span></a></li>"):jQuery("#prodbrand").append('<li id="b'+b.value+'" onClick="getIdValue(this);getFilters();"><a href="javascript:void(0);"><span>'+
+		b.value+"</span></a></li>")})},error:function(){alert("Failed to load data.")}})}function getIdValue(b,d){var a=b.id,c=a.slice(0,1),e=a.slice(1);0<=document.getElementById("prod"+c).value.indexOf(e+",")?(jQuery("#"+a).removeClass("activeFilter"),a=document.getElementById("prod"+c).value.replace(e+",",""),document.getElementById("prod"+c).value=a):(document.getElementById("prod"+c).value+=e+",",jQuery("#"+a).addClass("activeFilter"));showValues()}
+		function showAddedValues(){var b=getNewCurrent(),d="",d=jQuery("form").serialize();xmlhttp=new XMLHttpRequest;xmlhttp.onreadystatechange=function(){jQuery("div."+b+"added").html(xmlhttp.responseText).show()};var a=window.location.pathname,a=a.substring(0,a.lastIndexOf("prosperinsert/"))+"added.php?type="+b+"&";xmlhttp.open("GET",a+d,!0);xmlhttp.send()}
+		function sticky_relocate(){var b=jQuery(window).scrollTop(),d=jQuery("#sticky-anchor").offset().top;b>d?jQuery("#stickyHeader").addClass("sticky"):jQuery("#stickyHeader").removeClass("sticky")}
+		jQuery(function(){jQuery(window).scroll(sticky_relocate);sticky_relocate();var b=top.tinymce.activeEditor.windowManager.getParams();if(b){var d=jQuery("<i "+b+">").attr("id"),a=jQuery("<i "+b+">").attr("mid"),c=jQuery("<i "+b+">").attr("b"),e=jQuery("<i "+b+">").attr("sale"),g=jQuery("<i "+b+">").attr("pr"),h=jQuery("<i "+b+">").attr("po"),k=jQuery("<i "+b+">").attr("q"),l=jQuery("<i "+b+">").attr("gtm"),p=jQuery("<i "+b+">").attr("noShow"),f=jQuery("<i "+b+">").attr("v"),m=jQuery("<i "+b+">").attr("vst"),
+		n=jQuery("<i "+b+">").attr("cat");jQuery("<i "+b+">").attr("imgt");"undefined"!=typeof a&&null!==a&&(document.getElementById("prodd").value=a);"undefined"!=typeof k&&null!==k&&(document.getElementById("prodquery").value=k);"undefined"!=typeof c&&null!==c&&(document.getElementById("prodb").value=c);"undefined"!=typeof n&&null!==n&&(document.getElementById("merchantcategory").value=n);"undefined"!=typeof m&&null!==m&&(document.getElementById("prodvisit").value=m);"undefined"!=typeof g&&null!==g&&(d=
+		g.split(","),document.getElementById("pricerangea").value=d[0],document.getElementById("pricerangeb").value=d[1]);"undefined"!=typeof e&&null!==e&&jQuery("input[name=onSale]").attr("checked",!0);"undefined"!=typeof f&&null!==f&&jQuery("input[name=prodview][value="+f+"]").attr("checked",!0);"pc"==f&&openImageType();"undefined"!=typeof h&&null!==h&&(e=h.split(","),document.getElementById("percentrangea").value=e[0],document.getElementById("percentrangeb").value=e[1]);"undefined"!=typeof l&&null!==l&&
+		jQuery("input[name=prodgoTo][value="+l+"]").attr("checked",!0);"undefined"!=typeof p&&null!==p&&jQuery("input[name=noShow]").attr("checked",!0)}jQuery(window).keydown(function(a){if(13==a.keyCode)return a.preventDefault(),!1});jQuery("#prodresultsGoHere").css("height",600==screenHeight?"337px":"480px");jQuery("#truePreview").css("height",600==screenHeight?"558px":"708px")});
+		function openImageType(){"pc"==jQuery("#prodview:checked").val()?(jQuery("#prosperAddedprod").css("display","none"),jQuery("#prodImageType").css("visibility","visible")):(jQuery("#prosperAddedprod").css("display","block"),jQuery("#prodImageType").css("visibility","hidden"))};
+		</script>
     </head>
     <base target="_self" />
     <body id="inserter" role="application" aria-labelledby="app_label" onload="setFocus();showValues();getFilters()">			

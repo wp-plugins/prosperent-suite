@@ -565,7 +565,7 @@ class Model_Search extends Model_Base
 		    $prosperLastValue = end($params);
 		    $prosperLastKey = key($params);
 		    unset($params[$prosperLastKey]);
-		    $url = str_replace('/' . $prosperLastKey . '/' . $prosperLastValue, $url); 
+		    $url = str_replace('/' . $prosperLastKey . '/' . $prosperLastValue, '', $url); 
 		}
 		
 		if(is_front_page())

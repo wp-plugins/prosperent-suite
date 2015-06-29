@@ -71,7 +71,7 @@
 				?>
                 <form name="priceRange" method="POST" action="" style="border-bottom:1px solid #ccc">
                     <ul class="prosperFilterContainer" style="border:none">  
-			    <?php if ($lowRange != $highRange): ?>		    					
+			    <?php if ($lowRange != $highRange && $highRange && $lowRange): ?>		    					
                        <li class="prosperParent" onclick="toggle_visibility('prospPrice'); return false;">
     					    <a href="javascript:void(0);">                                        
                                 <span class="prosperArrow"><i class="prospPrice fa fa-caret-down"></i></span>

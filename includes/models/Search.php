@@ -49,7 +49,7 @@ class Model_Search extends Model_Base
 			
 	public function getUrlParams()
 	{
-		$params = explode('/', get_query_var('queryParams'));
+	    $params = explode('/', get_query_var('queryParams'));
 
 		$sendParams = array();
 		foreach ($params as $k => $p)
@@ -552,28 +552,31 @@ class Model_Search extends Model_Base
 	
 	public function storeSearch($related = false)
 	{		
+	    $base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
+	    
 		if(get_query_var('queryParams'))
 		{
 			$params = str_replace('%7C', '~', $this->getUrlParams());	
 		}
-		
-		$url = 'http://' . $_SERVER['HTTP_HOST'] . str_replace('%7C', '~', $_SERVER['REQUEST_URI']);
+
+		$url = home_url() . str_replace('%7C', '~', $_SERVER['REQUEST_URI']);
 		$url = preg_replace('/\/$/', '', $url);
 
+		if(is_front_page())
+		{			
+			$url = home_url('/') . $base;
+		}
+		
 		if ($related)
 		{
 		    $prosperLastValue = end($params);
 		    $prosperLastKey = key($params);
 		    unset($params[$prosperLastKey]);
-		    $url = str_replace('/' . $prosperLastKey . '/' . $prosperLastValue, '', $url); 
+		    $newParams = implode('/', $params);
+		    set_query_var('queryParams', $newParams);
+		    $url = home_url('/') . $base . '/' . $newParams;
 		}
 		
-		if(is_front_page())
-		{
-			$base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-			$url = home_url('/') . $base;
-		}
-
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';
 		$merchant 	  = isset($params['merchant']) ? str_replace('|', '~', rawurldecode(stripslashes($params['merchant']))) : '';		
 		$category 	  = isset($params['category']) ? str_replace('|', '~', rawurldecode(stripslashes($params['category']))) : '';	

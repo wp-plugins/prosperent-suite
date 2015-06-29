@@ -271,12 +271,14 @@ class ProsperSearchController
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',						
 			);	
 
-			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);			
+			$curlUrls['results'] = $this->searchModel->apiCall($settings, $fetch);		
 		}
 
 		if ($options['Enable_Facets'] && ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['allFilters'] ||$filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters']))
 		{
 			$merchantFacetSettings = array(
+			    'enableFullData'   => 'FALSE',
+			    'imageSize'        => '75x75',
 				'query'            => $query,
 				'enableFacets'     => 'merchant',
 				'limit'			   => 1,
@@ -285,14 +287,14 @@ class ProsperSearchController
 				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterBrand'	   => ($filters['brand']['appliedFilters'] ? $filters['brand']['appliedFilters'] : ($filters['brand']['allFilters'] ? $filters['brand']['allFilters'] : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
-				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
-				'enableFullData'   => 'FALSE',
-			    'imageSize'        => '75x75',
+				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',				
 			);	
 
 			$curlUrls['merchants'] = $this->searchModel->apiCall($merchantFacetSettings, $fetch);	
 
 			$brandFacetSettings = array(
+			    'imageSize'        => '75x75',
+			    'enableFullData'   => 'FALSE',
 				'query'            => $query,
 				'enableFacets'     => 'brand',
 				'limit'			   => 1,
@@ -301,14 +303,15 @@ class ProsperSearchController
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
 				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
-				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
-			    'imageSize'        => '75x75',
-				'enableFullData'   => 'FALSE'
+				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''			    
 			);	
 			
 			$curlUrls['brands'] = $this->searchModel->apiCall($brandFacetSettings, $fetch);
 			
 		    $settingsHigh = array(
+		        'limit'			   => 1,
+		        'enableFullData'   => 'FALSE',
+		        'imageSize'        => '75x75',
 		        'page'			   => 1,
 		        'query'            => $query,
 		        'sortBy'	       => 'price desc',
@@ -316,13 +319,13 @@ class ProsperSearchController
 		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 		        'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
-		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
-		        'limit'			   => 1,
-		        'enableFullData'   => 'FALSE',
-			    'imageSize'        => '75x75',
+		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''		        
 		    );
 		
 		    $settingsLow = array(
+		        'limit'			   => 1,
+		        'enableFullData'   => 'FALSE',
+		        'imageSize'        => '75x75',
 		        'page'			   => 1,
 		        'query'            => $query,
 		        'sortBy'	       => 'price asc',
@@ -330,10 +333,7 @@ class ProsperSearchController
 		        'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 		        'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
-		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',
-		        'limit'			   => 1,
-		        'enableFullData'   => 'FALSE',
-			    'imageSize'        => '75x75',
+		        'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''		        
 		    );
 		
 		    $curlUrls['highRange'] = $this->searchModel->apiCall($settingsHigh, $fetch);
@@ -372,12 +372,12 @@ class ProsperSearchController
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
-		{		    
-		    if ($query && ($filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['appliedFilters']))
+		{
+		    if (count($data['params']) >= 0)
 		    {
 		        //$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
 		        //unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
-                $data = $this->searchModel->storeSearch(true);		        
+                $data = $this->searchModel->storeSearch(true);		    
 		        $this->productAction($data, $homeUrl, $type, $searchPage, $options);
 		        return;
 		    }

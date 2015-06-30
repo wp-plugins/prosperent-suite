@@ -212,7 +212,7 @@ class TopProductsWidget extends WP_Widget
 			require_once(PROSPER_MODEL . '/Admin.php');
 			$this->adminModel = new Model_Admin();
 		
-			$this->adminModel->_settingsHistory('activated', array('trendsWidget' => 1));					
+			$this->adminModel->_settingsHistory();					
 		}	
 		
         $new_instance = (array) $new_instance;

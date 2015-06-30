@@ -200,7 +200,7 @@ class Model_Admin extends Model_Base
 		}
 	}
 	
-	public function _settingsHistory($status = 'activated', $extraVars = array())
+	public function _settingsHistory($status = 'activated')
 	{				
 		if (empty($this->_options))
 		{
@@ -211,22 +211,23 @@ class Model_Admin extends Model_Base
 			$options = $this->_options;
 		}	
 	
-		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);
-		$loadedExt = array_flip(get_loaded_extensions());			
+		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);		
 		
-		$allVars = array_merge($extraVars, array(
+		$allVars = array(
 			'apiKey' 			  => $options['Api_Key'],
+		    'accessKey' 		  => $options['prosperAccess'],
 			'httpHost' 			  => $_SERVER['HTTP_HOST'],
 			'phpVersion' 		  => phpversion(),
-			'curlLoaded' 		  => $loadedExt['curl'] ? 1 : 0,
 			'wordpressVersion' 	  => get_bloginfo('version'),
 			'status' 			  => $status,
-			'pluginName' 		  => $pluginInfo['Name'],
 			'pluginVersion' 	  => $pluginInfo['Version'],
 			'privateNetwork'	  => file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') ? 1 : 0,
 			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
 			'prosperShop'		  => $options['PSAct'] ? 1 : 0,
 			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
+		    'categories'     	  => $options['ProsperCategories'] ? $options['ProsperCategories'] : null,
+		    'negativeMerchants'	  => $options['NegativeMerchant'] ? $options['NegativeMerchant'] : null,
+		    'positiveMerchants'	  => $options['PositiveMerchant'] ? $options['PositiveMerchant'] : null,
 			'prosperInsert' 	  => $options['PICIAct'] ? 1 : 0,
 			'contentInsert' 	  => ($options['prosper_inserter_posts'] || $options['prosper_inserter_pages']) ? 1 : 0,
 			'linkerAmount'		  => $options['LinkAmount'],
@@ -241,7 +242,7 @@ class Model_Admin extends Model_Base
 		    'prosperInsertWidget' => is_active_widget(false, false, 'prosperproductinsert', true) ? 1 : 0,
 			'searchWidget'		  => is_active_widget(false, false, 'prosperent_store', true) ? 1 : 0,
 			'recentWidget'		  => is_active_widget(false, false, 'prosper_recent_searches', true) ? 1 : 0
-		));
+		);
 		
 		$allVars['settingsHash'] = md5(implode(',', $allVars));
 

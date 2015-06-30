@@ -38,7 +38,7 @@ class Model_Inserter extends Model_Base
 	        return $text;
 	    }
 	    
-	    if (($this->_options['prosper_inserter_posts'] && is_singular('post')) || ($this->_options['prosper_inserter_pages'] && (is_page() || is_product())))
+	    if (($this->_options['prosper_inserter_posts'] && is_singular('post')) || ($this->_options['prosper_inserter_pages'] && (is_page() || (is_plugin_active('woocommerce/woocommerce.php') ? is_product() : ''))))
 	    {
     		$newTitle = get_the_title();
     

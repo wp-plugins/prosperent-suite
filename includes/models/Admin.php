@@ -125,7 +125,7 @@ class Model_Admin extends Model_Base
 		array_splice($options['LTM'], $intOptNum, 1);
 		array_splice($options['Case'], $intOptNum, 1);
 		
-		$options['LinkAmount'] = $intLinks - 1;
+		$options['LinkAmount'] = ($intLinks > 0 ? $intLinks - 1 : 0);
 
 		update_option('prosper_autoLinker', $options);
 	}

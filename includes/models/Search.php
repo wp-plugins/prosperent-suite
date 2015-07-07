@@ -429,7 +429,6 @@ class Model_Search extends Model_Base
 			'imageSize' => $imageSize,
 			'curlCall'	=> 'single-productPage-' . $prosperPage
 		);
-		
 		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
 		if (!$cid)
 		{
@@ -458,7 +457,7 @@ class Model_Search extends Model_Base
     		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
     
     		// Twitter Cards
-    		echo '<meta name="twitter:card" content="record[0]">';
+    		echo '<meta name="twitter:card" content="summary">';
     		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
     		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
     		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
@@ -509,8 +508,10 @@ class Model_Search extends Model_Base
 		$page_num 	 = $params['page'] ? ' Page ' . $params['page'] : '';
 		$pagename 	 = get_the_title();
 		$blogname 	 = get_bloginfo();
-		$brand 	  	 = ucwords(rawurldecode($params['brand']));
-		$merchant 	 = ucwords(rawurldecode($params['merchant']));
+		$brands      = explode('|', ucwords(rawurldecode($params['brand'])));
+		$brand 	  	 = $brands[0];
+		$merchants   = explode('|', ucwords(rawurldecode($params['merchant'])));
+		$merchant 	 = $merchants[0];
 		$type 	  	 = $params['type'];
 		$query 	  	 = $params['query'] ? $params['query'] : (($this->_options['Starting_Query'] && !$brand && !$merchant) ? $this->_options['Starting_Query'] : '');
 		$city 	  	 = ucwords(rawurldecode($params['city']));

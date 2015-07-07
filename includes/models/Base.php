@@ -65,8 +65,12 @@ abstract class Model_Base
 				{
 					add_action( 'admin_notices', array($this, 'prosperPermalinkStructure' ));
 				}
-
-				if (!$this->_options['PSAct'])
+				
+				if ($this->_options['PSAct'])
+				{
+			        $this->prosperStoreInstall();
+				}
+				else
 				{				
 					add_action('admin_init', array($this, 'prosperStoreRemove'));
 				}				
@@ -402,6 +406,24 @@ abstract class Model_Base
 		
 	}	
 	
+	public function prosperStoreRemove()
+	{
+	    $pageTitle = get_option("prosperentStoreProductsTitle");
+	    $pageName = get_option("prosperentStoreProsperent SearchName");
+	
+	    // the id of our page...
+	    $pageId = get_option('prosperent_store_pageId');
+	    if($pageId)
+	    {
+	        wp_delete_post($pageId); // this will trash, not delete
+	    }
+	
+	    delete_option("prosperent_store_page_title");
+	    delete_option("prosperent_store_page_name");
+	    delete_option("prosperent_store_page_id");
+	}
+	
+	
 	public function prosperCustomAdd()
 	{
 		// Add only in Rich Editor mode
@@ -521,23 +543,6 @@ abstract class Model_Base
 		}
 	
 		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":1, "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
-	}
-	
-	public function prosperStoreRemove()
-	{
-		$pageTitle = get_option("prosperent_store_page_title");
-		$pageName = get_option("prosperent_store_page_name");
-
-		// the id of our page...
-		$pageId = get_option('prosperent_store_page_id');
-		if($pageId)
-		{
-			wp_delete_post($pageId); // this will trash, not delete
-		}
-
-		delete_option("prosperent_store_page_title");
-		delete_option("prosperent_store_page_name");
-		delete_option("prosperent_store_page_id");
 	}
 	
 	public function apiCall ($settings, $fetch, $sid = '')

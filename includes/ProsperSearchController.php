@@ -373,7 +373,7 @@ class ProsperSearchController
 		}
 		else
 		{
-		    if (count($data['params']) >= 0)
+		    if (count($data['params']) > 0 || (count($data['params']) >= 0 && $query)) 
 		    {
 		        //$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
 		        //unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);

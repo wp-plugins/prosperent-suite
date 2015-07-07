@@ -91,12 +91,12 @@ class Model_Linker extends Model_Base
 					'interface'		  => 'linker',
 					'enableFullData'  => 'FALSE',
 					'limit'           => 1,
-					'query'           => $query,
+					'query'           => (!$pieces['id'] ? $query : ''),
 					'filterMerchant'  => $merchants,
 					'filterBrand'	  => $brands,
 					'filterProductId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
-					'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
-					'filterPrice' 	  => ($pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
+					'filterPriceSale' => !$pieces['id'] && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+					'filterPrice' 	  => ($pieces['id'] || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
 				);
 			}
 			elseif ($pieces['ft'] == 'fetchMerchant')
@@ -284,7 +284,7 @@ class Model_Linker extends Model_Base
 	    {
 	        return $text;
 	    }
-	    
+
 		$text = ' ' . $text . ' ';
 		if (!empty($options['Match'][0]))
 		{
@@ -292,7 +292,7 @@ class Model_Linker extends Model_Base
 		    $random 		  = FALSE;
 		    $basePage         = ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products');
 		    $base   		  = $basePage . '/query/';
-		    $target 		  = $options['Target'] ? '_blank' : '_self';
+		    $target 		  = '_self';
 		    $productSearchUrl = home_url('/') . $base;
             $fetch            = 'fetchProducts';
 		    
@@ -415,7 +415,8 @@ class Model_Linker extends Model_Base
 					}
 					else
 					{*/
-						$text = preg_replace('/\b\s(' . $oldText . ')\s\b/' . $case, ' <a href="' . $productSearchUrl . $query . '" target="' . $target . '" class="prosperent-kw">$1</a> ', $text, $limit);
+				
+						$text = preg_replace('/\b(' . $oldText . ')\b/' . $case, '<a href="' . $productSearchUrl . $query . '" target="_self" class="prosperent-kw">$1</a>', $text, $limit);
 					//}
 				//}
 				

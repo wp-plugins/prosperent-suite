@@ -3,7 +3,7 @@ Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 4.2.2
-Stable tag: 4.0.1.1
+Stable tag: 4.1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -94,7 +94,10 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 
 == Changelog ==
 
-= 4.0.2 = 
+= 4.1.1 = 
+* Bug Fix for Front pages
+
+= 4.1 = 
 * Added Dashboard stats- shows commissions and clicks
 * Improved design of turning tools on or off, easier to tell which are on
 * Condensed Options - 3 main tools 
@@ -115,6 +118,7 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
 * Optimized Automated ProsperInsert
 * Fixed PriceComparison ProsperInsert
 * Shop Improvements
+* Fixes to Related Products Handling
 
 = 4.0.1 = 
 * CSS bug fixes

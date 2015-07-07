@@ -2,7 +2,6 @@
 //error_reporting(0);   
 $params = array_filter($_GET); 
 $type = $params['type'];
-
 $endPoints = array(
 	'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
 	'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
@@ -27,9 +26,11 @@ else
 
 	$merchantIds = array_map('trim', explode(',', $params['prodd']));
 	$brands      = array_map('trim', explode(',', $params['prodb']));
+	$productIds  = array_map('trim', explode(',', $params['prodid']));
 
 	$settings = array(
-		'query'            => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
+	    'filterProductId'  => ($params['prodid'] && $params['edit'] ? $productIds : ''),
+		'query'            => (!$params['prodid'] || !$params['edit'] ? ($params['prodq'] ? trim($params['prodq']) : 'shoes') : ''),
 		'filterMerchantId' => $merchantIds,
 		'filterBrand'      => $brands,
 		'imageSize'		   => '250x250',
@@ -70,7 +71,7 @@ $response = json_decode($response, true);
 // Check for errors
 if (count($response['errors']))
 {
-	throw new Exception(implode('; ', $response['errors']));
+	//throw new Exception(implode('; ', $response['errors']));
 }
 
 if ($results = $response['data'])
@@ -168,24 +169,7 @@ if ($results = $response['data'])
         	?>
 	   </ul>
 	</div>
-	
-	<script type="text/javascript">
-	jQuery(document).ready(function() {		
-	    var a = top.tinymce.activeEditor.windowManager.getParams();
-	  		j = jQuery("<i " + a + ">").attr("ahl"),
-	  		"undefined" != typeof j && null !== j && (document.getElementById("prosperHeldURL").value = j);
-	    if (a && (a = jQuery("<i " + a + ">").attr("id"), "undefined" != typeof a && null !== a)) 
-		{
-			a = a.split(",");
-			jQuery.each(a, function(a, b) {
-    	        if ("undefined" != typeof b && null !== b && 0 < b.length)
-    	        {
-    	        //	jQuery( "#"+b ).trigger("click");    	        	
-    	        }
-    		});
-		}
-	});
-    </script>
+
 	<?php
 }
 else
@@ -203,3 +187,8 @@ else
 	}
 }
 
+?>
+
+<script type="text/javascript">
+
+</script>

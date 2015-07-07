@@ -1,3 +1,4 @@
+
 <?php if ($options['hideShopPageTitle']): ?>
 <style>
     .page .entry-title { display: none; }
@@ -133,7 +134,7 @@
     	</div>
 	<?php endif; ?>
 	</div>
-	<div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:8px;'); ?>">
+	<div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
 <?php 
 	if (!$params['view'] || $params['view'] === 'list') 
 	{ 
@@ -240,7 +241,7 @@
 							<div style="position:absolute;left:-9999em;height:1px;line-height:1px;"><?php echo $record['description']; ?> </div>
 						</div>   
 						<div class="prodPrice">  
-						    <span class="prosperPrice"><?php echo $price; ?></span><span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:text-bottom;"><span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span><?php echo $record['merchant']; ?></span> 
+						    <span class="prosperPrice"><?php echo $price; ?></span><span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"><span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span><?php echo $record['merchant']; ?></span> 
 						</div>												
 					</div>								
 					<div class="shopCheck prosperVisit">		

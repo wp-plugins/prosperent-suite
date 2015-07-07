@@ -69,7 +69,7 @@ elseif ($pieces['v'] === 'grid')
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
 			}
 			?>
-		        <li style="overflow:hidden;list-style:none;margin:6px;float:left;height:285px!important;width:210px!important;">
+		        <li class="" style="overflow:hidden;list-style:none;margin:6px;float:left;height:285px!important;width:210px!important;">
     				<div class="listBlock">
     					<div class="prodImage" style="text-align:center;">     				
 				        	<a href=<?php echo $goToUrl; ?>><span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:185px;width:185px;" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span></a>
@@ -99,22 +99,24 @@ elseif ($pieces['v'] === 'pc')
     ?>
 	<div id="product">
     	<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer" style="<?php echo ($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'); ?>width:45%">        		
+    		
     		<?php	           
 			foreach ($results as $product)
 			{						
 			    $priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 			    $price 	   = $priceSale ? $priceSale : $record['price'];
-			    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';		
-			    if (!$imageSet)						
-			    {
-				   echo '<tr><td colSpan="3><div id="prosperPCImage" sty><img style="text-align:center;" src="' . $product['image_url'] . '"/></div></td></tr>';
-				   $imageSet = true;
-			    }
+			    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';	
 			    if (!$keywordSet)
 			    {
-				   echo '<tr><td colSpan="3"><div id="prosperPCKeyword">' . $product['keyword'] . '</div></td></tr>';
-				   $keywordSet = true;
+			        echo '<td colSpan="3"><div id="prosperPCKeyword">' . $product['keyword'] . '</div></td></tr>';
+			        $keywordSet = true;
+			    }	
+			    if (!$imageSet)						
+			    {
+				   echo '<tr><td colSpan="3><div id="prosperPCImage"><img style="text-align:center;" src="' . $product['image_url'] . '"/></div></td>';
+				   $imageSet = true;
 			    }
+			    
 				echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
 				echo '<td itemprop="seller""><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
 				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
@@ -123,6 +125,7 @@ elseif ($pieces['v'] === 'pc')
 				echo '</tr>';
 			}
 			?>
+			</tr>
 		</table>
 	</div>
 	<?php

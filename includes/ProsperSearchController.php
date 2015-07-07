@@ -267,7 +267,7 @@ class ProsperSearchController
 				'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
-				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
+				'filterPrice'	   => $params['dR'] ? rawurldecode(str_replace(',', '', $params['dR'])) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',						
 			);	
 

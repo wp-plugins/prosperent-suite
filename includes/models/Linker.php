@@ -92,8 +92,8 @@ class Model_Linker extends Model_Base
 					'enableFullData'  => 'FALSE',
 					'limit'           => 1,
 					'query'           => (!$pieces['id'] ? $query : ''),
-					'filterMerchant'  => $merchants,
-					'filterBrand'	  => $brands,
+					'filterMerchant'  => (!$pieces['id'] ? $merchants : ''),
+					'filterBrand'	  => (!$pieces['id'] ? $brands : ''),
 					'filterProductId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
 					'filterPriceSale' => !$pieces['id'] && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
 					'filterPrice' 	  => ($pieces['id'] || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
@@ -114,7 +114,7 @@ class Model_Linker extends Model_Base
 					'limit' 		   => 1,				    
 					'filterMerchant'   => $merchants,
 					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
-				    'filterCategory'   => $pieces['cat'] ? '*' . $pieces['cat'] . '*' : ''
+				    'filterCategory'   => !$pieces['id'] && $pieces['cat'] ? '*' . $pieces['cat'] . '*' : ''
 				);				
 			}				
 			

@@ -168,7 +168,7 @@ class Model_Inserter extends Model_Base
 				'filterMerchant'  => !$id && $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
 				'filterBrand'	  => !$id && $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
 				'filterProductId' => $id,
-				'filterPriceSale' => $id && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+				'filterPriceSale' => !$id && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
 				'filterPrice' 	  => ($id || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''))				
 			);
 			
@@ -179,7 +179,7 @@ class Model_Inserter extends Model_Base
 			    
 			    $settings = array(
 			        'curlCall'		   => 'single-' . $type,
-			        'query'           => trim($pieces['q'] ? $pieces['q'] : ''),
+			        'query'           => (!$id ? trim(strip_tags($pieces['q'] ? $pieces['q'] : '')) : ''),
 			        'filterProductId' => $id,
 			        'imageSize'		  => '250x250',
 			        'groupBy'         => 'merchant',

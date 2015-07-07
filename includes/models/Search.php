@@ -473,12 +473,28 @@ class Model_Search extends Model_Base
 	public function storeChecker()
 	{
 		$options = get_option('prosper_advanced');
+		
+		$currentId = get_the_ID();
+		$storeId = get_option('prosperent_store_pageId');
 
+		if ($currentId != $storeId)
+		{
+		    wp_delete_post($storeId);
+		    delete_option("prosperent_store_page_title");
+		    delete_option("prosperent_store_page_name");
+		    delete_option("prosperent_store_page_id");		    
+		    delete_option('prosperent_store_pageId');
+		    
+		    add_option('prosperent_store_page_title', get_post()->post_title);
+		    add_option('prosperent_store_page_name', get_post()->post_name);
+		    add_option('prosperent_store_pageId', $currentId);
+		}
+		
 		if (!isset($options['Manual_Base']) && (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name))
 		{
 			if (!is_front_page())
 			{
-				$options['Base_URL'] = get_post()->post_name;				
+				$options['Base_URL'] = get_post()->post_name;
 			}
 			else
 			{

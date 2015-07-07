@@ -403,7 +403,6 @@ abstract class Model_Base
 
 		delete_option('prosperent_store_pageId');
 		add_option('prosperent_store_pageId', $pageId);
-		
 	}	
 	
 	public function prosperStoreRemove()
@@ -420,6 +419,7 @@ abstract class Model_Base
 	
 	    delete_option("prosperent_store_page_title");
 	    delete_option("prosperent_store_page_name");
+	    delete_option("prosperent_store_pageId");
 	    delete_option("prosperent_store_page_id");
 	}
 	

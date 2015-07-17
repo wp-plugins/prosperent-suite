@@ -124,7 +124,10 @@ class Model_Activate extends Model_Base
 		{
 			$PIopt = array(
 				'Link_to_Merc' => 1,
-				'PI_Limit'	   => 1
+				'PI_Limit'	   => 1,
+			    'prosper_imageType' => 'grid',
+			    'prosper_insertView' => 'original',
+			    'prosper_inserter' => 'bottom'
 			);				
 			update_option( 'prosper_autoComparer', $PIopt );
 		}

@@ -1,5 +1,11 @@
 <script>
-jQuery(function(){"pc"==jQuery("#prosper_insertView-pc").is(":checked")?jQuery("#prosperpc").css("display","block"):jQuery("#prodImageType").css("display","none")});
+jQuery(function(){
+	document.getElementById('prosper_insertView-pc').checked?jQuery("#prosperpc").css("display","block"):jQuery("#prodImageType").css("display","none");
+	jQuery("#prosper_insertView-grid, #prosper_insertView-pc, #prosper_insertView-list").change(function () {
+    	document.getElementById('prosper_insertView-pc').checked?jQuery("#prosperpc").css("display","block"):jQuery("#prodImageType").css("display","none");
+    	document.getElementById('prosper_insertView-grid').checked || document.getElementById('prosper_insertView-list').checked ?jQuery("#prosperpc").css("display","none"):jQuery("#prodImageType").css("display","block");
+        });
+});
 </script>
 <?php
 require_once(PROSPER_MODEL . '/Admin.php');
@@ -19,7 +25,7 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 echo $prosperAdmin->radio( 'prosper_inserter', array('top'=> 'Above', 'bottom'=> 'Below'), __( '<strong style="font-size:14px;">Insert Above or Below content</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->radio( 'prosper_insertView', array('grid'=> 'Grid', 'list'=> 'List/Detail', 'pc' => 'Price Comparison'), __( '<strong style="font-size:14px;">View of Automated ProsperInsert</strong>', 'prosperent-suite' ) );
+echo $prosperAdmin->radio( 'prosper_insertView', array('grid'=> 'Grid', 'list'=> 'List/Detail', 'pc' => 'Price Comparison'), __( '<strong style="font-size:14px;">Automated ProsperInsert View</strong>', 'prosperent-suite' ) );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
 echo '<div id="prosperpc" style="display:none;">';
@@ -36,7 +42,7 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 /*echo $prosperAdmin->checkbox( 'contentAnalyzer', __( 'Use Content Analyzer for Query', 'prosperent-suite' ), false, '',  '<a href="#" class="prosper_tooltip"><span><strong>Use our Content Anaylzer to come up with a query for the Product Inserts. <br>Helpful if the titles are not adding products.</strong></span></a>' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';*/
 
-echo $prosperAdmin->textinput( 'prosper_inserter_negTitles', __( '<strong style="font-size:14px;">Words to exclude from Titles</strong>', 'prosperent-suite' ), '', 'Seperate by commas.' );
+echo $prosperAdmin->textinput( 'prosper_inserter_negTitles', __( '<strong style="font-size:14px;">Words to Ignore from Titles</strong>', 'prosperent-suite' ), '', 'Seperate by commas.' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
 $prosperAdmin->adminFooter();

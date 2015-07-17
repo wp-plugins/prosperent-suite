@@ -125,7 +125,7 @@ class Model_Admin extends Model_Base
 		array_splice($options['LTM'], $intOptNum, 1);
 		array_splice($options['Case'], $intOptNum, 1);
 		
-		$options['LinkAmount'] = $intLinks - 1;
+		$options['LinkAmount'] = ($intLinks > 0 ? $intLinks - 1 : 0);
 
 		update_option('prosper_autoLinker', $options);
 	}
@@ -150,7 +150,8 @@ class Model_Admin extends Model_Base
 	        'prosperInsert' => $options['PICIAct'],
 	        //'autoLinker'    => $options['ALAct'],
 	        'currentScreen' => $currentScreen->id,
-	        'contentInsert' => $contentInsertType
+	        'contentInsert' => $contentInsertType,
+	        'apiKey'        => $options['Api_Key']
 	    ); 
 	    
 	    echo '<script type="text/javascript">var prosperSuiteVars = ' . json_encode($enabledOpts) . '</script>';

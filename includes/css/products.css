@@ -92,11 +92,9 @@
 }
 
 .prosperNoResults {
-	font-size:14px;
-	color:red;
+	margin:8px;
+	font-size:16px;
 	float:left;
-	margin-left:4px;
-	margin-bottom:8px;
 }
 
 #prosperPriceSorter {
@@ -349,6 +347,10 @@
 	border:none;
 	width:135px;
 	vertical-align:middle;
+}
+
+#productList .productImage img {
+	width:135px;
 }
 
 span.prosperLoad {
@@ -754,6 +756,26 @@ table.productResults, table.productResults tr, table.productResults td {
 	#prosperShopMain #simProd {
 	border-top:none;
 	}
+			
+	#productList .productImage {
+		display:block;
+		width:100%;
+		text-align:center;
+	}
+	
+	#productList .productContent {
+		display:block;
+		width:100%
+	}
+	
+	#productList .productEnd {
+		display:block;
+		width:100%
+	}
+	
+	#productList .productImage img {
+		width:250px;
+	}
 }
 
 @media all and (min-width:480px) and (max-width:585px) {
@@ -762,6 +784,26 @@ table.productResults, table.productResults tr, table.productResults td {
 	}
 	#prosperShopMain #simProd {
 	border-top:none;
+	}
+	
+	#productList .productImage {
+		display:block;
+		width:100%;
+		text-align:center;
+	}
+	
+	#productList .productContent {
+		display:block;
+		width:100%
+	}
+	
+	#productList .productEnd {
+		display:block;
+		width:100%
+	}
+	
+	#productList .productImage img {
+		width:250px;
 	}
 }
 
@@ -777,6 +819,7 @@ table.productResults, table.productResults tr, table.productResults td {
 		padding:0 20px;
 		display:block;
 		width:100%;
+		text-align:center;
 	}
 	
 	#product .productContent {
@@ -797,31 +840,15 @@ table.productResults, table.productResults tr, table.productResults td {
 	}
 	
 	#product .productResults {
-		width:100%
+		width:100%!important
 	}
 	
 	#product .productResults td img {
 		width:120px!important;
-		height:60px!important;
 	}
-		#prosperPriceSorter {
+	
+	#prosperPriceSorter {
 		display:none;
-	}
-	
-	#productList .productImage {
-		display:block;
-		width:100%
-		
-	}
-	
-	#productList .productContent {
-		display:block;
-		width:100%
-	}
-	
-	#productList .productEnd {
-		display:block;
-		width:100%
 	}
 	
 	.productEnd .productPriceNoSale, .productEnd .productPriceSale {
@@ -830,6 +857,24 @@ table.productResults, table.productResults tr, table.productResults td {
 	
 	#simProd .prosperVisit {
 		margin:0;
+	}
+	
+	#prosperPCImage {
+		display:block!important;
+		width:100%!important;
+	}
+	
+	#product #prosperPCImage img {
+		width:225px!important;	
+	}
+	
+	#prosperPCMerchants {
+		display:block!important;
+		width:100%!important;
+	}
+	
+	#prosperPCAllMercs img {
+		width:90px!important;
 	}
 
 }

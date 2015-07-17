@@ -68,37 +68,33 @@ class Model_Search extends Model_Base
 	{
 		$postArray = array_filter($postArray);		
 		$newUrl = $data['url'];
-
 		if (preg_match('/\/\?gclid=.+/i', $newUrl))
 		{
 			$newUrl = preg_replace('/\/\?gclid=.+/i', '', $newUrl);
 		}
-
+		
+		$newUrl = str_replace(array(
+    		    '/pR/' . $data['params']['pR'],
+    		    '/dR/' . $data['params']['dR'],
+    		    '/city/' . $data['params']['city'],
+    		    '/state/' . $data['params']['state'],
+    		    '/zip/' . $data['params']['zip'],
+    		    '/page/' . $data['params']['page'],
+    		    '/celebrity/' . $data['params']['celebrity'],
+    		    '/sort/' . $data['params']['sort'],
+    		    '/celebQuery/' . $data['params']['celebQuery'],
+    		    '/cid/' . $data['params']['cid'],
+    		    '/type/' . $data['params']['type']
+    		), '', $newUrl
+		);
+		
 		while (current($postArray)) 
 		{ 
-			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery'], '/cid/' . $data['params']['cid']), '', $newUrl);
-
-			}	
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['query'] != current($postArray) && key($postArray) == 'query')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['state'] != current($postArray) && key($postArray) == 'state')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['celebrity'] != current($postArray) && key($postArray) == 'celebrity')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
-		
 			$newUrl = str_replace('/' . key($postArray) . '/' . $data['params'][key($postArray)], '', $newUrl);
 			$newUrl = $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(current($postArray)));
 			next($postArray);
 		}
-
+		
 		header('Location: ' . $newUrl);
 		exit;
 	}
@@ -429,7 +425,6 @@ class Model_Search extends Model_Base
 			'imageSize' => $imageSize,
 			'curlCall'	=> 'single-productPage-' . $prosperPage
 		);
-		
 		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
 		if (!$cid)
 		{
@@ -443,7 +438,7 @@ class Model_Search extends Model_Base
 		$curlUrl = $this->apiCall($settings, $fetch);
 		$allData = $this->singleCurlCall($curlUrl, 0);
 		$record = $allData['data'];		    
-		    
+
 		if ($record)
 		{
     		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
@@ -458,7 +453,7 @@ class Model_Search extends Model_Base
     		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
     
     		// Twitter Cards
-    		echo '<meta name="twitter:card" content="record[0]">';
+    		echo '<meta name="twitter:card" content="summary">';
     		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
     		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
     		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
@@ -469,17 +464,37 @@ class Model_Search extends Model_Base
     		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
     		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
 		}
+		else
+		{
+		    echo '<meta name="robots" content="noindex,nofollow">';
+		}
 	}	
 		
 	public function storeChecker()
 	{
 		$options = get_option('prosper_advanced');
+		
+		$currentId = get_the_ID();
+		$storeId = get_option('prosperent_store_pageId');
 
+		if ($currentId != $storeId)
+		{
+		    wp_delete_post($storeId);
+		    delete_option("prosperent_store_page_title");
+		    delete_option("prosperent_store_page_name");
+		    delete_option("prosperent_store_page_id");		    
+		    delete_option('prosperent_store_pageId');
+		    
+		    add_option('prosperent_store_page_title', get_post()->post_title);
+		    add_option('prosperent_store_page_name', get_post()->post_name);
+		    add_option('prosperent_store_pageId', $currentId);
+		}
+		
 		if (!isset($options['Manual_Base']) && (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name))
 		{
 			if (!is_front_page())
 			{
-				$options['Base_URL'] = get_post()->post_name;				
+				$options['Base_URL'] = get_post()->post_name;
 			}
 			else
 			{
@@ -509,8 +524,10 @@ class Model_Search extends Model_Base
 		$page_num 	 = $params['page'] ? ' Page ' . $params['page'] : '';
 		$pagename 	 = get_the_title();
 		$blogname 	 = get_bloginfo();
-		$brand 	  	 = ucwords(rawurldecode($params['brand']));
-		$merchant 	 = ucwords(rawurldecode($params['merchant']));
+		$brands      = explode('|', ucwords(rawurldecode($params['brand'])));
+		$brand 	  	 = $brands[0];
+		$merchants   = explode('|', ucwords(rawurldecode($params['merchant'])));
+		$merchant 	 = $merchants[0];
 		$type 	  	 = $params['type'];
 		$query 	  	 = $params['query'] ? $params['query'] : (($this->_options['Starting_Query'] && !$brand && !$merchant) ? $this->_options['Starting_Query'] : '');
 		$city 	  	 = ucwords(rawurldecode($params['city']));
@@ -553,7 +570,7 @@ class Model_Search extends Model_Base
 	public function storeSearch($related = false)
 	{		
 	    $base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-	    
+
 		if(get_query_var('queryParams'))
 		{
 			$params = str_replace('%7C', '~', $this->getUrlParams());	
@@ -568,13 +585,13 @@ class Model_Search extends Model_Base
 		}
 		
 		if ($related)
-		{
+		{		
 		    $prosperLastValue = end($params);
 		    $prosperLastKey = key($params);
 		    unset($params[$prosperLastKey]);
 		    $newParams = implode('/', $params);
 		    set_query_var('queryParams', $newParams);
-		    $url = home_url('/') . $base . '/' . $newParams;
+		    $url = home_url('/') . $base . ($newParams ? '/' . $newParams : '');
 		}
 		
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';

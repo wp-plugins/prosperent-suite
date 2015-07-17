@@ -34,7 +34,7 @@ class ProsperInsertController
 			add_shortcode('contentInsert', array($prosperInserter, 'newQueries'));
 		}
 
-		if ($prosperInserter->_options['prosper_inserter_posts'] || $prosperInserter->_options['prosper_inserter_pages'])
+		if (isset($prosperInserter->_options['prosper_inserter_posts']) || isset($prosperInserter->_options['prosper_inserter_pages']))
 		{			
 			add_filter('the_content', array($prosperInserter, 'contentInserter'), 2);			
 		}

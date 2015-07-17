@@ -40,13 +40,13 @@ elseif ($pieces['v'] === 'grid')
 {
 	?>
 	<div style="clear:both;"></div>
-	<div id="simProd">
+	<div id="simProd" class="prosperInsert">
 		<ul>
 		<?php
 		foreach ($results as $record)
 		{
 			$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-			$price 	   = $priceSale ? $priceSale : $record['price'];
+			$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
 			$cid 	   = $record[$recordId];
 
@@ -59,23 +59,22 @@ elseif ($pieces['v'] === 'grid')
 				$goToUrl = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="' . $target . '"';
 			}
 			?>
-		        <li class="" style="overflow:hidden;list-style:none;margin:6px;float:left;height:285px!important;width:210px!important;">
-    				<div class="listBlock">
-    					<div class="prodImage" style="text-align:center;">     				
-				        	<a href=<?php echo $goToUrl; ?>><span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:185px;width:185px;" src='<?php echo $record['image_url']; ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span></a>
-				        </div>
-				        <div class="prodContent" style="font-size:15px">
-				            <div class="prodTitle">
-				            <a href=<?php echo $goToUrl; ?>><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a> 
-				            </div>		
-    						<div class="prodPrice">
-                                <strong>$<?php echo number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $record['merchant'] . '</span>'; } ?>
-    						</div>          						          						                   
-    					</div>	
-						<div class="shopCheck prosperVisit">		
-							<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input type="submit" value="<?php echo $pieces['vst']; ?>"/></a>				
-						</div>		
-		            </div> 
+		        <li id="<?php echo $cid; ?>" class="<?php echo $record['productId']; ?>" data-prosperKeyword="<?php echo $keyword; ?>">
+					<div class="prodImage">
+						<a onClick="return false;" href=<?php echo $goToUrl; ?>><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					</div>								
+					<div class="prodContent">
+						<div class="prodTitle">
+						    <a onClick="return false;" href=<?php echo $goToUrl; ?> style="text-decoration:none;color:#646464"><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a>
+							<div style="position:absolute;left:-9999em;height:1px;line-height:1px;"><?php echo $record['description']; ?> </div>
+						</div>   
+						<div class="prodPrice">  
+						    <span class="prosperPrice"><?php echo $price; ?></span><span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"><span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span><?php echo $record['merchant']; ?></span> 
+						</div>												
+					</div>								
+					<div class="shopCheck prosperVisit">		
+						<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="<?php echo $pieces['vst']; ?>"/></a>				
+					</div>							
 				</li>
 			<?php
 		}

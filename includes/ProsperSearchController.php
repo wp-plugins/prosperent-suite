@@ -377,13 +377,14 @@ class ProsperSearchController
 		    }
 		    else
 		    {
+				/*
 				$settings = array(
 					'imageSize'	=> $imageSize
 				);
 
 				$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
 				$results   = $allData['data'];	
-
+                */
 				$noResults = true;
 				$trend     = 'Popular Products';
 				//header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );

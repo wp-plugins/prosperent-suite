@@ -183,8 +183,6 @@ else
     }
 }
 
-
-
 if ($results = $everything['data'])
 {
 	if ($type == 'merchant')

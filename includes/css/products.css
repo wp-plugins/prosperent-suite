@@ -92,11 +92,9 @@
 }
 
 .prosperNoResults {
-	font-size:14px;
-	color:red;
+	margin:8px;
+	font-size:16px;
 	float:left;
-	margin-left:4px;
-	margin-bottom:8px;
 }
 
 #prosperPriceSorter {

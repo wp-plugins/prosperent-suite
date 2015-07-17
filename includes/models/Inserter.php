@@ -119,10 +119,12 @@ class Model_Inserter extends Model_Base
 			return $content;
 		}
 
+		wp_register_script('productInsert', PROSPER_JS . '/productInsert.js', array('jquery', 'json2'), $this->_version);
+		wp_enqueue_script( 'productInsert');
+		
 		$target  = $this->_options['Target'] ? '_blank' : '_self';
 		$base 	 = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
 		$homeUrl = home_url();
-		$type 	 = 'product';
 		$page    = get_page_by_path($base);
 
 		$pieces = $this->shortCodeExtract($atts, $this->_shortcode);
@@ -146,8 +148,8 @@ class Model_Inserter extends Model_Base
 		    
 		}
 		elseif ($pieces['id'])
-		{    
-		    $filterType = ($type == 'prod' ? 'Product' : 'Merchant') . 'Id';
+		{
+		    $filterType = ($pieces['ft'] == 'fetchProducts' ? 'Product' : 'Merchant') . 'Id';
             $id = explode(',', rtrim($pieces['id'], ','));
 		}
 
@@ -284,17 +286,16 @@ class Model_Inserter extends Model_Base
 		$allData = $this->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
 
 		$everything = array();
-		if ($pieces['v'] == 'pc')
+		if ($pieces['v'] == 'pc' || (count($allData) == 1))
 		{
-		    $everything = $allData[0];
-		    
+		    $everything = $allData[0];		    
 		}
 		else 
 		{		
     		foreach($allData as $i => $record)
     		{
     		    if ($record['data'])
-    		    {    		        
+    		    { 
     		        $everything['data'][$i] = $record['data'][0];
     		    }
     		    elseif ($pieces['fb'])
@@ -370,7 +371,6 @@ class Model_Inserter extends Model_Base
     		    }
     		}		
 		}
-
 		$results = $everything['data'];
 
 		$prodSubmit = home_url('/') . $base;	

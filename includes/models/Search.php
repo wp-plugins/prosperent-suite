@@ -68,34 +68,33 @@ class Model_Search extends Model_Base
 	{
 		$postArray = array_filter($postArray);		
 		$newUrl = $data['url'];
-		
 		if (preg_match('/\/\?gclid=.+/i', $newUrl))
 		{
 			$newUrl = preg_replace('/\/\?gclid=.+/i', '', $newUrl);
 		}
+		
+		$newUrl = str_replace(array(
+    		    '/pR/' . $data['params']['pR'],
+    		    '/dR/' . $data['params']['dR'],
+    		    '/city/' . $data['params']['city'],
+    		    '/state/' . $data['params']['state'],
+    		    '/zip/' . $data['params']['zip'],
+    		    '/page/' . $data['params']['page'],
+    		    '/celebrity/' . $data['params']['celebrity'],
+    		    '/sort/' . $data['params']['sort'],
+    		    '/celebQuery/' . $data['params']['celebQuery'],
+    		    '/cid/' . $data['params']['cid'],
+    		    '/type/' . $data['params']['type']
+    		), '', $newUrl
+		);
+		
 		while (current($postArray)) 
 		{ 
-			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/celebrity/' . $data['params']['celebrity'], '/sort/' . $data['params']['sort'], '/celebQuery/' . $data['params']['celebQuery'], '/cid/' . $data['params']['cid']), '', $newUrl);
-
-			}	
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['query'] != current($postArray) && key($postArray) == 'query')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/state/' . $data['params']['state'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['state'] != current($postArray) && key($postArray) == 'state')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
-			elseif ($data['params']['type'] == $postArray['type'] && $data['params']['celebrity'] != current($postArray) && key($postArray) == 'celebrity')
-			{
-				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query'], '/cid/' . $data['params']['cid']), '', $newUrl);
-			}
 			$newUrl = str_replace('/' . key($postArray) . '/' . $data['params'][key($postArray)], '', $newUrl);
 			$newUrl = $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(current($postArray)));
 			next($postArray);
 		}
+		
 		header('Location: ' . $newUrl);
 		exit;
 	}

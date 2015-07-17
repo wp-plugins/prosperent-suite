@@ -23,12 +23,26 @@
 			    </div>	
 			</form>
 			<?php 
-			if ($noResults){ echo '<div class="prosperNoResults">Please try your search again.</div>'; }
-            if ($related){echo '<div class="prosperNoResults">Showing Related Products to your Original Search.</div><div class="clear"></div>'; }
+			if ($related){echo '<div class="prosperNoResults">Showing Related Products to your Original Search.</div><div class="clear"></div>'; }
 			?> 			
 		</div>
+		
 	<?php 
 	endif;
+	if ($noResults)
+	{
+	    echo '
+            <div class="prosperNoResults">
+                <span>Your search - <strong>' . $query . '</strong> - did not match any shopping results.</span><br>
+			    <span style="margin-top:8px;font-size:16px;">Suggestions:</span><br>
+			    <ul style="margin-top:8px;list-style-type:disc;font-size:15px;margin-left:22px;">
+			        <li>Make sure all words are spelled correctly.</li>
+        		    <li>Try different keywords.</li>
+        			<li>Try more general keywords.</li>
+			        <li>Try fewer keywords.</li>
+			    </ul>
+	        </div>';
+	}
 	
 	if ($filterArray)
 	{
@@ -104,41 +118,46 @@
 		</div>		
 		<?php
 	}
-?>
-<div style="float:right;">
-	<div id="views"> 
-	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/grid';?>"><span class="gridIcon"></span></a> 
-	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/list';?>"><span class="listIcon"></span></a>
-    </div>
-	<?php 
+
 	if (!$noResults): ?>
-    	<div id="prosperPriceSorter">
-    		<span class="sortLabel">Sort By: </span>			
-    		<?php
-    		
-    		$sortCount = count($sortArray);
-    		$c = 0;
-    		foreach ($sortArray as $i => $sort)
-    		{		  
-    			?>
-    			&nbsp;&nbsp;<a <?php echo (preg_match('/' . $sortedParam . '/i', $sort) ? 'class="activeSort"' : ''); ?> href="<?php echo ($sortUrl ? $sortUrl : $url) . '/sort/' . $sort; ?>"><?php echo $i; ?></a>&nbsp;&nbsp;
-    			<?php
-    			if ($sortCount > ($c + 1) )
-    			{
-                    echo '|';
-    			}	
-    			
-    			$c++;		 
-    		}
-    		?>		
-    	</div>
-	<?php endif; ?>
-	</div>
-	<div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
+
+        <div style="float:right;">
+        	<div id="views"> 
+        	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/grid';?>"><span class="gridIcon"></span></a> 
+        	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/list';?>"><span class="listIcon"></span></a>
+            </div>
+        
+        
+        	<div id="prosperPriceSorter">
+        		<span class="sortLabel">Sort By: </span>			
+        		<?php
+        		
+        		$sortCount = count($sortArray);
+        		$c = 0;
+        		foreach ($sortArray as $i => $sort)
+        		{		  
+        			?>
+        			&nbsp;&nbsp;<a <?php echo (preg_match('/' . $sortedParam . '/i', $sort) ? 'class="activeSort"' : ''); ?> href="<?php echo ($sortUrl ? $sortUrl : $url) . '/sort/' . $sort; ?>"><?php echo $i; ?></a>&nbsp;&nbsp;
+        			<?php
+        			if ($sortCount > ($c + 1) )
+        			{
+                        echo '|';
+        			}	
+        			
+        			$c++;		 
+        		}
+        		?>		
+        	</div>
+        
+        </div>
+        <div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
+
+
 <?php 
 	if (!$view || $view === 'list') 
 	{ 
 		?>
+	
 		<div id="productList" style="width:100%;float:right;display:inline-block;border:none;">
 			<?php
 			if (!empty($results))
@@ -147,11 +166,6 @@
 				// Loop to return Products and corresponding information
 				foreach ($results as $i => $record)
 				{			
-					if (is_ssl())
-					{
-						$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-					}
-					
 					$cid = $record['catalogId'];				
 					?>
 					<div data-prosperKeyword="<?php echo $keyword; ?>" id="<?php echo $cid; ?>" class="<?php echo $record['productId']; ?> productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
@@ -221,11 +235,6 @@
 		{
 			foreach ($results as $record)
 			{
-				if (is_ssl())
-				{
-					$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-				}
-				
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 				$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -252,18 +261,14 @@
 			}
 		}
 		?>
-            
-                  
-            
-		
         </ul>
-        <?php 
-	}
-?>
-		
-	<?php
+<?php 
 	$this->searchModel->prosperPagination($totalAvailable, $params['page']);
 	?>
 	</div>
+	        <?php 
+	}
+?>
+	<?php endif; ?>
 </div>
 <div class="clear"></div>

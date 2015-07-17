@@ -11,7 +11,7 @@ class Prosper_Cache
     {
         $this->_options = get_option('prosperSuite');
 
-        if (!extension_loaded('memcache'))
+        if (!extension_loaded('memcache') || !isset($this->_options['Enable_Caching']))
         {
           return false;
         }
@@ -42,7 +42,7 @@ class Prosper_Cache
 			$this->_options = get_option('prosperSuite');
 		}
 		
-        if (!$this->_options['Enable_Caching'] || !extension_loaded('memcache'))
+        if (!isset($this->_options['Enable_Caching']) || !extension_loaded('memcache'))
         {
             return false;
         }
@@ -67,7 +67,7 @@ class Prosper_Cache
 			$this->_options = get_option('prosperSuite');
 		}
 		
-        if (!$this->_options['Enable_Caching'] || !extension_loaded('memcache'))
+        if (!isset($this->_options['Enable_Caching']) || !extension_loaded('memcache'))
         {
             return false;
         }

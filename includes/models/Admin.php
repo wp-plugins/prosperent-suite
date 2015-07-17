@@ -150,7 +150,8 @@ class Model_Admin extends Model_Base
 	        'prosperInsert' => $options['PICIAct'],
 	        //'autoLinker'    => $options['ALAct'],
 	        'currentScreen' => $currentScreen->id,
-	        'contentInsert' => $contentInsertType
+	        'contentInsert' => $contentInsertType,
+	        'apiKey'        => $options['Api_Key']
 	    ); 
 	    
 	    echo '<script type="text/javascript">var prosperSuiteVars = ' . json_encode($enabledOpts) . '</script>';

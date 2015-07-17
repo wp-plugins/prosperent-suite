@@ -136,7 +136,7 @@
 	</div>
 	<div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
 <?php 
-	if (!$params['view'] || $params['view'] === 'list') 
+	if (!$view || $view === 'list') 
 	{ 
 		?>
 		<div id="productList" style="width:100%;float:right;display:inline-block;border:none;">
@@ -214,7 +214,7 @@
 			}
 		?></div><?php 
 	} 
-	elseif ($params['view'] === 'grid')
+	elseif ($view === 'grid')
 	{
 		echo '<ul>';	
 		if (!empty($results))

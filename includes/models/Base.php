@@ -60,20 +60,20 @@ abstract class Model_Base
 				if (get_option('permalink_structure'))
 				{	
 					require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
+					
+					if ($this->_options['PSAct'])
+					{
+					    $this->prosperStoreInstall();
+					}
+					else
+					{
+					    add_action('admin_init', array($this, 'prosperStoreRemove'));
+					}
 				}
 				else
 				{
 					add_action( 'admin_notices', array($this, 'prosperPermalinkStructure' ));
-				}
-				
-				if ($this->_options['PSAct'])
-				{
-			        $this->prosperStoreInstall();
-				}
-				else
-				{				
-					add_action('admin_init', array($this, 'prosperStoreRemove'));
-				}				
+				}			
 				
 				add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));	
 				
@@ -324,7 +324,8 @@ abstract class Model_Base
 			'vst'    => 'Visit Store', // Product Insert Visit Store text
 			'celeb'  => '', // Celebrity Name,
 			'noShow' => '', // Don't show the Product Insert on this page/post
-			'imgt'   => '' // ImageType		
+			'imgt'   => '', // ImageType
+		    'fb'     => '' // FallBack
 		), $atts, $shortcode);
 	}
 	

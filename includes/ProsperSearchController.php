@@ -66,7 +66,7 @@ class ProsperSearchController
 	
 		$this->searchModel->storeChecker();		
 		$data = $this->searchModel->storeSearch();
-
+		
 		$params = $data['params'];
 		$homeUrl = home_url('', 'http');
 		if (is_ssl())
@@ -74,7 +74,16 @@ class ProsperSearchController
 			$homeUrl = home_url('', 'https');
 		}
 
-		if (!empty($_POST))
+
+		$postArray = array(
+		    'query' 	=> $_POST['q'],
+		    'sort' 	 	=> $_POST['sort'],
+		    'dR' 	 	=> ($_POST['priceSliderMin'] || $_POST['priceSliderMax'] ? str_replace('$', '' , str_replace(',', '', $_POST['priceSliderMin']) . ',' . str_replace(',', '', $_POST['priceSliderMax'])) : ''),
+		    'pR' 	 	=> ($_POST['percentSliderMin'] || $_POST['percentSliderMax'] ? str_replace('%', '' , $_POST['percentSliderMin'] . ',' . $_POST['percentSliderMax']) :''),
+		    'merchant'  => stripslashes($_POST['merchant'])
+		);	
+		
+		if ($postArray = array_filter($postArray))
 		{
 			if (get_query_var('cid'))
 			{
@@ -86,15 +95,8 @@ class ProsperSearchController
 				$_POST['percentSliderMin'] = '0.01%';
 			}
 
-			$postArray = array(
-				'query' 	=> $_POST['q'],
-				'sort' 	 	=> $_POST['sort'],
-				'dR' 	 	=> ($_POST['priceSliderMin'] || $_POST['priceSliderMax'] ? str_replace('$', '' , $_POST['priceSliderMin'] . ',' . $_POST['priceSliderMax']) : ''),
-				'pR' 	 	=> ($_POST['percentSliderMin'] || $_POST['percentSliderMax'] ? str_replace('%', '' , $_POST['percentSliderMin'] . ',' . $_POST['percentSliderMax']) :''),
-				'merchant'  => stripslashes($_POST['merchant'])
-			);
 
-			if ($postArray['query'])
+		    if ($postArray['query'])
 			{				
 				$recentOptions = get_option('prosper_productSearch');
 				$recentOptions['recentSearches'][] = $postArray['query'];
@@ -105,10 +107,10 @@ class ProsperSearchController
 				
 				update_option('prosper_productSearch', $recentOptions);				
 			}
-			
+
 			$this->searchModel->getPostVars($postArray, $data);
 		}
-		
+
 		if (get_query_var('cid'))
 		{   
 		    wp_dequeue_script( 'productPhp' );
@@ -121,12 +123,13 @@ class ProsperSearchController
 			//$this->searchModel->sliderJs();
 		}		
 
-		$data['params']['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
+		$data['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
 		$this->productAction($data, $homeUrl, 'product', $searchPage, $options);			
 	}
 	
 	public function productAction($data, $homeUrl, $type, $searchPage, $options)
-	{		
+	{			    
+	    $view         = $data['view'];
 		$filters 	  = $data['filters'];
 		$params 	  = $data['params'];
 		$typeSelector = $data['typeSelector'];
@@ -139,15 +142,8 @@ class ProsperSearchController
 		//global $wp;
 		$currentUrl = rtrim(home_url( $_SERVER['REQUEST_URI']/*$wp->request*/ ), '/');
 
-		if ($params['view'] === 'grid' && ($options['Grid_Img_Size'] > '125' || !$options['Grid_Img_Size']))
-		{
-			$imageSize = '250x250';
-		}
-		else
-		{
-			$imageSize = '125x125';
-		}
-
+		$imageSize = '250x250';
+		
 		$fetch = 'fetchProducts';
 		$currency = 'USD';
 		
@@ -267,7 +263,7 @@ class ProsperSearchController
 				'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
 			    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
 				'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
-				'filterPrice'	   => $params['dR'] ? rawurldecode(str_replace(',', '', $params['dR'])) : '',
+				'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
 				'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : '',						
 			);	
 
@@ -372,18 +368,15 @@ class ProsperSearchController
 			$totalAvailable = $everything['results']['totalRecordsAvailable'];
 		}
 		else
-		{
-		    if (count($data['params']) > 0 || (count($data['params']) >= 0 && $query)) 
+		{		
+		    if (count($data['params']) > 1)
 		    {
-		        //$data['url'] = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant']), '', $data['url']);
-		        //unset($data['params']['merchant'], $data['filters']['merchant'], $data['params']['brand'], $data['filters']['brand'], $data['params']['category'], $data['filters']['category'], $data['params']['page']);
-                $data = $this->searchModel->storeSearch(true);		    
+		        $data = $this->searchModel->storeSearch(true);
 		        $this->productAction($data, $homeUrl, $type, $searchPage, $options);
 		        return;
 		    }
-
-			if (!$results)
-			{
+		    else
+		    {
 				$settings = array(
 					'imageSize'	=> $imageSize
 				);
@@ -393,7 +386,7 @@ class ProsperSearchController
 
 				$noResults = true;
 				$trend     = 'Popular Products';
-				header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
+				//header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
 			}
 		}
 

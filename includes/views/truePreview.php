@@ -1,8 +1,9 @@
 <?php
-error_reporting(0);   
+//error_reporting(0);   
 $params = array_filter($_GET); 
 $type = $params['type'];
 $view = $params['prodview'];
+$fetch = $params[$type . 'fetch'];
 
 $endPoints = array(
 	'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
@@ -10,83 +11,158 @@ $endPoints = array(
 	'fetchTrends'	   => 'http://api.prosperent.com/api/trends?'
 );
 
-if ($type == 'merchant')
+if ($params[$type . 'id'] && strpos($params[$type . 'id'], '~'))
 {
-	$fetch = 'fetchMerchant';
-	$merchants  = array_map('trim', explode(',', urldecode($params['merchantm'])));
-	$merchantId = array_map('trim', explode(',', urldecode($params['merchantid'])));
+    $id = explode('~', rtrim($params[$type . 'id'], '~'));
 
-	$settings = array(
-		'filterMerchant'   =>  (!$merchantId ? ($merchants[0] ? '*' . $merchants[0] . '*' : '') : ''),
-	    'filterMerchantId' =>  $merchantId,
-	    'filterCategory'   => $params['merchantcat'] ? '*' . $params['merchantcat'] . '*' : '',
-	    'imageType'        => ($params['imageType'] ? trim($params['imageType']) : 'original'),
-		'imageSize'		   => '120x60'
-	);
 }
-else
+elseif ($params[$type . 'id'])
 {
-	$fetch = 'fetchProducts';
-
-	$merchants   = array_map('trim', explode(',', $params['prodm']));
-	$merchantIds = array_map('trim', explode(',', $params['prodd']));
-	$brands      = array_map('trim', explode(',', $params['prodb']));
-	$productIds   = array_map('trim', explode(',', $params['prodid']));
-
-	$settings = array(
-		'query'            => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
-		'filterProductId'  => $productIds,
-	    'filterMerchantId' => $merchantIds,
-	    'filterMerchant'   => $merchants,
-		'filterBrand'      => $brands,
-		'imageSize'		   => '250x250',
-		'groupBy'	       => 'productId',
-	    'limit'            => count($productIds),
-		'filterPercentOff' => $params['percentrangea'] || $params['percentrangeb'] ? $params['percentrangea'] . ',' . $params['percentrangeb'] : '',
-	    'filterPriceSale'  => $params['onSale'] ? ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '0.01,') : '',
-		'filterPrice' 	   => $params['onSale'] ? '' : ($params['pricerangea'] || $params['pricerangeb'] ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '')
-	);
-	
-	if ($view == 'pc')
-	{
-	    $productIds = array_map('trim', explode(',', $params['prodid']));
-	    
-    	$settings = array(
-    	    'query'           => trim($params['prodq'] ? $params['prodq'] : 'shoes'),
-    	    'filterProductId' => $productIds,
-    	    'imageSize'		  => '250x250',
-    	    'groupBy'         => 'merchant',
-            'limit'           => 5,    	    
-    	);
-	}
+    $filterType = ($type == 'prod' ? 'Product' : 'Merchant') . 'Id';
+    $id = explode(',', rtrim($params[$type . 'id'], ','));
 }
 
-$settings = array_merge(array(
-	'api_key'        => '7b0a5297441c39be99fda92fc784b516',
-	'enableFacets'	 => 'FALSE'
-), $settings);
+$limit = 1;
+if ($params[$type . 'limit'] > 1)
+{
+    $limit = $params[$type . 'limit'];
+}
+elseif ($id)
+{
+    $limit = count($id);
+}
 
-// Set the URL
-$url = $endPoints[$fetch] . http_build_query ($settings);
+$mainSettings = array(
+    'api_key'        => $params['apiKey'],
+    'enableFacets'	 => 'FALSE'
+);
 
-$curl = curl_init();
+if ($fetch === 'fetchProducts')
+{
+    $expiration = PROSPER_CACHE_PRODS;
+    $recordId 	= 'catalogId';
+    $currency = 'USD';
+    	
+    if ($view == 'pc')
+    { 
+        $idFilter = array();
+        if (strlen($params[$type . 'id']) == 32 && strpos($params[$type . 'id'], '_'))
+        {
+            $idFilter = array('filter' . $filterType => $params[$type . 'id']);
+        }
+        elseif ($params[$type . 'id'])
+        {
+            $idFilter = array('query' => rtrim(str_replace('_', ' ', $params[$type . 'id']), '~'));
+        }
 
-// Set options
-curl_setopt_array($curl, array(
-	CURLOPT_RETURNTRANSFER => 1,
-	CURLOPT_URL => $url,
-	CURLOPT_CONNECTTIMEOUT => 30,
-	CURLOPT_TIMEOUT => 30
-));
+        $settings = array(
+            'query'              => (!$id ? trim(strip_tags($params[$type . 'q'] ? $params[$type . 'q'] : '')) : ''),
+            'imageSize'		     => '250x250',
+            'groupBy'            => 'merchant',
+            'limit'              => 5
+        );
+        $curlUrls[0] = $endPoints[$fetch] . http_build_query (array_merge($mainSettings, $settings, $idFilter));
+    }
+    elseif (count($id))
+    {
+        foreach ($id as $i => $apart)
+        {
+            if ($filterType == 'ProductId')
+            {
+                $settings[$i] = array(
+                    'imageSize'		  => '250x250',
+                    'limit'           => 1,
+                    'filterProductId' => $apart
+                );
+            }
+            else
+            {
+                $filterType = 'Keyword';
+                 
+                $settings[$i] = array(
+                    'imageSize'	=> '250x250',
+                    'limit'     => 1,
+                    'query'     => $apart
+                );
+            }
+             
+            $curlUrls[$i] = $endPoints[$fetch] . http_build_query (array_merge($mainSettings, $settings[$i]));
+        }      
+    }
+    else
+    {
+        $settings = array(
+            'imageSize'		   => '250x250',
+            'limit'            => $limit,
+            'query'            => $params[$type . 'q'] ? trim(strip_tags($params[$type . 'q'])) : '',
+            'filterMerchantId' => $params['prodd'] ? str_replace(',', '|', $params['prodd']) : '',
+            'filterBrand'	   => $params['prodb'] ? str_replace(',', '|', $params['prodb']) : '',
+            'filterPriceSale'  => $params['onSale'] ? (($params['pricerangea'] || $params['pricerangeb']) ? $params['pricerangea'] . ',' . $params['pricerangeb'] : '0.01,') : '',
+            'filterPrice' 	   => $params['onSale'] ? '' : (($params['pricerangea'] || $params['pricerangeb']) ? $params['pricerangea'] . ',' . $params['pricerangeb'] : ''),
+        );
 
-// Send the request
-$response = curl_exec($curl);
+        $curlUrls[0] = $endPoints[$fetch] . http_build_query (array_merge($mainSettings, $settings));
+    }
+}
+elseif ($fetch === 'fetchMerchant')
+{
+    $recordId 	 = 'merchantId';
+    $type 		 = 'merchant';
+    $pieces['v'] = 'grid';
 
-// Close request
-curl_close($curl);
+    $settings = array(
+        'imageSize'		   => '120x60',
+        'limit'            => $limit,
+        'filterMerchant'   => (!$id ? str_replace(',', '|', $params['merchantmerchant']) : ''),
+        'filterMerchantId' => $id,
+        'filterCategory'   => !$id && $params['merchantcat'] ? '*' . $params['merchantcat'] . '*' : '',
+        'imageType'		   => $params['imageType'] ? $params['imageType'] : 'original'
+    );
+    $curlUrls[0] = $endPoints[$fetch] . http_build_query (array_merge($mainSettings, $settings));
+}
 
-// Convert the json response to an array
-$response = json_decode($response, true);
+// array of curl handles
+$curly = array();
+// data to be returned
+$result = array();
+
+// multi handle
+$mh = curl_multi_init();
+
+// loop through $data and create curl handles
+// then add them to the multi-handle
+foreach ($curlUrls as $id => $url) 
+{
+	$curly[$id] = curl_init();
+
+	curl_setopt_array($curly[$id], array(CURLOPT_URL => $url,
+		CURLOPT_HEADER 		   => 0,
+		CURLOPT_RETURNTRANSFER => 1,
+		CURLOPT_TIMEOUT 	   => 30,
+		CURLOPT_CONNECTTIMEOUT => 30
+		)
+	);
+
+	curl_multi_add_handle($mh, $curly[$id]);
+}
+
+// execute the handles
+$running = null;
+do 
+{
+	curl_multi_exec($mh, $running);
+} while($running > 0);
+
+
+// get content and remove handles
+foreach($curly as $id => $c) 
+{
+	$result[$id] = json_decode(curl_multi_getcontent($c), true);
+	curl_multi_remove_handle($mh, $c);
+}
+
+// all done
+curl_multi_close($mh);
 
 // Check for errors
 if (count($response['errors']))
@@ -94,7 +170,22 @@ if (count($response['errors']))
 	throw new Exception(implode('; ', $response['errors']));
 }
 
-if ($results = $response['data'])
+$everything = array();
+if (count($result) == 1)
+{
+    $everything = $result[0];
+}
+else
+{
+    foreach($result as $i => $record)
+    {
+        $everything['data'][$i] = $record['data'][0];
+    }
+}
+
+
+
+if ($results = $everything['data'])
 {
 	if ($type == 'merchant')
 	{
@@ -165,38 +256,45 @@ if ($results = $response['data'])
         	<?php
         }
         elseif ($view === 'pc')
-        {  
+        { 
             $gridImage = ($params['gimgsz'] ? preg_replace('/\s?(px|em|%)/i', '', $params['gimgsz']) : 200) . 'px';
             $classLoad = ($type === 'merchant' ? '' : ($gridImage < 120 ? 'class="loadCoup"' : 'class="load"'));
             ?>
         	<div id="product">
             	<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer" style="<?php echo ($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'); ?>width:45%">        		
-            		<?php	           
-    				foreach ($results as $product)
-    				{						
-    				    $priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
-    				    $price 	   = $priceSale ? $priceSale : $record['price'];
-    				    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';		
-    				    if (!$imageSet)						
-    				    {
-    					   echo '<tr><td colSpan="3><div id="prosperPCImage" sty><img style="text-align:center;" src="' . $product['image_url'] . '"/></div></td></tr>';
-    					   $imageSet = true;
-    				    }
-    				    if (!$keywordSet)
-    				    {
-    					   echo '<tr><td colSpan="3"><div id="prosperPCKeyword">' . $product['keyword'] . '</div></td></tr>';
-    					   $keywordSet = true;
-    				    }
-    					echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-    					echo '<td itemprop="seller" style="vertical-align:middle;"><a href="javascript:void(0);" onClick="return false;" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . $params['prodImageType'] . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
-    					echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
-    					echo '<meta itemprop="priceCurrency" content="USD"/>';
-    					echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
-    					echo '</tr>';
-    				}
-    				?>
-    			</table>
-			</div>
+            		<?php	         
+        			foreach ($results as $product)
+        			{						
+        			    $priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
+        			    $price 	   = $priceSale ? $priceSale : $record['price'];
+        			    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';	
+        			    if (!$keywordSet)
+        			    {
+        			        echo '<tr><td id="prosperPCKeyword" colspan="4" style="width:100%;text-align:center;font-size:1.5em">' . $product['keyword'] . '</td></tr>';
+        			        $keywordSet = true;
+        			    }	
+        			    
+        			    if (!$imageSet)						
+        			    {
+        			       echo '<tr>';
+        				   echo '<td id="prosperPCImage" style="vertical-align:middle;width:50%;"><img style="text-align:center;" src="' . $product['image_url'] . '"/></td>';
+        				   $imageSet = true;
+        				   echo '<td id="prosperPCMerchants" style="vertical-align:middle;width:50%;"><table id="prosperPCAllMercs" style="border:none;width:100%;margin:0;' .($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'). '>';
+        			    }
+        			    
+        			    echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
+        				echo '<td class="prosperPCmercimg" itemprop="seller" style="vertical-align:middle;"><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:100px" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
+        				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
+        				echo '<meta itemprop="priceCurrency" content="USD"/>';
+        				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
+        				echo '</tr>';				
+        			}
+        			?>
+        			</table>
+            			</td>
+            			</tr>
+            		</table>
+            	</div>
         	<?php
         }
         else

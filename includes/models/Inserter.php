@@ -40,59 +40,63 @@ class Model_Inserter extends Model_Base
 	    
 	    if (($this->_options['prosper_inserter_posts'] && is_singular('post')) || ($this->_options['prosper_inserter_pages'] && (is_page() || (is_plugin_active('woocommerce/woocommerce.php') ? is_product() : ''))))
 	    {
-    		$newTitle = get_the_title();
-    
-    		if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs) || preg_match('/\[contentInsert (.+)\]\[\/contentInsert\]/i', $text, $regs))
+	        if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs) || preg_match('/\[contentInsert (.+)\]\[\/contentInsert\]/i', $text, $regs))
     		{
-    			preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
-    			$allParams = array_combine($results[1], $results[2]);
-    	
-    			if ($allParams['noShow'])
-    			{
-    				return trim($text);
-    			}
-    		}
-    
-    		if ($this->_options['prosper_inserter_negTitles'])
-    		{
-    			if(function_exists('prosper_negatives') === false)
-    			{
-    				function prosper_negatives($negative)
-    				{
-    					return '/\b' . trim($negative) . '\b/i';
-    				}
-    			}	
-    
-    			$exclude = array_map(
-    				"prosper_negatives",
-    				explode(',', $this->_options['prosper_inserter_negTitles'])
-    			);
-    
-    			$newTitle = preg_replace($exclude, '', $newTitle);
-    		}
-    
-    		if (!$newTitle)
-    		{
-    			return trim($text);
-    		}
-    		
-    		if ($this->_options['contentAnalyzer'])
-    		{
-    			$settings = array(
-    				'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
-    			);
-    
-    			$url = $this->apiCall($settings, 'fetchAnalyzer');
-    			$allData = $this->singleCurlCall($url, 86400, $settings);
-    
-    			foreach ($allData['data'] as $newKeyword)
-    			{
-    				$newKeywords[] = $newKeyword['phrase']; 
-    			}		
-    		}
-    		
-    		$insert = '<p>[prosperInsert imgt="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" q="' . ($allParams['q'] ? $allParams['q'] : $newTitle) . '" b="' . $allParams['b'] . '" m="' . $allParams['m'] . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/prosperInsert]</p>';
+    			//preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
+    			//$allParams = array_combine($results[1], $results[2]);
 
+    			if (preg_match('/noShow="on"/', $regs[1]))
+    			{
+    			    return trim($text);
+    			}
+    			
+    			$insert = '<p>[prosperInsert ' . $regs[1] . '][/prosperInsert]</p>';    			
+    		}
+	        else
+	        {
+        		$newTitle = get_the_title();
+                
+        		if ($this->_options['prosper_inserter_negTitles'])
+        		{
+        			if(function_exists('prosper_negatives') === false)
+        			{
+        				function prosper_negatives($negative)
+        				{
+        					return '/\b' . trim($negative) . '\b/i';
+        				}
+        			}	
+        
+        			$exclude = array_map(
+        				"prosper_negatives",
+        				explode(',', $this->_options['prosper_inserter_negTitles'])
+        			);
+        
+        			$newTitle = preg_replace($exclude, '', $newTitle);
+        		}
+        
+        		if (!$newTitle)
+        		{
+        			return trim($text);
+        		}
+        		
+        		if ($this->_options['contentAnalyzer'])
+        		{
+        			$settings = array(
+        				'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']
+        			);
+        
+        			$url = $this->apiCall($settings, 'fetchAnalyzer');
+        			$allData = $this->singleCurlCall($url, 86400, $settings);
+        
+        			foreach ($allData['data'] as $newKeyword)
+        			{
+        				$newKeywords[] = $newKeyword['phrase']; 
+        			}		
+        		}
+        		
+        		$insert = '<p>[prosperInsert imgt="' . ($this->_options['prosper_imageType'] ? $this->_options['prosper_imageType'] : 'original') . '" q="' . $newTitle . '" l="' . ($this->_options['PI_Limit'] ? $this->_options['PI_Limit'] : 1) . '" v="' . ($this->_options['prosper_insertView'] ? $this->_options['prosper_insertView'] : 'list') . '" gtm="' . ($this->_options['Link_to_Merc'] ? 1 : 0) . '"][/prosperInsert]</p>';
+	        }
+        		
     		if ('top' == $this->_options['prosper_inserter'])
     		{
     			$content = $insert . $text;
@@ -136,7 +140,16 @@ class Model_Inserter extends Model_Base
 		// Remove links within links
 		$content = strip_tags($content);
 
-		$id = $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '';
+		if ($pieces['id'] && strpos($pieces['id'], '~'))
+		{
+		    $id = explode('~', rtrim($pieces['id'], '~'));
+		    
+		}
+		elseif ($pieces['id'])
+		{    
+		    $filterType = ($type == 'prod' ? 'Product' : 'Merchant') . 'Id';
+            $id = explode(',', rtrim($pieces['id'], ','));
+		}
 
 		$limit = 1;		
 		if ($pieces['cl'] && $pieces['cl'] > $pieces['l'])
@@ -149,7 +162,7 @@ class Model_Inserter extends Model_Base
 		}
 		elseif ($id)
 		{
-			$limit = substr_count($id, '|');
+			$limit = count($id);
 		}
 		
 		if ($fetch === 'fetchProducts')
@@ -158,34 +171,88 @@ class Model_Inserter extends Model_Base
 			$recordId 	= 'catalogId';
 			$type = 'product';			
 			$currency = 'USD';	
-
-			$settings = array(
-				'curlCall'		  => 'single-' . $type,
-				'interface'		  => 'insert',
-				'imageSize'		  => $pieces['v'] === 'grid' && $pieces['gimgsz'] > 125 ? '250x250' : '125x125',
-				'limit'           => $limit,
-				'query'           => (!$id ? trim(strip_tags($pieces['q'] ? $pieces['q'] : '')) : ''),
-				'filterMerchant'  => !$id && $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
-				'filterBrand'	  => !$id && $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',			
-				'filterProductId' => $id,
-				'filterPriceSale' => !$id && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
-				'filterPrice' 	  => ($id || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''))				
-			);
 			
 			if ($pieces['v'] == 'pc')
 			{
-			    $productIds = array_map('trim', explode(',', $pieces['prodid']));
+			    $idFilter = array();
+			    if (strlen($pieces['id']) == 32 && strpos($pieces['id'], ' '))
+			    {
+			        $idFilter = array('filter' . $filterType => $pieces['id']);
+			    }
+			    elseif ($pieces['id'])
+			    {
+			        $idFilter = array('query' => rtrim(str_replace('_', ' ', $pieces['id']), '~'));
+			    } 
 			    $type = 'productPC';
-			    
+			     
 			    $settings = array(
-			        'curlCall'		   => 'single-' . $type,
-			        'query'           => (!$id ? trim(strip_tags($pieces['q'] ? $pieces['q'] : '')) : ''),
-			        'filterProductId' => $id,
-			        'imageSize'		  => '250x250',
-			        'groupBy'         => 'merchant',
-			        'limit'           => 5,
+			        'curlCall'		     => 'single-' . $type,
+			        'query'              => (!$pieces['id'] ? trim(strip_tags($pieces['q'] ? $pieces['q'] : '')) : ''),
+			        'imageSize'		     => '250x250',
+			        'groupBy'            => 'merchant',
+			        'limit'              => 5
 			    );
+			    $curlUrls[0] = $this->apiCall(array_merge($settings, $idFilter), $fetch);
 			}
+			elseif (count($id))
+            {
+			    foreach ($id as $i => $apart)
+			    {
+			        if ($filterType == 'ProductId')
+			        {
+    			        $settings[$i] = array(
+    			            'curlCall'		  => 'single-' . $type,
+    			            'interface'		  => 'insert',
+    			            'imageSize'		  => '250x250',
+    			            'limit'           => 1,
+    			            'filterProductId' => $apart    			           
+    			        );
+			        }
+			        else 
+			        {
+			            $filterType = 'Keyword';
+			            
+			            $settings[$i] = array(
+			                'curlCall'	=> 'single-' . $type,
+			                'interface'	=> 'insert',
+			                'imageSize'	=> '250x250',
+			                'limit'     => 1,
+			                'query'     => $apart
+			            );
+			        }
+			        
+			        $curlUrls[$i] = $this->apiCall($settings[$i], $fetch);
+			    }			    
+			    $settings = array(
+			        'curlCall'		  => 'single-' . $type,
+			        'interface'		  => 'insert',
+			        'imageSize'		  => '250x250',
+			        'limit'           => $limit,
+			        'query'           => $pieces['q'] ? trim(strip_tags($pieces['q'])) : '',
+			        'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
+			        'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',
+			        'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+			        'filterPrice' 	  => $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : ''),
+			        'filter' . $filterType => implode('|', $id)
+			    );
+			    
+            }
+            else 
+            {
+                $settings = array(
+                    'curlCall'		  => 'single-' . $type,
+                    'interface'		  => 'insert',
+                    'imageSize'		  => '250x250',
+                    'limit'           => $limit,
+                    'query'           => $pieces['q'] ? trim(strip_tags($pieces['q'])) : '',
+                    'filterMerchant'  => $pieces['m'] ? str_replace(',', '|', $pieces['m']) : '',
+                    'filterBrand'	  => $pieces['b'] ? str_replace(',', '|', $pieces['b']) : '',
+                    'filterPriceSale' => $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+                    'filterPrice' 	  => $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')
+                );
+                                
+                $curlUrls[0] = $this->apiCall($settings, $fetch);
+            }			
 		}
 		elseif ($fetch === 'fetchMerchant')
 		{
@@ -201,45 +268,112 @@ class Model_Inserter extends Model_Base
 				'limit'            => $limit,			    
 				'filterMerchant'   => (!$id ? str_replace(',', '|', $pieces['m']) : ''),		
 				'filterMerchantId' => $id,
-			    'filterCategory'   => $pieces['cat'] ? '*' . $pieces['cat'] . '*' : '',
+			    'filterCategory'   => !$id && $pieces['cat'] ? '*' . $pieces['cat'] . '*' : '',
 				'imageType'		   => $pieces['imgt'] ? $pieces['imgt'] : 'original'            		
 			);
+			
+			$curlUrls[0] = $this->apiCall($settings, $fetch);
+			
 		}		
-		$settings = array_filter($settings);
+
 		if (count($settings) < 5)
 		{
 			return;
-		}
+		}		
 
-		$url = $this->apiCall($settings, $fetch);
-		
-		$allData = $this->singleCurlCall($url, $expiration, $settings);
+		$allData = $this->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, $settings);
 
-		if (!$allData['data'])
+		$everything = array();
+		if ($pieces['v'] == 'pc')
 		{
-			$count = count($settings);
-			for ($i = 0; $i <= $count; $i++)
-			{
-				array_pop($settings);
-
-				if(count($settings) < 5)
-				{
-					return;
-				}
-			
-				$url = $this->apiCall($settings, $fetch);
-				$allData = $this->singleCurlCall($url, $expiration, $settings);
-				
-				if ($allData['data'])
-				{
-					break;
-				}	 
-			}
+		    $everything = $allData[0];
+		    
 		}
-		
+		else 
+		{		
+    		foreach($allData as $i => $record)
+    		{
+    		    if ($record['data'])
+    		    {    		        
+    		        $everything['data'][$i] = $record['data'][0];
+    		    }
+    		    elseif ($pieces['fb'])
+    		    {
+    		        $fallback = explode('~', $pieces['fb']);
+    		        $fallbackSettings = str_replace($id[$i], '', $fallback[$i]);
+    
+    		        $params = explode('_', $fallbackSettings);
+    		        
+    		        $sendParams = array();
+    		        foreach ($params as $k => $p)
+    		        {
+    		            //if the number is even, grab the next index value
+    		            if (!($k & 1) && $p)
+    		            {
+    		                $sendParams[$p] = $params[$k + 1];
+    		            }
+    		        }
+    		        
+    		        $url = $this->apiCall($newSettings = array_merge(array(
+        		            'curlCall'	=> 'single-' . $type,
+                            'interface'	=> 'insert',
+                            'imageSize'	=> '250x250',
+                            'limit'     => 1), 
+    		            $sendParams), $fetch);
+    
+    		        $allData = $this->singleCurlCall($url, $expiration, $newSettings);
+    
+    		        if (!$allData['data'])
+    		        {
+        		        $count = count($settings);
+        		        for ($i = 0; $i <= $count; $i++)
+        		        {
+            		        array_pop($settings);
+            		        
+            		            if(count($settings) < 5)
+            		            {
+            		            return;
+            		        }
+            		        	
+            		        $url = $this->apiCall($settings, $fetch);
+            		        $allData = $this->singleCurlCall($url, $expiration, $settings);
+            		        
+            		        if ($allData['data'])
+            		        {
+            		            break;
+            		        }
+        		        }        		        
+    		        }
+    		        $everything['data'][$i] = $allData['data'][0];
+    		    }
+    		    else 
+    		    {
+    		        $count = count($settings);
+    		        for ($i = 0; $i <= $count; $i++)
+    		        {
+        		        array_pop($settings);
+        		        
+        		        if(count($settings) < 5)
+        		        {
+        		            return;
+        		        }
+        		        	
+        		        $url = $this->apiCall($settings, $fetch);
+        		        $allData = $this->singleCurlCall($url, $expiration, $settings);
+        		        
+        		        if ($allData['data'])
+        		        {
+        		            break;
+        		        }
+    		        }
+    		        $everything['data'][$i] = $allData['data'][0];
+    		    }
+    		}		
+		}
+
+		$results = $everything['data'];
+
 		$prodSubmit = home_url('/') . $base;	
-		
-		$results = $allData['data'];
 
 		$insertProd = PROSPER_VIEW . '/prosperinsert/insertProd.php';
 		

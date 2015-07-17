@@ -68,12 +68,11 @@ class Model_Search extends Model_Base
 	{
 		$postArray = array_filter($postArray);		
 		$newUrl = $data['url'];
-
+		
 		if (preg_match('/\/\?gclid=.+/i', $newUrl))
 		{
 			$newUrl = preg_replace('/\/\?gclid=.+/i', '', $newUrl);
 		}
-
 		while (current($postArray)) 
 		{ 
 			if (key($postArray) == 'type' && $data['params']['type'] != current($postArray))
@@ -93,12 +92,10 @@ class Model_Search extends Model_Base
 			{
 				$newUrl = str_replace(array('/pR/' . $data['params']['pR'], '/dR/' . $data['params']['dR'], '/city/' . $data['params']['city'], '/zip/' . $data['params']['zip'], '/page/' . $data['params']['page'], '/brand/' . $data['params']['brand'], '/merchant/' . $data['params']['merchant'], '/query/' . $data['params']['query'], '/cid/' . $data['params']['cid']), '', $newUrl);
 			}
-		
 			$newUrl = str_replace('/' . key($postArray) . '/' . $data['params'][key($postArray)], '', $newUrl);
 			$newUrl = $newUrl . '/' . key($postArray) . '/' . htmlentities(rawurlencode(current($postArray)));
 			next($postArray);
 		}
-
 		header('Location: ' . $newUrl);
 		exit;
 	}
@@ -442,7 +439,7 @@ class Model_Search extends Model_Base
 		$curlUrl = $this->apiCall($settings, $fetch);
 		$allData = $this->singleCurlCall($curlUrl, 0);
 		$record = $allData['data'];		    
-		    
+
 		if ($record)
 		{
     		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
@@ -467,6 +464,10 @@ class Model_Search extends Model_Base
     		echo '<meta name="twitter:label2" content="Brand">';
     		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
     		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+		}
+		else
+		{
+		    echo '<meta name="robots" content="noindex,nofollow">';
 		}
 	}	
 		
@@ -570,7 +571,7 @@ class Model_Search extends Model_Base
 	public function storeSearch($related = false)
 	{		
 	    $base = $this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products';
-	    
+
 		if(get_query_var('queryParams'))
 		{
 			$params = str_replace('%7C', '~', $this->getUrlParams());	
@@ -585,13 +586,13 @@ class Model_Search extends Model_Base
 		}
 		
 		if ($related)
-		{
+		{		
 		    $prosperLastValue = end($params);
 		    $prosperLastKey = key($params);
 		    unset($params[$prosperLastKey]);
 		    $newParams = implode('/', $params);
 		    set_query_var('queryParams', $newParams);
-		    $url = home_url('/') . $base . '/' . $newParams;
+		    $url = home_url('/') . $base . ($newParams ? '/' . $newParams : '');
 		}
 		
 		$brand    	  = isset($params['brand']) ? str_replace('|', '~', rawurldecode(stripslashes($params['brand']))) : '';

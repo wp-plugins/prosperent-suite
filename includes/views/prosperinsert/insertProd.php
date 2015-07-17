@@ -8,11 +8,6 @@ if ($type == 'merchant' )
 		<?php
         foreach ($results as $record)
         {
-            if (is_ssl())
-            {
-                $record['image_url'] = str_replace('http', 'https', $record['image_url']);
-            }
-
             if ($record['deepLinking'] == 1 && $pieces['gtm'])
             {
                 if ($record['domain'] == 'sportsauthority.com')
@@ -50,11 +45,6 @@ elseif ($pieces['v'] === 'grid')
 		<?php
 		foreach ($results as $record)
 		{
-			if (is_ssl())
-			{
-				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-			}		
-			
 			$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 			$price 	   = $priceSale ? $priceSale : $record['price'];
 			$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -98,8 +88,7 @@ elseif ($pieces['v'] === 'pc')
 {
     ?>
 	<div id="product">
-    	<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer" style="<?php echo ($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'); ?>width:45%">        		
-    		
+    	<table class="productResults" itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer" style="<?php echo ($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'); ?>width:80%">        		
     		<?php	           
 			foreach ($results as $product)
 			{						
@@ -108,23 +97,29 @@ elseif ($pieces['v'] === 'pc')
 			    $goToUrl   = '"' . $record['affiliate_url'] . '" rel="nofollow,nolink" class="shopCheck" target="_blank"';	
 			    if (!$keywordSet)
 			    {
-			        echo '<td colSpan="3"><div id="prosperPCKeyword">' . $product['keyword'] . '</div></td></tr>';
+			        echo '<tr><td id="prosperPCKeyword" colspan="4" style="width:100%;text-align:center;font-size:1.5em">' . $product['keyword'] . '</td></tr>';
 			        $keywordSet = true;
 			    }	
+			    
 			    if (!$imageSet)						
 			    {
-				   echo '<tr><td colSpan="3><div id="prosperPCImage"><img style="text-align:center;" src="' . $product['image_url'] . '"/></div></td>';
+			       echo '<tr>';
+				   echo '<td id="prosperPCImage" style="vertical-align:middle;width:50%;"><img style="text-align:center;" src="' . $product['image_url'] . '"/></td>';
 				   $imageSet = true;
+				   echo '<td id="prosperPCMerchants" style="vertical-align:middle;width:50%;"><table id="prosperPCAllMercs" style="border:none;width:100%;margin:0;' .($params['prodImageType'] == 'white' ? 'color:white;' : 'background:white;'). '>';
 			    }
 			    
-				echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
-				echo '<td itemprop="seller""><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:80px;height:40px;" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
+			    echo '<tr itemscope itemtype="http://data-vocabulary.org/Product">';
+				echo '<td class="prosperPCmercimg" itemprop="seller" style="vertical-align:middle;"><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:100px" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
 				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
 				echo '<meta itemprop="priceCurrency" content="USD"/>';
 				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
 				echo '</tr>';
+				
 			}
 			?>
+			</table>
+			</td>
 			</tr>
 		</table>
 	</div>
@@ -137,15 +132,10 @@ else
 		<?php
 		// Loop to return Products and corresponding information
 		foreach ($results as $record)
-		{			
-			if (is_ssl())
-			{
-				$record['image_url'] = str_replace('http', 'https', $record['image_url']);
-			}
-					
+		{							
 			$cid = $record['catalogId'];
-			$baseUrl = $homeUrl . '/' . ($options['Base_URL'] ? ($options['Base_URL'] == 'null' ? '' : $options['Base_URL']) : 'products');
-
+			$baseUrl = $homeUrl . '/' . ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products');
+			
 			if (($this->_options['PSAct'] && $page->post_status == 'publish') && (!$pieces['gtm'] || $pieces['gtm'] === 'false'))
 			{
 				$goToUrl = '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid . '" rel="nolink"';
@@ -157,7 +147,7 @@ else
 			?>
 			<div class="productBlock">
 				<div class="productImage">
-					<a href=<?php echo $goToUrl; ?>><span class="load"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+					<a href=<?php echo $goToUrl; ?>><span class="load"><img src="<?php echo $record['image_url']; ?>" title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 				</div>
 				<div class="productContent">
 					<div class="productTitle"><a href=<?php echo $goToUrl; ?>><span><?php echo $record['keyword']; ?></span></a></div>
@@ -181,7 +171,7 @@ else
 						}
 						if($record['merchant'])
 						{
-							echo '<span class="merchantIn"><u>Merchant</u>: <a href="' . ($this->_options['PSAct'] ? '"' . $baseUrl . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"' : $goToUrl) . '"><cite>' . $record['merchant'] . '</cite></a></span>';
+							echo '<span class="merchantIn"><u>Merchant</u>: <a href=' . ($this->_options['PSAct'] ? '"' . $baseUrl . '/merchant/' . rawurlencode($record['merchant']) . '" rel="nolink"' : $goToUrl) . '><cite>' . $record['merchant'] . '</cite></a></span>';
 						}				
 						?>
 					</div>

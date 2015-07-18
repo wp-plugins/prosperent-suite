@@ -61,11 +61,11 @@ elseif ($pieces['v'] === 'grid')
 			?>
 		        <li id="<?php echo $cid; ?>" class="<?php echo $record['productId']; ?>" data-prosperKeyword="<?php echo $keyword; ?>">
 					<div class="prodImage">
-						<a onClick="return false;" href=<?php echo $goToUrl; ?>><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+						<a href=<?php echo $goToUrl; ?>><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 					</div>								
 					<div class="prodContent">
 						<div class="prodTitle">
-						    <a onClick="return false;" href=<?php echo $goToUrl; ?> style="text-decoration:none;color:#646464"><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a>
+						    <a href=<?php echo $goToUrl; ?> style="text-decoration:none;color:#646464"><?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?></a>
 							<div style="position:absolute;left:-9999em;height:1px;line-height:1px;"><?php echo $record['description']; ?> </div>
 						</div>   
 						<div class="prodPrice">  

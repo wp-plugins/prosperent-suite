@@ -71,167 +71,168 @@ class Model_Linker extends Model_Base
 		$content = $content ? (preg_match('/<a/i', $content) ? strip_tags($content) : $content) : $query;
 
 		$query = trim(strip_tags($pieces['q']));
-		if ((!$brands || !$merchants) && !$query)
-		{
+		if (!$brands && !$merchants && !$query)
+		{	
 			$query = $content;
 		}
 		
-		if (($pieces['gtm'] || !$options['PSAct']) && ($pieces['gtm'] === 'prodPage' && $pieces['ft'] == 'fetchProducts') && ($pieces['gtm'] !== 'prodResults' && $pieces['ft'] != 'fetchMerchant'))
-		{			
-			if ($pieces['ft'] == 'fetchProducts')
-			{		
-				$expiration = PROSPER_CACHE_PRODS;
-				$type = '';
-				$page = $curlType = 'product';
-				
-				$fetch = 'fetchProducts';
-				
-				$settings = array(
-					'curlCall'		  => 'single-' . $curlType,
-					'interface'		  => 'linker',
-					'enableFullData'  => 'FALSE',
-					'limit'           => 1,
-					'query'           => (!$pieces['id'] ? $query : ''),
-					'filterMerchant'  => (!$pieces['id'] ? $merchants : ''),
-					'filterBrand'	  => (!$pieces['id'] ? $brands : ''),
-					'filterProductId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
-					'filterPriceSale' => !$pieces['id'] && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
-					'filterPrice' 	  => ($pieces['id'] || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
-				);
-			}
-			elseif ($pieces['ft'] == 'fetchMerchant')
-			{			
-				$expiration = PROSPER_CACHE_PRODS;
-				$fetch = 'fetchMerchant';
-				$type = '';
-				$page = 'product';
-				$curlType = 'merchant';
-				
-				$settings = array(
-					'curlCall'		   => 'single-' . $curlType,
-					'interface'		   => 'linker',
-					'enableFullData'   => 'FALSE',		
-					'limit' 		   => 1,				    
-					'filterMerchant'   => $merchants,
-					'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
-				    'filterCategory'   => !$pieces['id'] && $pieces['cat'] ? '*' . $pieces['cat'] . '*' : ''
-				);				
-			}				
-			
-			if (count($settings) < 4)
-			{
-				return $content;
-			}
 	
-			$url = $this->apiCall($settings, $fetch);
-			$allData = $this->singleCurlCall($url, $expiration, $settings);
+		if ($pieces['ft'] == 'fetchProducts')
+		{		
+			$expiration = PROSPER_CACHE_PRODS;
+			$type = '';
+			$page = $curlType = 'product';
+			
+			$fetch = 'fetchProducts';
+			
+			$settings = array(
+				'curlCall'		  => 'single-' . $curlType,
+				'interface'		  => 'linker',
+				'enableFullData'  => 'FALSE',
+				'limit'           => 1,
+				'query'           => (!$pieces['id'] ? $query : ''),
+				'filterMerchant'  => (!$pieces['id'] ? $merchants : ''),
+				'filterBrand'	  => (!$pieces['id'] ? $brands : ''),
+				'filterProductId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
+				'filterPriceSale' => !$pieces['id'] && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
+				'filterPrice' 	  => ($pieces['id'] || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
+			);
+			print_r($settings);
+		}
+		elseif ($pieces['ft'] == 'fetchMerchant')
+		{			
+			$expiration = PROSPER_CACHE_PRODS;
+			$fetch = 'fetchMerchant';
+			$type = '';
+			$page = 'product';
+			$curlType = 'merchant';
+			
+			$settings = array(
+				'curlCall'		   => 'single-' . $curlType,
+				'interface'		   => 'linker',
+				'enableFullData'   => 'FALSE',		
+				'limit' 		   => 1,				    
+				'filterMerchant'   => $merchants,
+				'filterMerchantId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
+			    'filterCategory'   => !$pieces['id'] && $pieces['cat'] ? '*' . $pieces['cat'] . '*' : ''
+			);				
+		}							
+		
+		if (count($settings) < 4)
+		{
+			return $content;
+		}
 
-			if (!$allData['data'])
+		$url = $this->apiCall($settings, $fetch);
+
+		$allData = $this->singleCurlCall($url, $expiration, $settings);
+
+		if (!$allData['data'])
+		{
+			$count = count($settings);
+			for ($i = 0; $i <= $count; $i++)
 			{
-				$count = count($settings);
-				for ($i = 0; $i <= $count; $i++)
-				{
-					array_pop($settings);
+				array_pop($settings);
 
-					if(count($settings) < 5)
-					{
-						return $content;
-					}
-				
-					$url = $this->apiCall($settings, $fetch);
-					$allData = $this->singleCurlCall($url, $expiration, $settings);
-					
-					if ($allData['data'])
-					{
-						break;
-					}	 
-				}
-			}			
-
-			if ($pieces['ft'] == 'fetchMerchant')
-			{
-				if ($allData['data'][0]['deepLinking'] == 1)
-				{	
-					if ($options['prosperSid'] && !$sid)
-					{
-						foreach ($options['prosperSid'] as $sidPiece)
-						{
-							if ('blogname' === $sidPiece)
-							{
-								$sidArray[] = get_bloginfo('name');
-							}
-							elseif ('interface' === $sidPiece)
-							{
-								$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-							}
-							elseif ('query' === $sidPiece)
-							{
-								$sidArray[] = $settings['query'];
-							}
-							elseif ('page' === $sidPiece)
-							{
-								$sidArray[] = get_the_title();
-							}
-						}
-					}
-					if ($options['prosperSidText'] && !$sid)
-					{
-						if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
-						{
-							if ($regs[1] == '$_SERVER')
-							{
-								$sidArray[] = $_SERVER[$regs[4]];
-							}
-							elseif ($regs[1] == '$_SESSION')
-							{
-								$sidArray[] = $_SESSION[$regs[4]];
-							}
-							elseif ($regs[1] == '$_COOKIE')
-							{
-								$sidArray[] = $_COOKIE[$regs[4]];
-							}					
-						}
-						elseif (!preg_match('/\$/', $options['prosperSidText']))
-						{
-							$sidArray[] = $options['prosperSidText'];
-						}
-					}
-					
-					if ($sidArray)
-					{
-						$sidArray = array_filter($sidArray);
-						$sid = implode('_', $sidArray);
-					}
-				
-					if ($allData['data'][0]['domain'] == 'sportsauthority.com')
-					{
-						$allData['data'][0]['domain'] = $allData['data'][0]['domain'] . '%2Fhome%2Findex.jsp';
-					}
-				
-					$affUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $allData['data'][0]['domain']);
-					$rel = 'nofollow,nolink';
-				}
-				else
+				if(count($settings) < 5)
 				{
 					return $content;
 				}
-			}	
-			elseif ($pieces['gtm'] == 'merchant' || !$options['PSAct'])
-			{			
-				$affUrl = $allData['data'][0]['affiliate_url'];
+			
+				$url = $this->apiCall($settings, $fetch);
+				$allData = $this->singleCurlCall($url, $expiration, $settings);
+				
+				if ($allData['data'])
+				{
+					break;
+				}	 
+			}
+		}			
+
+		if ($pieces['ft'] == 'fetchMerchant')
+		{
+			if ($allData['data'][0]['deepLinking'] == 1)
+			{	
+				if ($options['prosperSid'] && !$sid)
+				{
+					foreach ($options['prosperSid'] as $sidPiece)
+					{
+						if ('blogname' === $sidPiece)
+						{
+							$sidArray[] = get_bloginfo('name');
+						}
+						elseif ('interface' === $sidPiece)
+						{
+							$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+						}
+						elseif ('query' === $sidPiece)
+						{
+							$sidArray[] = $settings['query'];
+						}
+						elseif ('page' === $sidPiece)
+						{
+							$sidArray[] = get_the_title();
+						}
+					}
+				}
+				if ($options['prosperSidText'] && !$sid)
+				{
+					if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
+					{
+						if ($regs[1] == '$_SERVER')
+						{
+							$sidArray[] = $_SERVER[$regs[4]];
+						}
+						elseif ($regs[1] == '$_SESSION')
+						{
+							$sidArray[] = $_SESSION[$regs[4]];
+						}
+						elseif ($regs[1] == '$_COOKIE')
+						{
+							$sidArray[] = $_COOKIE[$regs[4]];
+						}					
+					}
+					elseif (!preg_match('/\$/', $options['prosperSidText']))
+					{
+						$sidArray[] = $options['prosperSidText'];
+					}
+				}
+				
+				if ($sidArray)
+				{
+					$sidArray = array_filter($sidArray);
+					$sid = implode('_', $sidArray);
+				}
+			
+				if ($allData['data'][0]['domain'] == 'sportsauthority.com')
+				{
+					$allData['data'][0]['domain'] = $allData['data'][0]['domain'] . '%2Fhome%2Findex.jsp';
+				}
+			
+				$affUrl = 'http://prosperent.com/api/linkaffiliator/redirect?apiKey=' . $options['Api_Key'] . '&sid=' . $sid . '&url=' . rawurlencode('http://' . $allData['data'][0]['domain']);
 				$rel = 'nofollow,nolink';
-				$checkClass =  'shopCheck';
 			}
 			else
-			{				
-				$affUrl = $homeUrl . $page . '/' . str_replace('/', ',SL,', $allData['data'][0]['keyword']) . '/cid/' . $allData['data'][0]['catalogId'];
-				$rel = 'nolink';
+			{
+				return $content;
 			}
-
-			return '<a class="shopCheck" style="text-decoration:none;" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
+		}	
+		elseif ($pieces['gtm'] == 'merchant' || !$options['PSAct'])
+		{			
+			$affUrl = $allData['data'][0]['affiliate_url'];
+			$rel = 'nofollow,nolink';
+			$checkClass =  'shopCheck';
+		}
+		else
+		{				
+			$affUrl = $homeUrl . $page . '/' . str_replace('/', ',SL,', $allData['data'][0]['keyword']) . '/cid/' . $allData['data'][0]['catalogId'];
+			$rel = 'nolink';
 		}
 
-		$fB = '';
+		return '<a class="shopCheck" style="text-decoration:none;" href="' . $affUrl . '" TARGET=' . $target . '" class="prosperent-kw" class="' . $checkClass . '" rel="' . $rel . '">' . $content . '</a>';
+
+
+		/*$fB = '';
 		if ($brands)
 		{			
 			foreach ($brands as $brand)
@@ -267,7 +268,7 @@ class Model_Linker extends Model_Base
 		else 
 		{
 			return $content;
-		}
+		}*/
 	}
 	
 	/**

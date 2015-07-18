@@ -119,38 +119,38 @@
 		<?php
 	}
 
-	if (!$noResults): ?>
+if (!$noResults): ?>
 
-        <div style="float:right;">
-        	<div id="views"> 
-        	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/grid';?>"><span class="gridIcon"></span></a> 
-        	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/list';?>"><span class="listIcon"></span></a>
-            </div>
-        
-        
-        	<div id="prosperPriceSorter">
-        		<span class="sortLabel">Sort By: </span>			
-        		<?php
-        		
-        		$sortCount = count($sortArray);
-        		$c = 0;
-        		foreach ($sortArray as $i => $sort)
-        		{		  
-        			?>
-        			&nbsp;&nbsp;<a <?php echo (preg_match('/' . $sortedParam . '/i', $sort) ? 'class="activeSort"' : ''); ?> href="<?php echo ($sortUrl ? $sortUrl : $url) . '/sort/' . $sort; ?>"><?php echo $i; ?></a>&nbsp;&nbsp;
-        			<?php
-        			if ($sortCount > ($c + 1) )
-        			{
-                        echo '|';
-        			}	
-        			
-        			$c++;		 
-        		}
-        		?>		
-        	</div>
-        
+    <div style="float:right;">
+    	<div id="views"> 
+    	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/grid';?>"><span class="gridIcon"></span></a> 
+    	    <a href="<?php echo str_replace(array('/view/'.$params['view']),'',$url).'/view/list';?>"><span class="listIcon"></span></a>
         </div>
-        <div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
+    
+    
+    	<div id="prosperPriceSorter">
+    		<span class="sortLabel">Sort By: </span>			
+    		<?php
+    		
+    		$sortCount = count($sortArray);
+    		$c = 0;
+    		foreach ($sortArray as $i => $sort)
+    		{		  
+    			?>
+    			&nbsp;&nbsp;<a <?php echo (preg_match('/' . $sortedParam . '/i', $sort) ? 'class="activeSort"' : ''); ?> href="<?php echo ($sortUrl ? $sortUrl : $url) . '/sort/' . $sort; ?>"><?php echo $i; ?></a>&nbsp;&nbsp;
+    			<?php
+    			if ($sortCount > ($c + 1) )
+    			{
+                    echo '|';
+    			}	
+    			
+    			$c++;		 
+    		}
+    		?>		
+    	</div>
+    
+    </div>
+    <div id="simProd" class="prosperResults" style="<?php echo (!$filterArray ? 'width:100%!important;max-width:100%!important;' : 'margin-left:7px;'); ?>">
 
 
 <?php 
@@ -262,13 +262,13 @@
 		}
 		?>
         </ul>
-<?php 
+        <?php 
+	}
+
 	$this->searchModel->prosperPagination($totalAvailable, $params['page']);
 	?>
 	</div>
-	        <?php 
-	}
-?>
+
 	<?php endif; ?>
 </div>
 <div class="clear"></div>

@@ -385,84 +385,94 @@ class Model_Search extends Model_Base
 	}
 	
 	public function ogMeta()
-	{
-	    $params = $this->getUrlParams();
-
-		if(!preg_match('/^@/', $this->_options['Twitter_Site']))
-		{
-			$this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
-		}
-		if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
-		{
-			$this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
-		}
-
+	{	  	    
 		$prosperPage = get_query_var('prosperPage');
 		$expiration  = PROSPER_CACHE_PRODS;
 		$fetch       = 'fetchProducts';
-		$currency    = 'USD';
-		$filter      = 'filterCatalogId';
 		
-		if ($this->_options['OG_Image'] > '250' || !$this->_options['OG_Image'])
-		{
-			$imageSize = '500x500';				
-		}
-		else
-		{
-			$imageSize = '250x250';
-			if ($this->_options['OG_Image'] < '200')
-			{
-				$this->_options['OG_Image'] = 200;
-			}
-		}
-		
-		/*
-		/  Prosperent API Query
-		*/
-		$settings = array(
-			'limit' 	=> 1,			
-		    'page'      => $params['page'],
-			'imageSize' => $imageSize,
-			'curlCall'	=> 'single-productPage-' . $prosperPage
-		);
+        $imageSize = '500x500';
+
 		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
-		if (!$cid)
+		if ($cid)
 		{
-		    $settings['query'] = $params['query'];
+    		$settings = array(
+    			'limit' 	      => 1,
+    			'imageSize'       => $imageSize,
+    			'curlCall'	      => 'single-productPage-' . $prosperPage,
+    		    'filterCatalogId' => $cid
+    		);
 		}
 		else
-		{
-		    $settings[$filter] = $cid;
-		} 
+		{		    
+		    $data    = $this->storeSearch();
+		    $filters = $data['filters'];
+		    $params  = $data['params'];
+		    $query   = $params['query'] ? $params['query'] : ($this->_options['Starting_Query'] ? $this->_options['Starting_Query'] : '');
+		    
+		    $settings = array(
+    		    'limit'			   => $this->_options['Pagination_Limit'],
+    		    'imageSize'		   => $imageSize,
+    		    'curlCall'		   => 'multi-product',
+    		    'page'			   => $params['page'],
+    		    'query'            => $query,
+    		    'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
+    		    'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
+    		    'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
+    		    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
+    		    'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
+    		    'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
+    		    'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
+		    );
+		}
 
 		$curlUrl = $this->apiCall($settings, $fetch);
+
 		$allData = $this->singleCurlCall($curlUrl, 0);
 		$record = $allData['data'];		    
 
 		if ($record)
-		{
+		{ 
     		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
-    		// Open Graph: FaceBook
+    		// Open Graph: FaceBook/Pintrest
     		echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
     		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
-    		echo '<meta property="og:type" content="website" />';
+    		echo '<meta property="og:type" content="product" />';
     		echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
     		echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
     		echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
-    		echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
-    		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+    		echo '<meta property="og:description" content="' . htmlentities($record[0]['description']) . '" />';
+    		echo '<meta property="product:availability" content="instock" />';
+    		echo '<meta property="product:category" content="' . htmlentities($record[0]['category']) . '" />';
+    		echo '<meta property="product:brand" content="' . htmlentities($record[0]['brand']) . '" />';
+    		echo '<meta property="product:retailer_title" content="' . htmlentities($record[0]['merchant']) . '" />';
+    		echo '<meta property="og:title" content="' . htmlentities(strip_tags($record[0]['keyword'])) . '" />';
+    		echo '<meta property="product:price:amount" content="' . $record[0]['price'] . '" />';
+            echo '<meta property="product:price:currency" content="USD" />';
+            echo $priceSale ? '<meta property="product:sale_price:amount" content="' . $priceSale . '" />' : '';
+            echo $priceSale ? '<meta property="product:sale_price:currency" content="USD" />' : '';
     
     		// Twitter Cards
-    		echo '<meta name="twitter:card" content="summary">';
-    		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
-    		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
-    		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
-    		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
-    		echo '<meta name="twitter:label1" content="Price">';
-    		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
-    		echo '<meta name="twitter:label2" content="Brand">';
-    		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
-    		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+    		if ($this->_options['Twitter_Site'])
+    		{
+                if(!preg_match('/^@/', $this->_options['Twitter_Site']))
+                {
+                    $this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
+                }
+                if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
+                {
+                    $this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
+                }
+        		echo '<meta name="twitter:card" content="summary_large_image">';
+        		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
+        		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
+        		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
+        		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
+        		echo '<meta name="twitter:label1" content="Price">';
+        		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
+        		echo '<meta name="twitter:label2" content="Brand">';
+        		echo '<meta name="twitter:description" content="' . htmlentities($record[0]['description']) . '" />';
+        		echo '<meta name="twitter:title" content="' . htmlentities(strip_tags($record[0]['keyword'])) . '" />';
+    		}
 		}
 		else
 		{

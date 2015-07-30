@@ -476,7 +476,7 @@ class Model_Search extends Model_Base
 		}
 		else
 		{
-		    echo '<meta name="robots" content="noindex,nofollow">';
+		   // echo '<meta name="robots" content="noindex,nofollow">';
 		}
 	}	
 		

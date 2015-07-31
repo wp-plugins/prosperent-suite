@@ -27,7 +27,7 @@ else
 	$brands      = explode(',', $params['prodb']);    
 
 	$settings = array(
-		'query'            => ($params['prodq'] ? trim($params['prodq']) : 'shoes'),
+		'query'            => trim($params['prodq']),
 		'filterMerchantId' => $merchantIds,
 		'filterBrand'      => $brands,
 		'imageSize'		   => '250x250',
@@ -39,7 +39,7 @@ else
 
 $settings = array_merge(array(
 	'api_key'        => $params['apiKey'],
-	'limit'          => 120,
+	'limit'          => 80,
 	'enableFacets'	 => 'FALSE'
 ), $settings);
 
@@ -104,27 +104,30 @@ if ($results = $response['data'])
 		            $price 	   = $priceSale ? $priceSale : $record['price'];			        
 		            $prosperId = str_replace(' ', '_', $record['keyword']);			        
 		            ?>
-    				<li id="<?php echo $prosperId; ?>" data-prodid="<?php echo $record['productId']; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:6px;float:left;height:285px!important;width:210px!important;background-color:white;">
+    				<li id="<?php echo $prosperId; ?>" data-prodid="<?php echo $record['productId']; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:240px!important;width:170px!important;background-color:white;">
         				<div class="listBlock">
         					<div class="prodImage" style="text-align:center;">
         					    <span id="prosperCheckbox" style="position:relative;"></span>        				
-    				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" style="height:185px;width:185px;" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>'  alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>'/></span>
+    				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>' alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>' style="width:100%!important;max-width:100%"/></span>
     				        </div>
-    				        <div class="prodContent" style="font-size:15px">
+    				        <div class="prodContent" style="font-size:15px;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"">
+
     				            <?php echo ($record['brand'] ? $record['brand'] : '&nbsp;'); ?>
-        						<div class="prodTitle">
-        						    <?php if ($priceSale): ?>
-        						        <span style="color:#666;font-size:14px;text-decoration:line-through;">$<?php echo number_format($record['price'], 2); ?></span>
-        						    <?php endif; 
-        						    if ($record['groupCount'] > 1):?>
-        						        <div class="prodPrice"><strong>$<?php echo number_format($record['minPrice'], 2); ?></strong><?php echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $groupCount . ' stores</span>'; ?></div>
-        						    <?php else: ?>
-        							    <div class="prodPrice"><strong>$<?php echo number_format($price, 2); ?></strong><?php if ($record['merchant']){echo '<span class="merchantIn" style="color:#666;font-size:14px;"> from ' . $record['merchant'] . '</span>'; } ?></div>
-        							<?php endif; ?>
+        						<div class="prodTitle">        						
+        						    <div class="prodPrice">  
+            						    <?php if ($priceSale): ?>
+            						        <span style="color:#666;font-size:14px;text-decoration:line-through;">$<?php echo number_format($record['price'], 2); ?></span>
+            						    <?php endif; 
+            						    if ($record['groupCount'] > 1):?>
+            						        <span class="prosperPrice">$<?php echo number_format($record['minPrice'], 2); ?></span><?php echo '<span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;"> <span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span>' . $groupCount . ' stores</span>'; ?>
+            						    <?php else: ?>
+            							    <span class="prosperPrice">$<?php echo number_format($price, 2); ?></span><?php if ($record['merchant']){echo '<span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"> <span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span>' . $record['merchant'] . '</span>'; } ?>
+
+            							<?php endif; ?>
+        							</div>
         						</div>          						          						                   
         					</div>			
 			            </div> 
-			            <div id="prosperCheckbox"></div>
     				</li>
     				<?php 			           	
 		        }	  
@@ -132,14 +135,13 @@ if ($results = $response['data'])
         	?>
 	   </ul>
 	</div>
-
 	<?php
 }
 else
 {
-	echo '<h2 style="color:white;margin-left:12px;">No Results From Prosperent, Please Try Another Search</h2>';
-	
-	
+	echo '<h2 style="margin-left:12px;">No Results From Prosperent</h2>';
+    echo '<h2 style="font-size:20px;margin-left:12px;">Please Try Another Search</h2>';
+		            
 	if ($_GET['prosperSC'] == 'linker')
 	{
 	   echo '<div style="color:white;margin-left:12px;" class="noResults-secondary">- or -</div>';
@@ -150,8 +152,8 @@ else
 	}
 }
 
+if (!$params['createPI']):
 ?>
-
 <script type="text/javascript">
 var a = getNewCurrent();
 if (jQuery("#"+a+"id").val())
@@ -166,3 +168,4 @@ if (jQuery("#"+a+"id").val())
 	});
 };
 </script>
+<?php endif; ?>

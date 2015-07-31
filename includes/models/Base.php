@@ -33,9 +33,10 @@ abstract class Model_Base
 	);	
 
 	public function init()
-	{	    
+	{
 		if (extension_loaded('curl'))
 		{
+		    add_action( 'wp_enqueue_scripts', array($this, 'prosperEnqueueFAwesome' ));
 			$this->_options = $this->getOptions();
 			$this->_version = $this->getVersion();	
 
@@ -58,7 +59,8 @@ abstract class Model_Base
 				require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');				
 		
 				if (get_option('permalink_structure'))
-				{	
+				{
+				    
 					require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
 					
 					if ($this->_options['PSAct'])
@@ -94,9 +96,7 @@ abstract class Model_Base
 			else
 			{
 				add_action( 'admin_notices', array($this, 'prosperBadSettings' ));
-			}	
-			
-			add_action( 'wp_enqueue_scripts', array($this, 'prefixEnqueueFAwesome' ));
+			}							
 		}
 		else
 		{
@@ -106,9 +106,9 @@ abstract class Model_Base
 		add_shortcode('perform_ad', array($this, 'performAdShortCode'));
     }
 	
-    public function prefixEnqueueFAwesome() 
+    public function prosperEnqueueFAwesome() 
     {
-        wp_enqueue_style( 'prefix-font-awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', array(), '4.0.3' );
+        wp_enqueue_style( 'prosper-font-awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', array(), '4.0.3');
     }
     
     /**
@@ -148,7 +148,7 @@ abstract class Model_Base
 	public function getFetchEndpoints()
 	{
 		$this->_endPoints = $this->_allEndPoints;
-		if (file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php'))
+		if ($this->_options['prosperPrivateNet'])
 		{
 			$this->_endPoints = $this->_privateNetEndPoints;
 		}
@@ -170,13 +170,9 @@ abstract class Model_Base
 		}
 		if (!isset($cookie))
 		{
-			wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), $this->_version);
+			wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), $this->_version, 1);
 			wp_enqueue_script( 'loginCheck' );	
 		}					
-	
-		//wp_register_script('Beta', '', array('jquery', 'json2', 'jquery-ui-widget', 'jquery-ui-dialog', 'jquery-ui-tooltip', 'jquery-ui-autocomplete') );
-		//wp_enqueue_script( 'Beta' );	
-		//wp_enqueue_style('BetaCSS', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
 	}
 	
 	/**
@@ -197,17 +193,6 @@ abstract class Model_Base
 		}
 
 		return $this->_options;
-	}
-	
-	public function setWidget($widget)
-	{
-		$this->widget = (string) $widget;
-        return $this;
-	}
-	
-	public function getWidget()
-	{
-		return $this->widget;
 	}
 	
 	public function createWidget()
@@ -267,8 +252,7 @@ abstract class Model_Base
 	}
 	
 	public function prosperBadSettings()
-	{			
-	    
+	{				    
 		$url = admin_url( 'admin.php?page=prosper_general' );
 		echo '<div class="error" style="padding:6px 0;">';
 		echo _e( '<span style="font-size:14px; padding-left:10px;">Your <strong>API Key</strong> is either incorrect or missing. </span></br>', 'my-text-domain' );
@@ -356,29 +340,41 @@ abstract class Model_Base
 	
 	public function prosperStoreInstall()
 	{
-		/* For Use later if we start creating more pages
-		$pages = array(
-			'Products' => '[prosper_store][/prosper_store]'
-		);
-		*/
-		
-		$pageTitle = 'Products';
-		$pageName = 'Prosperent Search';
+	    $page = get_page_by_path(($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products'));
+	    $pageId = get_option('prosperent_store_pageId');
 
-		// the menu entry...
-		delete_option("prosperentStore" . ucfirst($pageTitle) . "Title");
-		add_option("prosperentStore" . ucfirst($pageTitle) . "Title", $pageTitle, '', 'yes');
-		// the slug...
-		delete_option("prosperentStore" . ucfirst($pageName) . "Name");
-		add_option("prosperentStore" . ucfirst($pageName) . "Name", $pageName, '', 'yes');
-		// the id...
-		delete_option("prosperent_store_pageId");
-		add_option("prosperent_store_" . ucfirst($pageTitle) . "Id", '0', '', 'yes');
+	    if ($page && $pageId == $page->ID)
+	    {
+	        return;
+	    }	    
+	    elseif ($page->post_status != 'publish' || !$pageId || $pageId != $page->ID)
+	    {
+	        // the plugin may have been previously active and the page may just be trashed...
+	        $pageId = $page->ID;	        	
+	        
+	        // the menu entry...
+	        add_option("prosperentStoreProductsTitle",  get_the_title($pageId), '', 'yes');
+	        // the slug...
+	        add_option("prosperentStoreProsperent SearchName", 'Prosperent Search', '', 'yes');
+	        // the id...
+	        add_option("prosperent_store_pageId", '0', '', 'yes');
+	        	
+	        //make sure the page is not trashed...
+	        $page->post_status = 'publish';
+	        $pageId = wp_update_post($page);
+	    
+	        delete_option('prosperent_store_pageId');
+	        add_option('prosperent_store_pageId', $pageId);
+	    }    
+	    elseif (!$page && !$pageId)
+	    {
+       		// the menu entry...
+    		add_option("prosperentStoreProductsTitle", 'Products', '', 'yes');
+    		// the slug...
+    		add_option("prosperentStoreProsperent SearchName", 'Prosperent Search', '', 'yes');
+    		// the id...
+    		add_option("prosperent_store_pageId", '0', '', 'yes');
 
-		$page = get_page_by_path(($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products'));
-
-		if (!$page)
-		{
 			// Create post object
 			$proserStore = array(
 				'post_title'     => $pageTitle,
@@ -391,19 +387,10 @@ abstract class Model_Base
 
 			// Insert the post into the database
 			$pageId = wp_insert_post($proserStore);
-		}
-		else
-		{
-			// the plugin may have been previously active and the page may just be trashed...
-			$pageId = $page->ID;
-
-			//make sure the page is not trashed...
-			$page->post_status = 'publish';
-			$pageId = wp_update_post($page);
-		}
-
-		delete_option('prosperent_store_pageId');
-		add_option('prosperent_store_pageId', $pageId);
+			
+    		delete_option('prosperent_store_pageId');
+    		add_option('prosperent_store_pageId', $pageId);
+		}	
 	}	
 	
 	public function prosperStoreRemove()
@@ -422,8 +409,9 @@ abstract class Model_Base
 	    delete_option("prosperent_store_page_name");
 	    delete_option("prosperent_store_pageId");
 	    delete_option("prosperent_store_page_id");
+	    delete_option("prosperentStoreProductsTitle");
+	    delete_option("prosperentStoreProsperent SearchName");
 	}
-	
 	
 	public function prosperCustomAdd()
 	{
@@ -437,15 +425,7 @@ abstract class Model_Base
 	
 	public function prosperTinyRegister($plugin_array)
 	{		
-		if (get_bloginfo('version') >= 3.9)
-		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version . 2134;
-		}
-		else
-		{
-			$plugin_array['prosperent'] = PROSPER_JS . '/prosperent.min.js?ver=' . $this->_version. 21332;
-		}	
-		
+		$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version;
 		return $plugin_array;
 	}	
 	
@@ -469,79 +449,100 @@ abstract class Model_Base
 	
 	public function doOutputBuffer()
 	{
-		ob_start();
+        if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
+        {
+            ob_start('ob_gzhandler');
+        }
+        else
+        {
+            ob_start();
+        }
+	}
+	
+	public function getSid($settings = array(), $widget = array())
+	{
+	    if ($this->_options['prosperSid'])
+	    {
+	        $sidArray = array();
+	        foreach ($this->_options['prosperSid'] as $sidPiece)
+	        {
+	            if ('blogname' === $sidPiece)
+	            {
+	                $sidArray[] = get_bloginfo('name');
+	            }
+	            elseif ('interface' === $sidPiece)
+	            {
+	                $sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
+	            }
+	            elseif ('query' === $sidPiece)
+	            {
+	                $sidArray[] = $settings['query'];
+	            }
+	            elseif ('page' === $sidPiece)
+	            {
+	                $sidArray[] = get_the_title();
+	            }
+	            elseif ('pageNumber' === $sidPiece)
+	            {
+	                $sidArray[] = $settings['page'];
+	            }
+	            elseif ('widgetTitle' === $sidPiece)
+	            {
+	                $sidArray[] = $widget['title'];
+	            }
+	            elseif ('widgetName' === $sidPiece)
+	            {
+	                $sidArray[] = $widget['type'];
+	            }
+	            elseif ('authorId' === $sidPiece)
+	            {
+	                $sidArray[] = get_the_author_meta('ID');
+	            }
+	            elseif ('authorName' === $sidPiece)
+	            {
+	                $sidArray[] = get_the_author_meta('user_login');
+	            }
+	            elseif ('postId' === $sidPiece)
+	            {
+	                $sidArray[] = get_the_ID();
+	            }
+	        }
+	    }
+	    if ($this->_options['prosperSidText'])
+	    {
+	        if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
+	        {
+	            if ($regs[1] == '$_SERVER')
+	            {
+	                $sidArray[] = $_SERVER[$regs[4]];
+	            }
+	            elseif ($regs[1] == '$_SESSION')
+	            {
+	                $sidArray[] = $_SESSION[$regs[4]];
+	            }
+	            elseif ($regs[1] == '$_COOKIE')
+	            {
+	                $sidArray[] = $_COOKIE[$regs[4]];
+	            }
+	        }
+	        elseif (!preg_match('/^\$/', $this->_options['prosperSidText']))
+	        {
+	            $sidArray[] = $this->_options['prosperSidText'];
+	        }
+	    }
+	    
+	    if ($sidArray)
+	    {
+	        $sidArray = array_filter($sidArray);
+	        $sid = implode('_', $sidArray);
+	    }
+	    
+	    return $sid;
 	}
 	
 	public function prosperHeaderScript()
 	{		
-		$sidArray = array();
-		if ($this->_options['prosperSid'])
-		{
-			$sidArray = array();
-			foreach ($this->_options['prosperSid'] as $sidPiece)
-			{
-				if ('blogname' === $sidPiece)
-				{
-					$sidArray[] = get_bloginfo('name');
-				}
-				elseif ('interface' === $sidPiece)
-				{
-					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-				}
-				elseif ('query' === $sidPiece)
-				{
-					$sidArray[] = $settings['query'];
-				}
-				elseif ('page' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('widgetTitle' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('widgetName' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('authorId' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('ID');
-				}
-				elseif ('authorName' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('user_login');
-				}
-			}
-		}
-		if ($this->_options['prosperSidText'])
-		{
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
-			{
-				if ($regs[1] == '$_SERVER')
-				{
-					$sidArray[] = $_SERVER[$regs[4]];
-				}
-				elseif ($regs[1] == '$_SESSION')
-				{
-					$sidArray[] = $_SESSION[$regs[4]];
-				}
-				elseif ($regs[1] == '$_COOKIE')
-				{
-					$sidArray[] = $_COOKIE[$regs[4]];
-				}					
-			}
-			elseif (!preg_match('/\$/', $this->_options['prosperSidText']))
-			{
-				$sidArray[] = $this->_options['prosperSidText'];
-			}
-		}
-		
-		if ($sidArray)
-		{
-			$sidArray = array_filter($sidArray);
-			$sid = implode('_', $sidArray);
-		}
+		$sid = $this->getSid();
 	
 		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":1, "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
@@ -558,76 +559,9 @@ abstract class Model_Base
 			$this->_options = $this->getOptions();
 		}		
 
-		if ($this->_options['prosperSid'] && !$sid)
+		if (!$sid)
 		{
-			$sidArray = array();
-			foreach ($this->_options['prosperSid'] as $sidPiece)
-			{
-				if ('blogname' === $sidPiece)
-				{
-					$sidArray[] = get_bloginfo('name');
-				}
-				elseif ('interface' === $sidPiece)
-				{
-					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-				}
-				elseif ('query' === $sidPiece)
-				{
-					$sidArray[] = $settings['query'];
-				}
-				elseif ('page' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('widgetTitle' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('widgetName' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('authorId' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('ID');
-				}
-				elseif ('authorName' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('user_login');
-				}
-				elseif ('postId' === $sidPiece)
-				{
-				    $sidArray[] = get_the_ID();
-				}
-			}
-		}
-		if ($this->_options['prosperSidText'] && !$sid)
-		{
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
-			{
-				if ($regs[1] == '$_SERVER')
-				{
-					$sidArray[] = $_SERVER[$regs[4]];
-				}
-				elseif ($regs[1] == '$_SESSION')
-				{
-					$sidArray[] = $_SESSION[$regs[4]];
-				}
-				elseif ($regs[1] == '$_COOKIE')
-				{
-					$sidArray[] = $_COOKIE[$regs[4]];
-				}					
-			}
-			elseif (!preg_match('/\$/', $this->_options['prosperSidText']))
-			{
-				$sidArray[] = $this->_options['prosperSidText'];
-			}
-		}
-		
-		if ($sidArray)
-		{
-			$sidArray = array_filter($sidArray);
-			$sid = implode('_', $sidArray);
+		    $sid = $this->getSid($settings);
 		}
 
 		$settings = array_merge(array(

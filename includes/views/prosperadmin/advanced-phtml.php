@@ -62,7 +62,7 @@ if ($genOptions['PSAct'])
 
 	echo $prosperAdmin->textinput( 'Title_Sep', __( '<strong style="font-size:14px">Title seperator</strong>', 'prosperent-suite' ) );
 	echo '<p class="prosper_desc">' . __( "Enter a seperator to use for the title structure above.", 'prosperent-suite' ) . '</p><br>';
-
+	/*
 	echo $prosperAdmin->checkbox( 'Manual_Base', __( '<strong style="font-size:14px">Change Base URL Manually</strong>', 'prosperent-suite' ), true, '',  'Check this box if you\'d like to change your site\'s Base URL manually. Helpful if it set incorrectly by the Plugin, or you have a special use case.' );
 	echo '<p class="prosper_desc">' . __( "Base URL for the ProsperShop. Gets <strong>set automatically</strong> by the plugin, but there are some instances that you may need to change it manually, for example if you are using the shop as a static front page.", 'prosperent-suite' ) . '</p>';
 
@@ -76,6 +76,7 @@ if ($genOptions['PSAct'])
 	{
 		echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 	}
+	*/
 
 	echo $prosperAdmin->textinput( 'Twitter_Site', __( '<strong style="font-size:14px">Twitter Site Handle</strong>', 'prosperent-suite' ) );
 	echo '<p class="prosper_desc">' . __( "Your site's Twitter Handle.", 'prosperent-suite' ) . '</p><br>';
@@ -149,5 +150,7 @@ if ($genOptions['PSAct'] || $genOptions['PICIAct'])
     echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
     
 }
+
+echo $prosperAdmin->hidden( 'refreshTitle');
 
 $prosperAdmin->adminFooter();

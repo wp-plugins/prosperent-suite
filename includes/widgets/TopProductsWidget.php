@@ -44,76 +44,13 @@ class TopProductsWidget extends WP_Widget
 		$fetch = 'fetchProducts';
 	    $currency = 'USD';
 
-		$sidArray = array();
-		if ($options['prosperSid'] && !$sid)
+		if (!$sid)
 		{
-			foreach ($options['prosperSid'] as $sidPiece)
-			{
-				if ('blogname' === $sidPiece)
-				{
-					$sidArray[] = get_bloginfo('name');
-				}
-				elseif ('interface' === $sidPiece)
-				{
-					$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-				}
-				elseif ('query' === $sidPiece)
-				{
-					$sidArray[] = $settings['query'];
-				}
-				elseif ('page' === $sidPiece)
-				{
-					$sidArray[] = get_the_title();
-				}
-				elseif ('widgetTitle' === $sidPiece)
-				{
-					$sidArray[] = $title;
-				}
-				elseif ('widgetName' === $sidPiece)
-				{
-					$sidArray[] = 'TopProducts';
-				}
-				elseif ('authorId' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('ID');
-				}
-				elseif ('authorName' === $sidPiece)
-				{
-					$sidArray[] = get_the_author_meta('user_login');
-				}
-				elseif ('postId' === $sidPiece)
-				{
-				    $sidArray[] = get_the_ID();
-				}
-			}
-		}
-		if ($options['prosperSidText'] && !$sid)
-		{
-			if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
-			{
-				if ($regs[1] == '$_SERVER')
-				{
-					$sidArray[] = $_SERVER[$regs[4]];
-				}
-				elseif ($regs[1] == '$_SESSION')
-				{
-					$sidArray[] = $_SESSION[$regs[4]];
-				}
-				elseif ($regs[1] == '$_COOKIE')
-				{
-					$sidArray[] = $_COOKIE[$regs[4]];
-				}					
-			}
-			elseif (!preg_match('/\$/', $options['prosperSidText']))
-			{
-				$sidArray[] = $options['prosperSidText'];
-			}
-		}
-		
-		if (!empty($sidArray))
-		{
-			$sidArray = array_filter($sidArray);
-			$sid = implode('_', $sidArray);
+            $sid = $modelSearch->getSid($settings, array(
+    		        'title' => $title,
+    		        'type' => 'PopularProducts'
+		        )
+		    );
 		}	
 		
 		$settings = array(

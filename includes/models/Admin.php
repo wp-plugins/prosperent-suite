@@ -188,7 +188,8 @@ class Model_Admin extends Model_Base
 		register_setting( 'prosperent_options', 'prosperSuite' );
 		register_setting( 'prosperent_prosper_links_options', 'prosper_prosperLinks' );
 		register_setting( 'prosperent_products_options', 'prosper_productSearch' );
-		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );	
+		register_setting( 'prosperent_compare_options', 'prosper_autoComparer' );
+		register_setting( 'prosperent_createpinsert_options', 'prosper_notsavedinsert' );
 		register_setting( 'prosperent_advanced_options', 'prosper_advanced' );
 		
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) 
@@ -211,8 +212,6 @@ class Model_Admin extends Model_Base
 		{
 			$options = $this->_options;
 		}	
-	
-		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);		
 		
 		$allVars = array(
 			'apiKey' 			  => $options['Api_Key'],
@@ -221,8 +220,8 @@ class Model_Admin extends Model_Base
 			'phpVersion' 		  => phpversion(),
 			'wordpressVersion' 	  => get_bloginfo('version'),
 			'status' 			  => $status,
-			'pluginVersion' 	  => $pluginInfo['Version'],
-			'privateNetwork'	  => file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') ? 1 : 0,
+			'pluginVersion' 	  => $this->_version,
+			'privateNetwork'	  => $options['prosperPrivateNet'],
 			'caching' 			  => $options['Enable_Caching'] ? 1 : 0,
 			'prosperShop'		  => $options['PSAct'] ? 1 : 0,
 			'facets' 			  => $options['Enable_Facets'] ? 1 : 0,
@@ -235,7 +234,6 @@ class Model_Admin extends Model_Base
 			'prosperLinks' 	      => $options['PLAct'] ? 1 : 0,
 			'linkOptimizer' 	  => $options['PL_LinkOpt'] ? 1 : 0,
 			'relevancyThreshold'  => $options['relThresh'],
-			'baseUrl' 			  => $options['Manual_Base'] ? 1 : 0,
 			'baseUrlText' 		  => $options['Base_URL'],
 			'theme' 			  => $options['Set_Theme'],
 			'shortCodes'  		  => $options['shortCodesAccessed'] ? 1 : 0,
@@ -266,12 +264,6 @@ class Model_Admin extends Model_Base
 
 		// Close request
 		curl_close($curl);
-
-		// Check for errors
-		if (count($response['errors']))
-		{
-			return array();
-		}
 	}	
 	
 	function multisiteDefaults() 
@@ -724,13 +716,13 @@ class Model_Admin extends Model_Base
 			</table>		
             <h2 style="display:inline;margin:0;padding:0;float:left;">&nbsp;</h2>
 			
-		<?php elseif ('Advanced Settings' == $title || 'ProsperThemes' == $title || 'MultiSite Settings' == $title ): ?>
+		<?php elseif ('Advanced Settings' == $title || 'ProsperThemes' == $title || 'MultiSite Settings' == $title || 'Search Products' == $title): ?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/Gears-32.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div><h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>';
 		 else :?>
 			<table><tr><td><img src="<?php echo PROSPER_IMG . '/adminImg/' . $title . '.png'; ?>"/></td><?php echo '<td><h1 style="margin-left:8px;display:inline-block;font-size:34px;">' . $title . '</h1></td></tr></table><div style="clear:both"></div><h2 style="display:inline;margin:0;padding:0">&nbsp;</h2>';
 		endif; ?>
 		
-		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:900px; max-width:950px;">
+		<div id="prosper_content_top" class="postbox-container" style="min-width:400px; width:910px; max-width:950px;">
 		<div class="metabox-holder">
 		<div class="meta-box-sortables">
 		<?php		

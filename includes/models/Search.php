@@ -120,7 +120,6 @@ class Model_Search extends Model_Base
 		if ($merchant)		
 		{
 			$merchants = explode('~', str_replace(',SL,', '/', $merchant));
-			//$filterMerchants = $merchants;
 			$merchants = array_combine($merchants, $merchants);
 		}
 
@@ -243,12 +242,13 @@ class Model_Search extends Model_Base
 		}
 		else
 		{
-			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2'), $this->_version);
+			wp_register_script('productPhp', PROSPER_JS . '/productPHP.js', array('jquery', 'json2'), $this->_version, 1);
 			wp_enqueue_script( 'productPhp');
 		}
 
 		return $phtml;
 	}
+	
 	
 	public function prosperPagination($totalAvailable = '', $paged, $range = 8)
 	{
@@ -290,48 +290,6 @@ class Model_Search extends Model_Base
 			echo '</div>';
 		}
 	}
-	
-	public function prosperPages($results, $pageNumber)
-	{		
-		// Pagination limit, can be changed
-		$limit = $this->_options['Pagination_Limit'] ? $this->_options['Pagination_Limit'] : 10;
-		if (count($results) > $limit)
-		{
-			$ceiling = ceil((count($results) + 1) / $limit);
-
-			if ($pageNumber  < 1)
-			{
-				$pageNumber  = 1;
-			}
-			else if ($pageNumber  > $ceiling)
-			{
-				$pageNumber  = $ceiling;
-			}
-
-			$limitLower = ($pageNumber  - 1) * $limit;
-
-			
-			// Breaks the array into smaller chunks for each page depending on $limit
-			$results = array_slice($results, $limitLower, $limit, true);
-		}
-		
-		return $results;
-	}
-	
-	public function sliderJs()
-	{
-		wp_register_script( 'rangeSlider', PROSPER_JS . '/prosperSlider.js', array('jquery', 'jquery-ui-slider', 'jquery-ui-dialog'), $this->_version, 1);
-		wp_enqueue_script( 'rangeSlider' );	
-		
-		wp_register_style('jqueryUIcss', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.min.css');
-		wp_enqueue_style('jqueryUIcss');		
-	}		
-	
-	public function productStoreJs()
-	{
-		wp_register_script( 'productStoreJS', PROSPER_JS . '/productStore.js', array(), $this->_version, 1 );
-		wp_enqueue_script( 'productStoreJS' );
-	}	
 	
 	public function searchShortcode($atts, $content = null)
 	{
@@ -385,89 +343,105 @@ class Model_Search extends Model_Base
 	}
 	
 	public function ogMeta()
-	{
-	    $params = $this->getUrlParams();
-
-		if(!preg_match('/^@/', $this->_options['Twitter_Site']))
-		{
-			$this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
-		}
-		if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
-		{
-			$this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
-		}
-
-		$prosperPage = get_query_var('prosperPage');
-		$expiration  = PROSPER_CACHE_PRODS;
-		$fetch       = 'fetchProducts';
-		$currency    = 'USD';
-		$filter      = 'filterCatalogId';
-		
-		if ($this->_options['OG_Image'] > '250' || !$this->_options['OG_Image'])
-		{
-			$imageSize = '500x500';				
-		}
-		else
-		{
-			$imageSize = '250x250';
-			if ($this->_options['OG_Image'] < '200')
-			{
-				$this->_options['OG_Image'] = 200;
-			}
-		}
-		
-		/*
-		/  Prosperent API Query
-		*/
-		$settings = array(
-			'limit' 	=> 1,			
-		    'page'      => $params['page'],
-			'imageSize' => $imageSize,
-			'curlCall'	=> 'single-productPage-' . $prosperPage
-		);
-		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
-		if (!$cid)
-		{
-		    $settings['query'] = $params['query'];
-		}
-		else
-		{
-		    $settings[$filter] = $cid;
-		} 
-
-		$curlUrl = $this->apiCall($settings, $fetch);
-		$allData = $this->singleCurlCall($curlUrl, 0);
-		$record = $allData['data'];		    
-
-		if ($record)
-		{
-    		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
-    		// Open Graph: FaceBook
-    		echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
-    		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
-    		echo '<meta property="og:type" content="website" />';
-    		echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
-    		echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
-    		echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
-    		echo '<meta property="og:description" content="' . $record[0]['description'] . '" />';
-    		echo '<meta property="og:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
+	{	  	    
+	    $currentId = get_the_ID();
+	    $storeId = (int) get_option('prosperent_store_pageId');
+	    
+	    if ($currentId === $storeId)
+	    {
+    		$prosperPage = get_query_var('prosperPage');
+    		$expiration  = PROSPER_CACHE_PRODS;
+    		$fetch       = 'fetchProducts';
+    		
+            $imageSize = '500x500';
     
-    		// Twitter Cards
-    		echo '<meta name="twitter:card" content="summary">';
-    		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
-    		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
-    		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
-    		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
-    		echo '<meta name="twitter:label1" content="Price">';
-    		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
-    		echo '<meta name="twitter:label2" content="Brand">';
-    		echo '<meta name="twitter:description" content="' . $record[0]['description'] . '" />';
-    		echo '<meta name="twitter:title" content="' . strip_tags($record[0]['keyword'] . ' - ' .  get_the_title($post) . ' - ' . get_bloginfo('name')) . '" />';
-		}
-		else
-		{
-		    echo '<meta name="robots" content="noindex,nofollow">';
-		}
+    		$cid = $params['cid'] ? $params['cid'] : (get_query_var('cid') ? get_query_var('cid') : '');
+    		if ($cid)
+    		{
+        		$settings = array(
+        			'limit' 	      => 1,
+        			'imageSize'       => $imageSize,
+        			'curlCall'	      => 'single-productPage-' . $prosperPage,
+        		    'filterCatalogId' => $cid
+        		);
+    		}
+    		else
+    		{		    
+    		    $data    = $this->storeSearch();
+    		    $filters = $data['filters'];
+    		    $params  = $data['params'];
+    		    $query   = $params['query'] ? $params['query'] : ($this->_options['Starting_Query'] ? $this->_options['Starting_Query'] : '');
+    		    
+    		    $settings = array(
+        		    'limit'			   => $this->_options['Pagination_Limit'],
+        		    'imageSize'		   => $imageSize,
+        		    'curlCall'		   => 'multi-product',
+        		    'page'			   => $params['page'],
+        		    'query'            => $query,
+        		    'sortBy'	       => $params['sort'] != 'rel' ? rawurldecode($params['sort']) : '',
+        		    'filterBrand'      => ($filters['brand']['appliedFilters'] ? implode('|', $filters['brand']['appliedFilters']) : ($filters['brand']['allFilters'] ? implode('|', $filters['brand']['allFilters']) : '')),
+        		    'filterMerchant'   => ($filters['merchant']['appliedFilters'] ? implode('|', $filters['merchant']['appliedFilters']) : ''),
+        		    'filterMerchantId' => ($filters['merchant']['appliedFilters'] ? '' : ($filters['merchant']['allFilters'] ? implode('|', $filters['merchant']['allFilters']) : '')),
+        		    'filterCategory'   => ($filters['category']['appliedFilters'] ? implode('|', $filters['category']['appliedFilters']) : ($filters['category']['allFilters'] ? implode('|', $filters['category']['allFilters']) : '')),
+        		    'filterPrice'	   => $params['dR'] ? rawurldecode($params['dR']) : '',
+        		    'filterPercentOff' => $params['pR'] ? rawurldecode($params['pR']) : ''
+    		    );
+    		}
+    
+    		$curlUrl = $this->apiCall($settings, $fetch);
+    
+    		$allData = $this->singleCurlCall($curlUrl, 0);
+    		$record = $allData['data'];		    
+    
+    		if ($record)
+    		{ 
+        		$priceSale = $record[0]['priceSale'] ? $record[0]['priceSale'] : $record[0]['price_sale'];
+        		// Open Graph: FaceBook/Pintrest
+        		echo '<meta property="og:url" content="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '" />';
+        		echo '<meta property="og:site_name" content="' . get_bloginfo('name') . '" />';
+        		echo '<meta property="og:type" content="product" />';
+        		echo '<meta property="og:image" content="' . $record[0]['image_url'] . '" />';
+        		echo '<meta property="og:image:width" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
+        		echo '<meta property="og:image:height" content="' . ($this->_options['OG_Image'] ? $this->_options['OG_Image'] : 300) . '" />';
+        		echo '<meta property="og:description" content="' . htmlentities($record[0]['description']) . '" />';
+        		echo '<meta property="product:availability" content="instock" />';
+        		echo '<meta property="product:category" content="' . htmlentities($record[0]['category']) . '" />';
+        		echo '<meta property="product:brand" content="' . htmlentities($record[0]['brand']) . '" />';
+        		echo '<meta property="product:retailer_title" content="' . htmlentities($record[0]['merchant']) . '" />';
+        		echo '<meta property="og:title" content="' . htmlentities(strip_tags($record[0]['keyword'])) . '" />';
+        		echo '<meta property="product:price:amount" content="' . $record[0]['price'] . '" />';
+                echo '<meta property="product:price:currency" content="USD" />';
+                echo $priceSale ? '<meta property="product:sale_price:amount" content="' . $priceSale . '" />' : '';
+                echo $priceSale ? '<meta property="product:sale_price:currency" content="USD" />' : '';
+        
+        		// Twitter Cards
+        		if ($this->_options['Twitter_Site'])
+        		{
+                    if(!preg_match('/^@/', $this->_options['Twitter_Site']))
+                    {
+                        $this->_options['Twitter_Site'] = '@' . $this->_options['Twitter_Site'];
+                    }
+                    if(!preg_match('/^@/', $this->_options['Twitter_Creator']))
+                    {
+                        $this->_options['Twitter_Creator'] = '@' . $this->_options['Twitter_Creator'];
+                    }
+            		echo '<meta name="twitter:card" content="summary_large_image">';
+            		echo '<meta name="twitter:site" content="' . $this->_options['Twitter_Site'] . '" />';
+            		echo '<meta name="twitter:creator" content="' . $this->_options['Twitter_Creator'] . '"/>';
+            		echo '<meta name="twitter:image" content="' . $record[0]['image_url'] . '" />';
+            		echo '<meta name="twitter:data1" content="' . ((!$priceSale || $record[0]['price'] <= $priceSale) ? $record[0]['price'] : $priceSale) . '">';
+            		echo '<meta name="twitter:label1" content="Price">';
+            		echo '<meta name="twitter:data2" content="' . $record[0]['brand'] . '">';
+            		echo '<meta name="twitter:label2" content="Brand">';
+            		echo '<meta name="twitter:description" content="' . htmlentities($record[0]['description']) . '" />';
+            		echo '<meta name="twitter:title" content="' . htmlentities(strip_tags($record[0]['keyword'])) . '" />';
+        		}
+    		}
+    		else
+    		{
+    		    echo '<meta name="robots" content="noindex,nofollow">';
+    		}
+	    }
 	}	
 		
 	public function storeChecker()
@@ -477,7 +451,7 @@ class Model_Search extends Model_Base
 		$currentId = get_the_ID();
 		$storeId = get_option('prosperent_store_pageId');
 
-		if ($currentId != $storeId)
+		if ($currentId != $storeId && !is_front_page())
 		{
 		    wp_delete_post($storeId);
 		    delete_option("prosperent_store_page_title");
@@ -488,22 +462,11 @@ class Model_Search extends Model_Base
 		    add_option('prosperent_store_page_title', get_post()->post_title);
 		    add_option('prosperent_store_page_name', get_post()->post_name);
 		    add_option('prosperent_store_pageId', $currentId);
-		}
-		
-		if (!isset($options['Manual_Base']) && (empty($options['Base_URL']) || $options['Base_URL'] != get_post()->post_name))
-		{
-			if (!is_front_page())
-			{
-				$options['Base_URL'] = get_post()->post_name;
-			}
-			else
-			{
-				$options['Base_URL'] = 'products';		
-			}
-				
-			update_option('prosper_advanced', $options);
-
-			$this->prosperReroutes();	
+		    
+		    $options['Base_URL'] = get_post()->post_name;
+		    
+		    update_option('prosper_advanced', $options);
+		    $this->prosperReroutes();
 		}
 	}
 	

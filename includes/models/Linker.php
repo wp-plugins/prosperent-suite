@@ -96,8 +96,8 @@ class Model_Linker extends Model_Base
 				'filterProductId' => $pieces['id'] ? str_replace(',', '|', $pieces['id']) : '',
 				'filterPriceSale' => !$pieces['id'] && $pieces['sale'] ? ($pieces['pr'] ? $pieces['pr'] : '0.01,') : '',
 				'filterPrice' 	  => ($pieces['id'] || $pieces['sale'] ? '' : ($pieces['pr'] ? $pieces['pr'] : '')),
+			    
 			);
-			print_r($settings);
 		}
 		elseif ($pieces['ft'] == 'fetchMerchant')
 		{			
@@ -153,55 +153,9 @@ class Model_Linker extends Model_Base
 		{
 			if ($allData['data'][0]['deepLinking'] == 1)
 			{	
-				if ($options['prosperSid'] && !$sid)
+				if (!$sid)
 				{
-					foreach ($options['prosperSid'] as $sidPiece)
-					{
-						if ('blogname' === $sidPiece)
-						{
-							$sidArray[] = get_bloginfo('name');
-						}
-						elseif ('interface' === $sidPiece)
-						{
-							$sidArray[] = $settings['interface'] ? $settings['interface'] : 'api';
-						}
-						elseif ('query' === $sidPiece)
-						{
-							$sidArray[] = $settings['query'];
-						}
-						elseif ('page' === $sidPiece)
-						{
-							$sidArray[] = get_the_title();
-						}
-					}
-				}
-				if ($options['prosperSidText'] && !$sid)
-				{
-					if (preg_match('/(^\$_(SERVER|SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $options['prosperSidText'], $regs))
-					{
-						if ($regs[1] == '$_SERVER')
-						{
-							$sidArray[] = $_SERVER[$regs[4]];
-						}
-						elseif ($regs[1] == '$_SESSION')
-						{
-							$sidArray[] = $_SESSION[$regs[4]];
-						}
-						elseif ($regs[1] == '$_COOKIE')
-						{
-							$sidArray[] = $_COOKIE[$regs[4]];
-						}					
-					}
-					elseif (!preg_match('/\$/', $options['prosperSidText']))
-					{
-						$sidArray[] = $options['prosperSidText'];
-					}
-				}
-				
-				if ($sidArray)
-				{
-					$sidArray = array_filter($sidArray);
-					$sid = implode('_', $sidArray);
+				    $sid = $this->getSid($settings);
 				}
 			
 				if ($allData['data'][0]['domain'] == 'sportsauthority.com')
@@ -288,8 +242,7 @@ class Model_Linker extends Model_Base
 
 		$text = ' ' . $text . ' ';
 		if (!empty($options['Match'][0]))
-		{
-		    
+		{		    
 		    $random 		  = FALSE;
 		    $basePage         = ($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products');
 		    $base   		  = $basePage . '/query/';

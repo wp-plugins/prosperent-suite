@@ -3,7 +3,7 @@ Contributors: Prosperent
 Tags: Prosperent, products, search, money, SEO, affiliate, links, product search, store, Prosperent.com, monetize, make money, affiliate marketing, wordpress seo, seo wordpress, search engine optimization, advertising, earn money, easy, revenue, tool, comparison
 Requires at least: 3.0
 Tested up to: 4.2.3
-Stable tag: 4.1.4
+Stable tag: 4.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,20 @@ Log in to **[Prosperent](http://prosperent.com)** every so often to check your s
     * The commission rates vary from merchant to merchant, but we are always negotiating the highest rates in the industry. We pay out net30 like most networks. The only exception is when a merchant that we work with extends a commission based on their return policy. Our reporting interface reflects this and allows you to see the status of each commission. It's the same as what you would experience with any of the other affiliate networks like commission junction.
 
 == Changelog ==
+
+= 4.2 =
+* New Search Products page in settings - create a short code right there
+* Fixed Store Creation Bug
+* Fixed noFollow bug
+* Added gzip capability
+* Improved all Short Code Windows
+* More Reliability/ Stability
+* Better Store and Front Page Self Setting (No More Manual Base URL)
+* Optimizations
+* General Bug Fixes
+* Memcache error only appears on general settings page
+* Added view button to preview for inserts/linker
+* Fixed bug when switching between views that would remove selected products 
 
 = 4.1.4 =
 * Fixed a meta noindex issue

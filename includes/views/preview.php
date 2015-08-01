@@ -86,7 +86,7 @@ if ($results = $response['data'])
     				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:6px;float:left;height:86px!important;width:136px!important;background-color:<?php echo ($params['imageType'] == 'white' ? $record['color1'] : '#fff'); ?>">
         				<div class="listBlock">
         					<div class="prodImage" style="text-align:center;">
-        					    <div style="float:right;"><a href="http://<?php echo $record['domain']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" style="position:relative;color:<?php echo ($params['imageType'] == 'white' ? '#000!important' : '#fff'); ?>"></span></div>            				
+        					    <div style="float:right;" onClick="return false();"><a href="http://<?php echo $record['domain']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" style="position:relative;color:<?php echo ($params['imageType'] == 'white' ? '#000!important' : '#fff'); ?>"></span></div>            				
     				        	<span title="<?php echo $record['merchant']; ?>"><img class="newImage" style="height:60px!important;width:120px!important;" src='<?php echo $record['logoUrl']; ?>'  alt='<?php echo $record['merchant']; ?>' title='<?php echo $record['merchant']; ?>'/></span>  
     				        </div>		
 			            </div>   
@@ -108,7 +108,7 @@ if ($results = $response['data'])
     				<li id="<?php echo $prosperId; ?>" data-prodid="<?php echo $record['productId']; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:240px!important;width:170px!important;background-color:white;">
         				<div class="listBlock">
         					<div class="prodImage" style="text-align:center;">
-        					    <div style="float:right;"><a  href="<?php echo $record['affiliate_url']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" ></span></div>        				
+        					    <div style="float:right;"><a id="testing" href="<?php echo $record['affiliate_url']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" ></span></div>        				
     				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>' alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>' style="width:100%!important;max-width:100%"/></span>
     				        </div>
     				        <div class="prodContent" style="font-size:15px;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"">
@@ -166,4 +166,9 @@ if (jQuery("#"+a+"id").val())
 		}; 
 	});
 };
+
+jQuery("a#testing").click(function(e) {
+	   e.cancelBubble = true;
+	   e.stopPropagation();  // to prevent the default action of anchor elements
+	});
 </script>

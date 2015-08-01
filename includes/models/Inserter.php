@@ -192,6 +192,7 @@ class Model_Inserter extends Model_Base
 			        'limit'              => 5
 			    );
 			    $curlUrls[0] = $this->apiCall(array_merge($settings, $idFilter), $fetch);
+
 			}
 			elseif (count($id))
             {

@@ -86,7 +86,7 @@ if ($results = $response['data'])
     				<li id="<?php echo $prosperId; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:6px;float:left;height:86px!important;width:136px!important;background-color:<?php echo ($params['imageType'] == 'white' ? $record['color1'] : '#fff'); ?>">
         				<div class="listBlock">
         					<div class="prodImage" style="text-align:center;">
-        					    <span id="prosperCheckbox" style="position:relative;color:<?php echo ($params['imageType'] == 'white' ? '#000!important' : '#fff'); ?>"></span>            				
+        					    <div style="float:right;"><a href="http://<?php echo $record['domain']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" style="position:relative;color:<?php echo ($params['imageType'] == 'white' ? '#000!important' : '#fff'); ?>"></span></div>            				
     				        	<span title="<?php echo $record['merchant']; ?>"><img class="newImage" style="height:60px!important;width:120px!important;" src='<?php echo $record['logoUrl']; ?>'  alt='<?php echo $record['merchant']; ?>' title='<?php echo $record['merchant']; ?>'/></span>  
     				        </div>		
 			            </div>   
@@ -104,10 +104,11 @@ if ($results = $response['data'])
 		            $price 	   = $priceSale ? $priceSale : $record['price'];			        
 		            $prosperId = str_replace(' ', '_', $record['keyword']);			        
 		            ?>
+		            
     				<li id="<?php echo $prosperId; ?>" data-prodid="<?php echo $record['productId']; ?>" onClick="getIdofItem(this);" class="productSCFull" style="overflow:hidden;list-style:none;margin:4px;float:left;height:240px!important;width:170px!important;background-color:white;">
         				<div class="listBlock">
         					<div class="prodImage" style="text-align:center;">
-        					    <span id="prosperCheckbox" style="position:relative;"></span>        				
+        					    <div style="float:right;"><a  href="<?php echo $record['affiliate_url']; ?>" target="_blank"><i style="font-size:14px;" class="fa fa-search"></i></a><span id="prosperCheckbox" ></span></div>        				
     				        	<span title="<?php echo $record['keyword']; ?>"><img class="newImage" src='<?php echo ($record['logoUrl'] ? $record['logoUrl'] : $record['image_url'] ); ?>' alt='<?php echo $record['keyword']; ?>' title='<?php echo $record['keyword']; ?>' style="width:100%!important;max-width:100%"/></span>
     				        </div>
     				        <div class="prodContent" style="font-size:15px;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"">
@@ -122,8 +123,7 @@ if ($results = $response['data'])
             						        <span class="prosperPrice">$<?php echo number_format($record['minPrice'], 2); ?></span><?php echo '<span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;"> <span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span>' . $groupCount . ' stores</span>'; ?>
             						    <?php else: ?>
             							    <span class="prosperPrice">$<?php echo number_format($price, 2); ?></span><?php if ($record['merchant']){echo '<span class="prosperExtra" style="display:inline-block;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;word-wrap:break-word;overflow:hidden;vertical-align:top;"> <span style="color:#666;font-size:12px;font-weight:normal;">&nbsp;from </span>' . $record['merchant'] . '</span>'; } ?>
-
-            							<?php endif; ?>
+             							<?php endif; ?>
         							</div>
         						</div>          						          						                   
         					</div>			
@@ -152,7 +152,6 @@ else
 	}
 }
 
-if (!$params['createPI']):
 ?>
 <script type="text/javascript">
 var a = getNewCurrent();
@@ -168,4 +167,3 @@ if (jQuery("#"+a+"id").val())
 	});
 };
 </script>
-<?php endif; ?>

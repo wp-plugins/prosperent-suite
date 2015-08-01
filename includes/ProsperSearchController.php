@@ -44,14 +44,7 @@ class ProsperSearchController
 	
 	public function storecode()
 	{	    
-	    if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
-        {
-            ob_start('ob_gzhandler');
-        }
-        else
-        {
-            ob_start();
-        }
+        ob_start();
 		$this->storeShortcode();
 		$store = ob_get_clean();
 		return $store;
@@ -80,8 +73,6 @@ class ProsperSearchController
 		{
 			$homeUrl = home_url('', 'https');
 		}
-
-
 		$postArray = array(
 		    'query' 	=> $_POST['q'],
 		    'sort' 	 	=> $_POST['sort'],
@@ -101,7 +92,6 @@ class ProsperSearchController
 			{
 				$_POST['percentSliderMin'] = '0.01%';
 			}
-
 
 		    if ($postArray['query'])
 			{				

@@ -8,9 +8,7 @@
 class ProsperIndexController
 {	
     public function __construct()
-    {			
-        add_action('init', array($this, 'banBaidu'), 1);
-        
+    {		        
 		require_once(PROSPER_MODEL . '/Activate.php');
 		$prosperActivate = new Model_Activate();
 		
@@ -25,6 +23,7 @@ class ProsperIndexController
 		
 		add_action('init', array($prosperActivate, 'prosperQueryTag'), 1);
 		add_action('init', array($prosperActivate, 'init'));
+		add_action('init', array($this, 'banBaidu'), 1);
 		
 		add_action('template_redirect', array($this, 'checkToFix'), 1);
 

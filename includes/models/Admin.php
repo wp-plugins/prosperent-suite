@@ -737,7 +737,7 @@ class Model_Admin extends Model_Base
 			}
 		}
 
-		if ($options['Enable_Caching'] && !extension_loaded('memcache'))
+		if ($options['Enable_Caching'] && !extension_loaded('memcache') && isset( $_GET['page'] ) && 'prosper_general' == $_GET['page'] )
 		{
 			echo '<div style="max-width:900px;margin-bottom:12px;" class="update-nag">';
 			echo '<span style="font-size:14px; padding-left:10px;">The <strong>memcached library</strong> is needed in order to use caching. </span></br>';

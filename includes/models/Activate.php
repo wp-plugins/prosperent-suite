@@ -70,7 +70,6 @@ class Model_Activate extends Model_Base
 			    'prosperNoOptions'  => 1,
 				'PSAct'	  		    => 1,
 				'PICIAct' 		    => 1,
-				//'ALAct'	  		    => 1,
 				'PLAct'	  		    => 1
 			);	
 			update_option('prosperSuite', $prosperSuiteOpts);
@@ -83,7 +82,6 @@ class Model_Activate extends Model_Base
 			    'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
-		       //'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
 			));
 			update_option('prosperSuite', $prosperSuiteOpts);
@@ -94,7 +92,6 @@ class Model_Activate extends Model_Base
 		        'prosperNoOptions' => 1,
 		        'PSAct'	  		   => 1,
 		        'PICIAct' 		   => 1,
-		        //'ALAct'	  		   => 1,
 		        'PLAct'	  		   => 1
 		    ));
 		
@@ -152,12 +149,23 @@ class Model_Activate extends Model_Base
 		if (!is_array($advOpts = get_option('prosper_advanced')))
 		{
 			$advOpts = array(
-				'Title_Structure' => 0,
+				'Title_Structure' => 1,
 				'Base_URL'		  => 'products',
 				'MemcacheIP'	  => '127.0.0.1',
 				'MemcachePort'    => '11211'
 			);			
 			update_option( 'prosper_advanced', $advOpts );
+		}
+		elseif (!$advOpts['refreshTitle'])
+		{
+		    if ($advOpts['Title_Structure'] == 0)
+		    {
+		        $advOpts['Title_Structure'] = 1;
+		    }
+		    
+		    $advOpts['refreshTitle'] = true;
+		    
+		    update_option( 'prosper_advanced', $advOpts );
 		}
 
 		if (!is_array($themesOpts = get_option('prosper_themes')))
@@ -183,8 +191,6 @@ class Model_Activate extends Model_Base
 		$GLOBALS['wp']->add_query_var( 'prosperPage' );
 		$GLOBALS['wp']->add_query_var( 'keyword' );
 		$GLOBALS['wp']->add_query_var( 'cid' );
-		$GLOBALS['wp']->add_query_var( 'storeUrl' );
 		$GLOBALS['wp']->add_query_var( 'queryParams' );
-		$GLOBALS['wp']->add_query_var( 'prosperImg' );
 	}
 }

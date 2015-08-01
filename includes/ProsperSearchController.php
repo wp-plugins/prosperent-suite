@@ -44,7 +44,7 @@ class ProsperSearchController
 	
 	public function storecode()
 	{	    
-		ob_start();
+        ob_start();
 		$this->storeShortcode();
 		$store = ob_get_clean();
 		return $store;
@@ -73,8 +73,6 @@ class ProsperSearchController
 		{
 			$homeUrl = home_url('', 'https');
 		}
-
-
 		$postArray = array(
 		    'query' 	=> $_POST['q'],
 		    'sort' 	 	=> $_POST['sort'],
@@ -94,7 +92,6 @@ class ProsperSearchController
 			{
 				$_POST['percentSliderMin'] = '0.01%';
 			}
-
 
 		    if ($postArray['query'])
 			{				
@@ -116,12 +113,7 @@ class ProsperSearchController
 		    wp_dequeue_script( 'productPhp' );
 			$this->productPageAction($data, $homeUrl, $productPage, $options);
 			return;
-		}
-		
-		if ($options['Enable_Facets'] && $options['Enable_Sliders'])
-		{
-			//$this->searchModel->sliderJs();
-		}		
+		}	
 
 		$data['view'] = !$params['view'] ? $options['Product_View'] : $params['view'];
 		$this->productAction($data, $homeUrl, 'product', $searchPage, $options);			
@@ -249,7 +241,7 @@ class ProsperSearchController
 		    $percentSlider = explode(',', rawurldecode($params['pR']));
 		    $pickedFacets[] = '<a href="' . str_replace('/pR/' . $params['pR'], '', $url) . '">' . implode('% - ', $percentSlider) . '% Off <l style="font-size:12px;">&#215;</l></a>';
 		}	
-
+		
 		if ($query || $filters['brand']['appliedFilters'] || $filters['merchant']['appliedFilters'] || $filters['category']['allFilters'] ||$filters['category']['appliedFilters'] || $filters['merchant']['allFilters'] || $filters['brand']['allFilters'])
 		{		
 			$settings = array(
@@ -377,17 +369,8 @@ class ProsperSearchController
 		    }
 		    else
 		    {
-				/*
-				$settings = array(
-					'imageSize'	=> $imageSize
-				);
-
-				$allData   = $this->searchModel->trendsApiCall($settings, $fetch, array_map('trim', explode(',', $options['No_Results_Categories'])));
-				$results   = $allData['data'];	
-                */
 				$noResults = true;
 				$trend     = 'Popular Products';
-				//header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404 );
 			}
 		}
 

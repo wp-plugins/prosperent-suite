@@ -42,9 +42,6 @@ class Model_Inserter extends Model_Base
 	    {
 	        if (preg_match('/\[prosperNewQuery (.+)\]/i', $text, $regs) || preg_match('/\[contentInsert (.+)\]\[\/contentInsert\]/i', $text, $regs))
     		{
-    			//preg_match_all('/([^=]*?)=?"([^"]*)" ?/i', $regs[1], $results, PREG_PATTERN_ORDER);
-    			//$allParams = array_combine($results[1], $results[2]);
-
     			if (preg_match('/noShow="on"/', $regs[1]))
     			{
     			    return trim($text);
@@ -195,6 +192,7 @@ class Model_Inserter extends Model_Base
 			        'limit'              => 5
 			    );
 			    $curlUrls[0] = $this->apiCall(array_merge($settings, $idFilter), $fetch);
+
 			}
 			elseif (count($id))
             {
@@ -275,7 +273,6 @@ class Model_Inserter extends Model_Base
 			);
 			
 			$curlUrls[0] = $this->apiCall($settings, $fetch);
-			
 		}		
 
 		if (count($settings) < 5)

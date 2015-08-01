@@ -46,9 +46,14 @@ class ProsperAdminController
 	 * @global array $submenu used to change the label on the first item.
 	 */
 	public function registerSettingsPage() 
-	{
-		add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_IMG . '/prosperentWhite.png' );
+	{    	
+	    add_menu_page(__('Prosperent Suite Settings', 'prosperent-suite'), __( 'Prosperent', 'prosperent-suite' ), 'manage_options', 'prosper_general', array( $this, 'generalPage' ), PROSPER_IMG . '/prosperentWhite.png' );
 		
+	    if ($this->_options['PICIAct'])
+	    {
+	        add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
+	        add_submenu_page('prosper_general', __( 'Search Products', 'prosperent-suite' ),__( 'Search Products', 'prosperent-suite' ), 'manage_options', 'prosper_createPI', array( $this, 'createPIPage' ) );
+	    }
 		if ($this->_options['PLAct'])
 		{
 		    add_submenu_page('prosper_general', __( 'ProsperLinks', 'prosperent-suite' ), __( 'ProsperLinks', 'prosperent-suite' ), 'manage_options', 'prosper_prosperLinks', array( $this, 'linksPage' ) );
@@ -56,11 +61,9 @@ class ProsperAdminController
 		if ($this->_options['PSAct'])
 		{
 			add_submenu_page('prosper_general', __('ProsperShop', 'prosperent-suite' ), __( 'ProsperShop', 'prosperent-suite' ), 'manage_options', 'prosper_productSearch', array( $this, 'productPage' ) );
+			
 		}
-		if ($this->_options['PICIAct'])
-		{
-			add_submenu_page('prosper_general', __( 'ProsperInsert', 'prosperent-suite' ), __( 'ProsperInsert', 'prosperent-suite' ), 'manage_options', 'prosper_autoComparer', array( $this, 'inserterPage' ) );
-		}
+
 		add_submenu_page('prosper_general', __( 'Advanced Options', 'prosperent-suite' ), __( 'Advanced', 'prosperent-suite' ), 'manage_options', 'prosper_advanced', array( $this, 'advancedPage' ) );
 		
 		global $submenu;
@@ -82,8 +85,21 @@ class ProsperAdminController
 	function networkConfigPage() 
 	{
 		require_once(PROSPER_VIEW . '/prosperadmin/network-phtml.php' );
+	}	
+	
+	/**
+	 * Loads the form for the general settings page.
+	 */
+	public function createPIPage()
+	{
+	    if ( isset( $_GET['page'] ) && 'prosper_createPI' == $_GET['page'] )
+	    {	     
+	        wp_register_style( 'prosperCreater', PROSPER_URL . 'includes/css/prosperMCE.css', array(), 2 );
+	        wp_enqueue_style( 'prosperCreater');
+	        require_once( PROSPER_VIEW . '/prosperadmin/createProsperInsert.php' );
+	    }
 	}
-		
+	
 	/**
 	 * Loads the form for the general settings page.
 	 */

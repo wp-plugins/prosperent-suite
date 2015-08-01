@@ -13,6 +13,17 @@ $advOptions = get_option('prosper_advanced');
 
 $prosperAdmin->adminHeader( __( 'General Settings', 'prosperent-suite' ), true, 'prosperent_options', 'prosperSuite' );
 
+if (file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') && !$options['prosperPrivateNet'])
+{
+    $options['prosperPrivateNet'] = true;
+    update_option('prosperSuite', $options);
+}
+else 
+{
+    $options['prosperPrivateNet'] = false;
+    update_option('prosperSuite', $options);
+}
+
 if (!$options['Api_Key'] || strlen($options['Api_Key']) != 32)
 {
     echo __( '<ol style="font-size:16px;"><li><a href="http://prosperent.com/join?utm_source=' . urlencode(home_url()) . '&utm_medium=direct&utm_campaign=wp-suite-signup" target="_blank">Sign Up (It\'s free)</a>, if you haven\'t already.</li><li>Go to the <a href="http://prosperent.com/account/wordpress" target="_blank">Prosperent WordPress Install</a> screen.</li><li>Either Create a New Installation or use the Key from a previous setup.</li><li>Copy the Key, and paste it into the box below.</li><li>Save your Settings!</li></ol>', 'prosperent-suite' );
@@ -25,6 +36,13 @@ if (!$options['Api_Key'] || strlen($options['Api_Key']) != 32)
 else
 {
 ?>
+
+<div class="toolCards" style="display:inline-block;width:100%;max-width:876px;margin-bottom:15px;vertical-align:top;">
+    <div style="padding:0 8px;display:block;margin-bottom:8px;"><img style="width:32px;padding-right:4px;vertical-align:bottom;" src="<?php echo PROSPER_IMG . '/adminImg/ProsperInsert Settings.png'; ?>"/><span style="font-size:24px;">ProsperInsert</span><input type="checkbox" class="prosperLights" id="PICIAct" name="prosperSuite[PICIAct]" <?php echo $options['PICIAct'] ? 'checked' : ''; ?> data-on="On" data-off="Off" /></div>
+    <h3>You <?php echo ($options['PICIAct'] ? 'now' : '<span style="color:red;">do not</span>');?> have the ability to add products or merchants into your content.</h3>
+    <div style="font-size:1em;margin-left:3em;"><ul style="list-style: disc"><li><a style="font-size:16px;" href="<?php echo admin_url('admin.php?page=prosper_createPI') ?>">Search For Products to Insert into Posts</a> </li><li>Look for the <i style="font-size:18px;padding:0 4px;" class="mce-ico mce-i-prosperent"></i> when editing to add products or merchants into your content.</li><li>Use the ProsperInsert Settings to add products to every page or post automatically.</li><li>Add the ProsperInsert Widget to your sidebar to showcase products.</li></ul></div>
+    <div style="text-align:left;"><a href="<?php echo admin_url('edit.php') ?>"><input style="font-size:13px;" type="button" value="Edit Posts"></a><a style="padding:0 8px;" href="<?php echo admin_url( 'admin.php?page=prosper_autoComparer'); ?>"><input style="font-size:13px;" type="button" value="ProsperInsert Settings"></a><a href="<?php echo admin_url( 'widgets.php?editwidget=prosperproductinsert-5&sidebar=main-sidebar&key=8'); ?>"><input style="font-size:13px;" type="button" value="Add ProsperInsert Widget"></a></div>
+</div>
 
 <div class="toolCards" style="display:inline-block;width:100%;max-width:876px;margin-bottom:15px;">
     <div style="padding:0 8px;display:block;margin-bottom:8px;"><img style="width:32px;padding-right:4px;vertical-align:bottom;" src="<?php echo PROSPER_IMG . '/adminImg/ProsperLinks Settings.png'; ?>"/><span style="font-size:24px;">ProsperLinks</span><input type="checkbox" class="prosperLights" id="PLAct" name="prosperSuite[PLAct]" <?php echo $options['PLAct'] ? 'checked' : ''; ?> data-on="On" data-off="Off" /></div>
@@ -40,12 +58,6 @@ else
     <div style="text-align:left"><a style="padding-right:8px;" target="BLANK" href="<?php echo home_url('/') . ($advOptions['Base_URL'] ? $advOptions['Base_URL'] : 'products'); ?>"><input type="button" value="View Your Shop"></a><a style="padding-right:8px;" href="<?php echo admin_url( 'admin.php?page=prosper_productSearch'); ?>"><input type="button" value="Edit Your Shop"></a><a style="padding-right:8px;" href="<?php echo admin_url( 'widgets.php?editwidget=prosper_top_products-2&sidebar=main-sidebar&key=7'); ?>"><input type="button" value="Add Popular Products Widget"></a><a style="padding-right:8px;" href="<?php echo admin_url( 'widgets.php?editwidget=prosperent_store-2&sidebar=main-sidebar&key=10'); ?>"><input type="button" value="Add Search Bar Widget"></a><a style="padding-right:8px;" href="<?php echo admin_url( 'admin.php?page=prosper_advanced#prosperThemes'); ?>"><input type="button" value="Manage Shop Theme"></a></div>
 </div>
 
-<div class="toolCards" style="display:inline-block;width:100%;max-width:876px;margin-bottom:15px;vertical-align:top;">
-    <div style="padding:0 8px;display:block;margin-bottom:8px;"><img style="width:32px;padding-right:4px;vertical-align:bottom;" src="<?php echo PROSPER_IMG . '/adminImg/ProsperInsert Settings.png'; ?>"/><span style="font-size:24px;">ProsperInsert</span><input type="checkbox" class="prosperLights" id="PICIAct" name="prosperSuite[PICIAct]" <?php echo $options['PICIAct'] ? 'checked' : ''; ?> data-on="On" data-off="Off" /></div>
-    <h3>You <?php echo ($options['PICIAct'] ? 'now' : '<span style="color:red;">do not</span>');?> have the ability to add products or merchants into your content.</h3>
-    <div style="font-size:1em;margin-left:3em;"><ul style="list-style: disc"><li>Look for the <i style="font-size:18px;padding:0 4px;" class="mce-ico mce-i-prosperent"></i> when editing to add products or merchants into your content.</li><li>Use the ProsperInsert Settings to add products to every page or post automatically.</li><li>Add the ProsperInsert Widget to your sidebar to showcase products.</li></ul></div>
-    <div style="text-align:left;"><a href="<?php echo admin_url('edit.php') ?>"><input style="font-size:13px;" type="button" value="Edit Posts"></a><a style="padding:0 8px;" href="<?php echo admin_url( 'admin.php?page=prosper_autoComparer'); ?>"><input style="font-size:13px;" type="button" value="ProsperInsert Settings"></a><a href="<?php echo admin_url( 'widgets.php?editwidget=prosperproductinsert-5&sidebar=main-sidebar&key=8'); ?>"><input style="font-size:13px;" type="button" value="Add ProsperInsert Widget"></a></div>
-</div>
 <div style="clear:both;margin-bottom:15px;"></div>
 
 <?php 
@@ -85,5 +97,6 @@ echo '<p class="prosper_desc" style="font-size:14px;">' . __( 'Get Your Prospere
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 echo $prosperAdmin->hidden( 'prosperNoOptions' );
 echo $prosperAdmin->hidden( 'dismissOpenMessage' );
+echo $prosperAdmin->hidden( 'prosperPrivateNet' );
 
 $prosperAdmin->adminFooter();

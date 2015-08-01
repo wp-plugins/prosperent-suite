@@ -170,7 +170,7 @@ if (!$noResults): ?>
 					?>
 					<div data-prosperKeyword="<?php echo $keyword; ?>" id="<?php echo $cid; ?>" class="<?php echo $record['productId']; ?> productBlock" <?php echo ($i == ($resultsCount - 1) ? 'style="border-bottom:none;"' : ''); ?>>
 						<div class="productImage">
-							<a href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '" rel="nolink,nofollow"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '" rel="nolink"'; ?>><span class="load"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+							<a href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '" rel="nolink,nofollow"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '" rel="nolink"'; ?>><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 						</div>
 						<div class="productContent">							
 							<div class="productTitle"><a href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '" rel="nolink,nofollow"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '" rel="nolink"'; ?>><span><?php echo preg_replace('/\(.+\)/i', '', $record['keyword']); ?></span></a></div>

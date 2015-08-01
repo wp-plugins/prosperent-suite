@@ -1,8 +1,9 @@
 <?php
-//error_reporting(0);   
+echo '<a href="javascript:void(0);" id="prosperCloseCheck" onClick="closeMainPreview();"><i class="fa fa-times"></i></a>';
+error_reporting(0);   
 $params = array_filter($_GET); 
 $type = $params['type'];
-$view = $params['prodview'];
+$view = $params[$type . 'view'];
 $fetch = $params[$type . 'fetch'];
 
 $endPoints = array(
@@ -113,7 +114,7 @@ elseif ($fetch === 'fetchMerchant')
     $settings = array(
         'imageSize'		   => '120x60',
         'limit'            => $limit,
-        'filterMerchant'   => (!$id ? str_replace(',', '|', $params['merchantmerchant']) : ''),
+        'filterMerchant'   => (!$id ? str_replace(',', '|', $params['merchantm']) : ''),
         'filterMerchantId' => $id,
         'filterCategory'   => !$id && $params['merchantcat'] ? '*' . $params['merchantcat'] . '*' : '',
         'imageType'		   => $params['imageType'] ? $params['imageType'] : 'original'
@@ -241,7 +242,7 @@ if ($results = $everything['data'])
         
         						<?php if ($type != 'merchant') : ?>
         						<div class="shopCheck prosperVisit">		
-        							<a href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input type="submit" id="submit" class="submit" value="<?php echo ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store'); ?>"/></a>				
+        							<a href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input type="submit" id="submit" class="submit button-primary" value="<?php echo ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store'); ?>"/></a>				
         						</div>	
         						<?php endif; ?>
         					</div>			
@@ -284,7 +285,7 @@ if ($results = $everything['data'])
         				echo '<td class="prosperPCmercimg" itemprop="seller" style="vertical-align:middle;"><a href="' . $product['affiliate_url'] . '" rel="nolink"><img style="width:100px" src="http://images.prosperentcdn.com/images/logo/merchant/' . ($pieces['imgt'] ? $pieces['imgt'] : 'original') . '/120x60/' . $product['merchantId'] . '.jpg?prosp=&m=' . $product['merchant'] . '"/></a></td>';
         				echo '<td itemprop="price" style="vertical-align:middle;">$' . ($priceSale ? number_format($priceSale, 2, '.', ',') :  number_format($product['price'], 2, '.', ',')) . '</td>';
         				echo '<meta itemprop="priceCurrency" content="USD"/>';
-        				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
+        				echo '<td style="vertical-align:middle;"><div class="prosperVisit"><a itemprop="offerURL" href="' . $product['affiliate_url'] . '"  rel="nofollow,nolink"><input type="submit" type="submit" class="prosperVisitSubmit button-primary" value="' . ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store') . '"/></a></div></td>';
         				echo '</tr>';				
         			}
         			?>
@@ -359,7 +360,7 @@ if ($results = $everything['data'])
         					}
         					?>
         					<div class="shopCheck prosperVisit">		
-        						<a href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="<?php echo ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store'); ?>"/></a>				
+        						<a href="javascript:void(0);" onClick="return false;" rel="nofollow,nolink"><input id="submit" class="submit button-primary" type="submit" value="<?php echo ($params['prodvisit'] ? $params['prodvisit'] : 'Visit Store'); ?>"/></a>				
         					</div>	
         				</div>
         			</div>

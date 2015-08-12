@@ -4,41 +4,41 @@ class TopProductsWidget extends WP_Widget
     public function __construct()
     {
 	    parent::__construct(
-			'prosper_top_products', 
-			'Popular Products', 
+			'prosper_top_products',
+			'Popular Products',
 			array('classname' => 'top_products_widget', 'description' => __( "Displays the top Products of Prosperent at the time"))
 		);
     }
 
     public function widget( $args, $instance )
-    {		
+    {
 		$allOptions = array('prosperSuite', 'prosper_productSearch', 'prosper_advanced');
 		$options = array();
 		foreach ($allOptions as $opt)
-		{ 
+		{
 			$options = array_merge($options, (array) get_option($opt));
 		}
 
 		$target  = isset($options['Target']) ? '_blank' : '_self';
-		
-        extract($args);	
-        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Popular Products' : $instance['title'], $instance, $this->id_base );	
+
+        extract($args);
+        $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'Popular Products' : $instance['title'], $instance, $this->id_base );
 
 		if($instance['useTitle'])
-		{ 
+		{
 			$instance[$instance['useTitle']] = strtolower(get_the_title());
-		}			
+		}
 
 		require_once(PROSPER_MODEL . '/Search.php');
 		$modelSearch = new Model_Search();
 		$modelSearch->getFetchEndpoints();
-					
+
 		$homeUrl = home_url('', 'http');
 		if (is_ssl())
 		{
 			$homeUrl = home_url('', 'https');
-		}					
-					
+		}
+
 		$expiration = PROSPER_CACHE_PRODS;
 		$type = 'product';
 		$fetch = 'fetchProducts';
@@ -51,31 +51,31 @@ class TopProductsWidget extends WP_Widget
     		        'type' => 'PopularProducts'
 		        )
 		    );
-		}	
-		
+		}
+
 		$settings = array(
 			'limit' 		 => $instance['numProd']  ? $instance['numProd'] : 5,
 			'enableFullData' => $instance['showImages'] ? 1 : 0,
 			'imageSize'		 => '500x500'
 		);
-		
+
 		$categories = $instance['categories'] ? array_map('trim', explode(',', $instance['categories'])) : '';
 		$merchants  = $instance['merchants'] ? array_map('trim', explode(',', $instance['merchants'])) : '';
 		$brands     = $instance['brands'] ? array_map('trim', explode(',', $instance['brands'])) : '';
-		
-		$allData = $modelSearch->trendsApiCall($settings, $fetch, $categories, $merchants, $brands, $sid);			
+
+		$allData = $modelSearch->trendsApiCall($settings, $fetch, $categories, $merchants, $brands, $sid);
 
 		if ($allData && $instance['showImages'])
 		{
 			echo $before_widget;
 			if ( $title )
-				echo $before_title . $title . $after_title;	
-				
+				echo $before_title . $title . $after_title;
+
 			echo '<div id="simProd" class="prosperSide" style="width:100%;">';
-			echo '<ul style="width:100%;">';	
+			echo '<ul style="width:100%;">';
 
 			foreach ($allData['data'] as $record)
-			{						
+			{
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 				$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -83,35 +83,32 @@ class TopProductsWidget extends WP_Widget
 				?>
 				<li style="float:none;margin:0;width:100%;">
 					<div class="prodImage">
-						<a href=<?php echo ($instance['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+						<a href=<?php echo ($instance['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '&interface=wp&subinterface=prospershop" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 					</div>
 					<div class="prodContent">
 						<div class="prodTitle">
-						    <a onClick="return false;" href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'; ?> rel="nolink" style="text-decoration:none;color:#646464"><?php echo $record['brand']; ?></a>
-							<?php /*<a href=<?php echo ($options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"javascript:void(0);" onClick="prosperProdDetails();"'); ?> rel="nolink">
-								<?php echo $keyword; ?>
-							</a> */?>
-						</div>   
-						<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">  
+						    <a onClick="return false;" href=<?php echo $options['gotoMerchantBypass'] ? '"' . $record['affiliate_url'] . '&interface=wp&subinterface=prospershop" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'; ?> rel="nolink" style="text-decoration:none;color:#646464"><?php echo $record['brand']; ?></a>
+						</div>
+						<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">
 						    <?php echo $price . '<span style="color:#666;font-size:12px;font-weight:normal;"> from</span><div style="display:inline;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;"> ' . $record['merchant'] . '</div>' ?>
-						</div>												
-					</div>								
-					<div class="shopCheck prosperVisit">		
-						<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="Visit Store<?php //echo $visitButton; ?>"/></a>				
-					</div>				
+						</div>
+					</div>
+					<div class="shopCheck prosperVisit">
+						<a href="<?php echo $record['affiliate_url'] . '&interface=wp&subinterface=prospershop'; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="Visit Store<?php //echo $visitButton; ?>"/></a>
+					</div>
 				</li>
 				<?php
 			}
 
 			echo '</ul>';
-			echo '</div>';	
-			echo $after_widget;			
+			echo '</div>';
+			echo $after_widget;
 		}
 		elseif ($allData)
 		{
 			echo $before_widget;
 			if ( $title )
-				echo $before_title . $title . $after_title;		
+				echo $before_title . $title . $after_title;
 			?>
 			<table>
 				<?php
@@ -119,14 +116,14 @@ class TopProductsWidget extends WP_Widget
 				{
 					if ($instance['gotoMerchantBypass'])
 					{
-						$goToUrl = $record['affiliate_url'];
+						$goToUrl = $record['affiliate_url'] . '&interface=wp&subinterface=prospershop';
 					}
 					else
 					{
 						$goToUrl = home_url() . '/product/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $record['catalogId'];
 						$target = '_self';
 					}
-					
+
 					echo '<tr><td>&bull;&nbsp;</td><td style="padding-bottom:4px; font-size:13px;"><a href="' . $goToUrl . '" rel="nolink" target="' . $target . '">' . preg_replace('/\(.+\)/i', '', $record['keyword']) . '</a></td></tr>';
 
 				}
@@ -139,7 +136,7 @@ class TopProductsWidget extends WP_Widget
 		else
 		{
 			return;
-		}		
+		}
     }
 
     public function update( $new_instance, $old_instance )
@@ -148,10 +145,10 @@ class TopProductsWidget extends WP_Widget
 		{
 			require_once(PROSPER_MODEL . '/Admin.php');
 			$this->adminModel = new Model_Admin();
-		
-			$this->adminModel->_settingsHistory();					
-		}	
-		
+
+			$this->adminModel->_settingsHistory();
+		}
+
         $new_instance = (array) $new_instance;
         $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'numProd' => '', 'useTitle' => '', 'showImages' => ''));
         $instance['title'] = strip_tags($new_instance['title']);

@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function deleteMyParent(a){var b=document.getElementById("linkCarrier");window.setTimeout(function(){b.removeChild(a)},50);return!1};
 </script>
-<?php 
+<?php
 wp_register_script( 'autoSuggest', PROSPER_JS . '/autosuggest.js', array('jquery', 'jquery-ui-autocomplete'), '3.1.7');
 wp_enqueue_script( 'autoSuggest' );
 
@@ -12,7 +12,7 @@ $options = get_option('prosper_productSearch');
 $optionsGen = get_option('prosperSuite');
 
 if ($optionsAL = get_option('prosper_autoLinker'))
-{ 
+{
     foreach ($optionsAL as $i => $alOpt)
     {
         $options[$i] = $alOpt;
@@ -37,7 +37,7 @@ echo '<p class="prosper_settingDesc" style="font-size:14px;">' . __( 'The store 
 echo $prosperAdmin->textinput( 'Starting_Query', __( '<strong style="font-size:14px">Starting Query</strong>', 'prosperent-suite' ), '', 'This will be used if no search query was provided. If not set and no query, the shop shows the No Results page which show Popular Products.' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong style="font-size:14px">Show the merchants/brands</strong>', 'prosperent-suite' ), true );
+echo $prosperAdmin->checkbox( 'Enable_Facets', __( '<strong style="font-size:14px">Show the stores/brands</strong>', 'prosperent-suite' ), true );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
 echo $prosperAdmin->textinput( 'searchTitle', __( '<strong style="font-size:14px">Title Above Search Bar</strong>', 'prosperent-suite' ), '', 'Text to show above the search bar.');
@@ -55,7 +55,7 @@ echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 echo $prosperAdmin->textinput( 'VisitStoreButton', __( '<strong style="font-size:14px">Visit Store Button Text</strong>', 'prosperent-suite' ), '', 'Number of products shown on each page.' );
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->checkbox( 'gotoMerchantBypass', __( '<strong style="font-size:14px">Links Go To Merchant</strong>', 'prosperent-suite' ), true, '', 'Bypasses the Product Page.');
+echo $prosperAdmin->checkbox( 'gotoMerchantBypass', __( '<strong style="font-size:14px">Links Go To Store</strong>', 'prosperent-suite' ), true, '', 'Bypasses the Product Page.');
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
 
 echo '<div style="margin:0 0 5px 20px;">';
@@ -73,21 +73,21 @@ if ($options['ProsperCategories'])
     foreach ($categories as $category)
     {
         echo '<li data-savedvalue="' . $category . '" class="ProsperCategories" data-filtype="ProsperCategories" style="float:left;margin:0;padding:6px;" onClick="removeFilter(this);"><span><a data-filtype="ProsperCategories" style="text-decoration:none;" href="javascript:void(0);">' . str_replace('_', ' ', $category) . ' <i class="fa fa-times"></i></a></span></li>';
-    }  
+    }
 }
 echo '</ul></div>';
 
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
-echo '<label style="font-size:14px;font-weight:bold;display:block;">Hide Products from these Merchants</label>';
-echo '<input style="margin-left:5px;margin-top:4px;" type="text" id="NegativeMerchant" placeholder="Enter Merchant Name" onKeyUp="addingNewMerchantFilter(this);"/>';
+echo '<label style="font-size:14px;font-weight:bold;display:block;">Hide Products from these Stores</label>';
+echo '<input style="margin-left:5px;margin-top:4px;" type="text" id="NegativeMerchant" placeholder="Enter Store Name" onKeyUp="addingNewMerchantFilter(this);"/>';
 echo '<div style="margin:6px 0 5px 20px;width:100%;display:inline-block;"><ul style="margin:0;list-style:none;display:inline-block;width:100%" id="NegativeMerchantFilters"></ul></div>';
 echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 
-echo '<label style="font-size:14px;font-weight:bold;display:block;">Only Show Products from these Merchants</label>';
-echo '<input style="margin-left:5px;margin-top:4px;" type="text" id="PositiveMerchant" placeholder="Enter Merchant Name" onKeyUp="addingNewMerchantFilter(this);"/>';
+echo '<label style="font-size:14px;font-weight:bold;display:block;">Only Show Products from these Stores</label>';
+echo '<input style="margin-left:5px;margin-top:4px;" type="text" id="PositiveMerchant" placeholder="Enter Store Name" onKeyUp="addingNewMerchantFilter(this);"/>';
 
-echo '<p class="prosper_desc" style="padding-left:6px;margin-bottom:0;">' . __( "<strong style='font-size:12px;color:red;'>When you enter merchant names here, these will be the ONLY merchants that will show up!</strong>", 'prosperent-suite' ) . '</p>';
-echo '<p class="prosper_desc" style="padding-left:6px;margin-bottom:0;">' . __( "<strong style='font-size:12px;color:red;'>This could result in you missing out on new merchants and extra commissions.</strong>", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc" style="padding-left:6px;margin-bottom:0;">' . __( "<strong style='font-size:12px;color:red;'>When you enter store names here, these will be the ONLY stores that will show up!</strong>", 'prosperent-suite' ) . '</p>';
+echo '<p class="prosper_desc" style="padding-left:6px;margin-bottom:0;">' . __( "<strong style='font-size:12px;color:red;'>This could result in you missing out on new stores and extra commissions.</strong>", 'prosperent-suite' ) . '</p>';
 echo '<div style="margin:6px 0 5px 20px;width:100%;display:inline-block;"><ul style="margin:0;list-style:none;display:inline-block;width:100%" id="PositiveMerchantFilters"></ul></div>';
 
 echo $prosperAdmin->hidden( 'ProsperCategories');
@@ -105,12 +105,12 @@ if ($options['recentSearches'])
 	for ($i = 0; $i < count($options['recentSearches']); $i++)
 	{
 		echo '<span id="ALFields' . $i . '">';
-		echo $prosperAdmin->textinputnewinline( 'recentSearches', $i ); 
+		echo $prosperAdmin->textinputnewinline( 'recentSearches', $i );
 		echo '<a style="margin:3px 0 0 10px; vertical-align:baseline;" onClick="deleteMyParent(this.parentNode);" class="button-secondary" href="' . admin_url( 'admin.php?page=prosper_productSearch&deleteRecent=' . $i . '&nonce='. wp_create_nonce( 'prosper_delete_recent' )) . '">' . __( 'Delete', 'prosperent-suite' ) . '</a>';
 		echo '</span>';
 		echo '<br class="clear" />';
 	}
-	
+
 	echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p>';
 	echo '</div>';
 }

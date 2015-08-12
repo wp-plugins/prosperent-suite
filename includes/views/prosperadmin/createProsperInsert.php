@@ -24,7 +24,7 @@ function showAddedValues(c){var d="",d=jQuery("form").serialize();xmlhttp=new XM
 function sticky_relocate(){var c=jQuery(window).scrollTop(),d=jQuery("#sticky-anchor").offset().top;c>d?jQuery("#stickyHeader").addClass("sticky"):jQuery("#stickyHeader").removeClass("sticky")}jQuery(function(){window.prodqueryString="";window.merchantqueryString="";document.getElementById("apiKey").value=prosperSuiteVars.apiKey;jQuery(window).keydown(function(c){if(13==c.keyCode)return c.preventDefault(),!1});jQuery(window).scroll(sticky_relocate);sticky_relocate()});
 function openImageType(){"pc"==jQuery("#prodview:checked").val()?(jQuery("#prodimages").val(""),jQuery("#prodid").val(""),jQuery(document.getElementById("prosperInsertLimit")).hide(),jQuery("#prodImageType").css("visibility","visible"),showAddedValues(),showValues()):(jQuery(document.getElementById("prosperInsertLimit")).show(),jQuery("#prodImageType").css("visibility","hidden"))};
 </script>
-<?php 
+<?php
 require_once(PROSPER_MODEL . '/Admin.php');
 $prosperAdmin = new Model_Admin();
 
@@ -32,36 +32,36 @@ $prosperAdmin->adminHeader( __( 'Search Products', 'prosperent-suite' ), false);
 echo '<div style="font-weight:bold;font-size:16px;">Search for products, choose a view format, and paste the short code into a post or page.<div style="padding-top:6px;">You’ll make money on any products clicked and purchased!</div></div>';
 
 ?>
-<body id="inserter" role="application" aria-labelledby="app_label" onload="setFocus();showAddedValues();showValues();">	
+<body id="inserter" role="application" aria-labelledby="app_label" onload="setFocus();showAddedValues();showValues();">
     <div id="shortCodeBox" style="display:none;padding-top:16px;font-size:18px;font-weight:bold;">Copy This into a Page or Post:
         <input id="shortCodeVal" readonly type="text" onClick="this.select();" style="width:100%;margin-top:12px;padding:8px 6px;background-color:white;border:1px solid #000;font-weight:normal;">
     </div><br>
     <div id="mainFormDiv" style="display:block;position:relative;z-index:1;width:100%;">
-    <form action="/" method="get" id="prosperSCForm">    	
+    <form action="/" method="get" id="prosperSCForm">
 	    <input type="hidden" id="apiKey" name="apiKey"/>
 	    <input type="hidden" id="createPI" name="createPI" value="true"/>
 	    <input type="hidden" id="prosperSC" value="prosperInsert"/>
 		<input type="hidden" id="prodid" name="prodid"/>
 		<input type="hidden" id="prodd" name="prodd"/>
-		<input type="hidden" id="prodb" name="prodb"/>			
-		<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>						
-		<label><strong>Search Products:</strong></label><input class="prosperMainTextSC" tabindex="1" type="text" name="prodq" id="prodquery" onKeyUp="showValues();" placeholder="Please enter a search term"/>						
+		<input type="hidden" id="prodb" name="prodb"/>
+		<input type="hidden" name="prodfetch" id="prodfetch" value="fetchProducts"/>
+		<label><strong>Search Products:</strong></label><input class="prosperMainTextSC" tabindex="1" type="text" name="prodq" id="prodquery" onKeyUp="showValues();" placeholder="Please enter a search term"/>
 		<table>
 			<tr>
 				<td style="vertical-align:top;width:200px;"><div style="display:block;"><label class="secondaryLabels" style="width:70px;">Merchant:</label><ul class="prosperSelect" id="prodmerchant" style="background-color:white;"></ul></div></td>
-                <td style="vertical-align:top;width:200px;"><div style="display:block;"><label class="secondaryLabels" style="width:50px;">Brand:</label><ul class="prosperSelect" id="prodbrand" style="background-color:white;"></ul></div></td>						
+                <td style="vertical-align:top;width:200px;"><div style="display:block;"><label class="secondaryLabels" style="width:50px;">Brand:</label><ul class="prosperSelect" id="prodbrand" style="background-color:white;"></ul></div></td>
                 <td style="width:290px;vertical-align:middle;">
-                    <span><label class="secondaryLabels" style="width:105px;">Price Range:</label><span style="color:#747474;padding-right:2px;">$</span><input class="prosperShortTextSC" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();getFilters();" style="margin-top:2px;"/><span style="color:#747474;padding-right:">&nbsp;to&nbsp;</span><span style="color:#747474;padding-right:2px;">$</span><input class="prosperShortTextSC" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();getFilters();" style="margin-top:2px;"/></span>														
+                    <span><label class="secondaryLabels" style="width:105px;">Price Range:</label><span style="color:#747474;padding-right:2px;">$</span><input class="prosperShortTextSC" tabindex="4" type="text" id="pricerangea" name="pricerangea" onKeyUp="showValues();getFilters();" style="margin-top:2px;"/><span style="color:#747474;padding-right:">&nbsp;to&nbsp;</span><span style="color:#747474;padding-right:2px;">$</span><input class="prosperShortTextSC" tabindex="4" type="text" id="pricerangeb" name="pricerangeb" onKeyUp="showValues();getFilters();" style="margin-top:2px;"/></span>
                     <span><label class="secondaryLabels" style="width:105px;">Percent Off:</label><input class="prosperShortTextSC" tabindex="4" type="text" id="percentrangea" name="percentrangea" onKeyUp="showValues();getFilters();" style="margin-top:4px;"/><span style="color:#747474;padding-left:2px;">%</span><span style="color:#747474;">&nbsp;to&nbsp;</span><input class="prosperShortTextSC" tabindex="4" type="text" id="percentrangeb" name="percentrangeb" onKeyUp="showValues();getFilters();" style="margin-top:4px;"/><span style="color:#747474;padding-left:2px;">%</span></span>
                     <span><label class="secondaryLabels" style="width:105px;">On Sale Only:</label><input tabindex="6" type="checkbox" id="onSale" name="onSale" onClick="showValues();getFilters();" style="margin-top:6px;"/></span>
                     <div><label class="secondaryLabels" style="width:105px;">Go To:</label><span style="display:inline-block;margin-top:6px;"><input tabindex="9" class="viewRadioSC" type="radio" value="merchant" name="prodgoTo" id="prodgoTo" checked="checked"/>Merchant<input style="margin-left:4px;" tabindex="10" type="radio" value="prodPage" name="prodgoTo" id="prodgoTo"/>Product Page</span></div>
-                    <div><label class="secondaryLabels" style="width:105px;">Button Text:</label><input class="prosperTextSC" style="height:auto;font-size:14px;width:170px;margin-top:4px;" placeholder="Visit Store" tabindex="8" type="text" id="prodvisit" name="prodvisit"/></div>                                                          
-                </td>    
-                <td style="vertical-align:middle;">                                                                                   
+                    <div><label class="secondaryLabels" style="width:105px;">Button Text:</label><input class="prosperTextSC" style="height:auto;font-size:14px;width:170px;margin-top:4px;" placeholder="Visit Store" tabindex="8" type="text" id="prodvisit" name="prodvisit"/></div>
+                </td>
+                <td style="vertical-align:middle;">
                     <span style="display:block;" id="prosperInsertLimit"><label class="secondaryLabels" style="width:50px;">Limit:</label><input class="prosperTextSC" style="height:auto;font-size:14px;width:75px;margin-top:4px;" tabindex="8" type="text" id="prodlimit" name="prodlimit"/></span>
                     <div>
-                        <span><label style="width:50px;" class="secondaryLabels">View:</label> 
-                        <input tabindex="9" style="margin-top:6px;" class="viewRadioSC" type="radio" value="grid" name="prodview" id="prodview" checked="checked" onClick="openImageType();"/>Grid</span> 
+                        <span><label style="width:50px;" class="secondaryLabels">View:</label>
+                        <input tabindex="9" style="margin-top:6px;" class="viewRadioSC" type="radio" value="grid" name="prodview" id="prodview" checked="checked" onClick="openImageType();"/>Grid</span>
                         <div><input style="margin-left:50px;" tabindex="10" type="radio" value="list" name="prodview" id="prodview" onClick="openImageType();"/>List/Detail</div>
                         <div><input style="margin-left:50px;" tabindex="10" type="radio" value="pc" name="prodview" id="prodview" onClick="openImageType();"/>Price Comparison</div>
                     </div>
@@ -74,18 +74,20 @@ echo '<div style="font-weight:bold;font-size:16px;">Search for products, choose 
             			<input tabindex="11" type="submit" value="Preview" class="button-primary" id="prosperMCE_preview" onClick="openPreview(this);return false;"/>
             			<input tabindex="11" type="submit" value="Create Short Code" class="button-primary" id="prosperMCE_submit" onClick="createShortCode();return false;"/>
                     </div>
-                </td>                          
-            </tr>                            
+                </td>
+            </tr>
 		</table>
-		<div id="prosperAddedprod" style="margin-bottom:5px;">      			
+		<div id="prosperAddedprod" style="margin-bottom:5px;">
             <input type="hidden" id="prodimages" name="prodimages"/>
 		    <div id="sticky-anchor"></div>
-	        <div class="prodadded" aria-required="true"></div> 
-	    </div>	
-		<div id="prodresultsGoHere" class="mceActionPanel" style="overflow:auto;height:500px;max-height:500px;border:1px solid #919B9C;background-color:#fff;">  				
-			<div class="prodpreview" aria-required="true" style="overflow:auto;"></div>             				 						        
-		</div> 
+	        <div class="prodadded" aria-required="true"></div>
+	    </div>
+		<div id="prodresultsGoHere" class="mceActionPanel" style="overflow:auto;height:500px;max-height:500px;border:1px solid #919B9C;background-color:#fff;">
+			<div class="prodpreview" aria-required="true" style="overflow:auto;"></div>
+		</div>
     </form>
 </div>
     <div id="truePreview" style="position:absolute;top:145px;left:-1px;height:800px;width:955px;visibility:hidden;z-index:-10;overflow:auto;background-color:#fff;border:1px solid #000;"></div>
 </body>
+<?php
+$prosperAdmin->adminFooter(false);

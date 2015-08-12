@@ -7,13 +7,13 @@
 abstract class Model_Base
 {
 	protected $_options;
-	
+
 	protected $_version;
-	
+
 	protected $_endPoints;
-	
+
 	public $widget;
-	
+
 	private $_allEndPoints = array(
 		'fetchMerchant'	   => 'http://api.prosperent.com/api/merchant?',
 		'fetchProducts'	   => 'http://api.prosperent.com/api/search?',
@@ -22,7 +22,7 @@ abstract class Model_Base
 	    'fetchClicks'	   => 'http://api.prosperent.com/api/clicks?',
 	    'fetchCommissions' => 'http://api.prosperent.com/api/commissions?'
 	);
-	
+
 	private $_privateNetEndPoints = array(
 		'fetchMerchant'    => 'http://192.168.1.104/api/merchant?',
 		'fetchProducts'    => 'http://192.168.1.104/api/search?',
@@ -30,7 +30,14 @@ abstract class Model_Base
 		'fetchAnalyzer'	   => 'http://192.168.1.104/api/content/analyzer?',
 	    'fetchClicks'	   => 'http://192.168.1.104/api/clicks?',
 	    'fetchCommissions' => 'http://192.168.1.104/api/commissions?'
-	);	
+	);
+
+	private $_subinterfaces = array(
+		'insert' => '&interface=wp&subinterface=prosperinsert',
+		'shop'   => '&interface=wp&subinterface=prospershop',
+		'links'  => '&interface=wp&subinterface=prosperinsert',
+
+	);
 
 	public function init()
 	{
@@ -38,31 +45,31 @@ abstract class Model_Base
 		{
 		    add_action( 'wp_enqueue_scripts', array($this, 'prosperEnqueueFAwesome' ));
 			$this->_options = $this->getOptions();
-			$this->_version = $this->getVersion();	
+			$this->_version = $this->getVersion();
 
 			if ($this->_options['Api_Key'] && strlen($this->_options['Api_Key']) == 32)
-			{ 				
-				$this->_endPoints = $this->getFetchEndpoints();			
+			{
+				$this->_endPoints = $this->getFetchEndpoints();
 
 				if ($this->_options['PLAct'])
 				{
 					add_action('wp_head', array($this, 'prosperHeaderScript'));
 				}
-				
+
 				if ((home_url() == 'http://shophounds.com' || home_url() == 'https://shophounds.com') && isset($this->_options['prosperSidText']))
 				{
 					$this->shopHounds();
-				}						
-				
+				}
+
 				require_once(PROSPER_INCLUDE . '/ProsperInsertController.php');
 
-				require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');				
-		
+				require_once(PROSPER_INCLUDE . '/ProsperLinkerController.php');
+
 				if (get_option('permalink_structure'))
 				{
-				    
+
 					require_once(PROSPER_INCLUDE . '/ProsperSearchController.php');
-					
+
 					if ($this->_options['PSAct'])
 					{
 					    $this->prosperStoreInstall();
@@ -75,19 +82,19 @@ abstract class Model_Base
 				else
 				{
 					add_action( 'admin_notices', array($this, 'prosperPermalinkStructure' ));
-				}			
-				
-				add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));	
-				
+				}
+
+				add_action('wp_enqueue_scripts', array($this, 'prosperStylesheets'));
+
 				$advancedOpts = get_option('prosper_advanced');
 				$generalOpts = get_option('prosperSuite');
-				if (($generalOpts['prosperSid'] && !$advancedOpts['prosperSid']) || ($generalOpts['prosperSidText'] && !$advancedOpts['prosperSidText'])) 
+				if (($generalOpts['prosperSid'] && !$advancedOpts['prosperSid']) || ($generalOpts['prosperSidText'] && !$advancedOpts['prosperSidText']))
 				{
 					$advancedOpts['prosperSid'] = $generalOpts['prosperSid'];
 					$advancedOpts['prosperSidText'] = $generalOpts['prosperSidText'];
 					update_option('prosper_advanced', $advancedOpts);
 				}
-				
+
 				if ($this->_options['autoMinorUpdates'])
 				{
 					add_filter( 'auto_update_plugin', array( $this, 'autoUpdateProsperMinor' ), 1000, 2 );
@@ -96,21 +103,21 @@ abstract class Model_Base
 			else
 			{
 				add_action( 'admin_notices', array($this, 'prosperBadSettings' ));
-			}							
+			}
 		}
 		else
 		{
 			add_action( 'admin_notices', array($this, 'prosperNoCurlLoaded' ));
-		}	
+		}
 
 		add_shortcode('perform_ad', array($this, 'performAdShortCode'));
     }
-	
-    public function prosperEnqueueFAwesome() 
+
+    public function prosperEnqueueFAwesome()
     {
         wp_enqueue_style( 'prosper-font-awesome', '//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', array(), '4.0.3');
     }
-    
+
     /**
      * Performs shortcode extraction for ProsperAds
      *
@@ -124,10 +131,10 @@ abstract class Model_Base
 
 	public function autoUpdateProsperMinor ( $update, $item )
 	{
-		if ( !is_object( $item ) || !isset( $item->new_version ) || !isset( $item->plugin ) )  
+		if ( !is_object( $item ) || !isset( $item->new_version ) || !isset( $item->plugin ) )
 		{
 			return $update;
-		}		
+		}
 
 		$currentParts = explode( '.', $this->_version );
 		$updateParts = explode( '.', $item->new_version );
@@ -135,13 +142,13 @@ abstract class Model_Base
 		// Only return true and update when the update is a minor version
 		return ( ($updateParts[0] === $currentParts[0] && $updateParts[1] === $currentParts[1]) );
 	}
-	
+
 	public function getVersion()
-	{			
+	{
 		if ( ! function_exists( 'get_plugin_data' ) )
 			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-	
-		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);				
+
+		$pluginInfo = get_plugin_data(PROSPER_PATH . PROSPER_FILE);
 		return $pluginInfo['Version'];
 	}
 
@@ -154,7 +161,7 @@ abstract class Model_Base
 		}
 		return $this->_endPoints;
 	}
-	
+
 	public function shopHounds()
 	{
 		if (preg_match('/(^\$_(SESSION|COOKIE))\[(\'|")(.+?)(\'|")\]/', $this->_options['prosperSidText'], $regs))
@@ -166,15 +173,15 @@ abstract class Model_Base
 			elseif ($regs[1] == '$_COOKIE')
 			{
 				$cookie = $_COOKIE[$regs[4]];
-			}					
+			}
 		}
 		if (!isset($cookie))
 		{
 			wp_register_script( 'loginCheck', PROSPER_JS . '/shopCheck.js', array('jquery'), $this->_version, 1);
-			wp_enqueue_script( 'loginCheck' );	
-		}					
+			wp_enqueue_script( 'loginCheck' );
+		}
 	}
-	
+
 	/**
 	 * Retrieve all the options
 	 *
@@ -187,14 +194,14 @@ abstract class Model_Base
 			$this->_options = array();
 
 			foreach ($this->getProsperOptionsArray() as $opt)
-			{ 
+			{
 			    $this->_options = array_merge($this->_options, (array) get_option($opt));
 			}
 		}
 
 		return $this->_options;
 	}
-	
+
 	public function createWidget()
 	{
 		$genOpt = get_option('prosperSuite');
@@ -203,20 +210,20 @@ abstract class Model_Base
 
 		if (isset($genOpt['PSAct']))
 		{
-			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget', 'RecentSearchesWidget'));		
+			$widgets = array_merge($widgets, array('ProsperStoreWidget', 'TopProductsWidget', 'RecentSearchesWidget'));
 		}
 		if (isset($genOpt['PICIAct']))
 		{
-			$widgets[] = 'ProductInsertWidget';		
+			$widgets[] = 'ProductInsertWidget';
 		}
 
 		foreach ($widgets as $widget)
 		{
 			require_once(PROSPER_WIDGET . '/' . $widget . '.php');
 			register_widget($widget);
-		}		
+		}
 	}
-		
+
 	public function prosperStylesheets()
 	{
 		$css = PROSPER_CSS . '/products.min.css';
@@ -226,42 +233,42 @@ abstract class Model_Base
 		{
 			$dir = PROSPER_THEME . '/' . $this->_options['Set_Theme'];
 			if($newTheme = glob($dir . "/*.css"))
-			{			
+			{
 				$css = str_replace(' ', '%20', (content_url(preg_replace('/.*\/wp-content/i', '', $newTheme[0]))));
 			}
 		}
 
 		wp_register_style( 'prospere_main_style', $css, array(), $this->_version );
 		wp_enqueue_style( 'prospere_main_style' );
-	}	
-	
+	}
+
 	public function prosperPermalinkStructure()
-	{			
+	{
 		echo '<div class="error" style="padding:6px 0;">';
 		echo _e('<span style="font-size:14px; padding-left:10px;">Switch your <a href="' . admin_url( 'options-permalink.php') . '">PermaLinks</a> structure to anything other than Default.</span></br>', 'my-text-domain' );
-		echo _e('<span style="font-size:14px; padding-left:10px;">The ProsperShop will not work correctly on the Default structure due to formatting of the  Prosperent Suite.</span></br>', 'my-text-domain' ); 
-		echo '</div>';		
+		echo _e('<span style="font-size:14px; padding-left:10px;">The ProsperShop will not work correctly on the Default structure due to formatting of the  Prosperent Suite.</span></br>', 'my-text-domain' );
+		echo '</div>';
 	}
-	
+
 	public function prosperNoCurlLoaded()
-	{			
+	{
 		echo '<div class="error" style="padding:6px 0;">';
 		echo _e('<span style="font-size:14px; padding-left:10px;"><strong>cURL</strong> is not installed on your server.</span></br>', 'my-text-domain' );
-		echo _e('<span style="font-size:14px; padding-left:10px;">You need cURL to run the Prosperent Suite.</span></br>', 'my-text-domain' ); 
-		echo '</div>';		
+		echo _e('<span style="font-size:14px; padding-left:10px;">You need cURL to run the Prosperent Suite.</span></br>', 'my-text-domain' );
+		echo '</div>';
 	}
-	
+
 	public function prosperBadSettings()
-	{				    
+	{
 		$url = admin_url( 'admin.php?page=prosper_general' );
 		echo '<div class="error" style="padding:6px 0;">';
 		echo _e( '<span style="font-size:14px; padding-left:10px;">Your <strong>API Key</strong> is either incorrect or missing. </span></br>', 'my-text-domain' );
-		
-		echo _e('<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent API Key</strong> by following the directions ' . ('prosper_general' == $_GET['page'] ? 'below' : 'in <a href="' . $url . '">General Settings</a>') . '.</span></br>', 'my-text-domain' ); 
+
+		echo _e('<span style="font-size:14px; padding-left:10px;">Please enter your <strong>Prosperent API Key</strong> by following the directions ' . ('prosper_general' == $_GET['page'] ? 'below' : 'in <a href="' . $url . '">General Settings</a>') . '.</span></br>', 'my-text-domain' );
 		echo _e('<span style="font-size:14px; padding-left:10px;">Prosperent Suite will not work without this information.</span>', 'my-text-domain' );
-		echo '</div>';		
+		echo '</div>';
 	}
-	
+
 	/**
 	 * Retrieve an array of all the options the plugin uses. It can't use only one due to limitations of the options API.
 	 *
@@ -272,15 +279,15 @@ abstract class Model_Base
 		$optarr = array('prosperSuite', 'prosper_productSearch', 'prosper_autoComparer', 'prosper_autoLinker', 'prosper_prosperLinks', 'prosper_advanced', 'prosper_themes');
         return apply_filters( 'prosper_options', $optarr );
 	}
-	
+
 	public function shortCodeExtract($atts, $shortcode)
-	{	
+	{
 		return shortcode_atts(array(
 			'q'      => '', // query
 			'utt'    => 0, // use Title as Topics
 			'utg'    => 0, // use Tags as Topics
 			'h'      => 90, // height
-			'w'      => 'auto',	// width	
+			'w'      => 'auto',	// width
 			'c'      => 0, // use coupons, deprecated
 			'b'      => '', // brand
 			'm'      => '', // merchant
@@ -288,14 +295,14 @@ abstract class Model_Base
 			'k'		 => '', // keyword
 			'cl'     => '', // comparison limit, deprecated
 			'ct'     => 'US', // country
-			'id'     => '',  // product/catalog id	
+			'id'     => '',  // product/catalog id
 			'gtm'    => 0, // go to merchant
 			'v'      => 'list', // view
 			'w'	     => '', // width
 			'ws'     => 'px', // width style (px, em, %)
 			'css'    => '', // additional css
 			'state'  => '', // state
-			'city'   => '', // city 
+			'city'   => '', // city
 			'z'	 	 => '', // zipCode
 			'ft'  	 => 'fetchProducts', // fetch method
 			'sale'   => 0, // on sale products only
@@ -312,13 +319,13 @@ abstract class Model_Base
 		    'fb'     => '' // FallBack
 		), $atts, $shortcode);
 	}
-	
+
 	public function prosperReroutes()
 	{
 		$this->prosperRewrite();
 		$this->prosperFlushRules();
 	}
-	
+
 	public function prosperRewrite()
 	{
 		$options = get_option('prosper_advanced');
@@ -329,15 +336,15 @@ abstract class Model_Base
 		add_rewrite_rule('^([^/]+)/([^/]+).cid.([a-z0-9A-Z]{32})/?$', 'index.php?' . $pageName . '&prosperPage=$matches[1]&keyword=$matches[2]&cid=$matches[3]', 'top');
 		add_rewrite_rule($page . '(.+)', 'index.php?' . $pageName . '&queryParams=$matches[1]', 'top');
 	}
-	
+
 	/**
 	 * Flush the rewrite rules.
 	 */
 	public function prosperFlushRules()
 	{
 		flush_rewrite_rules();
-	}	
-	
+	}
+
 	public function prosperStoreInstall()
 	{
 	    $page = get_page_by_path(($this->_options['Base_URL'] ? $this->_options['Base_URL'] : 'products'));
@@ -346,26 +353,26 @@ abstract class Model_Base
 	    if ($page && $pageId == $page->ID)
 	    {
 	        return;
-	    }	    
+	    }
 	    elseif ($page->post_status != 'publish' || !$pageId || $pageId != $page->ID)
 	    {
 	        // the plugin may have been previously active and the page may just be trashed...
-	        $pageId = $page->ID;	        	
-	        
+	        $pageId = $page->ID;
+
 	        // the menu entry...
 	        add_option("prosperentStoreProductsTitle",  get_the_title($pageId), '', 'yes');
 	        // the slug...
 	        add_option("prosperentStoreProsperent SearchName", 'Prosperent Search', '', 'yes');
 	        // the id...
 	        add_option("prosperent_store_pageId", '0', '', 'yes');
-	        	
+
 	        //make sure the page is not trashed...
 	        $page->post_status = 'publish';
 	        $pageId = wp_update_post($page);
-	    
+
 	        delete_option('prosperent_store_pageId');
 	        add_option('prosperent_store_pageId', $pageId);
-	    }    
+	    }
 	    elseif (!$page && !$pageId)
 	    {
        		// the menu entry...
@@ -387,24 +394,24 @@ abstract class Model_Base
 
 			// Insert the post into the database
 			$pageId = wp_insert_post($proserStore);
-			
+
     		delete_option('prosperent_store_pageId');
     		add_option('prosperent_store_pageId', $pageId);
-		}	
-	}	
-	
+		}
+	}
+
 	public function prosperStoreRemove()
 	{
 	    $pageTitle = get_option("prosperentStoreProductsTitle");
 	    $pageName = get_option("prosperentStoreProsperent SearchName");
-	
+
 	    // the id of our page...
 	    $pageId = get_option('prosperent_store_pageId');
 	    if($pageId)
 	    {
 	        wp_delete_post($pageId); // this will trash, not delete
 	    }
-	
+
 	    delete_option("prosperent_store_page_title");
 	    delete_option("prosperent_store_page_name");
 	    delete_option("prosperent_store_pageId");
@@ -412,7 +419,7 @@ abstract class Model_Base
 	    delete_option("prosperentStoreProductsTitle");
 	    delete_option("prosperentStoreProsperent SearchName");
 	}
-	
+
 	public function prosperCustomAdd()
 	{
 		// Add only in Rich Editor mode
@@ -422,19 +429,19 @@ abstract class Model_Base
 			add_filter('mce_buttons', array($this, 'prosperTinyAdd'));
 		}
 	}
-	
+
 	public function prosperTinyRegister($plugin_array)
-	{		
+	{
 		$plugin_array['prosperent'] = PROSPER_JS . '/prosperent3.9.min.js?ver=' . $this->_version;
 		return $plugin_array;
-	}	
-	
+	}
+
 	public function prosperTinyAdd($buttons)
 	{
 		array_push( $buttons, '|', 'prosperent');
 		return $buttons;
 	}
-	
+
 	public function qTagsProsper($id, $display, $arg1, $arg2)
 	{
 	    if (wp_script_is('quicktags'))
@@ -446,12 +453,12 @@ abstract class Model_Base
     		<?php
 	    }
 	}
-	
+
 	public function doOutputBuffer()
 	{
-            ob_start();
+        ob_start();
 	}
-	
+
 	public function getSid($settings = array(), $widget = array())
 	{
 	    if ($this->_options['prosperSid'])
@@ -523,49 +530,55 @@ abstract class Model_Base
 	            $sidArray[] = $this->_options['prosperSidText'];
 	        }
 	    }
-	    
+
 	    if ($sidArray)
 	    {
 	        $sidArray = array_filter($sidArray);
 	        $sid = implode('_', $sidArray);
 	    }
-	    
+
 	    return $sid;
 	}
-	
+
 	public function prosperHeaderScript()
-	{		
+	{
 		$sid = $this->getSid();
-	
+
 		echo '<script type="text/javascript">var _prosperent={"campaign_id":"' . $this->_options['Api_Key'] . '", "pl_active":' . (wp_script_is('loginCheck') ? 0 : 1) . ', "pl_sid":"' . $sid . '", "pl_phraselinker_active":0, "pl_linkoptimizer_active":' . ($this->_options['PL_LinkOpt'] ? 1 : 0) . ', "pl_linkaffiliator_active":1, "platform":"wordpress"};</script><script async type="text/javascript" src="//prosperent.com/js/prosperent.js"></script>';
 	}
-	
+
 	public function apiCall ($settings, $fetch, $sid = '')
-	{				
+	{
 		if (empty($this->_endPoints))
 		{
 			$this->_endPoints = $this->getFetchEndpoints();
 		}
-	
+
 		if (empty($this->_options))
 		{
 			$this->_options = $this->getOptions();
-		}		
+		}
 
 		if (!$sid)
 		{
 		    $sid = $this->getSid($settings);
 		}
 
+		$homeUrl = home_url('', 'http');
+		if (is_ssl())
+		{
+			$homeUrl = home_url('', 'https');
+		}
+
 		$settings = array_merge(array(
 			'api_key' 		  	 => $this->_options['Api_Key'],
-			'location'  	  	 => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+			'location'  	  	 => $homeUrl . $_SERVER['REQUEST_URI'],
 			'referrer' 		  	 => $_SERVER['HTTP_REFERER'],
 			'imageMaskDomain' 	 => $this->_options['ImageCname'],
 			'clickMaskDomain' 	 => $this->_options['ClickCname'],
 			'sid'			  	 => $sid,
 			'relevancyThreshold' => $this->_options['relThresh']
-		), $settings);	
+		), $settings);
 
 		$settings = array_filter( $settings);
 
@@ -574,11 +587,11 @@ abstract class Model_Base
 
 		return $url;
 	}
-	
+
 	public function multiCurlCall ($urls = array(), $expiration = 86400, $settings = array())
-	{		
+	{
 		require_once(PROSPER_PATH . 'prosperMemcache.php');
-		$cache = new Prosper_Cache(); 
+		$cache = new Prosper_Cache();
 
 		$result = $cache->get($settings);
 
@@ -600,7 +613,7 @@ abstract class Model_Base
 
 			// loop through $data and create curl handles
 			// then add them to the multi-handle
-			foreach ($urls as $id => $url) 
+			foreach ($urls as $id => $url)
 			{
 				$curly[$id] = curl_init();
 
@@ -617,14 +630,14 @@ abstract class Model_Base
 
 			// execute the handles
 			$running = null;
-			do 
+			do
 			{
 				curl_multi_exec($mh, $running);
 			} while($running > 0);
 
 
 			// get content and remove handles
-			foreach($curly as $id => $c) 
+			foreach($curly as $id => $c)
 			{
 				$result[$id] = json_decode(curl_multi_getcontent($c), true);
 				curl_multi_remove_handle($mh, $c);
@@ -632,18 +645,18 @@ abstract class Model_Base
 
 			// all done
 			curl_multi_close($mh);
-				
+
 			if ($result['data'])
 			{
 				$cache->set($settings, $result, $expiration);
-			}			
+			}
 		}
 
 		return $result;
 	}
-	
+
 	public function singleCurlCall ($url = '', $expiration = 86400, $settings = array())
-	{	
+	{
 		require_once(PROSPER_PATH . 'prosperMemcache.php');
 		$cache = new Prosper_Cache();
 
@@ -680,12 +693,12 @@ abstract class Model_Base
 			if ($response['data'])
 			{
 				$cache->set($settings, $response, $expiration);
-			}			
+			}
 		}
 
 		return $response;
-	}	
-	
+	}
+
 	public function trendsApiCall ($settings, $fetch, $categories = '', $merchants = '', $brands = '', $sid = '')
 	{
 		if (empty($this->_options))
@@ -695,26 +708,26 @@ abstract class Model_Base
 		else
 		{
 			$options = $this->_options;
-		}	
-		
+		}
+
 		$brandFilter = true;
 		$filter = 'filterCatalogId';
 		$catalog = 'US';
-		
+
 		// calculate date range
 		$prevNumDays = 60;
 		$startDate   = date('Ymd', time() - 86400 * $prevNumDays);
-		$endDate     = date('Ymd');		
-		
+		$endDate     = date('Ymd');
+
 		$apiCall = array(
 			'curlCall'			   => 'trends',
 			'api_key' 	     	   => $this->_options['Api_Key'],
 			'enableFacets'   	   => 'catalogId',
 			'filterCommissionDate' => $startDate . ',' . $endDate,
 			'filterCatalog'  	   => $catalog,
-			'filterCategory' 	   => implode('|', $categories),			
+			'filterCategory' 	   => implode('|', $categories),
 			'filterMerchant'	   => implode('|', $merchants),
-			'filterBrand'		   => $brandFilter ? implode('|', $brands) : ''			
+			'filterBrand'		   => $brandFilter ? implode('|', $brands) : ''
 		);
 
 		$apiCall = array_filter($apiCall);
@@ -723,7 +736,7 @@ abstract class Model_Base
 		$response = $this->trendsCurlCall($apiCall);
 
 		if ($response)
-		{				
+		{
 			// set productId as key in array
 			$keys = array();
 			foreach ($response['facets']['catalogId'] as $i => $data)
@@ -747,13 +760,13 @@ abstract class Model_Base
 			), $settings);
 
 			$trendsUrl = $this->apiCall($settings, $fetch, $sid);
-			
+
 			$results = $this->singleCurlCall($trendsUrl, 86400, $settings);
 		}
-		
+
 		return (array) $results;
 	}
-	
+
 	public function trendsCurlCall($settings)
 	{
 		if (!$this->_endPoints)
@@ -763,7 +776,7 @@ abstract class Model_Base
 		$url = $this->_endPoints['fetchTrends'] . http_build_query ($settings);
 
 		require_once(PROSPER_PATH . 'prosperMemcache.php');
-		$cache = new Prosper_Cache(); 
+		$cache = new Prosper_Cache();
 
 		$response = $cache->get($settings);
 
@@ -800,22 +813,22 @@ abstract class Model_Base
 					{
 						return;
 					}
-				
+
 					$response = $this->trendsCurlCall($settings);
 
 					if ($response['facets']['catalogId'])
 					{
 						break;
-					}	 
+					}
 				}
-			}				
-			
+			}
+
 			if ($response['data'])
 			{
 				$cache->set($settings, $response);
 			}
 		}
-		
+
 		return $response;
 	}
 }

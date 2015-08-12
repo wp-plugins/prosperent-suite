@@ -4,48 +4,48 @@ class ProductInsertWidget extends WP_Widget
     public function __construct()
     {
 	    parent::__construct(
-			'prosperproductinsert', 
-			'ProsperInsert', 
+			'prosperproductinsert',
+			'ProsperInsert',
 			array('classname' => 'productInsert_widget', 'description' => __( "Display products using a query, merchant or brand."))
 		);
-    }	
+    }
 
     public function widget( $args, $instance )
-    {	
+    {
 		$allOptions = array('prosperSuite', 'prosper_productSearch', 'prosper_advanced');
 		$options = array();
 		foreach ($allOptions as $opt)
-		{ 
+		{
 			$options = array_merge($options, (array) get_option($opt));
 		}
 
-        extract($args);			
+        extract($args);
         $title = apply_filters( 'widget_title', (empty( $instance['title'] ) ? 'Related Products' : $instance['title']), $instance, $this->id_base );
 
 		$target  = isset($options['Target']) ? '_blank' : '_self';
-		
+
 		if($instance['useTitle'])
-		{ 
+		{
 			$instance[$instance['useTitle']] = strtolower(get_the_title());
-		}			
+		}
 
 		require_once(PROSPER_MODEL . '/Search.php');
 		$modelSearch = new Model_Search();
 		$modelSearch->getFetchEndpoints();
-					
+
 		$homeUrl = home_url('', 'http');
 		if (is_ssl())
 		{
 			$homeUrl = home_url('', 'https');
-		}					
-		
+		}
+
 		$expiration = PROSPER_CACHE_PRODS;
 		$type = 'product';
-		$visitButton = 'Visit Store';			
+		$visitButton = 'Visit Store';
 		$fetch = 'fetchProducts';
 		$currency = 'USD';
-	
-	
+
+
 		$settings = array(
 			'limit' 		  => $instance['numProd']  ? $instance['numProd'] : 5,
 			'query' 		  => $instance['query'] ? trim($instance['query']) : '',
@@ -55,34 +55,34 @@ class ProductInsertWidget extends WP_Widget
 			'filterPriceSale' => $instance['onSale'] ? (($instance['priceRangea'] || $instance['priceRangeb']) ? $instance['priceRangea'] . ',' . $instance['priceRangeb'] : '0.01,') : '',
 			'filterPrice' 	  => ($instance['onSale'] ? '' : (($instance['priceRangea'] || $instance['priceRangeb']) ? $instance['priceRangea'] . ',' . $instance['priceRangeb'] : '')),
 		);
-		
+
 		$settings = array_filter($settings);
-		
-		if (!$sid)		
+
+		if (!$sid)
 		{
 		    $sid = $modelSearch->getSid($settings, array(
     		        'title' => $title,
     		        'type' => 'ProsperInsert'
 		        )
 		    );
-		}	
-		
+		}
+
 		$curlUrls = $modelSearch->apiCall($settings, $fetch, $sid);
 		$allData = $modelSearch->singleCurlCall($curlUrls, $expiration);
-		
+
 		if ($allData)
-		{		
+		{
 			echo $before_widget;
 			if ( $title )
-				echo $before_title . $title . $after_title;		
-			
+				echo $before_title . $title . $after_title;
+
 			$gridImage = ($instance['imageSize'] ? preg_replace('/px|em|%/i', '', $instance['imageSize']) : 200) . 'px';
-				
+
 			echo '<div id="simProd" class="prosperSide" style="width:100%;">';
-			echo '<ul style="width:100%;">';	
+			echo '<ul style="width:100%;">';
 
 			foreach ($allData['data'] as $record)
-			{			
+			{
 				$priceSale = $record['priceSale'] ? $record['priceSale'] : $record['price_sale'];
 				$price 	   = $priceSale ? '$' . number_format($priceSale, 2) . '' : '$' . number_format($record['price'], 2);
 				$keyword   = preg_replace('/\(.+\)/i', '', $record['keyword']);
@@ -90,19 +90,19 @@ class ProductInsertWidget extends WP_Widget
 				?>
                 <li style="float:none;margin:0;width:100%;">
 					<div class="prodImage">
-						<a href=<?php echo ($instance['goTo'] == 'merchant' ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
+						<a href=<?php echo ($instance['goTo'] == 'merchant' ? '"' . $record['affiliate_url'] . '&interface=wp&subinterface=prosperinsert" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'); ?> rel="nolink"><span class="prosperLoad"><img src="<?php echo $record['image_url']; ?>"  title="<?php echo $record['keyword']; ?>" alt="<?php echo $record['keyword']; ?>"/></span></a>
 					</div>
 					<div class="prodContent">
 						<div class="prodTitle">
-						    <a href=<?php echo $options['goTo'] == 'merchant' ? '"' . $record['affiliate_url'] . '" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'; ?> rel="nolink" style="text-decoration:none;color:#646464"><?php echo $record['brand']; ?></a>
-						</div>   
-						<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">  
+						    <a href=<?php echo $options['goTo'] == 'merchant' ? '"' . $record['affiliate_url'] . '&interface=wp&subinterface=prosperinsert" target="' . $target .  '"' :  '"' . $homeUrl . '/' . $type . '/' . rawurlencode(str_replace('/', ',SL,', $record['keyword'])) . '/cid/' . $cid .  '"'; ?> rel="nolink" style="text-decoration:none;color:#646464"><?php echo $record['brand']; ?></a>
+						</div>
+						<div class="<?php echo ($priceSale ? 'prodPriceSale' : 'prodPrice'); ?>">
 						    <?php echo $price . '<span style="color:#666;font-size:12px;font-weight:normal;"> from</span><div style="display:inline;color:#666;font-size:14px;font-weight:normal;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;"> ' . $record['merchant'] . '</div>' ?>
-						</div>												
-					</div>								
-					<div class="shopCheck prosperVisit">		
-						<a href="<?php echo $record['affiliate_url']; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="Visit Store<?php //echo $visitButton; ?>"/></a>				
-					</div>				
+						</div>
+					</div>
+					<div class="shopCheck prosperVisit">
+						<a href="<?php echo $record['affiliate_url'] . '&interface=wp&subinterface=prosperinsert'; ?>" target="<?php echo $target; ?>" rel="nofollow,nolink"><input id="submit" class="submit" type="submit" value="Visit Store<?php //echo $visitButton; ?>"/></a>
+					</div>
 				</li>
 				<?php
 			}
@@ -121,10 +121,10 @@ class ProductInsertWidget extends WP_Widget
 		{
 			require_once(PROSPER_MODEL . '/Admin.php');
 			$this->adminModel = new Model_Admin();
-		
-			$this->adminModel->_settingsHistory();					
+
+			$this->adminModel->_settingsHistory();
 		}
-	
+
         $new_instance = (array) $new_instance;
         $new_instance = wp_parse_args((array) $new_instance, array( 'title' => '', 'query' => '', 'categories' => '', 'merchants' => '', 'brands' => '', 'priceRangea' => '', 'priceRangeb' => '', 'onSale' => '', 'numProd' => 5, 'goTo' => '', 'useTitle' => ''));
         $instance['title'] = strip_tags($new_instance['title']);
@@ -174,8 +174,8 @@ class ProductInsertWidget extends WP_Widget
         <input class="widefat" id="<?php echo $this->get_field_id('numProd'); ?>" name="<?php echo $this->get_field_name('numProd'); ?>" type="text" value="<?php echo esc_attr($numProd); ?>" /></p>
 		<label  style="display:inline" for="<?php echo $this->get_field_id('goTo'); ?>"><?php _e('Go To:'); ?></label><a href="#" class="prosper_tooltip"><span>Determines where to send the visitor when they click on a product.</span></a>
 		<input type="radio" name="<?php echo $this->get_field_name('goTo'); ?>" value="merchant" <?php echo checked( esc_attr($goTo), 'merchant', false ); ?> /> <strong>Merchant</strong>
-		<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('goTo'); ?>" value="prodPage" <?php echo checked( esc_attr($goTo), 'prodPage', false ); ?> /> <strong>Product Page</strong>			
-		<p><label for="<?php echo $this->get_field_id('useTitle'); ?>"><?php _e('Use Page/Post Title as:'); ?></label><a href="#" class="prosper_tooltip"><span>Make sure the page/post titles are compatible. Some titles may result in little or no results. If checked this will be true for all pages/posts with the Product Insert widget.</span></a></p>	
+		<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('goTo'); ?>" value="prodPage" <?php echo checked( esc_attr($goTo), 'prodPage', false ); ?> /> <strong>Product Page</strong>
+		<p><label for="<?php echo $this->get_field_id('useTitle'); ?>"><?php _e('Use Page/Post Title as:'); ?></label><a href="#" class="prosper_tooltip"><span>Make sure the page/post titles are compatible. Some titles may result in little or no results. If checked this will be true for all pages/posts with the Product Insert widget.</span></a></p>
 		<div style="text-align:center;">
 			<input type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="query" <?php echo checked( esc_attr($useTitle), 'query', false ); ?> /> <strong>Query</strong>
 			<input style="margin-left:8px;" type="radio" name="<?php echo $this->get_field_name('useTitle'); ?>" value="categories" <?php echo checked( esc_attr($useTitle), 'categories', false ); ?> /> <strong>Category</strong>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 class Widget_ProsperDashStats extends WP_Widget {
@@ -16,16 +16,16 @@ class Widget_ProsperDashStats extends WP_Widget {
     }
 
     public static function prosperGetStats( )
-    {          
+    {
         $options = get_option('prosperSuite');
 
         if ($accessKey = $options['prosperAccess'])
-        {           
+        {
             require_once(PROSPER_MODEL . '/Search.php');
             $modelSearch = new Model_Search();
             $fetch = 'fetchClicks';
             $fetch2 = 'fetchCommissions';
-            
+
             switch ($_GET['prosperDate'])
             {
                 case 'yesterday':
@@ -45,7 +45,7 @@ class Widget_ProsperDashStats extends WP_Widget {
                     break;
             }
 
-            $settings = array(                
+            $settings = array(
                 'accessKey'      => $accessKey,
                 'filterHttpHost' => $_SERVER['HTTP_HOST'],
                 'limit'          => 1000
@@ -65,12 +65,12 @@ class Widget_ProsperDashStats extends WP_Widget {
             )), $fetch2);
 
             $everything = $modelSearch->multiCurlCall($curlUrls, PROSPER_CACHE_PRODS, array_merge($settings, array('date' => $startDate . ',' . $endDate)));
-            
+
             $range = new DatePeriod(
                 DateTime::createFromFormat('Ymd', $startDate),
                 new DateInterval('P1D'),
                 DateTime::createFromFormat('Ymd', $endDate));
-            
+
             $dateRange = array();
             foreach($range as $i => $date)
             {
@@ -79,8 +79,8 @@ class Widget_ProsperDashStats extends WP_Widget {
                     'y' => 0
                 );
             }
-            
-            $initialClicks = array();            
+
+            $initialClicks = array();
             foreach ($everything['clickData']['data'] as $clicks)
             {
                 $initialClicks[(string) $clicks[$clickGroup]] = array(
@@ -88,9 +88,9 @@ class Widget_ProsperDashStats extends WP_Widget {
                     'y' => $clicks['groupCount']
                 );
             }
-            
+
             $initialClicks += $dateRange;
-            sort($initialClicks);          
+            sort($initialClicks);
 
             $initialCommissions = array();
             foreach ($everything['commissionData']['data'] as $commissions)
@@ -99,12 +99,12 @@ class Widget_ProsperDashStats extends WP_Widget {
                     'x' => strtotime(DateTime::createFromFormat('Ymd', $commissions[$commissionGroup])->format('Y-m-d')) * 1000,
                     'y' => $commissions['totalPaymentAmount']
                 );
-            }         
-            
+            }
+
             $initialCommissions += $dateRange;
             sort($initialCommissions);
-            
-            
+
+
             if (($initialCommissions || $initialClicks) || $_GET['prosperDate']) :
             ?>
                 <table style="width:100%;">
@@ -114,25 +114,25 @@ class Widget_ProsperDashStats extends WP_Widget {
                         <td><a style="margin-left:2px; vertical-align:baseline;" class="button-secondary" href="<?php echo admin_url( 'index.php?prosperDate=month#prosper_dash_stats'); ?>">Last 30 Days</a></td>
                     </tr>
                 </table>
-            <?php 
+            <?php
             if (!$initialCommissions && !$initialClicks)
-            {       
+            {
                 echo '<div><span style="font-size:16px;font-weight:bold;display:block;padding:8px 0;">No stats for ' . $timeFrame . '.</span><span style="font-size:14px;">Please select a different range.</span></div>';
             }
             ?>
-            
+
             <script type="text/javascript" src="<?php echo PROSPER_JS;?>/canvasjs.min.js"></script>
             <script type="text/javascript">
-            
-            window.onload = function(){ 
-                document.getElementById("prosperClickContainer").style.display = "inline-block";       
+
+            window.onload = function(){
+                document.getElementById("prosperClickContainer").style.display = "inline-block";
                 var prosperClicks = new CanvasJS.Chart("prosperClickContainer",
-                {      
+                {
                   title:{
                     text: "Clicks"
                   },
                   animationEnabled: true,
-                  axisX:{      
+                  axisX:{
                       valueFormatString: "MMM DD, YY" ,
                       labelAngle: -50
                   },
@@ -144,23 +144,23 @@ class Widget_ProsperDashStats extends WP_Widget {
                     shared: "true"
                   },
                   data: [
-                  {        
-                    type: "area",   
-                    xValueType: "dateTime",   
+                  {
+                    type: "area",
+                    xValueType: "dateTime",
                     dataPoints: <?php echo json_encode($initialClicks); ?>
                   }]
                 });
 
-                prosperClicks.render();   
+                prosperClicks.render();
 
                 document.getElementById("prosperCommissionContainer").style.display = "inline-block";
                 var prosperCommissions = new CanvasJS.Chart("prosperCommissionContainer",
-                {      
+                {
                   title:{
                     text: "Commissions"
                   },
                   animationEnabled: true,
-                  axisX:{      
+                  axisX:{
                       valueFormatString: "MMM DD, YY" ,
                       labelAngle: -50
                   },
@@ -172,28 +172,36 @@ class Widget_ProsperDashStats extends WP_Widget {
                     shared: "true"
                   },
                   data: [
-                  {        
-                    type: "area",   
-                    xValueType: "dateTime",   
+                  {
+                    type: "area",
+                    xValueType: "dateTime",
                     dataPoints: <?php echo json_encode($initialCommissions); ?>
                   }]
                 });
 
-                prosperCommissions.render();  
+                prosperCommissions.render();
             }
               </script>
-              
+
               <div id="prosperClickContainer" style="display:none;height: 300px; width: 100%;"></div>
               <div id="prosperCommissionContainer" style="display:none;height: 300px; width: 100%;"></div>
-            <?php 
+            <?php
             else:
             echo '<div><span style="font-size:16px;font-weight:bold;display:block;padding-bottom:6px">No stats to report.</span><span style="font-size:14px;">If you need any help, let us know.</span></div>';
             endif;
         }
         else
         {
-            echo '<div><span style="font-size:16px;font-weight:bold;display:block;padding-bottom:6px">Opps.</span><span style="font-size:14px;">You don\'t have your Prosperent Access Key set. Go to the <strong><a href="' . admin_url( 'admin.php?page=prosper_general' ) . '">General Settings</a></strong> to set it and then you will be able to see your Clicks and Commissions right here.</span></div>';
+        	if ($_POST['prosperAccess'])
+        	{
+        		$genOpts = get_option('prosperSuite');
+        		$genOpts['prosperAccess'] = $_POST['prosperAccess'];
+        		update_option('prosperSuite', $genOpts);
+        	}
+        	echo '<script src="' . PROSPER_JS . '/getDetails.js"></script>';
+        	echo '<form action="' . admin_url() . '" method="post" id="prosper-conf"><input type="hidden" id="hidden_prosperAccess" name="prosperAccess"></form>';
+            echo '<div><span style="font-size:16px;font-weight:bold;display:block;padding-bottom:6px">Opps.</span><span style="font-size:14px;">Your Prosperent Access Key is not set. <a onClick="return openLoginWindow();" href="https://prosperent.com/login" target="_blank">Login</a> to Prosperent to set it and then you will be able to see your Clicks and Commissions right here.</span></div>';
         }
-        
+
     }
 }

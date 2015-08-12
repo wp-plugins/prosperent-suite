@@ -11,22 +11,28 @@ $prosperAdmin = new Model_Admin();
 $options = get_option('prosperSuite');
 $advOptions = get_option('prosper_advanced');
 
-$prosperAdmin->adminHeader( __( 'General Settings', 'prosperent-suite' ), true, 'prosperent_options', 'prosperSuite' );
-
 if (file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php') && !$options['prosperPrivateNet'])
 {
     $options['prosperPrivateNet'] = true;
     update_option('prosperSuite', $options);
 }
-else 
+elseif ($options['prosperPrivateNet'] && !file_exists(WP_CONTENT_DIR . '/prosperentPrivateNetwork.php'))
 {
     $options['prosperPrivateNet'] = false;
     update_option('prosperSuite', $options);
 }
 
+$prosperAdmin->adminHeader( __( 'General Settings', 'prosperent-suite' ), true, 'prosperent_options', 'prosperSuite' );
+
 if (!$options['Api_Key'] || strlen($options['Api_Key']) != 32)
 {
-    echo __( '<ol style="font-size:16px;"><li><a href="http://prosperent.com/join?utm_source=' . urlencode(home_url()) . '&utm_medium=direct&utm_campaign=wp-suite-signup" target="_blank">Sign Up (It\'s free)</a>, if you haven\'t already.</li><li>Go to the <a href="http://prosperent.com/account/wordpress" target="_blank">Prosperent WordPress Install</a> screen.</li><li>Either Create a New Installation or use the Key from a previous setup.</li><li>Copy the Key, and paste it into the box below.</li><li>Save your Settings!</li></ol>', 'prosperent-suite' );
+	echo '<script src="' . PROSPER_JS . '/getDetails.js"></script>';
+
+	echo '<div style="margin-bottom:12px;font-size:24px;" id="prosperSignUpLogin"><a onClick="return openLoginWindow();" href="https://prosperent.com/login" target="_blank">Login</a> to Prosperent</div>';
+    echo '<div style="font-size:18px;">
+    	      Or <a href="http://prosperent.com/join?utm_source=' . urlencode(home_url()) . '&utm_medium=direct&utm_campaign=wp-suite-signup" target="_blank">Sign Up (It\'s free)</a> for a Prosperent account if you haven\'t already...
+          </div>';
+
     echo $prosperAdmin->hidden( 'PSAct' );
     echo $prosperAdmin->hidden( 'PICIAct' );
     //echo $prosperAdmin->hidden( 'ALAct' );
@@ -35,6 +41,7 @@ if (!$options['Api_Key'] || strlen($options['Api_Key']) != 32)
 }
 else
 {
+
 ?>
 
 <div class="toolCards" style="display:inline-block;width:100%;max-width:876px;margin-bottom:15px;vertical-align:top;">
@@ -60,7 +67,7 @@ else
 
 <div style="clear:both;margin-bottom:15px;"></div>
 
-<?php 
+<?php
     if ($options['PSAct'] || $options['PICIAct'])
     {
         echo $prosperAdmin->checkbox( 'Target', __( '<strong style="font-size:14px">Open Links in New Window</strong>', 'prosperent-suite' ), true, '', 'Will Not Change ProsperLinks');
@@ -78,25 +85,32 @@ else
         echo $prosperAdmin->hidden( 'Enable_Caching' );
         echo $prosperAdmin->hidden( 'Target' );
     }
-    
+
     echo $prosperAdmin->checkbox( 'autoMinorUpdates', __( '<strong style="font-size:14px">Automatic Minor Updates</strong>', 'prosperent-suite' ), true);
     echo '<p class="prosper_desc">' . __( "", 'prosperent-suite' ) . '</p><br>';
-    
+
     echo $prosperAdmin->checkbox( 'anonymousData', __( '<strong style="font-size:14px">Send Usage Data Back to Us</strong>', 'prosperent-suite' ), true);
     echo '<p class="prosper_desc">' . __( "This will help us better serve you by knowing which features are used the most and helping with support when needed.", 'prosperent-suite' ) . '</p>';
 }
 
-echo $prosperAdmin->textinput( 'Api_Key', __( '<strong style="font-size:14px;">Prosperent Key</strong>', 'prosperent-suite' ), '');
-echo '<p class="prosper_desc">' . __( '', 'prosperent-suite' ) . '</p><br>';
+echo $prosperAdmin->hidden( 'Api_Key' );
+echo $prosperAdmin->hidden( 'prosperAccess' );
+//echo $prosperAdmin->textinput( 'Api_Key', __( '<strong style="font-size:14px;">Prosperent Key</strong>', 'prosperent-suite' ), '');
+//echo '<p class="prosper_desc">' . __( '', 'prosperent-suite' ) . '</p><br>';
 
-echo $prosperAdmin->textinput( 'prosperAccess', __( '<strong style="font-size:14px;">Prosperent AccessKey</strong>', 'prosperent-suite' ), '');
-echo '<p class="prosper_desc">' . __( 'This is for the dashboard widget that will show your Clicks and Commissions earned from this domain.', 'prosperent-suite' ) . '</p>';
-
-echo '<p class="prosper_desc" style="font-size:14px;">' . __( 'Get Your Prosperent Keys <a href="https://prosperent.com/account/api/keys" target="blank">Here!</a>', 'prosperent-suite' ) . '</p><br>';
+//echo $prosperAdmin->textinput( 'prosperAccess', __( '<strong style="font-size:14px;">Prosperent AccessKey</strong>', 'prosperent-suite' ), '');
+//echo '<p class="prosper_desc">' . __( 'This is for the dashboard widget that will show your Clicks and Commissions earned from this domain.', 'prosperent-suite' ) . '</p>';
 
 echo $prosperAdmin->hidden( 'shortCodesAccessed' );
 echo $prosperAdmin->hidden( 'prosperNoOptions' );
 echo $prosperAdmin->hidden( 'dismissOpenMessage' );
 echo $prosperAdmin->hidden( 'prosperPrivateNet' );
 
-$prosperAdmin->adminFooter();
+if (!$options['Api_Key'] || strlen($options['Api_Key']) != 32)
+{
+	$prosperAdmin->adminFooter(false);
+}
+else
+{
+	$prosperAdmin->adminFooter();
+}
